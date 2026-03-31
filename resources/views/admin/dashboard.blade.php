@@ -1,10 +1,10 @@
 @extends('admin.layouts.admin')
 @section('content')            
-            <div class="page-header">
+             <div class="page-header">
                 <h1 class="page-title">Dashboard</h1>
-                <p class="page-subtitle">Welcome back! Here's an overview of your email marketing performance.</p>
+                <p class="page-subtitle">Welcome back!.</p>
             </div>
-
+            {{--
             <div class="action-cards">
                 <div class="action-card">
                     <div class="action-icon">
@@ -42,7 +42,7 @@
                     <h3>Setup Automation</h3>
                     <p>Build automated workflows</p>
                 </div>
-            </div>
+            </div> --}}
 
             <div class="stats-grid">
                 <div class="stat-card">
@@ -54,9 +54,9 @@
                         </div>
                         <span class="stat-change positive">↑ 12.5%</span>
                     </div>
-                    <div class="stat-value">2,847</div>
-                    <div class="stat-label">Total Customers</div>
-                    <div class="stat-meta">vs last month</div>
+                    <div class="stat-value">{{ number_format($totalUsers) }}</div>
+                    <div class="stat-label">Total Users</div>
+                    {{-- <div class="stat-meta">vs last month</div> --}}
                 </div>
 
                 <div class="stat-card">
@@ -68,12 +68,12 @@
                         </div>
                         <span class="stat-change positive">↑ 8.2%</span>
                     </div>
-                    <div class="stat-value">48.2K</div>
-                    <div class="stat-label">Emails Sent</div>
-                    <div class="stat-meta">vs last month</div>
+                    <div class="stat-value">{{ number_format($totalAppointments) }}</div>
+                    <div class="stat-label">Total Appointments</div>
+                    {{-- <div class="stat-meta">vs last month</div> --}}
                 </div>
 
-                <div class="stat-card">
+                {{-- <div class="stat-card">
                     <div class="stat-header">
                         <div class="stat-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -127,10 +127,10 @@
                     <div class="stat-value">$12.4K</div>
                     <div class="stat-label">Revenue</div>
                     <div class="stat-meta">vs last month</div>
-                </div>
+                </div> --}}
             </div>
 
-            <div class="chart-card">
+            {{-- <div class="chart-card">
                 <div class="chart-header">
                     <div class="chart-title">
                         <div class="chart-icon">
@@ -161,5 +161,5 @@
                 <div class="chart-container">
                     <canvas id="performanceChart"></canvas>
                 </div>
-            </div>
+            </div> --}}
 @endsection            

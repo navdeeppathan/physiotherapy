@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SpecializationController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -28,8 +29,8 @@ Route::get('/', function () {
 
 //admin 
 
-Route::get('/admin-register', [AuthController::class, 'showRegister'])->name('admin.register');
-Route::post('/admin-register', [AuthController::class, 'register'])->name('admin.register.store');
+// Route::get('/admin-register', [AuthController::class, 'showRegister'])->name('admin.register');
+// Route::post('/admin-register', [AuthController::class, 'register'])->name('admin.register.store');
 
 Route::get('/admin-login', [AuthController::class, 'showLogin'])->name('admin.login');
 Route::post('/admin-login', [AuthController::class, 'login'])->name('admin.login.check');
@@ -54,8 +55,9 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
     Route::delete('/specializations/{id}', [SpecializationController::class,'destroy'])->name('specializations.destroy');
   
 
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    // Route::get('/dashboard', function () {
+    //     return view('admin.dashboard');
+    // })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 });
 

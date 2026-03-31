@@ -4,61 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <!-- ✅ BASIC SEO -->
-<title>Medical Prayojnam - Best Marketing and Branding Agency in India</title>
+<title>Physiotherapy</title>
 
-<meta name="title" content="Medical Prayojnam - Best Marketing and Branding Agency in India">
-<meta name="description" content="Medical Prayojnam is a results-driven marketing and branding agency helping businesses grow through strategy, creativity, and performance-focused digital marketing.">
-<meta name="keywords" content="marketing agency india, branding agency delhi, digital marketing company, Medical Prayojnam">
-<meta name="author" content="Medical Prayojnam">
+<meta name="title" content="Physiotherapy">
+<meta name="description" content="Physiotherapy is a results-driven marketing and branding agency helping businesses grow through strategy, creativity, and performance-focused digital marketing.">
+<meta name="keywords" content="marketing agency india, branding agency delhi, digital marketing company, Physiotherapy">
+<meta name="author" content="Physiotherapy">
 
 <!-- ✅ MOBILE -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- ✅ OPEN GRAPH (Facebook / LinkedIn / WhatsApp) -->
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://www.tourfybrandise.com/">
-<meta property="og:title" content="Medical Prayojnam - Marketing & Branding Agency">
+<meta property="og:url" content="http://physiotherapy.infoharry.in/">
+<meta property="og:title" content="Physiotherapy - Marketing & Branding Agency">
 <meta property="og:description" content="Results-driven marketing and branding agency helping businesses grow.">
-<meta property="og:image" content="https://www.tourfybrandise.com/logo.png">
-<meta property="og:site_name" content="Medical Prayojnam">
+<meta property="og:image" content="{{asset('logo.png')}}">
+<meta property="og:site_name" content="Physiotherapy">
 
 <!-- ✅ TWITTER -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Medical Prayojnam">
+<meta name="twitter:title" content="Physiotherapy">
 <meta name="twitter:description" content="Marketing and Branding Agency in India">
-<meta name="twitter:image" content="https://www.tourfybrandise.com/logo.png">
+<meta name="twitter:image" content="{{asset('logo.png')}}">
 
 <!-- ✅ CANONICAL -->
-<link rel="canonical" href="https://www.tourfybrandise.com/">
+<link rel="canonical" href="http://physiotherapy.infoharry.in/">
 
   <!-- Favicons -->
   {{-- <link href="assets/img/favicon.png" rel="icon"> --}}
   {{-- <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon"> --}}
 
   <!-- Favicon -->
-<link rel="icon" href="http://tourfybrandise.infoharry.in/tb.jpeg" type="image/jpeg">
-<link rel="apple-touch-icon" href="http://tourfybrandise.infoharry.in/tb.jpeg">
+<link rel="icon" href="{{asset('logo.png')}}" type="image/jpeg">
+<link rel="apple-touch-icon" href="{{asset('logo.png')}}">
 
 <!-- Open Graph (WhatsApp, Facebook, LinkedIn) -->
-<meta property="og:title" content="Medical Prayojnam">
+<meta property="og:title" content="Physiotherapy">
 <meta property="og:description" content="Branding Agency & Digital Solutions">
-<meta property="og:image" content="http://tourfybrandise.infoharry.in/tb.jpeg">
+<meta property="og:image" content="{{asset('logo.png')}}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:url" content="http://tourfybrandise.infoharry.in/">
+<meta property="og:url" content="http://physiotherapy.infoharry.in/">
 <meta property="og:type" content="website">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Medical Prayojnam">
+<meta name="twitter:title" content="Physiotherapy">
 <meta name="twitter:description" content="Travel, Branding & Digital Solutions">
-<meta name="twitter:image" content="http://tourfybrandise.infoharry.in/tb.jpeg">
+<meta name="twitter:image" content="{{asset('logo.png')}}">
 
 
-<meta name="description" content="Medical Prayojnam is a marketing and branding company helping businesses grow.">
+<meta name="description" content="Physiotherapy is a marketing and branding company helping businesses grow.">
 
-<meta property="og:site_name" content="Medical Prayojnam">
-<meta property="og:title" content="Medical Prayojnam">
+<meta property="og:site_name" content="Physiotherapy">
+<meta property="og:title" content="Physiotherapy">
 <meta property="og:description" content="Marketing and Branding Services">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -995,7 +995,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                 </svg>
             </div> --}}
-            {{-- <span class="brand-name">Medical Prayojnam</span> --}}
+            {{-- <span class="brand-name">Physiotherapy</span> --}}
             <img src="{{asset('logo.png')}}" class="sidebar-logo" alt="">
             <button class="collapse-btn" onclick="toggleSidebar()">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">

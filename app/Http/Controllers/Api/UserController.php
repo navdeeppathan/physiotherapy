@@ -321,7 +321,22 @@ class UserController extends BaseApiController
                 'id_proof_number' => 'nullable|string',
                 'id_proof_file' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
                 'license_certificate' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
+
+                'default_available_days' => 'nullable|array',
+                'default_available_days.*' => 'in:sunday,monday,tuesday,wednesday,thursday,friday,saturday',
+
+                'default_start_time' => 'nullable|date_format:h:i A',
+                'default_end_time' => 'nullable|date_format:h:i A',
             ]);
+
+
+            $startTime = $request->default_start_time 
+                ? Carbon::createFromFormat('h:i A', $request->default_start_time)->format('H:i:s') 
+                : null;
+
+            $endTime = $request->default_end_time 
+                ? Carbon::createFromFormat('h:i A', $request->default_end_time)->format('H:i:s') 
+                : null;
 
             // ✅ Helper function for upload
             $uploadFile = function ($file, $prefix) {
@@ -347,6 +362,13 @@ class UserController extends BaseApiController
                 'gender' => $request->gender,
                 'profile_img' => $profileImagePath,
                 'address' => $request->clinic_address,
+                 // ✅ NEW FIELDS
+                'default_available_days' => $request->default_available_days 
+                    ? json_encode($request->default_available_days) 
+                    : null,
+
+                'default_start_time' => $startTime,
+                'default_end_time' => $endTime,
             ]);
 
             // ✅ Only for Doctor
@@ -413,6 +435,109 @@ class UserController extends BaseApiController
         }
     }
 
+
+    public function update(Request $request, $id)
+    {
+        try {
+
+            $user = User::findOrFail($id);
+
+            // ✅ Validation
+            $request->validate([
+                'role' => 'required|in:admin,doctor,patient',
+                'name' => 'required|max:150',
+
+                
+                'phone' => 'required|unique:users,phone,' . $user->id,
+
+               
+                'dob' => 'required|date',
+                'gender' => 'required|in:male,female',
+
+                // Profile
+                'profile_img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+
+                // Doctor fields
+                'experience' => 'nullable|string',
+                'clinic_address' => 'nullable|string',
+                'home_visit_available' => 'nullable|boolean',
+                'clinic_visit_available' => 'nullable|boolean',
+
+                // Availability
+                'default_available_days' => 'nullable|array',
+                'default_available_days.*' => 'in:sunday,monday,tuesday,wednesday,thursday,friday,saturday',
+
+                'default_start_time' => 'nullable|date_format:h:i A',
+                'default_end_time' => 'nullable|date_format:h:i A',
+            ]);
+
+            // ✅ Convert time
+            $startTime = $request->default_start_time 
+                ? \Carbon\Carbon::createFromFormat('h:i A', $request->default_start_time)->format('H:i:s') 
+                : $user->default_start_time;
+
+            $endTime = $request->default_end_time 
+                ? \Carbon\Carbon::createFromFormat('h:i A', $request->default_end_time)->format('H:i:s') 
+                : $user->default_end_time;
+
+            // ✅ Upload helper
+            $uploadFile = function ($file, $prefix) {
+                $filename = time() . '_' . $prefix . '_' . $file->getClientOriginalName();
+                $file->move(public_path('documents'), $filename);
+                return 'documents/' . $filename;
+            };
+
+            // ✅ Profile Image Update
+            $profileImagePath = $user->profile_img;
+            if ($request->hasFile('profile_img')) {
+                $profileImagePath = $uploadFile($request->file('profile_img'), 'profile');
+            }
+
+            // ✅ Update Data
+            $user->update([
+                'role' => $request->role,
+                'name' => $request->name,
+                
+                'phone' => $request->phone,
+
+                
+
+                'dob' => $request->dob,
+                'gender' => $request->gender,
+                'profile_img' => $profileImagePath,
+                'address' => $request->clinic_address,
+
+                'default_available_days' => $request->default_available_days 
+                    ?? $user->default_available_days,
+
+                'default_start_time' => $startTime,
+                'default_end_time' => $endTime,
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'User updated successfully',
+                'data' => $user
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation Error',
+                'errors' => $e->errors()
+            ], 422);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
     public function show($id)
     {
         try {
@@ -438,59 +563,59 @@ class UserController extends BaseApiController
     }
 
 
-    public function update(Request $request, $id)
-    {
-        try {
+    // public function update(Request $request, $id)
+    // {
+    //     try {
 
-            $user = User::findOrFail($id);
+    //         $user = User::findOrFail($id);
 
-            $request->validate([
-                'role' => 'required|in:admin,doctor,patient',
-                'name' => 'required|max:150',
-                'email' => 'required|email|unique:users,email,' . $user->id,
-                'phone' => 'nullable|unique:users,phone,' . $user->id,
-                'dob' => 'required|date',
-                'gender' => 'required|in:male,female'
+    //         $request->validate([
+    //             'role' => 'required|in:admin,doctor,patient',
+    //             'name' => 'required|max:150',
+    //             'email' => 'required|email|unique:users,email,' . $user->id,
+    //             'phone' => 'nullable|unique:users,phone,' . $user->id,
+    //             'dob' => 'required|date',
+    //             'gender' => 'required|in:male,female'
                 
-            ]);
+    //         ]);
 
-            $user->update([
-                'role' => $request->role,
-                'name' => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'dob' => $request->dob,
-                'gender' => $request->gender
+    //         $user->update([
+    //             'role' => $request->role,
+    //             'name' => $request->name,
+    //             'email' => $request->email,
+    //             'phone' => $request->phone,
+    //             'dob' => $request->dob,
+    //             'gender' => $request->gender
                
-            ]);
+    //         ]);
 
             
 
-            return response()->json([
-                'status' => true,
-                'message' => 'User updated successfully',
-                'data' => $user
-            ], 200);
+    //         return response()->json([
+    //             'status' => true,
+    //             'message' => 'User updated successfully',
+    //             'data' => $user
+    //         ], 200);
 
-        } catch (ValidationException $e) {
+    //     } catch (ValidationException $e) {
 
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation Error',
-                'errors' => $e->errors()
-            ], 422);
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Validation Error',
+    //             'errors' => $e->errors()
+    //         ], 422);
 
-        } catch (Exception $e) {
+    //     } catch (Exception $e) {
 
-            $this->logException($e, 'User Update Error');
+    //         $this->logException($e, 'User Update Error');
 
 
-            return response()->json([
-                'status' => false,
-                'message' => $e->getMessage()
-            ], 500);
-        }
-    }
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
 
 
     public function destroy($id)

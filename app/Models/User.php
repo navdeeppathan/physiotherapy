@@ -35,6 +35,9 @@ class User extends Authenticatable
         'pincode',
         'latitude',
         'longitude',
+        'default_available_days',
+        'default_start_time',
+        'default_end_time'
     ];
 
     protected $hidden = [

@@ -107,4 +107,53 @@ class DoctorAvailabilityController extends BaseApiController
             ], 500);
         }
     }
+
+
+    public function getSlotsByDate(Request $request)
+    {
+        try {
+
+            $request->validate([
+                'available_date' => 'required|date'
+            ]);
+
+            $user = Auth::user();
+
+            if ($user->role !== 'doctor') {
+                return $this->sendError('Unauthorized access', [], 403);
+            }
+
+            // Find availability for that date
+            $availability = DoctorAvailabilityDate::where('user_id', $user->id)
+                ->where('available_date', $request->available_date)
+                ->first();
+
+            if (!$availability) {
+                return $this->sendResponse([
+                    'availability' => null,
+                    'time_slots'   => []
+                ], 'No availability found for this date');
+            }
+
+            // Get slots
+            $slots = DoctorTimeSlot::where('availability_date_id', $availability->id)
+                ->orderBy('start_time', 'asc')
+                ->get();
+
+            return $this->sendResponse([
+                'availability' => $availability,
+                'time_slots'   => $slots
+            ], 'Slots fetched successfully');
+
+        } catch (Exception $e) {
+
+            $this->logException($e, 'Get Slots Error');
+
+            return response()->json([
+                'status'  => false,
+                'message' => 'Something went wrong',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
 }

@@ -37,7 +37,7 @@ Route::middleware(['auth:api', 'role:doctor'])->group(function () {
     Route::post('/doctor/availability', [DoctorAvailabilityController::class, 'store']);
     Route::get('/doctor/availability', [DoctorAvailabilityController::class, 'myAvailability']);
     Route::get('/doctor/availability/slots', [DoctorAvailabilityController::class, 'getSlotsByDate']);
-
+    Route::delete('/doctor/time-slots/{id}', [DoctorAvailabilityController::class, 'destroySlots']);
     Route::get('/doctor/appointments', [AppointmentController::class, 'doctorAppointments']);
 
 });

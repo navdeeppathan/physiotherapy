@@ -156,4 +156,55 @@ class DoctorAvailabilityController extends BaseApiController
             ], 500);
         }
     }
+
+
+    public function destroySlots($id)
+    {
+        try {
+            $user = Auth::user();
+
+            // Find slot
+            $slot = DoctorTimeSlot::where('id', $id)
+                ->where('user_id', $user->id) // ensure doctor owns slot
+                ->first();
+
+            if (!$slot) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Slot not found or unauthorized'
+                ], 404);
+            }
+
+            // Optional: prevent delete if booked
+            if ($slot->is_booked) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Cannot delete a booked slot'
+                ], 400);
+            }
+
+            // Optional: check appointments exist
+            if ($slot->appointments()->exists()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Slot has appointments, cannot delete'
+                ], 400);
+            }
+
+            $slot->delete();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Slot deleted successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            $this->logException($e, 'Slot Destroy Error');
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

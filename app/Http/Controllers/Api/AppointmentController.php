@@ -250,7 +250,7 @@ class AppointmentController extends BaseApiController
     {
         try {
             $request->validate([
-                'action' => 'required|in:accept,reject'
+                'action' => 'required|in:accept,reject,complete'
             ]);
 
             $doctor = Auth::user();
@@ -275,7 +275,7 @@ class AppointmentController extends BaseApiController
                 $appointment->update([
                     'status' => 'confirmed'
                 ]);
-            } else {
+            } else if ($request->action === 'reject') {
                 $appointment->update([
                     'status' => 'cancelled'
                 ]);
@@ -283,6 +283,12 @@ class AppointmentController extends BaseApiController
                 // Free the slot again
                 DoctorTimeSlot::where('id', $appointment->time_slot_id)
                     ->update(['is_booked' => false]);
+            }
+            else if($request->action === 'complete')
+            {
+                $appointment->update([
+                    'status' => 'completed'
+                ]);
             }
 
             return $this->sendResponse($appointment, 'Appointment ' . $request->action . 'ed successfully');

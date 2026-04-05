@@ -81,7 +81,7 @@ class AppointmentController extends BaseApiController
                 'appointment_date'=> $slot->availabilityDate->available_date,
                 'start_time'      => $slot->start_time,
                 'end_time'        => $slot->end_time,
-                'status'          => 'confirmed',
+                'status'          => 'pending',
                 'booking_for'     => $request->booking_for,
                 'patient_name'    => $request->patient_name,
                 'patient_age'     => $request->patient_age,
@@ -237,6 +237,65 @@ class AppointmentController extends BaseApiController
             DB::rollBack();
 
             $this->logException($e, 'Appointment Cancel Error');
+
+            return response()->json([
+                'status'  => false,
+                'message' => 'Something went wrong',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function handleAction(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'action'        => 'required|in:accept,reject',
+                'time_slot_id'  => 'required|exists:doctor_time_slots,id'
+            ]);
+
+            $doctor = Auth::user();
+
+            if ($doctor->role !== 'doctor') {
+                return $this->sendError('Only doctors can perform this action', [], 403);
+            }
+
+            $appointment = Appointment::where('id', $id)
+                ->where('doctor_id', $doctor->id)
+                ->where('time_slot_id', $request->time_slot_id) // ✅ match slot also
+                ->first();
+
+            if (!$appointment) {
+                return $this->sendError('Appointment not found or slot mismatch', [], 404);
+            }
+
+            if ($appointment->status !== 'pending') {
+                return $this->sendError('Appointment already processed', [], 400);
+            }
+
+            if ($request->action === 'accept') {
+
+                $appointment->update([
+                    'status' => 'confirmed'
+                ]);
+
+            } else {
+
+                $appointment->update([
+                    'status' => 'cancelled'
+                ]);
+
+                // ✅ Free slot safely
+                DoctorTimeSlot::where('id', $request->time_slot_id)
+                    ->where('user_id', $doctor->id) // extra safety
+                    ->update(['is_booked' => false]);
+            }
+
+            return $this->sendResponse($appointment, 'Appointment ' . $request->action . 'ed successfully');
+
+        } catch (Exception $e) {
+
+            $this->logException($e, 'Appointment Action Error');
 
             return response()->json([
                 'status'  => false,

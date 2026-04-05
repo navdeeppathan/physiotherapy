@@ -250,8 +250,7 @@ class AppointmentController extends BaseApiController
     {
         try {
             $request->validate([
-                'action'        => 'required|in:accept,reject',
-                'time_slot_id'  => 'required|exists:doctor_time_slots,id'
+                'action' => 'required|in:accept,reject'
             ]);
 
             $doctor = Auth::user();
@@ -262,11 +261,10 @@ class AppointmentController extends BaseApiController
 
             $appointment = Appointment::where('id', $id)
                 ->where('doctor_id', $doctor->id)
-                ->where('time_slot_id', $request->time_slot_id) // ✅ match slot also
                 ->first();
 
             if (!$appointment) {
-                return $this->sendError('Appointment not found or slot mismatch', [], 404);
+                return $this->sendError('Appointment not found', [], 404);
             }
 
             if ($appointment->status !== 'pending') {
@@ -274,20 +272,16 @@ class AppointmentController extends BaseApiController
             }
 
             if ($request->action === 'accept') {
-
                 $appointment->update([
                     'status' => 'confirmed'
                 ]);
-
             } else {
-
                 $appointment->update([
                     'status' => 'cancelled'
                 ]);
 
-                // ✅ Free slot safely
-                DoctorTimeSlot::where('id', $request->time_slot_id)
-                    ->where('user_id', $doctor->id) // extra safety
+                // Free the slot again
+                DoctorTimeSlot::where('id', $appointment->time_slot_id)
                     ->update(['is_booked' => false]);
             }
 

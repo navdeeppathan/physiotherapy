@@ -267,7 +267,7 @@ class AppointmentController extends BaseApiController
                 return $this->sendError('Appointment not found', [], 404);
             }
 
-            if ($appointment->status !== 'pending' && $appointment->status !== 'completed') {
+            if ($appointment->status !== 'completed') {
                 return $this->sendError('Appointment already processed', [], 400);
             }
 

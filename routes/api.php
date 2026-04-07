@@ -26,6 +26,16 @@ Route::post('/login', [UserController::class, 'login']);
 Route::post('/verify-otp', [UserController::class, 'verifyOtp']);
 Route::post('/logout', [UserController::class, 'logout']);
 
+use App\Http\Controllers\Api\PlanController;
+
+Route::prefix('plans')->group(function () {
+    Route::get('/', [PlanController::class, 'index']);      // GET all plans
+    Route::post('/', [PlanController::class, 'store']);     // Create plan
+    Route::get('{id}', [PlanController::class, 'show']);    // Get single plan
+    Route::put('{id}', [PlanController::class, 'update']);  // Update plan
+    Route::delete('{id}', [PlanController::class, 'destroy']); // Delete plan
+});
+
 Route::middleware(['auth:api', 'role:doctor'])->group(function () {
     Route::post('/doctor/profile', [DoctorProfileController::class, 'store']);
     Route::get('/doctor/my-profile', [DoctorProfileController::class, 'myProfile']);
@@ -53,6 +63,22 @@ Route::get('/doctor/profile/{doctor_id}', [DoctorProfileController::class, 'show
 
 Route::post('/change-password', [UserController::class, 'changePassword']);
 
+use App\Http\Controllers\Api\UserSubscriptionController;
+
+
+    Route::get('/subscriptions', [UserSubscriptionController::class, 'index']);
+
+    Route::get('/my-subscription', [UserSubscriptionController::class, 'mySubscription']);
+
+    Route::post('/subscribe', [UserSubscriptionController::class, 'store']);
+
+    Route::post('/cancel-subscription', [UserSubscriptionController::class, 'cancel']);
+    
+
+
+// (Optional - cron endpoint)
+Route::get('/expire-subscriptions', [UserSubscriptionController::class, 'expireSubscriptions']);
+
 Route::middleware(['auth:api', 'role:patient'])->group(function () {
 
     
@@ -61,5 +87,7 @@ Route::middleware(['auth:api', 'role:patient'])->group(function () {
 
     // Cancel (both doctor & patient)
     Route::post('/appointment/{id}', [AppointmentController::class, 'cancel']);
+
+    
 
 });

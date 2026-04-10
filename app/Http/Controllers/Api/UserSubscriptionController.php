@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Models\UserSubscription;
 use App\Models\Plan;
+use Illuminate\Support\Facades\Auth;
 
 class UserSubscriptionController extends BaseApiController
 {
@@ -57,7 +58,8 @@ class UserSubscriptionController extends BaseApiController
                 'plan_id' => 'required|exists:plans,id'
             ]);
 
-            $user = $request->user();
+            $user = Auth::user();
+
             $plan = Plan::find($request->plan_id);
 
             // 🧠 Calculate end date
@@ -97,7 +99,9 @@ class UserSubscriptionController extends BaseApiController
     public function cancel(Request $request)
     {
         try {
-            $subscription = UserSubscription::where('user_id', $request->user()->id)
+            $user = Auth::user();
+
+            $subscription = UserSubscription::where('user_id', $user->id)
                 ->where('status', 'active')
                 ->first();
 

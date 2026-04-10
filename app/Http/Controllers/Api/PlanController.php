@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Models\Plan;
+use App\Models\User;
+use App\Models\UserSubscription;
+use Illuminate\Support\Facades\Auth;
 
 class PlanController extends BaseApiController
 {
@@ -12,10 +15,15 @@ class PlanController extends BaseApiController
     {
         try {
             $plans = Plan::all();
+            $user = Auth::user();
+            $userSubsciption = UserSubscription::where('user_id', $user->id)
+            ->with('plan') // optional if you want plan details
+            ->latest()->first();
 
             return $this->sendResponse([
                 'status' => true,
-                'data' => $plans
+                'data' => $plans,
+                'user_subscription' => $userSubsciption
             ], 'Plans fetched successfully');
 
         } catch (\Exception $e) {

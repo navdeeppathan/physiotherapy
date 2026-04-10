@@ -54,6 +54,10 @@
                             <th>Phone</th>
                             <th>role</th>
                             <th>Status</th>
+                            <th>Doctor Fee</th>
+                            <th>Admin Fee</th>
+                            <th>Total</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -77,6 +81,25 @@
                                     </label>
                                     @endif
                                 </td>
+                                <td>{{ $user->fee->doctor_fee ?? '-' }}</td>
+                                <td>{{ $user->fee->admin_fee ?? '-' }}</td>
+                                <td>{{ $user->fee->total_fee ?? '-' }}</td>
+                                <td>
+                                    @if($user->role == 'doctor')
+                                    <button class="btn btn-sm btn-primary open-fee-modal"
+                                        data-id="{{ $user->id }}"
+                                        data-name="{{ $user->name }}">
+                                        Set Fee
+                                    </button>
+                                    @else
+                                    {{-- <a href="{{ route('admin.users.show', $user->id) }}" class="btn btn-sm btn-primary">
+                                        View
+                                    </a> --}}
+                                    <div>
+                                        -
+                                    </div>
+                                    @endif
+                                </td>
                             </tr>
                         @empty
                             <tr>
@@ -95,7 +118,99 @@
         </div>
     </div>
 </div>
+
+<!-- Fee Modal -->
+<div class="modal fade" id="feeModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Set Appointment Fee</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="feeForm">
+            <input type="hidden" name="doctor_id" id="doctor_id">
+
+            <div class="mb-3">
+                <label>Doctor Fee</label>
+                <input type="number" name="doctor_fee" id="doctor_fee" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label>Admin Fee</label>
+                <input type="number" name="admin_fee" id="admin_fee" class="form-control">
+            </div>
+
+            <button type="submit" class="btn btn-success w-100">
+                Save Fee
+            </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    let modal = new bootstrap.Modal(document.getElementById('feeModal'));
+
+    document.querySelectorAll('.open-fee-modal').forEach(btn => {
+
+        btn.addEventListener('click', function(){
+
+            let userId = this.dataset.id;
+
+            document.getElementById('doctor_id').value = userId;
+
+            // 🔥 Load existing fee
+            fetch(`/admin/fees/${userId}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('doctor_fee').value = data.data?.doctor_fee || '';
+                    document.getElementById('admin_fee').value = data.data?.admin_fee || '';
+                });
+
+            modal.show();
+        });
+    });
+
+    // ✅ Submit form
+    document.getElementById('feeForm').addEventListener('submit', function(e){
+        e.preventDefault();
+
+        let formData = new FormData(this);
+
+        fetch("{{ route('admin.fees.store') }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            if(data.success){
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Saved!',
+                    text: data.message
+                }).then(() => {
+                    location.reload(); // refresh table
+                });
+            }
+        });
+    });
+
+});
+</script>
 @endsection
+
+
 
 
 <style>

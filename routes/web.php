@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AppointmentController;
+use App\Http\Controllers\AppointmentFeeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SpecializationController;
@@ -55,6 +56,8 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
     Route::delete('/specializations/{id}', [SpecializationController::class,'destroy'])->name('specializations.destroy');
   
 
+    Route::post('/fees/store', [AppointmentFeeController::class, 'store'])->name('fees.store');
+    Route::get('/fees/{doctor_id}', [AppointmentFeeController::class, 'getFee']);
     // Route::get('/dashboard', function () {
     //     return view('admin.dashboard');
     // })->name('dashboard');

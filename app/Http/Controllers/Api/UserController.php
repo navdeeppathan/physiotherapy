@@ -98,6 +98,53 @@ class UserController extends BaseApiController
     // }
 
     
+   public function registerPatient(Request $request)
+    {
+        try {
+
+            $request->validate([
+                'name' => 'required|max:150',
+                'email' => 'required|email|unique:users,email',
+                'phone' => 'required',
+                'password' => 'nullable',
+                'dob' => 'required|date',
+                'gender' => 'required|in:male,female,other',
+            ]);
+
+            $user = User::create([
+                'role' => 'patient', // 🔥 fixed
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'password' => $request->password 
+                    ? Hash::make($request->password) 
+                    : null,
+                'dob' => $request->dob,
+                'gender' => $request->gender,
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Patient registered successfully',
+                'data' => $user
+            ], 201);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation Error',
+                'errors' => $e->errors()
+            ], 422);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 
     public function login(Request $request)
     {

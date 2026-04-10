@@ -98,7 +98,7 @@ class UserController extends BaseApiController
     // }
 
     
-   public function registerPatient(Request $request)
+    public function registerPatient(Request $request)
     {
         try {
 
@@ -128,6 +128,77 @@ class UserController extends BaseApiController
                 'message' => 'Patient registered successfully',
                 'data' => $user
             ], 201);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation Error',
+                'errors' => $e->errors()
+            ], 422);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function updatePatient(Request $request, $id)
+    {
+        try {
+
+            $user = User::findOrFail($id);
+
+            // ✅ Validation
+            $request->validate([
+                'name' => 'required|max:150',
+                'phone' => 'required|unique:users,phone,' . $user->id,
+                'dob' => 'required|date',
+                'gender' => 'required|in:male,female,other',
+                'address' => 'nullable|string',
+
+                'profile_img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            ]);
+
+            // ✅ File upload helper
+            $uploadFile = function ($file, $prefix) {
+                $filename = time() . '_' . $prefix . '_' . $file->getClientOriginalName();
+                $file->move(public_path('documents'), $filename);
+                return 'documents/' . $filename;
+            };
+
+            // ✅ Default image path (old one)
+            $profileImagePath = $user->profile_img;
+
+            // ✅ Profile Image Update
+            if ($request->hasFile('profile_img')) {
+
+                // delete old file
+                if ($user->profile_img && file_exists(public_path($user->profile_img))) {
+                    unlink(public_path($user->profile_img));
+                }
+
+                $profileImagePath = $uploadFile($request->file('profile_img'), 'profile');
+            }
+
+            // ✅ Update User (INCLUDING IMAGE 🔥)
+            $user->update([
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'dob' => $request->dob,
+                'gender' => $request->gender,
+                'address' => $request->address,
+                'profile_img' => $profileImagePath, // ✅ FIX
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Patient updated successfully',
+                'data' => $user
+            ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
 
@@ -481,6 +552,7 @@ class UserController extends BaseApiController
             ], 500);
         }
     }
+
 
 
     public function update(Request $request, $id)

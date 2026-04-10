@@ -92,6 +92,8 @@ Route::middleware(['auth:api', 'role:patient'])->group(function () {
     // Cancel (both doctor & patient)
     Route::post('/appointment/{id}', [AppointmentController::class, 'cancel']);
 
+    Route::post('/update-patient/{id}', [UserController::class, 'updatePatient']);
+
     
 
 });

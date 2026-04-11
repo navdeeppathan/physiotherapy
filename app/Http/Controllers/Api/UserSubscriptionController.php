@@ -50,15 +50,17 @@ class UserSubscriptionController extends BaseApiController
         }
     }
 
+    
     // 📌 Assign plan to user (create subscription)
     public function store(Request $request)
     {
         try {
             $request->validate([
-                'plan_id' => 'required|exists:plans,id'
+                'plan_id' => 'required|exists:plans,id',
+                'user_id' => 'required|exists:users,id'
             ]);
 
-            $user = Auth::user();
+            // $user = Auth::user();
 
             $plan = Plan::find($request->plan_id);
 
@@ -70,12 +72,12 @@ class UserSubscriptionController extends BaseApiController
             }
 
             // ❗ Expire old subscription
-            UserSubscription::where('user_id', $user->id)
+            UserSubscription::where('user_id', $request->user_id)
                 ->where('status', 'active')
                 ->update(['status' => 'expired']);
 
             $subscription = UserSubscription::create([
-                'user_id' => $user->id,
+                'user_id' => $request->user_id,
                 'plan_id' => $plan->id,
                 'start_date' => now(),
                 'end_date' => $endDate,

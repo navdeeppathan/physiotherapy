@@ -15,25 +15,30 @@ class PlanController extends BaseApiController
     {
         try {
             $plans = Plan::all();
-            // $user = Auth::user();
-            // if(!$user) 
-            //     return $this->sendResponse([
-            //     'status' => false, 
-            //     'message' => 'You are not logged in'],
-            //     'You are not logged in'
-            // );
-            // $userSubsciption = UserSubscription::where('user_id', $user->id)
-            // ->with('plan') // optional if you want plan details
-            // ->latest()->first();
+
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthorized access'
+                ], 401);
+            }
+
+            $userSubsciption = UserSubscription::where('user_id', $user->id)
+                ->with('plan')
+                ->latest()
+                ->first();
 
             return $this->sendResponse([
                 'status' => true,
                 'data' => $plans,
-                // 'user_subscription' => $userSubsciption
+                'user_subscription' => $userSubsciption
             ], 'Plans fetched successfully');
 
         } catch (\Exception $e) {
             $this->logException($e, 'Plan Index Error');
+
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage()

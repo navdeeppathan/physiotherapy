@@ -16,6 +16,7 @@ class PlanController extends BaseApiController
         try {
             $plans = Plan::all();
             $user = Auth::user();
+            if(!$user) return $this->sendResponse(['status' => false, 'message' => 'You are not logged in'], 'You are not logged in');
             $userSubsciption = UserSubscription::where('user_id', $user->id)
             ->with('plan') // optional if you want plan details
             ->latest()->first();

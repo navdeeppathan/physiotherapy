@@ -11,24 +11,21 @@ use Illuminate\Support\Facades\Auth;
 class PlanController extends BaseApiController
 {
     // 📌 Get all plans
-    public function index()
+    public function index(Request $request)
     {
         try {
+            $user_id = $request->query('user_id');
             $plans = Plan::all();
 
-            $user = Auth::user();
+            $userSubsciption = null; // default
 
-            if (!$user) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Unauthorized access'
-                ], 401);
+            // ✅ only if user_id present
+            if ($user_id) {
+                $userSubsciption = UserSubscription::where('user_id', $user_id)
+                    ->with('plan')
+                    ->latest()
+                    ->first();
             }
-
-            $userSubsciption = UserSubscription::where('user_id', $user->id)
-                ->with('plan')
-                ->latest()
-                ->first();
 
             return $this->sendResponse([
                 'status' => true,

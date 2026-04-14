@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\AppointmentCancellation;
+use App\Models\Payment;
 use Exception;
 
 class AppointmentController extends BaseApiController
@@ -42,9 +43,78 @@ class AppointmentController extends BaseApiController
      * Book Appointment (Patient)
      */
     
+    // public function book(Request $request)
+    // {
+    //     try {
+
+    //         $request->validate([
+    //             'doctor_id'    => 'required|exists:users,id',
+    //             'time_slot_id' => 'required|exists:doctor_time_slots,id',
+    //             'booking_for'        => 'required|in:self,other',
+    //             'patient_name'       => 'required|string|max:150',
+    //             'patient_age'        => 'nullable|integer|min:0|max:120',
+    //             'patient_gender'     => 'nullable|in:male,female,other',
+    //             'problem_description'=> 'nullable|string'
+    //         ]);
+
+    //         $patient = Auth::user();
+
+    //         if ($patient->role !== 'patient') {
+    //             return $this->sendError('Only patients can book appointments', [], 403);
+    //         }
+
+    //         $slot = DoctorTimeSlot::where('id', $request->time_slot_id)
+    //                 ->where('user_id', $request->doctor_id)
+    //                 ->first();
+
+    //         if (!$slot) {
+    //             return $this->sendError('Invalid slot selected', [], 404);
+    //         }
+
+    //         if ($slot->is_booked) {
+    //             return $this->sendError('Slot already booked', [], 400);
+    //         }
+
+    //         $appointment = Appointment::create([
+    //             'doctor_id'       => $request->doctor_id,
+    //             'patient_id'      => $patient->id,
+    //             'time_slot_id'    => $slot->id,
+    //             'appointment_date'=> $slot->availabilityDate->available_date,
+    //             'start_time'      => $slot->start_time,
+    //             'end_time'        => $slot->end_time,
+    //             'status'          => 'pending',
+    //             'booking_for'     => $request->booking_for,
+    //             'patient_name'    => $request->patient_name,
+    //             'patient_age'     => $request->patient_age,
+    //             'patient_gender'  => $request->patient_gender,
+    //             'problem_description' => $request->problem_description
+
+    //         ]);
+
+    //         // Mark slot as booked
+    //         $slot->update(['is_booked' => true]);
+
+    //         return $this->sendResponse($appointment, 'Appointment booked successfully');
+
+    //     } catch (Exception $e) {
+
+    //         $this->logException($e, 'Appointment Booking Error');
+
+    //         return response()->json([
+    //             'status'  => false,
+    //             'message' => 'Something went wrong',
+    //             'error'   => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
+    
+
     public function book(Request $request)
     {
         try {
+
+            DB::beginTransaction(); // 🔥 Important
 
             $request->validate([
                 'doctor_id'    => 'required|exists:users,id',
@@ -74,6 +144,7 @@ class AppointmentController extends BaseApiController
                 return $this->sendError('Slot already booked', [], 400);
             }
 
+            // ✅ Create Appointment
             $appointment = Appointment::create([
                 'doctor_id'       => $request->doctor_id,
                 'patient_id'      => $patient->id,
@@ -87,15 +158,33 @@ class AppointmentController extends BaseApiController
                 'patient_age'     => $request->patient_age,
                 'patient_gender'  => $request->patient_gender,
                 'problem_description' => $request->problem_description
+            ]);
 
+            
+
+            // ✅ Create Payment (NEW)
+            $payment = Payment::create([
+                'appointment_id' => $appointment->id,
+                'patient_id'     => $patient->id,
+                'doctor_id'      => $request->doctor_id,
+                'amount'         => $request->amount, // 🔥 Replace with dynamic doctor fee
+                'currency'       => 'INR',
+                'status'         => 'pending'
             ]);
 
             // Mark slot as booked
             $slot->update(['is_booked' => true]);
 
-            return $this->sendResponse($appointment, 'Appointment booked successfully');
+            DB::commit();
+
+            return $this->sendResponse([
+                'appointment' => $appointment,
+                'payment'     => $payment
+            ], 'Appointment booked, proceed to payment');
 
         } catch (Exception $e) {
+
+            DB::rollBack(); // 🔥 rollback everything
 
             $this->logException($e, 'Appointment Booking Error');
 

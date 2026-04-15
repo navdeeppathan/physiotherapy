@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\AppointmentCancellation;
+use App\Models\DoctorWallet;
 use App\Models\Payment;
 use Exception;
 
@@ -123,7 +124,8 @@ class AppointmentController extends BaseApiController
                 'patient_name'       => 'required|string|max:150',
                 'patient_age'        => 'nullable|integer|min:0|max:120',
                 'patient_gender'     => 'nullable|in:male,female,other',
-                'problem_description'=> 'nullable|string'
+                'problem_description'=> 'nullable|string',
+                'doctor_fee' => 'nullable|numeric|min:0',
             ]);
 
             $patient = Auth::user();
@@ -157,7 +159,8 @@ class AppointmentController extends BaseApiController
                 'patient_name'    => $request->patient_name,
                 'patient_age'     => $request->patient_age,
                 'patient_gender'  => $request->patient_gender,
-                'problem_description' => $request->problem_description
+                'problem_description' => $request->problem_description,
+                
             ]);
 
             
@@ -169,8 +172,17 @@ class AppointmentController extends BaseApiController
                 'doctor_id'      => $request->doctor_id,
                 'amount'         => $request->amount, // 🔥 Replace with dynamic doctor fee
                 'currency'       => 'INR',
-                'status'         => 'pending'
+                'status'         => 'paid'
             ]);
+
+            // ✅ 💰 CREDIT DOCTOR WALLET (TEMPORARY HERE)
+            $wallet = DoctorWallet::firstOrCreate(
+                ['doctor_id' => $request->doctor_id],
+                ['balance' => 0, 'currency' => 'INR']
+            );
+
+            $wallet->balance += $request->doctor_fee;
+            $wallet->save();
 
             // Mark slot as booked
             $slot->update(['is_booked' => true]);
@@ -390,6 +402,30 @@ class AppointmentController extends BaseApiController
                 'status'  => false,
                 'message' => 'Something went wrong',
                 'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getDoctorWallet($doctor_id)
+    {
+        try {
+            // ✅ Get wallet or create if not exists
+            $wallet = DoctorWallet::firstOrCreate(
+                ['doctor_id' => $doctor_id],
+                ['balance' => 0, 'currency' => 'INR']
+            );
+
+            return $this->sendResponse([
+                'balance' => $wallet->balance,
+                'currency' => $wallet->currency
+            ], 'Wallet fetched successfully');
+
+        } catch (\Exception $e) {
+            $this->logException($e, 'Get Doctor Wallet Error');
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to fetch wallet',
+                'error' => $e->getMessage()
             ], 500);
         }
     }

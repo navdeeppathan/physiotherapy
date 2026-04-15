@@ -121,6 +121,7 @@ class UserController extends BaseApiController
                     : null,
                 'dob' => $request->dob,
                 'gender' => $request->gender,
+                'status' => 'active'
             ]);
 
             return response()->json([

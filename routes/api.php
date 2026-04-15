@@ -55,6 +55,8 @@ Route::middleware(['auth:api', 'role:doctor'])->group(function () {
     Route::get('/doctor/appointments', [AppointmentController::class, 'doctorAppointments']);
 
     Route::post('/doctor/appointments/{id}/action', [AppointmentController::class, 'handleAction']);
+    // routes/api.php
+    Route::get('/doctor/{doctor_id}/wallet', [AppointmentController::class, 'getDoctorWallet']);
 
 });
 

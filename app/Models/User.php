@@ -88,4 +88,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(AppointmentFee::class, 'doctor_id');
     }
+
+    public function wallet()
+    {
+        return $this->hasOne(DoctorWallet::class, 'doctor_id');
+    }
 }

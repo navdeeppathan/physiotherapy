@@ -29,6 +29,7 @@ Route::post('/logout', [UserController::class, 'logout']);
 
 Route::post('/register-patient', [UserController::class, 'registerPatient']);
 
+Route::get('/doctors', [UserController::class, 'doctors']);
 
 use App\Http\Controllers\Api\PlanController;
 

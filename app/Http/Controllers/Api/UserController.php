@@ -809,4 +809,27 @@ class UserController extends BaseApiController
             ], 500);
         }
     }
+
+    public function doctors()
+    {
+        try {
+
+            $doctors = User::where('role', 'doctor')->where('status', 'active')->get();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Doctors fetched successfully',
+                'data' => $doctors
+            ], 200);
+
+        } catch (Exception $e) {
+
+            $this->logException($e, 'Doctors Fetch Error');
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

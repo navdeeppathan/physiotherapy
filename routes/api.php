@@ -96,6 +96,7 @@ Route::middleware(['auth:api', 'role:patient'])->group(function () {
     Route::post('/appointment/{id}', [AppointmentController::class, 'cancel']);
 
     Route::post('/update-patient/{id}', [UserController::class, 'updatePatient']);
+    Route::get('/patient/{id}/payments', [UserController::class, 'patientPaymentHistory']);
 
     
 

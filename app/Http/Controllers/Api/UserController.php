@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\DoctorDocument;
+use App\Models\Payment;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -825,6 +826,32 @@ class UserController extends BaseApiController
         } catch (Exception $e) {
 
             $this->logException($e, 'Doctors Fetch Error');
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function patientPaymentHistory($patientId)
+    {
+        try {
+
+            $payments = Payment::with(['doctor', 'appointment'])
+                ->where('patient_id', $patientId)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Patient payment history fetched successfully',
+                'data' => $payments
+            ], 200);
+
+        } catch (Exception $e) {
+
+            $this->logException($e, 'Patient Payment History Error');
 
             return response()->json([
                 'status' => false,

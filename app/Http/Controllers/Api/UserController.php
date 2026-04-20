@@ -859,4 +859,30 @@ class UserController extends BaseApiController
             ], 500);
         }
     }
+
+    public function doctorPaymentHistory($doctorId)
+    {
+        try {
+
+            $payments = Payment::with(['patient', 'appointment'])
+                ->where('doctor_id', $doctorId)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Doctor payment history fetched successfully',
+                'data' => $payments
+            ], 200);
+
+        } catch (Exception $e) {
+
+            $this->logException($e, 'Doctor Payment History Error');
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

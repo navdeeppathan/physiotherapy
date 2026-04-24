@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\DoctorAvailabilityController;
 use App\Http\Controllers\Api\DoctorDocumentController;
 use App\Http\Controllers\Api\DoctorProfileController;
+use App\Http\Controllers\Api\FeedbackController;
 use App\Http\Controllers\Api\SpecializationControllerApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,11 @@ Route::post('/logout', [UserController::class, 'logout']);
 Route::post('/register-patient', [UserController::class, 'registerPatient']);
 
 Route::get('/doctors', [UserController::class, 'doctors']);
+Route::post('/doctor/slots', [DoctorAvailabilityController::class, 'getSlotsByDoctorId']);
+
+Route::post('/feedback', [FeedbackController::class, 'store']);
+Route::get('/doctor/{doctor_id}/feedback', [FeedbackController::class, 'getDoctorFeedback']);
+Route::get('/doctor/{doctor_id}/rating', [FeedbackController::class, 'getDoctorRating']);
 
 use App\Http\Controllers\Api\PlanController;
 

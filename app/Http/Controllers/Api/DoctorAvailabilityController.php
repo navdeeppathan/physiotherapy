@@ -207,4 +207,41 @@ class DoctorAvailabilityController extends BaseApiController
             ], 500);
         }
     }
+    public function getSlotsByDoctorId(Request $request)
+    {
+        try {
+
+            $request->validate([
+                'doctor_id' => 'required|exists:users,id'
+            ]);
+
+            // Get all availability with slots
+            $availability = DoctorAvailabilityDate::with(['timeSlots' => function ($query) {
+                    $query->orderBy('start_time', 'asc');
+                }])
+                ->where('user_id', $request->doctor_id)
+                ->orderBy('available_date', 'asc')
+                ->get();
+
+            if ($availability->isEmpty()) {
+                return $this->sendResponse([
+                    'availability' => [],
+                ], 'No availability found for this doctor');
+            }
+
+            return $this->sendResponse([
+                'availability' => $availability
+            ], 'Slots fetched successfully');
+
+        } catch (Exception $e) {
+
+            $this->logException($e, 'Get Slots By Doctor ID Error');
+
+            return response()->json([
+                'status'  => false,
+                'message' => 'Something went wrong',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
 }

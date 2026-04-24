@@ -811,11 +811,73 @@ class UserController extends BaseApiController
         }
     }
 
+    // public function doctors()
+    // {
+    //     try {
+
+    //         $doctors = User::where('role', 'doctor')
+    //                         ->where('status', 'active')
+    //                         ->with([
+    //                             'profile',
+    //                             'fee',
+    //                             'feedbacks.patient' // include patient info
+    //                         ])
+    //                         ->get();
+
+    //         return response()->json([
+    //             'status' => true,
+    //             'message' => 'Doctors fetched successfully',
+    //             'data' => $doctors
+    //         ], 200);
+
+    //     } catch (Exception $e) {
+
+    //         $this->logException($e, 'Doctors Fetch Error');
+
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
     public function doctors()
     {
         try {
 
-            $doctors = User::where('role', 'doctor')->where('status', 'active')->get();
+            $doctors = User::where('role', 'doctor')
+                ->where('status', 'active')
+                ->with([
+                    'profile',
+                    'fee',
+                    'feedbacks.patient:id,name' // limit fields
+                ])
+                ->withCount('feedbacks')
+                ->withAvg('feedbacks', 'rating')
+                ->get()
+                ->map(function ($doctor) {
+
+                    return [
+                        'id' => $doctor->id,
+                        'name' => $doctor->name,
+                        'email' => $doctor->email,
+
+                        // Profile
+                        'profile' => $doctor->profile,
+
+                        // Fee (if relation exists)
+                        'fee' => $doctor->fee,
+
+                        // Rating Summary (optimized)
+                        'average_rating' => $doctor->feedbacks_avg_rating 
+                            ? round($doctor->feedbacks_avg_rating, 1) 
+                            : 0,
+
+                        'total_reviews' => $doctor->feedbacks_count,
+
+                        // Feedbacks (optional - limit if needed)
+                        'feedbacks' => $doctor->feedbacks
+                    ];
+                });
 
             return response()->json([
                 'status' => true,

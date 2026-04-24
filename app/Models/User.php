@@ -93,4 +93,14 @@ class User extends Authenticatable
     {
         return $this->hasOne(DoctorWallet::class, 'doctor_id');
     }
+
+    public function profile()
+    {
+        return $this->hasOne(DoctorProfile::class, 'user_id');
+    }
+
+    public function feedbacks()
+    {
+        return $this->hasMany(Feedback::class, 'doctor_id');
+    }
 }

@@ -31,7 +31,7 @@ Route::post('/logout', [UserController::class, 'logout']);
 Route::post('/register-patient', [UserController::class, 'registerPatient']);
 
 Route::get('/doctors', [UserController::class, 'doctors']);
-Route::post('/doctor/slots', [DoctorAvailabilityController::class, 'getSlotsByDoctorId']);
+Route::get('/doctor/slots/{doctor_id}', [DoctorAvailabilityController::class, 'getSlotsByDoctorId']);
 
 Route::post('/feedback', [FeedbackController::class, 'store']);
 Route::get('/doctor/{doctor_id}/feedback', [FeedbackController::class, 'getDoctorFeedback']);

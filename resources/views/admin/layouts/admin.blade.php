@@ -1120,6 +1120,31 @@
                 </a>
             </div>
 
+            <div class="nav-item">
+                <a href="{{ route('admin.patient-plans.index') }}" class="nav-link {{ Request::is('admin/patient-plans*') ? 'active' : '' }}" >
+                    <span class="nav-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6M7 4h7l5 5v11a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z"/>
+                    </svg>
+                    </span>
+                    <span class="nav-text">Patient Plans</span>
+                </a>
+            </div>
+
+
+            <div class="nav-item">
+                <a href="{{ route('admin.patient-plan-subscriptions.index') }}" class="nav-link {{ Request::is('admin/patient-plan-subscriptions*') ? 'active' : '' }}" >
+                    <span class="nav-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6M7 4h7l5 5v11a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z"/>
+                    </svg>
+                    </span>
+                    <span class="nav-text">Patient Subscriptions</span>
+                </a>
+            </div>
+
             
              
 

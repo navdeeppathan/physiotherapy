@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\AppointmentFeeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PatientPlanController;
+use App\Http\Controllers\PatientPlanSubscriptionController;
 use App\Http\Controllers\SpecializationController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -62,5 +64,12 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
     //     return view('admin.dashboard');
     // })->name('dashboard');
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+
+     Route::resource('patient-plans', PatientPlanController::class);
+
+       Route::get(
+        'patient-plan-subscriptions',
+        [PatientPlanSubscriptionController::class, 'index']
+    )->name('patient-plan-subscriptions.index');
 });
 

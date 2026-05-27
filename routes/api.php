@@ -24,6 +24,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 
 Route::post('/login', [UserController::class, 'login']);
+Route::post('/login-patient', [UserController::class, 'loginPatient']);
+
 
 Route::post('/verify-otp', [UserController::class, 'verifyOtp']);
 Route::post('/logout', [UserController::class, 'logout']);
@@ -74,25 +76,32 @@ Route::middleware(['auth:api', 'role:doctor'])->group(function () {
 Route::apiResource('users', UserController::class);
 Route::get('/all-specializations', [SpecializationControllerApi::class,'index']);
 
+Route::get('/find-doctors', [SpecializationControllerApi::class, 'findDoctors']);
+
 Route::get('/doctor/profile/{doctor_id}', [DoctorProfileController::class, 'show']);
 
 Route::post('/change-password', [UserController::class, 'changePassword']);
 
+
 use App\Http\Controllers\Api\UserSubscriptionController;
 
+Route::get('/subscriptions', [UserSubscriptionController::class, 'index']);
+Route::get('/my-subscription', [UserSubscriptionController::class, 'mySubscription']);
+Route::post('/subscribe', [UserSubscriptionController::class, 'store']);
+Route::post('/cancel-subscription', [UserSubscriptionController::class, 'cancel']);
 
-    Route::get('/subscriptions', [UserSubscriptionController::class, 'index']);
-
-    Route::get('/my-subscription', [UserSubscriptionController::class, 'mySubscription']);
-
-    Route::post('/subscribe', [UserSubscriptionController::class, 'store']);
-
-    Route::post('/cancel-subscription', [UserSubscriptionController::class, 'cancel']);
     
+use App\Http\Controllers\Api\PatientPlanController;
 
+Route::get('/patient-plans', [PatientPlanController::class, 'index']);
+
+Route::post('/patient-plans/subscribe', [PatientPlanController::class, 'subscribe']);
 
 // (Optional - cron endpoint)
 Route::get('/expire-subscriptions', [UserSubscriptionController::class, 'expireSubscriptions']);
+
+
+
 
 Route::middleware(['auth:api', 'role:patient'])->group(function () {
 
@@ -105,7 +114,5 @@ Route::middleware(['auth:api', 'role:patient'])->group(function () {
 
     Route::post('/update-patient/{id}', [UserController::class, 'updatePatient']);
     Route::get('/patient/{id}/payments', [UserController::class, 'patientPaymentHistory']);
-
-    
 
 });

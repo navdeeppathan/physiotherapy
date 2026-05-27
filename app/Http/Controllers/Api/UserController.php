@@ -277,6 +277,70 @@ class UserController extends BaseApiController
         }
     }
 
+    public function loginPatient(Request $request)
+    {
+        try {
+
+            $request->validate([
+                'phone' => 'required',
+                'password' => 'required',
+            ]);
+
+            // ✅ Find user by phone
+            $user = User::where('phone', $request->phone)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User not found'
+                ], 404);
+            }
+
+            // ✅ Check user status
+            if ($user->status !== 'active') {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Your account is inactive'
+                ], 403);
+            }
+
+            // ✅ Check password
+            if (!Hash::check($request->password, $user->password)) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Invalid password'
+                ], 401);
+            }
+
+            // ✅ Generate Token
+            $token = Str::random(60);
+
+            $user->api_token = hash('sha256', $token);
+            $user->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Login successful',
+                'token' => $token,
+                'token_type' => 'Bearer',
+                'data' => $user
+            ], 200);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+
+            return response()->json([
+                'status' => false,
+                'errors' => $e->errors()
+            ], 422);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
     public function verifyOtp(Request $request)
     {
         try {

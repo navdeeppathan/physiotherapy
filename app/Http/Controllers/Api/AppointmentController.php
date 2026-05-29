@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\AppointmentCancellation;
+use App\Models\AppointmentReschedule;
 use App\Models\DoctorWallet;
 use App\Models\Payment;
 use Exception;
@@ -429,5 +430,231 @@ class AppointmentController extends BaseApiController
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+
+    public function reschedule(Request $request, $id)
+    {
+        try {
+
+            $request->validate([
+                'new_time_slot_id' => 'required|exists:doctor_time_slots,id',
+                'reason' => 'nullable|string|max:500'
+            ]);
+
+            $doctor = Auth::user();
+
+            $appointment = Appointment::with('timeSlot')
+                ->where('id', $id)
+                ->where('doctor_id', $doctor->id)
+                ->first();
+
+            if (!$appointment) {
+                return $this->sendError('Appointment not found', [], 404);
+            }
+
+            if ($appointment->status === 'cancelled') {
+                return $this->sendError(
+                    'Cancelled appointment cannot be rescheduled',
+                    [],
+                    400
+                );
+            }
+
+            if ($appointment->status === 'completed') {
+                return $this->sendError(
+                    'Completed appointment cannot be rescheduled',
+                    [],
+                    400
+                );
+            }
+
+            if ($appointment->time_slot_id == $request->new_time_slot_id) {
+                return $this->sendError(
+                    'Please select a different slot',
+                    [],
+                    400
+                );
+            }
+
+            DB::beginTransaction();
+
+            $newSlot = DoctorTimeSlot::with('availabilityDate')
+                ->where('id', $request->new_time_slot_id)
+                ->where('user_id', $doctor->id)
+                ->lockForUpdate()
+                ->first();
+
+            if (!$newSlot) {
+                DB::rollBack();
+                return $this->sendError('Invalid slot selected', [], 404);
+            }
+
+            if ($newSlot->is_booked) {
+                DB::rollBack();
+                return $this->sendError(
+                    'Selected slot is already booked',
+                    [],
+                    400
+                );
+            }
+
+            // Store reschedule history
+            AppointmentReschedule::create([
+                'appointment_id' => $appointment->id,
+
+                'old_date' => $appointment->appointment_date,
+                'old_start_time' => $appointment->start_time,
+                'old_end_time' => $appointment->end_time,
+
+                'new_date' => $newSlot->availabilityDate->available_date,
+                'new_start_time' => $newSlot->start_time,
+                'new_end_time' => $newSlot->end_time,
+
+                'rescheduled_by' => 'doctor',
+                'reason' => $request->reason
+            ]);
+
+            // Free old slot
+            if ($appointment->timeSlot) {
+                $appointment->timeSlot->update([
+                    'is_booked' => false
+                ]);
+            }
+
+            // Update appointment
+            $appointment->update([
+                'time_slot_id' => $newSlot->id,
+                'appointment_date' => $newSlot->availabilityDate->available_date,
+                'start_time' => $newSlot->start_time,
+                'end_time' => $newSlot->end_time,
+                'status' => 'confirmed',
+                'is_rescheduled' => true
+            ]);
+
+            // Book new slot
+            $newSlot->update([
+                'is_booked' => true
+            ]);
+
+            DB::commit();
+
+            return $this->sendResponse(
+                $appointment->fresh(),
+                'Appointment rescheduled successfully'
+            );
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            $this->logException($e, 'Appointment Reschedule Error');
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function doctorUpcomingAppointments()
+    {
+        $doctor = Auth::user();
+
+        $appointments = Appointment::with(['patient','timeSlot'])
+            ->where('doctor_id', $doctor->id)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->whereDate('appointment_date', '>=', now()->toDateString())
+            ->orderBy('appointment_date')
+            ->get();
+
+        return $this->sendResponse(
+            $appointments,
+            'Upcoming appointments fetched successfully'
+        );
+    }
+
+    public function doctorCompletedAppointments()
+    {
+        $doctor = Auth::user();
+
+        $appointments = Appointment::with(['patient','timeSlot'])
+            ->where('doctor_id', $doctor->id)
+            ->where('status', 'completed')
+            ->latest()
+            ->get();
+
+        return $this->sendResponse(
+            $appointments,
+            'Completed appointments fetched successfully'
+        );
+    }
+
+    public function doctorShiftedAppointments()
+    {
+        $doctor = Auth::user();
+
+        $appointments = Appointment::with(['patient','timeSlot'])
+            ->where('doctor_id', $doctor->id)
+            ->where('is_rescheduled', true)
+            ->whereHas('reschedules')
+            ->latest()
+            ->get();
+
+        return $this->sendResponse(
+            $appointments,
+            'Shifted appointments fetched successfully'
+        );
+    }
+
+    public function patientUpcomingAppointments()
+    {
+        $patient = Auth::user();
+
+        $appointments = Appointment::with(['doctor','timeSlot'])
+            ->where('patient_id', $patient->id)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->whereDate('appointment_date', '>=', now()->toDateString())
+            ->orderBy('appointment_date')
+            ->get();
+
+        return $this->sendResponse(
+            $appointments,
+            'Upcoming appointments fetched successfully'
+        );
+    }
+
+    public function patientCompletedAppointments()
+    {
+        $patient = Auth::user();
+
+        $appointments = Appointment::with(['doctor','timeSlot'])
+            ->where('patient_id', $patient->id)
+            ->where('status', 'completed')
+            ->latest()
+            ->get();
+
+        return $this->sendResponse(
+            $appointments,
+            'Completed appointments fetched successfully'
+        );
+    }
+
+    public function patientShiftedAppointments()
+    {
+        $patient = Auth::user();
+
+        $appointments = Appointment::with(['doctor','timeSlot'])
+            ->where('patient_id', $patient->id)
+            ->where('is_rescheduled', true)
+            ->whereHas('reschedules')
+            ->latest()
+            ->get();
+
+        return $this->sendResponse(
+            $appointments,
+            'Shifted appointments fetched successfully'
+        );
     }
 }

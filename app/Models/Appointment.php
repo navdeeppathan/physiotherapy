@@ -24,7 +24,8 @@ class Appointment extends Model
         'start_time',
         'end_time',
         'status',
-        'payment_status'
+        'payment_status',
+        'is_rescheduled'
     ];
 
     protected $casts = [
@@ -62,5 +63,10 @@ class Appointment extends Model
     public function review()
     {
         return $this->hasOne(DoctorReview::class, 'appointment_id');
+    }
+
+    public function reschedules()
+    {
+        return $this->hasMany(AppointmentReschedule::class);
     }
 }

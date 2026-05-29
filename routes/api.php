@@ -217,6 +217,14 @@ Route::middleware(['auth:api', 'role:doctor'])->group(function () {
 
     Route::get('/doctor/{doctor_id}/wallet', [AppointmentController::class, 'getDoctorWallet']);
     Route::get('/doctor/payment-history/{doctorId}', [UserController::class, 'doctorPaymentHistory']);
+
+    Route::post('/doctor/appointments/{id}/reschedule', [AppointmentController::class, 'reschedule']);
+
+    Route::get('/doctor/appointments/upcoming', [AppointmentController::class, 'doctorUpcomingAppointments']);
+
+    Route::get('/doctor/appointments/completed', [AppointmentController::class, 'doctorCompletedAppointments']);
+
+    Route::get('/doctor/appointments/shifted', [AppointmentController::class, 'doctorShiftedAppointments']);
 });
 
 
@@ -229,4 +237,10 @@ Route::middleware(['auth:api', 'role:patient'])->group(function () {
 
     Route::post('/update-patient/{id}', [UserController::class, 'updatePatient']);
     Route::get('/patient/{id}/payments', [UserController::class, 'patientPaymentHistory']);
+
+    Route::get('/patient/appointments/upcoming', [AppointmentController::class, 'patientUpcomingAppointments']);
+
+    Route::get('/patient/appointments/completed', [AppointmentController::class, 'patientCompletedAppointments']);
+
+    Route::get('/patient/appointments/shifted', [AppointmentController::class, 'patientShiftedAppointments']);
 });

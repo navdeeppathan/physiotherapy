@@ -156,10 +156,10 @@ class UserController extends BaseApiController
 
             // ✅ Validation
             $request->validate([
-                'name' => 'required|max:150',
-                'phone' => 'required|unique:users,phone,' . $user->id,
-                'dob' => 'required|date',
-                'gender' => 'required|in:male,female,other',
+                'name' => 'nullable|max:150',
+                'phone' => 'nullable|unique:users,phone,' . $user->id,
+                'dob' => 'nullable|date',
+                'gender' => 'nullable|in:male,female,other',
                 'address' => 'nullable|string',
 
                 'profile_img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',

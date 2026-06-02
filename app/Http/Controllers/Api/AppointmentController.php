@@ -172,9 +172,9 @@ class AppointmentController extends BaseApiController
                 'appointment_id' => $appointment->id,
                 'patient_id'     => $patient->id,
                 'doctor_id'      => $request->doctor_id,
-                'amount'         => $request->amount, // 🔥 Replace with dynamic doctor fee
+                'amount'         => $request->doctor_fee, // 🔥 Replace with dynamic doctor fee
                 'currency'       => 'INR',
-                'status'         => 'paid'
+                'status'         => 'success'
             ]);
 
             // ✅ 💰 CREDIT DOCTOR WALLET (TEMPORARY HERE)

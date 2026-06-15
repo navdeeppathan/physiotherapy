@@ -481,6 +481,7 @@ class UserController extends BaseApiController
 
     public function store(Request $request)
     {
+        \Log::info($request->all());
         try {
             \Log::info($request->all());
 
@@ -495,7 +496,7 @@ class UserController extends BaseApiController
                 'gender' => 'required|in:male,female',
 
                 // Profile
-                'profile_img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'profile_img' => 'nullable|image|mimes:jpeg,png,jpg|max:5048',
 
                 // Doctor fields
                 'experience' => 'nullable|string',
@@ -504,10 +505,10 @@ class UserController extends BaseApiController
                 'clinic_visit_available' => 'nullable|boolean',
 
                 // Documents
-                'degree_certificate' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
+                'degree_certificate' => 'nullable|file|mimes:pdf,jpg,png|max:5048',
                 'id_proof_number' => 'nullable|string',
-                'id_proof_file' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-                'license_certificate' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
+                'id_proof_file' => 'nullable|file|mimes:pdf,jpg,png|max:5048',
+                'license_certificate' => 'nullable|file|mimes:pdf,jpg,png|max:5048',
 
                 'default_available_days' => 'nullable|array',
                 'default_available_days.*' => 'in:sunday,monday,tuesday,wednesday,thursday,friday,saturday',

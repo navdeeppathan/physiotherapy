@@ -138,7 +138,7 @@ use App\Http\Controllers\Api\PatientPlanController;
 */
 
 // Authentication
-Route::post('/login', [UserController::class, 'login'])->name('login');
+Route::post('/login', [UserController::class, 'login']);
 Route::post('/login-patient', [UserController::class, 'loginPatient']);
 Route::post('/verify-otp', [UserController::class, 'verifyOtp']);
 Route::post('/register-patient', [UserController::class, 'registerPatient']);

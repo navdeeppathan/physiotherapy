@@ -225,6 +225,8 @@ class UserController extends BaseApiController
     {
         try {
 
+        \Log::info($request->all());
+
             $request->validate([
                 'email' => 'required|email',
             ]);

@@ -247,7 +247,7 @@ class UserController extends BaseApiController
                 return response()->json([
                     'status' => false,
                     'message' => 'Your account is inactive'
-                ], 422);
+                ], 500);
             }
 
             // ✅ Generate OTP

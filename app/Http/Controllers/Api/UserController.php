@@ -226,8 +226,6 @@ class UserController extends BaseApiController
           \Log::info($request->all());
         try {
 
-      
-
             $request->validate([
                 'email' => 'required|email',
             ]);
@@ -348,6 +346,7 @@ class UserController extends BaseApiController
             ], 500);
         }
     }
+
     public function verifyOtp(Request $request)
     {
         try {
@@ -430,7 +429,6 @@ class UserController extends BaseApiController
     // public function store(Request $request)
     // {
     //     try {
-
     //         $request->validate([
     //             'role' => 'required|in:admin,doctor,patient',
     //             'name' => 'required|max:150',
@@ -443,12 +441,8 @@ class UserController extends BaseApiController
     //             'clinic_address' => 'nullable|string',
     //             'home_visit_available' => 'nullable|boolean',
     //             'clinic_visit_available', 'nullable|boolean',
-
     //             'document_type' => 'nullable|string',
-
-
     //         ]);
-
     //         $user = User::create([
     //             'role' => $request->role,
     //             'name' => $request->name,
@@ -458,7 +452,6 @@ class UserController extends BaseApiController
     //             'dob' => $request->dob,
     //             'gender' => $request->gender
     //         ]);
-
     //         return response()->json([
     //             'status' => true,
     //             'message' => 'User created successfully',
@@ -645,7 +638,7 @@ class UserController extends BaseApiController
                 'phone' => 'required|unique:users,phone,' . $user->id,
 
                
-                'dob' => 'required|date',
+                'dob' => 'required',
                 'gender' => 'required|in:male,female',
 
                 // Profile

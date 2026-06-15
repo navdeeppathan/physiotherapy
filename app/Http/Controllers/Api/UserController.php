@@ -110,7 +110,7 @@ class UserController extends BaseApiController
                 'email' => 'required|email|unique:users,email',
                 'phone' => 'required',
                 'password' => 'nullable',
-                'dob' => 'required|date',
+                'dob' => 'required',
                 'gender' => 'required|in:male,female,other',
             ]);
 

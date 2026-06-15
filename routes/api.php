@@ -148,7 +148,7 @@ Route::post('/register-patient', [UserController::class, 'registerPatient']);
 | AUTHENTICATED ROUTES
 |--------------------------------------------------------------------------
 */
-
+Route::post('users', [UserController::class, 'store']);
 Route::middleware('auth:api')->group(function () {
 
     Route::post('/logout', [UserController::class, 'logout']);

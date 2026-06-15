@@ -482,146 +482,145 @@ class UserController extends BaseApiController
     public function store(Request $request)
     {
         \Log::info($request->all());
-        // \Log::info($request->all());
-        // try {
-        //     \Log::info($request->all());
+        try {
+            \Log::info($request->all());
 
-        //     // ✅ Validation
-        //     $request->validate([
-        //         'role' => 'required|in:admin,doctor,patient',
-        //         'name' => 'required|max:150',
-        //         'email' => 'required|email|unique:users,email',
-        //         'phone' => 'required|unique:users,phone',
-        //         'password' => 'nullable|min:6',
-        //         'dob' => 'required',
-        //         'gender' => 'required|in:male,female',
+            // ✅ Validation
+            $request->validate([
+                'role' => 'required|in:admin,doctor,patient',
+                'name' => 'required|max:150',
+                'email' => 'required|email|unique:users,email',
+                'phone' => 'required|unique:users,phone',
+                'password' => 'nullable|min:6',
+                'dob' => 'required',
+                'gender' => 'required|in:male,female',
 
-        //         // Profile
-        //         'profile_img' => 'nullable|image|mimes:jpeg,png,jpg|max:5048',
+                // Profile
+                'profile_img' => 'nullable|image|mimes:jpeg,png,jpg|max:5048',
 
-        //         // Doctor fields
-        //         'experience' => 'nullable|string',
-        //         'clinic_address' => 'nullable|string',
-        //         'home_visit_available' => 'nullable|boolean',
-        //         'clinic_visit_available' => 'nullable|boolean',
+                // Doctor fields
+                'experience' => 'nullable|string',
+                'clinic_address' => 'nullable|string',
+                'home_visit_available' => 'nullable|boolean',
+                'clinic_visit_available' => 'nullable|boolean',
 
-        //         // Documents
-        //         'degree_certificate' => 'nullable|file|mimes:pdf,jpg,png|max:5048',
-        //         'id_proof_number' => 'nullable|string',
-        //         'id_proof_file' => 'nullable|file|mimes:pdf,jpg,png|max:5048',
-        //         'license_certificate' => 'nullable|file|mimes:pdf,jpg,png|max:5048',
+                // Documents
+                'degree_certificate' => 'nullable|file|mimes:pdf,jpg,png|max:5048',
+                'id_proof_number' => 'nullable|string',
+                'id_proof_file' => 'nullable|file|mimes:pdf,jpg,png|max:5048',
+                'license_certificate' => 'nullable|file|mimes:pdf,jpg,png|max:5048',
 
-        //         'default_available_days' => 'nullable|array',
-        //         'default_available_days.*' => 'in:sunday,monday,tuesday,wednesday,thursday,friday,saturday',
+                'default_available_days' => 'nullable|array',
+                'default_available_days.*' => 'in:sunday,monday,tuesday,wednesday,thursday,friday,saturday',
 
-        //         'default_start_time' => 'nullable|date_format:h:i A',
-        //         'default_end_time' => 'nullable|date_format:h:i A',
-        //     ]);
+                'default_start_time' => 'nullable|date_format:h:i A',
+                'default_end_time' => 'nullable|date_format:h:i A',
+            ]);
 
 
-        //     $startTime = $request->default_start_time 
-        //         ? Carbon::createFromFormat('h:i A', $request->default_start_time)->format('H:i:s') 
-        //         : null;
+            $startTime = $request->default_start_time 
+                ? Carbon::createFromFormat('h:i A', $request->default_start_time)->format('H:i:s') 
+                : null;
 
-        //     $endTime = $request->default_end_time 
-        //         ? Carbon::createFromFormat('h:i A', $request->default_end_time)->format('H:i:s') 
-        //         : null;
+            $endTime = $request->default_end_time 
+                ? Carbon::createFromFormat('h:i A', $request->default_end_time)->format('H:i:s') 
+                : null;
 
-        //     // ✅ Helper function for upload
-        //     $uploadFile = function ($file, $prefix) {
-        //         $filename = time() . '_' . $prefix . '_' . $file->getClientOriginalName();
-        //         $file->move(public_path('documents'), $filename);
-        //         return 'documents/' . $filename;
-        //     };
+            // ✅ Helper function for upload
+            $uploadFile = function ($file, $prefix) {
+                $filename = time() . '_' . $prefix . '_' . $file->getClientOriginalName();
+                $file->move(public_path('documents'), $filename);
+                return 'documents/' . $filename;
+            };
 
-        //     // ✅ Upload Profile Image
-        //     $profileImagePath = null;
-        //     if ($request->hasFile('profile_img')) {
-        //         $profileImagePath = $uploadFile($request->file('profile_img'), 'profile');
-        //     }
+            // ✅ Upload Profile Image
+            $profileImagePath = null;
+            if ($request->hasFile('profile_img')) {
+                $profileImagePath = $uploadFile($request->file('profile_img'), 'profile');
+            }
 
-        //     // ✅ Create User
-        //     $user = User::create([
-        //         'role' => $request->role,
-        //         'name' => $request->name,
-        //         'email' => $request->email,
-        //         'phone' => $request->phone,
-        //         'password' => Hash::make($request->password),
-        //         'dob' => $request->dob,
-        //         'gender' => $request->gender,
-        //         'profile_img' => $profileImagePath,
-        //         'address' => $request->clinic_address,
-        //          // ✅ NEW FIELDS
-        //         'default_available_days' => $request->default_available_days 
-        //             ? json_encode($request->default_available_days) 
-        //             : null,
+            // ✅ Create User
+            $user = User::create([
+                'role' => $request->role,
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'password' => Hash::make($request->password),
+                'dob' => $request->dob,
+                'gender' => $request->gender,
+                'profile_img' => $profileImagePath,
+                'address' => $request->clinic_address,
+                 // ✅ NEW FIELDS
+                'default_available_days' => $request->default_available_days 
+                    ? json_encode($request->default_available_days) 
+                    : null,
 
-        //         'default_start_time' => $startTime,
-        //         'default_end_time' => $endTime,
-        //     ]);
+                'default_start_time' => $startTime,
+                'default_end_time' => $endTime,
+            ]);
 
-        //     // ✅ Only for Doctor
-        //     if ($request->role === 'doctor') {
+            // ✅ Only for Doctor
+            if ($request->role === 'doctor') {
 
-        //         // 📄 Degree Certificate
-        //         if ($request->hasFile('degree_certificate')) {
-        //             $path = $uploadFile($request->file('degree_certificate'), 'degree');
+                // 📄 Degree Certificate
+                if ($request->hasFile('degree_certificate')) {
+                    $path = $uploadFile($request->file('degree_certificate'), 'degree');
 
-        //             DoctorDocument::create([
-        //                 'user_id' => $user->id,
-        //                 'document_type' => 'certificate',
-        //                 'document_path' => $path,
-        //                 'verification_status' => 'pending',
-        //             ]);
-        //         }
+                    DoctorDocument::create([
+                        'user_id' => $user->id,
+                        'document_type' => 'certificate',
+                        'document_path' => $path,
+                        'verification_status' => 'pending',
+                    ]);
+                }
 
-        //         // 🆔 ID Proof
-        //         if ($request->hasFile('id_proof_file')) {
-        //             $path = $uploadFile($request->file('id_proof_file'), 'id');
+                // 🆔 ID Proof
+                if ($request->hasFile('id_proof_file')) {
+                    $path = $uploadFile($request->file('id_proof_file'), 'id');
 
-        //             DoctorDocument::create([
-        //                 'user_id' => $user->id,
-        //                 'document_type' => 'id_proof',
-        //                 'document_path' => $path,
-        //                 'verification_status' => 'pending',
-        //                 // 'document_number' => $request->id_proof_number // add column if needed
-        //             ]);
-        //         }
+                    DoctorDocument::create([
+                        'user_id' => $user->id,
+                        'document_type' => 'id_proof',
+                        'document_path' => $path,
+                        'verification_status' => 'pending',
+                        // 'document_number' => $request->id_proof_number // add column if needed
+                    ]);
+                }
 
-        //         // 🪪 License Certificate
-        //         if ($request->hasFile('license_certificate')) {
-        //             $path = $uploadFile($request->file('license_certificate'), 'license');
+                // 🪪 License Certificate
+                if ($request->hasFile('license_certificate')) {
+                    $path = $uploadFile($request->file('license_certificate'), 'license');
 
-        //             DoctorDocument::create([
-        //                 'user_id' => $user->id,
-        //                 'document_type' => 'license',
-        //                 'document_path' => $path,
-        //                 'verification_status' => 'pending',
-        //             ]);
-        //         }
-        //     }
+                    DoctorDocument::create([
+                        'user_id' => $user->id,
+                        'document_type' => 'license',
+                        'document_path' => $path,
+                        'verification_status' => 'pending',
+                    ]);
+                }
+            }
 
-        //     return response()->json([
-        //         'status' => true,
-        //         'message' => 'User registered successfully',
-        //         'data' => $user->load('documents')
-        //     ], 201);
+            return response()->json([
+                'status' => true,
+                'message' => 'User registered successfully',
+                'data' => $user->load('documents')
+            ], 201);
 
-        // } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (\Illuminate\Validation\ValidationException $e) {
 
-        //     return response()->json([
-        //         'status' => false,
-        //         'message' => 'Validation Error',
-        //         'errors' => $e->errors()
-        //     ], 422);
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation Error',
+                'errors' => $e->errors()
+            ], 422);
 
-        // } catch (\Exception $e) {
+        } catch (\Exception $e) {
 
-        //     return response()->json([
-        //         'status' => false,
-        //         'message' => $e->getMessage(),
-        //     ], 500);
-        // }
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
 

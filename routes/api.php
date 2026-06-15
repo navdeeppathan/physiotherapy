@@ -138,7 +138,7 @@ use App\Http\Controllers\Api\PatientPlanController;
 */
 
 // Authentication
-Route::post('/login', [UserController::class, 'login']);
+Route::post('/login', [UserController::class, 'login'])->name('login');
 Route::post('/login-patient', [UserController::class, 'loginPatient']);
 Route::post('/verify-otp', [UserController::class, 'verifyOtp']);
 Route::post('/register-patient', [UserController::class, 'registerPatient']);
@@ -149,12 +149,13 @@ Route::post('/register-patient', [UserController::class, 'registerPatient']);
 |--------------------------------------------------------------------------
 */
 Route::post('users', [UserController::class, 'store']);
+
 Route::middleware('auth:api')->group(function () {
 
     Route::post('/logout', [UserController::class, 'logout']);
 
     // Users
-    Route::apiResource('users', UserController::class);
+     Route::apiResource('users', UserController::class)->except(['store']);
 
     Route::post('/change-password', [UserController::class, 'changePassword']);
 

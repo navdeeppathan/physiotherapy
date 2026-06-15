@@ -103,6 +103,8 @@ class UserController extends BaseApiController
     {
         try {
 
+        \Log::info($request->all());
+
             $request->validate([
                 'name' => 'required|max:150',
                 'email' => 'required|email|unique:users,email',

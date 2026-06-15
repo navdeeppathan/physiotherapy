@@ -160,7 +160,7 @@ class UserController extends BaseApiController
             $request->validate([
                 'name' => 'nullable|max:150',
                 'phone' => 'nullable|unique:users,phone,' . $user->id,
-                'dob' => 'nullable|date',
+                'dob' => 'nullable',
                 'gender' => 'nullable|in:male,female,other',
                 'address' => 'nullable|string',
 
@@ -482,6 +482,7 @@ class UserController extends BaseApiController
     public function store(Request $request)
     {
         try {
+            \Log::info($request->all());
 
             // ✅ Validation
             $request->validate([
@@ -490,7 +491,7 @@ class UserController extends BaseApiController
                 'email' => 'required|email|unique:users,email',
                 'phone' => 'required|unique:users,phone',
                 'password' => 'nullable|min:6',
-                'dob' => 'required|date',
+                'dob' => 'required',
                 'gender' => 'required|in:male,female',
 
                 // Profile

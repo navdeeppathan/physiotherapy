@@ -242,13 +242,13 @@ class UserController extends BaseApiController
                 ], 404);
             }
 
-            if ($user->status !== 'active') {
-                \Log::info('active');
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Your account is inactive'
-                ], 500);
-            }
+            // if ($user->status !== 'active') {
+            //     \Log::info('active');
+            //     return response()->json([
+            //         'status' => false,
+            //         'message' => 'Your account is inactive'
+            //     ], 500);
+            // }
 
             // ✅ Generate OTP
             $otp = rand(100000, 999999);

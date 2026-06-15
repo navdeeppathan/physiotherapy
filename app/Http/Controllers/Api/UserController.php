@@ -233,8 +233,9 @@ class UserController extends BaseApiController
             ]);
 
             $user = User::where('email', $request->email)->first();
-
+            \Log::info($user);
             if (!$user) {
+                \Log::info('dsdsds');
                 return response()->json([
                     'status' => false,
                     'message' => 'User not found'
@@ -242,6 +243,7 @@ class UserController extends BaseApiController
             }
 
             if ($user->status !== 'active') {
+                \Log::info('active');
                 return response()->json([
                     'status' => false,
                     'message' => 'Your account is inactive'

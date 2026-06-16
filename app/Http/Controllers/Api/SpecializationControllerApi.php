@@ -35,30 +35,29 @@ class SpecializationControllerApi extends BaseApiController
         try {
 
             $specialization = $request->specialization;
-            $latitude = $request->latitude;
-            $longitude = $request->longitude;
+            $latitude = $request->latitude ?? '';
+            $longitude = $request->longitude ?? '';
             $experience = $request->experience_years;
 
             $query = User::query()
-                ->where('role', 'doctor')
-                ->where('status', 'active')
-                ->with([
-                    'profile',
-                    'fee'
-                ]);
+                    ->where('role', 'doctor')
+                    ->where('status', 'active')
+                    ->with([
+                        'profile',
+                        'fee'
+                    ]);
 
             /*
             |--------------------------------------------------------------------------
             | Filter by Specialization
             |--------------------------------------------------------------------------
             */
-
             if ($specialization) {
 
                 $query->whereHas('profile', function ($q) use ($specialization) {
-
                     $q->where('specialization', $specialization);
                 });
+
             }
 
             /*

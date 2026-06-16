@@ -102,6 +102,8 @@ class SpecializationControllerApi extends BaseApiController
 
             $doctors = $query->paginate(20);
 
+            \Log::info($doctors);
+
             return $this->sendResponse([
                 'status' => true,
                 'data' => $doctors

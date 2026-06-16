@@ -194,6 +194,7 @@ Route::middleware('auth:api')->group(function () {
 
     // Expire subscriptions
     Route::get('/expire-subscriptions', [UserSubscriptionController::class, 'expireSubscriptions']);
+    
 });
 
 

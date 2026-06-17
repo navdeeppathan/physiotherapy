@@ -14,6 +14,7 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends BaseApiController
 {
@@ -570,20 +571,19 @@ class UserController extends BaseApiController
     //     }
     // }
 
-
+  
 
     public function store(Request $request)
     {
         try {
 
-            // ✅ Validation
-            $request->validate([
+            $validator = Validator::make($request->all(), [
                 'role' => 'required|in:admin,doctor,patient',
-                'name' => 'required|max:150',
+                'name' => 'required|string|max:150',
                 'email' => 'required|email|unique:users,email',
                 'phone' => 'required|unique:users,phone',
-                'password' => 'nullable|min:6',
-                'dob' => 'required',
+                'password' => 'required|min:6',
+                'dob' => 'required|date',
                 'gender' => 'required|in:male,female',
 
                 'profile_img' => 'nullable|image|mimes:jpeg,png,jpg|max:5048',
@@ -599,7 +599,8 @@ class UserController extends BaseApiController
                 'license_certificate' => 'nullable|file|mimes:pdf,jpg,png|max:5048',
 
                 'default_available_days' => 'nullable|array',
-                'default_available_days.*' => 'in:sunday,monday,tuesday,wednesday,thursday,friday,saturday',
+                'default_available_days.*' =>
+                    'in:sunday,monday,tuesday,wednesday,thursday,friday,saturday',
 
                 'default_start_time' => 'nullable|date_format:h:i A',
                 'default_end_time' => 'nullable|date_format:h:i A',
@@ -607,12 +608,43 @@ class UserController extends BaseApiController
             ],[
                 'email.unique' => 'This email address is already registered.',
                 'phone.unique' => 'This phone number is already registered.',
+
                 'email.required' => 'Email address is required.',
+                'email.email' => 'Please enter valid email address.',
+
+                'phone.required' => 'Phone number is required.',
+
                 'name.required' => 'Name is required.',
                 'role.required' => 'Role is required.',
+
+                'password.required' => 'Password is required.',
+                'password.min' => 'Password must be minimum 6 characters.',
+
                 'dob.required' => 'Date of birth is required.',
                 'gender.required' => 'Gender is required.',
+
+                'profile_img.image' => 'Please upload valid profile image.',
+                'profile_img.mimes' => 'Only jpeg, jpg and png images allowed.',
+
+                'degree_certificate.mimes' =>
+                    'Degree certificate must be pdf, jpg or png.',
+
+                'id_proof_file.mimes' =>
+                    'ID proof must be pdf, jpg or png.',
+
+                'license_certificate.mimes' =>
+                    'License must be pdf, jpg or png.',
             ]);
+
+
+            // Validation Response
+            if($validator->fails()){
+                return response()->json([
+                    'status' => false,
+                    'message' => $validator->errors()->first(),
+                    'errors' => $validator->errors()
+                ],422);
+            }
 
 
             $startTime = $request->default_start_time
@@ -631,26 +663,21 @@ class UserController extends BaseApiController
                 : null;
 
 
-            // File upload helper
-            $uploadFile = function ($file, $prefix) {
+            // upload helper
+            $uploadFile = function($file,$prefix){
 
                 $filename = time().'_'.$prefix.'_'
                     .$file->getClientOriginalName();
 
-                $file->move(
-                    public_path('documents'),
-                    $filename
-                );
+                $file->move(public_path('documents'),$filename);
 
                 return 'documents/'.$filename;
             };
 
 
-            // Profile Image
             $profileImagePath = null;
 
-            if ($request->hasFile('profile_img')) {
-
+            if($request->hasFile('profile_img')){
                 $profileImagePath = $uploadFile(
                     $request->file('profile_img'),
                     'profile'
@@ -658,155 +685,75 @@ class UserController extends BaseApiController
             }
 
 
-
-            // Create User
             $user = User::create([
-
                 'role' => $request->role,
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
 
-                'password' => Hash::make(
-                    $request->password
-                ),
+                'password' => Hash::make($request->password),
 
                 'dob' => $request->dob,
                 'gender' => $request->gender,
 
                 'profile_img' => $profileImagePath,
-
                 'address' => $request->clinic_address,
-
 
                 'default_available_days' =>
                     $request->default_available_days
-                        ? json_encode(
-                            $request->default_available_days
-                        )
-                        : null,
-
+                    ? json_encode($request->default_available_days)
+                    : null,
 
                 'default_start_time' => $startTime,
                 'default_end_time' => $endTime,
-
             ]);
 
 
+            // doctor documents
+            if($request->role == "doctor"){
 
-            // Doctor Documents
-            if ($request->role === 'doctor') {
+                $docs = [
+                    'degree_certificate'=>'certificate',
+                    'id_proof_file'=>'id_proof',
+                    'license_certificate'=>'license'
+                ];
 
+                foreach($docs as $field=>$type){
 
-                if ($request->hasFile('degree_certificate')) {
+                    if($request->hasFile($field)){
 
-                    DoctorDocument::create([
-
-                        'user_id' => $user->id,
-
-                        'document_type' => 'certificate',
-
-                        'document_path' =>
-                            $uploadFile(
-                                $request->file('degree_certificate'),
-                                'degree'
+                        DoctorDocument::create([
+                            'user_id'=>$user->id,
+                            'document_type'=>$type,
+                            'document_path'=>$uploadFile(
+                                $request->file($field),
+                                $type
                             ),
+                            'verification_status'=>'pending'
+                        ]);
 
-                        'verification_status' => 'pending',
-
-                    ]);
+                    }
                 }
-
-
-
-                if ($request->hasFile('id_proof_file')) {
-
-
-                    DoctorDocument::create([
-
-                        'user_id' => $user->id,
-
-                        'document_type' => 'id_proof',
-
-                        'document_path' =>
-                            $uploadFile(
-                                $request->file('id_proof_file'),
-                                'id'
-                            ),
-
-                        'verification_status' => 'pending',
-
-                    ]);
-                }
-
-
-
-                if ($request->hasFile('license_certificate')) {
-
-
-                    DoctorDocument::create([
-
-                        'user_id' => $user->id,
-
-                        'document_type' => 'license',
-
-                        'document_path' =>
-                            $uploadFile(
-                                $request->file('license_certificate'),
-                                'license'
-                            ),
-
-                        'verification_status' => 'pending',
-
-                    ]);
-                }
-
             }
 
 
-
             return response()->json([
-
-                'status' => true,
-
-                'message' => 'User registered successfully',
-
-                'data' => $user->load('documents')
-
+                'status'=>true,
+                'message'=>'User registered successfully',
+                'data'=>$user->load('documents')
             ],201);
 
 
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-
-
-            $errors = $e->errors();
-
+        }catch(\Exception $e){
 
             return response()->json([
-
-                'status' => false,
-
-                // ✅ first validation message here
-                'message' => collect($errors)->first()[0],
-
-                'errors' => $errors
-
-            ],422);
-
-
-        } catch (\Exception $e) {
-
-
-            return response()->json([
-
-                'status' => false,
-
-                'message' => $e->getMessage()
-
+                'status'=>false,
+                'message'=>'Something went wrong',
+                'error'=>$e->getMessage()
             ],500);
         }
     }
+    
     public function update(Request $request, $id)
     {
         try {

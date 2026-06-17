@@ -104,50 +104,97 @@ class UserController extends BaseApiController
     {
         try {
 
-        \Log::info($request->all());
+            \Log::info($request->all());
 
-            $request->validate([
+            $validator = Validator::make($request->all(), [
+
                 'name' => 'required|max:150',
                 'email' => 'required|email|unique:users,email',
-                'phone' => 'required',
-                'password' => 'nullable',
-                'dob' => 'required',
+                'phone' => 'required|unique:users,phone',
+                'password' => 'nullable|min:6',
+                'dob' => 'required|date',
                 'gender' => 'required|in:male,female,other',
+
+            ],[
+
+                'name.required' => 'Name is required.',
+                'name.max' => 'Name should not be greater than 150 characters.',
+
+                'email.required' => 'Email address is required.',
+                'email.email' => 'Please enter valid email address.',
+                'email.unique' => 'This email address is already registered.',
+
+                'phone.required' => 'Phone number is required.',
+                'phone.unique' => 'This phone number is already registered.',
+
+                'password.min' => 'Password must be minimum 6 characters.',
+
+                'dob.required' => 'Date of birth is required.',
+                'dob.date' => 'Please enter valid date of birth.',
+
+                'gender.required' => 'Gender is required.',
+                'gender.in' => 'Please select valid gender.',
+
             ]);
+
+
+            if($validator->fails()){
+
+                return response()->json([
+                    'status' => false,
+                    'message' => $validator->errors()->first(),
+                    'errors' => $validator->errors()
+                ],422);
+
+            }
+
 
             $user = User::create([
-                'role' => 'patient', // 🔥 fixed
+
+                'role' => 'patient',
+
                 'name' => $request->name,
+
                 'email' => $request->email,
+
                 'phone' => $request->phone,
-                'password' => $request->password 
-                    ? Hash::make($request->password) 
+
+                'password' => $request->password
+                    ? Hash::make($request->password)
                     : null,
+
                 'dob' => $request->dob,
+
                 'gender' => $request->gender,
+
                 'status' => 'active'
+
             ]);
 
+
             return response()->json([
+
                 'status' => true,
+
                 'message' => 'Patient registered successfully',
+
                 'data' => $user
-            ], 201);
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
+            ],201);
 
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation Error',
-                'errors' => $e->errors()
-            ], 422);
 
-        } catch (\Exception $e) {
+        }catch(\Exception $e){
 
             return response()->json([
+
                 'status' => false,
-                'message' => $e->getMessage(),
-            ], 500);
+
+                'message' => 'Something went wrong',
+
+                'error' => $e->getMessage()
+
+            ],500);
+
         }
     }
 

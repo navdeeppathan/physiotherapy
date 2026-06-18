@@ -848,6 +848,42 @@ class UserController extends BaseApiController
         }
     }
 
+    public function doctorPatients($doctorId)
+    {
+        try{
+            $patients = User::whereHas('patientAppointments', function ($q) use ($doctorId) {
+                    $q->where('doctor_id', $doctorId);
+                })
+                ->withCount([
+                    'patientAppointments as total_appointments' => function ($q) use ($doctorId) {
+                        $q->where('doctor_id', $doctorId);
+                    }
+                ])
+                ->get([
+                    'id',
+                    'name',
+                    'email',
+                    'phone',
+                    'gender',
+                    'dob'
+                ]);
+
+            return response()->json([
+                'status' => true,
+                'data' => $patients
+            ]);
+
+        } catch (Exception $e) {
+            $this->logException($e, 'Doctor Patients Fetch Error');
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    
+
     public function patientPaymentHistory($patientId)
     {
         try {

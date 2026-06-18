@@ -408,22 +408,80 @@ class AppointmentController extends BaseApiController
         }
     }
 
-    public function getDoctorWallet($doctor_id)
+    // public function getDoctorWallet($doctor_id)
+    // {
+    //     try {
+    //         // ✅ Get wallet or create if not exists
+    //         $wallet = DoctorWallet::firstOrCreate(
+    //             ['doctor_id' => $doctor_id],
+    //             ['balance' => 0, 'currency' => 'INR']
+    //         );
+
+    //         $payments = Payment::with(['patient', 'appointment'])
+    //             ->where('doctor_id', $doctor_id)
+    //             ->orderBy('created_at', 'desc')
+    //             ->get();
+
+    //         return $this->sendResponse([
+    //             'balance' => $wallet->balance,
+    //             'currency' => $wallet->currency,
+    //             'payments' => $payments
+    //         ], 'Wallet fetched successfully');
+
+    //     } catch (\Exception $e) {
+    //         $this->logException($e, 'Get Doctor Wallet Error');
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Failed to fetch wallet',
+    //             'error' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
+    public function getDoctorWallet(Request $request, $doctor_id)
     {
         try {
-            // ✅ Get wallet or create if not exists
+
             $wallet = DoctorWallet::firstOrCreate(
                 ['doctor_id' => $doctor_id],
                 ['balance' => 0, 'currency' => 'INR']
             );
 
+            $payments = Payment::with([
+                    'patient:id,name,email,phone',
+                    'appointment:id,appointment_date,start_time,end_time,status'
+                ])
+                ->where('doctor_id', $doctor_id);
+
+            // Filter by patient
+            if ($request->filled('patient_id')) {
+                $payments->where('patient_id', $request->patient_id);
+            }
+
+            // Filter by payment date range
+            if ($request->filled('start_date')) {
+                $payments->whereDate('created_at', '>=', $request->start_date);
+            }
+
+            if ($request->filled('end_date')) {
+                $payments->whereDate('created_at', '<=', $request->end_date);
+            }
+
+            $payments = $payments
+                ->orderBy('created_at', 'desc')
+                ->get();
+
             return $this->sendResponse([
                 'balance' => $wallet->balance,
-                'currency' => $wallet->currency
+                'currency' => $wallet->currency,
+                'total_transactions' => $payments->count(),
+                'transactions' => $payments
             ], 'Wallet fetched successfully');
 
         } catch (\Exception $e) {
+
             $this->logException($e, 'Get Doctor Wallet Error');
+
             return response()->json([
                 'status' => false,
                 'message' => 'Failed to fetch wallet',

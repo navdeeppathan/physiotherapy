@@ -224,6 +224,7 @@ class DoctorAvailabilityController extends BaseApiController
                     $query->orderBy('start_time', 'asc');
                 }])
                 ->where('user_id', $doctor_id)
+                ->whereDate('available_date', '>=', now()->toDateString()) // Today and future only
                 ->orderBy('available_date', 'asc')
                 ->get();
 

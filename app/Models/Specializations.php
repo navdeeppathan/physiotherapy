@@ -16,7 +16,8 @@ class Specializations extends Model
     protected $fillable = [
         'name',
         'description',
-        'status'
+        'status',
+        'icon'
     ];
 
     public $timestamps = true;

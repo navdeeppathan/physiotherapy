@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\BaseApiController;
+use App\Models\DoctorDocument;
 use App\Models\DoctorProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -70,12 +71,18 @@ class DoctorProfileController extends BaseApiController
             $user = Auth::user();
 
             $profile = DoctorProfile::where('user_id', $user->id)->first();
+            $documents = DoctorDocument::where('user_id', $user->id)->get();
 
             if (!$profile) {
                 return $this->sendError('Profile not found', [], 404);
             }
+            $data = [
+                'user'      => $user,
+                'profile'   => $profile,
+                'documents' => $documents,
+            ];
 
-            return $this->sendResponse($profile, 'Profile fetched successfully');
+            return $this->sendResponse($data, 'Profile fetched successfully');
 
         } catch (Exception $e) {
 
@@ -128,6 +135,7 @@ class DoctorProfileController extends BaseApiController
             $user = Auth::user();
 
             $profile = DoctorProfile::where('user_id', $user->id)->first();
+
 
             if (!$profile) {
                 return $this->sendError('Profile not found', [], 404);

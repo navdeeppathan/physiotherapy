@@ -117,7 +117,7 @@
             </div>
 
             <div class="mt-3">
-                {{ $subscriptions->links() }}
+                {{ $subscriptions->links('pagination::bootstrap-5') }}
             </div>
 
         </div>

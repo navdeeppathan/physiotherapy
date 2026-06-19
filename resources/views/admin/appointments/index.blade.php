@@ -110,7 +110,9 @@
 
             <!-- 📄 Pagination -->
             <div class="mt-3">
-                {{ $appointments->links() }}
+                {{-- {{ $appointments->links() }} --}}
+                {{ $appointments->links('pagination::bootstrap-5') }}
+
             </div>
 
         </div>

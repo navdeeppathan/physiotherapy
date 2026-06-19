@@ -12,6 +12,7 @@ use App\Models\AppointmentCancellation;
 use App\Models\AppointmentReschedule;
 use App\Models\DoctorWallet;
 use App\Models\Payment;
+use Carbon\Carbon;
 use Exception;
 
 class AppointmentController extends BaseApiController
@@ -673,7 +674,7 @@ class AppointmentController extends BaseApiController
         $appointments = Appointment::with(['doctor','timeSlot'])
             ->where('patient_id', $patient->id)
             ->whereIn('status', ['pending', 'confirmed'])
-            ->whereDate('appointment_date', '>=', today())
+            ->whereDate('appointment_date', '>=', Carbon::today())
             ->orderBy('appointment_date')
             ->get();
 

@@ -624,7 +624,7 @@ class AppointmentController extends BaseApiController
         $appointments = Appointment::with(['patient','timeSlot'])
             ->where('doctor_id', $doctor->id)
             ->whereIn('status', ['pending', 'confirmed'])
-            ->whereDate('appointment_date', '>=', now()->toDateString())
+            ->whereDate('appointment_date', '>=', Carbon::today())
             ->orderBy('appointment_date')
             ->get();
 

@@ -194,7 +194,12 @@ Route::middleware('auth:api')->group(function () {
 
     // Expire subscriptions
     Route::get('/expire-subscriptions', [UserSubscriptionController::class, 'expireSubscriptions']);
-    
+    Route::post('/appointment/{id}/cancel', [AppointmentController::class, 'cancel']);
+
+    Route::get(
+    '/cancellation-reasons',
+    [AppointmentController::class, 'getCancellationReasons']
+);
 });
 
 
@@ -227,6 +232,7 @@ Route::middleware(['auth:api', 'role:doctor'])->group(function () {
     Route::get('/doctor/appointments/upcoming', [AppointmentController::class, 'doctorUpcomingAppointments']);
 
     Route::get('/doctor/appointments/completed', [AppointmentController::class, 'doctorCompletedAppointments']);
+    Route::get('/doctor/cancelled-appointments', [AppointmentController::class, 'doctorCancelledAppointments']);
 
     Route::get('/doctor/appointments/shifted', [AppointmentController::class, 'doctorShiftedAppointments']);
 });
@@ -237,7 +243,6 @@ Route::middleware(['auth:api', 'role:patient'])->group(function () {
     Route::post('/appointment/book', [AppointmentController::class, 'book']);
     Route::get('/patient/appointments', [AppointmentController::class, 'patientAppointments']);
 
-    Route::post('/appointment/{id}', [AppointmentController::class, 'cancel']);
 
     Route::post('/update-patient/{id}', [UserController::class, 'updatePatient']);
     Route::get('/patient/{id}/payments', [UserController::class, 'patientPaymentHistory']);
@@ -245,6 +250,7 @@ Route::middleware(['auth:api', 'role:patient'])->group(function () {
     Route::get('/patient/appointments/upcoming', [AppointmentController::class, 'patientUpcomingAppointments']);
 
     Route::get('/patient/appointments/completed', [AppointmentController::class, 'patientCompletedAppointments']);
+    Route::get('/patient/cancelled-appointments', [AppointmentController::class, 'patientCancelledAppointments']);
 
     Route::get('/patient/appointments/shifted', [AppointmentController::class, 'patientShiftedAppointments']);
 });

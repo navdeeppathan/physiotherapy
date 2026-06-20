@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\AppointmentCancellation;
 use App\Models\AppointmentReschedule;
+use App\Models\CancellationReason;
 use App\Models\DoctorWallet;
 use App\Models\Payment;
 use Carbon\Carbon;
@@ -270,6 +271,33 @@ class AppointmentController extends BaseApiController
     /**
      * Cancel Appointment
      */
+
+
+    public function getCancellationReasons()
+    {
+        try {
+
+            $reasons = CancellationReason::where('is_active', true)
+                ->select('id', 'title', 'description')
+                ->orderBy('title')
+                ->get();
+
+            return $this->sendResponse(
+                $reasons,
+                'Cancellation reasons fetched successfully'
+            );
+
+        } catch (Exception $e) {
+
+            $this->logException($e, 'Get Cancellation Reasons Error');
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
     
 
     public function cancel(Request $request, $id)
@@ -714,6 +742,38 @@ class AppointmentController extends BaseApiController
         return $this->sendResponse(
             $appointments,
             'Shifted appointments fetched successfully'
+        );
+    }
+
+    public function doctorCancelledAppointments()
+    {
+        $doctor = Auth::user();
+
+        $appointments = Appointment::with(['patient', 'timeSlot'])
+            ->where('doctor_id', $doctor->id)
+            ->where('status', 'cancelled')
+            ->latest()
+            ->get();
+
+        return $this->sendResponse(
+            $appointments,
+            'Cancelled appointments fetched successfully'
+        );
+    }
+
+    public function patientCancelledAppointments()
+    {
+        $patient = Auth::user();
+
+        $appointments = Appointment::with(['doctor', 'timeSlot'])
+            ->where('patient_id', $patient->id)
+            ->where('status', 'cancelled')
+            ->latest()
+            ->get();
+
+        return $this->sendResponse(
+            $appointments,
+            'Cancelled appointments fetched successfully'
         );
     }
 }

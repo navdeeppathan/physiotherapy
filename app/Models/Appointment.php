@@ -69,4 +69,11 @@ class Appointment extends Model
     {
         return $this->hasMany(AppointmentReschedule::class);
     }
+
+    public function cancellation()
+    {
+        return $this->hasOne(AppointmentCancellation::class, 'appointment_id', 'id')
+                    ->with('reason');
+    }
+    
 }

@@ -749,11 +749,13 @@ class AppointmentController extends BaseApiController
     {
         $doctor = Auth::user();
 
-        $appointments = Appointment::with(['patient', 'timeSlot'])
+
+        $appointments = Appointment::with(['patient', 'timeSlot' , 'cancellation.reason'])
             ->where('doctor_id', $doctor->id)
             ->where('status', 'cancelled')
             ->latest()
             ->get();
+            
 
         return $this->sendResponse(
             $appointments,
@@ -765,7 +767,7 @@ class AppointmentController extends BaseApiController
     {
         $patient = Auth::user();
 
-        $appointments = Appointment::with(['doctor', 'timeSlot'])
+        $appointments = Appointment::with(['doctor', 'timeSlot', 'cancellation.reason'])
             ->where('patient_id', $patient->id)
             ->where('status', 'cancelled')
             ->latest()

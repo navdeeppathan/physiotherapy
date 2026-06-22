@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\DoctorDocument;
+use App\Models\DoctorProfile;
 use App\Models\Payment;
 use App\Models\User;
 use Carbon\Carbon;
@@ -691,6 +692,155 @@ class UserController extends BaseApiController
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function updateDoctorProfile(Request $request, $id)
+    {
+        try {
+
+            $user = User::findOrFail($id);
+
+            $request->validate([
+                'role' => 'required|in:admin,doctor,patient',
+                'name' => 'required|max:150',
+                'phone' => 'required|unique:users,phone,' . $user->id,
+                'dob' => 'required',
+                'gender' => 'required|in:male,female',
+
+                'profile_img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+
+                // Doctor Profile Fields
+                'specialization'   => 'nullable|integer|exists:specializations,id',
+                'experience_years' => 'nullable|integer|min:0',
+                
+                'clinic_address'   => 'nullable|string',
+                'bio'              => 'nullable|string',
+                'career_path'      => 'nullable|string',
+                'highlights'       => 'nullable|string',
+
+                // Availability
+                'default_available_days' => 'nullable|array',
+                'default_available_days.*' => 'in:sunday,monday,tuesday,wednesday,thursday,friday,saturday',
+                'default_start_time' => 'nullable|date_format:h:i A',
+                'default_end_time' => 'nullable|date_format:h:i A',
+
+                // Documents
+                'document_type'   => 'nullable|array',
+                'document_type.*' => 'in:license,certificate,id_proof',
+
+                'documents'       => 'nullable|array',
+                'documents.*'     => 'file|mimes:jpg,jpeg,png,pdf|max:4096',
+            ]);
+
+            $startTime = $request->default_start_time
+                ? \Carbon\Carbon::createFromFormat('h:i A', $request->default_start_time)->format('H:i:s')
+                : $user->default_start_time;
+
+            $endTime = $request->default_end_time
+                ? \Carbon\Carbon::createFromFormat('h:i A', $request->default_end_time)->format('H:i:s')
+                : $user->default_end_time;
+
+            $uploadFile = function ($file, $folder, $prefix) {
+
+                $filename = time().'_'.$prefix.'_'.$file->getClientOriginalName();
+
+                $file->move(public_path($folder), $filename);
+
+                return $folder.'/'.$filename;
+            };
+
+            // Profile Image
+            $profileImagePath = $user->profile_img;
+
+            if ($request->hasFile('profile_img')) {
+                $profileImagePath = $uploadFile(
+                    $request->file('profile_img'),
+                    'documents',
+                    'profile'
+                );
+            }
+
+            // Update User
+            $user->update([
+                'role' => $request->role,
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'dob' => $request->dob,
+                'gender' => $request->gender,
+                'profile_img' => $profileImagePath,
+                'address' => $request->clinic_address,
+                'default_available_days' => $request->default_available_days ?? $user->default_available_days,
+                'default_start_time' => $startTime,
+                'default_end_time' => $endTime,
+            ]);
+
+            // =====================================
+            // DOCTOR PROFILE UPDATE
+            // =====================================
+            if ($request->role === 'doctor') {
+
+                $doctorProfile = DoctorProfile::updateOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'specialization'   => $request->specialization,
+                        'experience_years' => $request->experience_years,
+                        
+                        'clinic_address'   => $request->clinic_address,
+                        'bio'              => $request->bio,
+                        'career_path'      => $request->career_path,
+                        'highlights'       => $request->highlights,
+                    ]
+                );
+
+                // =====================================
+                // DOCUMENT UPDATE
+                // =====================================
+                if ($request->hasFile('documents')) {
+
+                    // Purane documents delete karne hain to:
+                    DoctorDocument::where('user_id', $user->id)->delete();
+
+                    foreach ($request->file('documents') as $index => $file) {
+
+                        $fileName = time().'_'.$index.'.'.$file->getClientOriginalExtension();
+
+                        $file->move(public_path('doctor_documents'), $fileName);
+
+                        DoctorDocument::create([
+                            'user_id' => $user->id,
+                            'document_type' => $request->document_type[$index],
+                            'document_path' => 'doctor_documents/'.$fileName,
+                            'verification_status' => 'pending'
+                        ]);
+                    }
+                }
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'User updated successfully',
+                'data' => [
+                    'user' => $user->fresh(),
+                    'doctor_profile' => DoctorProfile::where('user_id', $user->id)->first(),
+                    'documents' => DoctorDocument::where('user_id', $user->id)->get()
+                ]
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation Error',
+                'errors' => $e->errors()
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
             ], 500);
         }
     }

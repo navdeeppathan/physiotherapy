@@ -207,6 +207,8 @@ Route::middleware('auth:api')->group(function () {
 Route::middleware(['auth:api', 'role:doctor'])->group(function () {
 
     Route::get('/doctor/{doctorId}/patients', [UserController::class, 'doctorPatients']);
+    Route::put('/doctor/profile/update/{id}', [UserController::class, 'updateDoctorProfile']);
+
 
     Route::post('/doctor/profile', [DoctorProfileController::class, 'store']);
     Route::get('/doctor/my-profile', [DoctorProfileController::class, 'myProfile']);

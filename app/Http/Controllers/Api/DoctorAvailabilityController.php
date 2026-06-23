@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Exception;
 use Carbon\CarbonPeriod;
-use Illuminate\Support\Facades\Auth;
 
 
 class DoctorAvailabilityController extends BaseApiController

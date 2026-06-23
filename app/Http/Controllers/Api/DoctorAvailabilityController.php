@@ -9,74 +9,203 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Exception;
+use Carbon\CarbonPeriod;
+use Illuminate\Support\Facades\Auth;
+
 
 class DoctorAvailabilityController extends BaseApiController
 {
     /**
      * Create Availability with 30-min Slots
      */
+    // public function store(Request $request)
+    // {
+    //     try {
+
+    //         $request->validate([
+    //             'available_date' => 'required|date',
+    //             'start_time'     => 'required|date_format:H:i',
+    //             'end_time'       => 'required|date_format:H:i|after:start_time'
+    //         ]);
+
+    //         $user = Auth::user();
+
+    //         if ($user->role !== 'doctor') {
+    //             return $this->sendError('Unauthorized access', [], 403);
+    //         }
+
+    //         // Create Availability Date
+    //         $availability = DoctorAvailabilityDate::create([
+    //             'user_id'        => $user->id,
+    //             'available_date' => $request->available_date,
+    //             'is_available'   => true
+    //         ]);
+
+    //         $start = Carbon::createFromFormat('H:i', $request->start_time);
+    //         $end   = Carbon::createFromFormat('H:i', $request->end_time);
+
+    //         $slots = [];
+
+    //         while ($start < $end) {
+
+    //             $slotStart = $start->format('H:i:s');
+    //             $start->addMinutes(30);
+    //             $slotEnd = $start->format('H:i:s');
+
+    //             if ($start <= $end) {
+
+    //                 $slot = DoctorTimeSlot::create([
+    //                     'user_id'              => $user->id,
+    //                     'availability_date_id' => $availability->id,
+    //                     'start_time'           => $slotStart,
+    //                     'end_time'             => $slotEnd,
+    //                     'is_booked'            => false
+    //                 ]);
+
+    //                 $slots[] = $slot;
+    //             }
+    //         }
+
+    //         return $this->sendResponse([
+    //             'availability' => $availability,
+    //             'time_slots'   => $slots
+    //         ], 'Availability and slots created successfully');
+
+    //     } catch (Exception $e) {
+
+    //         $this->logException($e, 'Doctor Availability Create Error');
+
+    //         return response()->json([
+    //             'status'  => false,
+    //             'message' => 'Something went wrong',
+    //             'error'   => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+   
     public function store(Request $request)
     {
         try {
 
             $request->validate([
-                'available_date' => 'required|date',
-                'start_time'     => 'required|date_format:H:i',
-                'end_time'       => 'required|date_format:H:i|after:start_time'
+                'start_date' => 'required|date',
+                'end_date'   => 'required|date|after_or_equal:start_date',
+                'start_time' => 'required|date_format:H:i',
+                'end_time'   => 'required|date_format:H:i|after:start_time'
             ]);
 
             $user = Auth::user();
 
             if ($user->role !== 'doctor') {
-                return $this->sendError('Unauthorized access', [], 403);
+                return $this->sendError(
+                    'Unauthorized access',
+                    [],
+                    403
+                );
             }
 
-            // Create Availability Date
-            $availability = DoctorAvailabilityDate::create([
-                'user_id'        => $user->id,
-                'available_date' => $request->available_date,
-                'is_available'   => true
-            ]);
 
-            $start = Carbon::createFromFormat('H:i', $request->start_time);
-            $end   = Carbon::createFromFormat('H:i', $request->end_time);
+            $createdAvailability = [];
 
-            $slots = [];
+            // Date Range
+            $period = CarbonPeriod::create(
+                $request->start_date,
+                $request->end_date
+            );
 
-            while ($start < $end) {
 
-                $slotStart = $start->format('H:i:s');
-                $start->addMinutes(30);
-                $slotEnd = $start->format('H:i:s');
+            foreach ($period as $date) {
 
-                if ($start <= $end) {
 
-                    $slot = DoctorTimeSlot::create([
-                        'user_id'              => $user->id,
-                        'availability_date_id' => $availability->id,
-                        'start_time'           => $slotStart,
-                        'end_time'             => $slotEnd,
-                        'is_booked'            => false
-                    ]);
+                // Avoid duplicate date
+                $availability = DoctorAvailabilityDate::firstOrCreate(
+                    [
+                        'user_id' => $user->id,
+                        'available_date' => $date->format('Y-m-d')
+                    ],
+                    [
+                        'is_available' => true
+                    ]
+                );
 
-                    $slots[] = $slot;
+
+                $start = Carbon::createFromFormat(
+                    'H:i',
+                    $request->start_time
+                );
+
+                $end = Carbon::createFromFormat(
+                    'H:i',
+                    $request->end_time
+                );
+
+
+                $slots = [];
+
+
+                while ($start < $end) {
+
+
+                    $slotStart = $start->format('H:i:s');
+
+                    $start->addMinutes(30);
+
+                    $slotEnd = $start->format('H:i:s');
+
+
+                    if ($start <= $end) {
+
+
+                        // Avoid duplicate slots
+                        $slot = DoctorTimeSlot::firstOrCreate(
+                            [
+                                'user_id' => $user->id,
+                                'availability_date_id' => $availability->id,
+                                'start_time' => $slotStart,
+                                'end_time' => $slotEnd
+                            ],
+                            [
+                                'is_booked' => false
+                            ]
+                        );
+
+
+                        $slots[] = $slot;
+
+                    }
+
                 }
+
+
+                $createdAvailability[] = [
+                    'availability' => $availability,
+                    'slots' => $slots
+                ];
+
             }
 
-            return $this->sendResponse([
-                'availability' => $availability,
-                'time_slots'   => $slots
-            ], 'Availability and slots created successfully');
+
+            return $this->sendResponse(
+                $createdAvailability,
+                'Availability created successfully'
+            );
+
 
         } catch (Exception $e) {
 
-            $this->logException($e, 'Doctor Availability Create Error');
+
+            $this->logException(
+                $e,
+                'Doctor Availability Create Error'
+            );
+
 
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Something went wrong',
-                'error'   => $e->getMessage()
+                'error' => $e->getMessage()
             ], 500);
+
         }
     }
 
@@ -87,12 +216,15 @@ class DoctorAvailabilityController extends BaseApiController
     {
         try {
 
+        \Log::info('myAvailability');
             $user = Auth::user();
 
+            \Log::info($user);
             $data = DoctorAvailabilityDate::with('timeSlots')
                         ->where('user_id', $user->id)
                         ->orderBy('available_date', 'desc')
                         ->get();
+        \Log::info($data);
 
             return $this->sendResponse($data, 'Availability fetched successfully');
 

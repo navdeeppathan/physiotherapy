@@ -7,13 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 class AppointmentTransfer extends Model
 {
     protected $fillable = [
+        'transfer_request_id',
         'appointment_id',
         'old_doctor_id',
         'new_doctor_id',
-        'transfer_request_id',
         'transferred_by',
         'remarks',
     ];
+
+    public function request()
+    {
+        return $this->belongsTo(
+            AppointmentTransferRequest::class,
+            'transfer_request_id'
+        );
+    }
 
     public function appointment()
     {
@@ -28,14 +36,6 @@ class AppointmentTransfer extends Model
     public function newDoctor()
     {
         return $this->belongsTo(User::class, 'new_doctor_id');
-    }
-
-    public function transferRequest()
-    {
-        return $this->belongsTo(
-            AppointmentTransferRequest::class,
-            'transfer_request_id'
-        );
     }
 
     public function transferredBy()

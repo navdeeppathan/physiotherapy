@@ -788,50 +788,73 @@ class AppointmentController extends BaseApiController
         try {
 
             $request->validate([
-                'appointment_id' => 'required|exists:appointments,id',
+                'from_date' => 'required|date',
+                'to_date' => 'required|date|after_or_equal:from_date',
                 'reason' => 'required|string|max:1000',
-                'requested_doctor_id' => 'nullable|exists:users,id'
             ]);
 
             $doctorId = Auth::id();
 
-            $appointment = Appointment::findOrFail(
-                $request->appointment_id
-            );
+            $appointmentsCount = Appointment::where(
+                    'doctor_id',
+                    $doctorId
+                )
+                ->whereBetween('appointment_date', [
+                    $request->from_date,
+                    $request->to_date
+                ])
+                ->whereIn('status', [
+                    'pending',
+                    'approved',
+                    'confirmed'
+                ])
+                ->count();
 
-            if ($appointment->doctor_id != $doctorId) {
+            if ($appointmentsCount == 0) {
                 return $this->sendError(
-                    'You can only request transfer for your own appointments.'
+                    'No appointments found in selected date range.'
                 );
             }
 
             $alreadyRequested = AppointmentTransferRequest::where(
-                'appointment_id',
-                $appointment->id
-            )
-            ->where('status', 'pending')
-            ->exists();
+                    'doctor_id',
+                    $doctorId
+                )
+                ->where('status', 'pending')
+                ->where(function ($q) use ($request) {
+
+                    $q->whereBetween('from_date', [
+                            $request->from_date,
+                            $request->to_date
+                        ])
+                    ->orWhereBetween('to_date', [
+                            $request->from_date,
+                            $request->to_date
+                        ]);
+                })
+                ->exists();
 
             if ($alreadyRequested) {
                 return $this->sendError(
-                    'Transfer request already exists.'
+                    'A transfer request already exists for this date range.'
                 );
             }
 
             $transferRequest = AppointmentTransferRequest::create([
-                'appointment_id' => $appointment->id,
-                'current_doctor_id' => $doctorId,
-                'requested_doctor_id' => $request->requested_doctor_id,
+                'doctor_id' => $doctorId,
+                'from_date' => $request->from_date,
+                'to_date' => $request->to_date,
                 'reason' => $request->reason,
                 'status' => 'pending',
             ]);
 
-            return $this->sendResponse(
-                $transferRequest,
-                'Transfer request submitted successfully.'
-            );
+            return $this->sendResponse([
+                'request_id' => $transferRequest->id,
+                'affected_appointments' => $appointmentsCount,
+                'status' => $transferRequest->status,
+            ], 'Transfer request submitted successfully.');
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
 
             return $this->sendError($e->getMessage());
         }
@@ -842,10 +865,9 @@ class AppointmentController extends BaseApiController
         try {
 
             $requests = AppointmentTransferRequest::with([
-                'appointment',
-                'requestedDoctor'
+                'admin'
             ])
-            ->where('current_doctor_id', Auth::id())
+            ->where('doctor_id', Auth::id())
             ->latest()
             ->get();
 
@@ -854,48 +876,61 @@ class AppointmentController extends BaseApiController
                 'Transfer requests fetched successfully.'
             );
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
 
             return $this->sendError($e->getMessage());
         }
     }
 
 
-    public function transferRequestDetail($id)
+   public function transferRequestDetail($id)
     {
         try {
 
             $requestData = AppointmentTransferRequest::with([
-                'appointment',
-                'currentDoctor',
-                'requestedDoctor',
-                'admin'
+                'doctor',
+                'admin',
+                'transfers.newDoctor',
+                'transfers.appointment'
             ])
-            ->where('current_doctor_id', Auth::id())
+            ->where('doctor_id', Auth::id())
             ->findOrFail($id);
+
+            $appointments = Appointment::with([
+                'doctor',
+                'timeSlot'
+            ])
+            ->where('doctor_id', $requestData->doctor_id)
+            ->whereBetween('appointment_date', [
+                $requestData->from_date,
+                $requestData->to_date
+            ])
+            ->get();
+
+            $requestData->affected_appointments = $appointments;
 
             return $this->sendResponse(
                 $requestData,
                 'Transfer request details fetched successfully.'
             );
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
 
             return $this->sendError($e->getMessage());
         }
     }
 
-    public function cancelTransferRequest($id)
+   public function cancelTransferRequest($id)
     {
         try {
 
             $requestData = AppointmentTransferRequest::where(
-                'current_doctor_id',
+                'doctor_id',
                 Auth::id()
             )
             ->findOrFail($id);
 
-            if ($requestData->status != 'pending') {
+            if ($requestData->status !== 'pending') {
 
                 return $this->sendError(
                     'Only pending requests can be cancelled.'
@@ -909,7 +944,7 @@ class AppointmentController extends BaseApiController
                 'Transfer request cancelled successfully.'
             );
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
 
             return $this->sendError($e->getMessage());
         }

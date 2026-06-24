@@ -7,28 +7,23 @@ use Illuminate\Database\Eloquent\Model;
 class AppointmentTransferRequest extends Model
 {
     protected $fillable = [
-        'appointment_id',
-        'current_doctor_id',
-        'requested_doctor_id',
+        'doctor_id',
+        'from_date',
+        'to_date',
         'reason',
         'status',
         'admin_id',
         'admin_remark',
     ];
 
-    public function appointment()
-    {
-        return $this->belongsTo(Appointment::class);
-    }
+    protected $casts = [
+        'from_date' => 'date',
+        'to_date' => 'date',
+    ];
 
-    public function currentDoctor()
+    public function doctor()
     {
-        return $this->belongsTo(User::class, 'current_doctor_id');
-    }
-
-    public function requestedDoctor()
-    {
-        return $this->belongsTo(User::class, 'requested_doctor_id');
+        return $this->belongsTo(User::class, 'doctor_id');
     }
 
     public function admin()
@@ -36,11 +31,8 @@ class AppointmentTransferRequest extends Model
         return $this->belongsTo(User::class, 'admin_id');
     }
 
-    public function transfer()
+    public function transfers()
     {
-        return $this->hasOne(
-            AppointmentTransfer::class,
-            'transfer_request_id'
-        );
+        return $this->hasMany(AppointmentTransfer::class, 'transfer_request_id');
     }
 }

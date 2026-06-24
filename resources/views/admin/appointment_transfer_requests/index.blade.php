@@ -1,9 +1,7 @@
 @extends('admin.layouts.admin')
 
 @section('content')
-
 <div class="container mt-4">
-
     <div class="card">
 
         <div class="card-header bg-primary text-white">
@@ -12,89 +10,154 @@
 
         <div class="card-body">
 
-            <table class="table table-bordered">
+            <form method="GET" class="row g-3 mb-3">
 
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Patient</th>
-                        <th>Current Doctor</th>
-                        <th>Suggested Doctor</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
+                <div class="col-md-4">
+                    <input type="text"
+                           name="search"
+                           class="form-control"
+                           placeholder="Search Doctor"
+                           value="{{ request('search') }}">
+                </div>
 
-                <tbody>
+                <div class="col-md-3">
+                    <select name="status" class="form-select">
+                        <option value="">All Status</option>
 
-                @forelse($requests as $key => $item)
+                        <option value="pending"
+                            {{ request('status') == 'pending' ? 'selected' : '' }}>
+                            Pending
+                        </option>
 
-                    <tr>
+                        <option value="approved"
+                            {{ request('status') == 'approved' ? 'selected' : '' }}>
+                            Approved
+                        </option>
 
-                        <td>{{ $requests->firstItem() + $key }}</td>
+                        <option value="rejected"
+                            {{ request('status') == 'rejected' ? 'selected' : '' }}>
+                            Rejected
+                        </option>
+                    </select>
+                </div>
 
-                        <td>
-                            {{ $item->appointment->patient_name ?? 'N/A' }}
-                        </td>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100">
+                        Filter
+                    </button>
+                </div>
 
-                        <td>
-                            {{ $item->currentDoctor->name ?? 'N/A' }}
-                        </td>
+            </form>
 
-                        <td>
-                            {{ $item->requestedDoctor->name ?? 'Not Suggested' }}
-                        </td>
+            <div class="table-responsive">
 
-                        <td>
+                <table class="table table-bordered align-middle">
 
-                            <span class="badge
-                            @if($item->status=='approved')
-                                bg-success
-                            @elseif($item->status=='pending')
-                                bg-warning
-                            @else
-                                bg-danger
-                            @endif">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Doctor</th>
+                            <th>From Date</th>
+                            <th>To Date</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Requested On</th>
+                            <th width="120">Action</th>
+                        </tr>
+                    </thead>
 
-                                {{ ucfirst($item->status) }}
+                    <tbody>
 
-                            </span>
+                        @forelse($requests as $key => $request)
 
-                        </td>
+                        <tr>
 
-                        <td>
+                            <td>
+                                {{ $requests->firstItem() + $key }}
+                            </td>
 
-                            <a href="{{ route('admin.appointment-transfer-requests.show',$item->id) }}"
-                               class="btn btn-sm btn-primary">
+                            <td>
+                                {{ $request->doctor->name ?? 'N/A' }}
+                            </td>
 
-                                View
+                            <td>
+                                {{ \Carbon\Carbon::parse($request->from_date)->format('d M Y') }}
+                            </td>
 
-                            </a>
+                            <td>
+                                {{ \Carbon\Carbon::parse($request->to_date)->format('d M Y') }}
+                            </td>
 
-                        </td>
+                            <td>
+                                {{ $request->reason }}
+                            </td>
 
-                    </tr>
+                            <td>
 
-                @empty
+                                <span class="badge
+                                    @if($request->status == 'approved')
+                                        bg-success
+                                    @elseif($request->status == 'pending')
+                                        bg-warning
+                                    @else
+                                        bg-danger
+                                    @endif">
 
-                    <tr>
-                        <td colspan="6" class="text-center">
-                            No Requests Found
-                        </td>
-                    </tr>
+                                    {{ ucfirst($request->status) }}
 
-                @endforelse
+                                </span>
 
-                </tbody>
+                            </td>
 
-            </table>
+                            <td>
+                                {{ $request->created_at->format('d M Y') }}
+                            </td>
 
-            {{ $requests->links('pagination::bootstrap-5') }}
+                            <td>
+
+                                @if($request->status == 'pending')
+
+                                    <a href="{{ route('admin.appointment-transfer-requests.show',$request->id) }}"
+                                       class="btn btn-sm btn-primary">
+                                        Review
+                                    </a>
+
+                                @else
+
+                                    <button
+                                        class="btn btn-sm btn-secondary"
+                                        disabled>
+                                        Closed
+                                    </button>
+
+                                @endif
+
+                            </td>
+
+                        </tr>
+
+                        @empty
+
+                        <tr>
+                            <td colspan="8" class="text-center">
+                                No Requests Found
+                            </td>
+                        </tr>
+
+                        @endforelse
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="mt-3">
+                {{ $requests->links('pagination::bootstrap-5') }}
+            </div>
 
         </div>
 
     </div>
-
 </div>
-
 @endsection

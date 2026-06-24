@@ -80,16 +80,16 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
     Route::prefix('appointment-transfer-requests')->group(function () {
 
         Route::get('/', [AppointmentTransferRequestController::class, 'index'])
-            ->name('appointment-transfer-requests.index');
+        ->name('appointment-transfer-requests.index');
 
-        Route::get('/{id}', [AppointmentTransferRequestController::class, 'show'])
-            ->name('appointment-transfer-requests.show');
+    Route::get('/{id}', [AppointmentTransferRequestController::class, 'show'])
+        ->name('appointment-transfer-requests.show');
 
-        Route::post('/{id}/approve', [AppointmentTransferRequestController::class, 'approve'])
-            ->name('appointment-transfer-requests.approve');
+    Route::post('/{id}/approve', [AppointmentTransferRequestController::class, 'approve'])
+        ->name('appointment-transfer-requests.approve');
 
-        Route::post('/{id}/reject', [AppointmentTransferRequestController::class, 'reject'])
-            ->name('appointment-transfer-requests.reject');
+    Route::post('/{id}/reject', [AppointmentTransferRequestController::class, 'reject'])
+        ->name('appointment-transfer-requests.reject');
     });
 });
 

@@ -2,132 +2,145 @@
 
 @section('content')
 
-<div class="container mt-4">
+<div class="container">
 
     <div class="card">
 
-        <div class="card-header bg-primary text-white">
-            Review Transfer Request
+        <div class="card-header">
+            <h5>Transfer Request Details</h5>
         </div>
 
         <div class="card-body">
 
-            <div class="row mb-3">
-
-                <div class="col-md-6">
-                    <strong>Patient:</strong>
-                    {{ $transferRequest->appointment->patient_name }}
-                </div>
-
-                <div class="col-md-6">
-                    <strong>Appointment Date:</strong>
-                    {{ $transferRequest->appointment->appointment_date }}
-                </div>
-
+            <div class="mb-3">
+                <strong>Doctor:</strong>
+                {{ $requestData->doctor->name }}
             </div>
 
-            <div class="row mb-3">
-
-                <div class="col-md-6">
-                    <strong>Current Doctor:</strong>
-                    {{ $transferRequest->currentDoctor->name }}
-                </div>
-
-                <div class="col-md-6">
-                    <strong>Suggested Doctor:</strong>
-                    {{ $transferRequest->requestedDoctor->name ?? 'Not Suggested' }}
-                </div>
-
+            <div class="mb-3">
+                <strong>Period:</strong>
+                {{ $requestData->from_date }}
+                -
+                {{ $requestData->to_date }}
             </div>
 
-            <div class="mb-4">
-
+            <div class="mb-3">
                 <strong>Reason:</strong>
-
-                <div class="border rounded p-3 mt-2">
-                    {{ $transferRequest->reason }}
-                </div>
-
+                {{ $requestData->reason }}
             </div>
 
-            @if($transferRequest->status == 'pending')
+            <hr>
+
+            <h5>Affected Appointments</h5>
 
             <form method="POST"
-                  action="{{ route('admin.appointment-transfer-requests.approve',$transferRequest->id) }}">
+      action="{{ route('admin.appointment-transfer-requests.approve',$requestData->id) }}">
 
-                @csrf
+    @csrf
 
-                <div class="mb-3">
+    <table class="table table-bordered">
 
-                    <label>Select New Doctor</label>
+        <thead>
+            <tr>
+                <th>Patient</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Transfer To Doctor</th>
+            </tr>
+        </thead>
 
-                    <select name="new_doctor_id"
-                            class="form-select"
-                            required>
+        <tbody>
+
+            @foreach($appointments as $appointment)
+
+            <tr>
+
+                <td>
+                    {{ $appointment->patient_name }}
+                </td>
+
+                <td>
+                    {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y') }}
+                </td>
+
+                <td>
+                    {{ \Carbon\Carbon::parse($appointment->start_time)->format('h:i A') }}
+                    -
+                    {{ \Carbon\Carbon::parse($appointment->end_time)->format('h:i A') }}
+                </td>
+
+                <td>
+
+                    <select
+                        name="appointments[{{ $appointment->id }}]"
+                        class="form-control">
 
                         <option value="">
                             Select Doctor
                         </option>
 
-                        @foreach($doctors as $doctor)
+                        @foreach($appointment->available_doctors as $doctor)
 
-                        <option value="{{ $doctor->id }}"
-                            {{ $transferRequest->requested_doctor_id == $doctor->id ? 'selected' : '' }}>
-
-                            {{ $doctor->name }}
-
-                        </option>
+                            <option value="{{ $doctor->id }}">
+                                {{ $doctor->name }}
+                            </option>
 
                         @endforeach
 
                     </select>
 
-                </div>
+                </td>
 
-                <div class="mb-3">
+            </tr>
 
-                    <label>Admin Remark</label>
+            @endforeach
 
-                    <textarea
-                        name="admin_remark"
-                        class="form-control"
-                        rows="3"></textarea>
+        </tbody>
 
-                </div>
+    </table>
 
-                <button class="btn btn-success">
-                    Approve & Transfer
-                </button>
+    <div class="mb-3">
+        <label>Admin Remark</label>
 
-            </form>
+        <textarea
+            name="admin_remark"
+            class="form-control"></textarea>
+    </div>
+
+    <button
+        type="submit"
+        class="btn btn-success">
+
+        Approve & Transfer
+    </button>
+
+</form>
 
             <hr>
 
+            
+
+           
+
             <form method="POST"
-                  action="{{ route('admin.appointment-transfer-requests.reject',$transferRequest->id) }}">
+                  class="mt-2"
+                  action="{{ route('admin.appointment-transfer-requests.reject',$requestData->id) }}">
 
                 @csrf
 
                 <textarea
                     name="admin_remark"
-                    class="form-control mb-3"
-                    placeholder="Reason for rejection"
-                    required></textarea>
+                    class="form-control mb-2"
+                    placeholder="Reason for rejection"></textarea>
 
-                <button class="btn btn-danger">
+                <button
+                    type="submit"
+                    class="btn btn-danger">
+
                     Reject Request
                 </button>
 
             </form>
-
-            @else
-
-                <div class="alert alert-info">
-                    This request has already been
-                    <strong>{{ ucfirst($transferRequest->status) }}</strong>.
-                </div>
-
-            @endif
 
         </div>
 

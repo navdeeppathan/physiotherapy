@@ -59,6 +59,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(DoctorAvailabilityDate::class, 'user_id');
     }
+    public function timeSlots()
+    {
+        return $this->hasMany(
+            DoctorTimeSlot::class,
+            'user_id'
+        );
+    }
 
     // Doctor appointments
     public function doctorAppointments()

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\AppointmentCancellation;
 use App\Models\AppointmentReschedule;
+use App\Models\AppointmentTransferRequest;
 use App\Models\CancellationReason;
 use App\Models\DoctorWallet;
 use App\Models\Payment;
@@ -777,5 +778,140 @@ class AppointmentController extends BaseApiController
             $appointments,
             'Cancelled appointments fetched successfully'
         );
+    }
+
+
+
+
+    public function requestAppointmentTransfer(Request $request)
+    {
+        try {
+
+            $request->validate([
+                'appointment_id' => 'required|exists:appointments,id',
+                'reason' => 'required|string|max:1000',
+                'requested_doctor_id' => 'nullable|exists:users,id'
+            ]);
+
+            $doctorId = Auth::id();
+
+            $appointment = Appointment::findOrFail(
+                $request->appointment_id
+            );
+
+            if ($appointment->doctor_id != $doctorId) {
+                return $this->sendError(
+                    'You can only request transfer for your own appointments.'
+                );
+            }
+
+            $alreadyRequested = AppointmentTransferRequest::where(
+                'appointment_id',
+                $appointment->id
+            )
+            ->where('status', 'pending')
+            ->exists();
+
+            if ($alreadyRequested) {
+                return $this->sendError(
+                    'Transfer request already exists.'
+                );
+            }
+
+            $transferRequest = AppointmentTransferRequest::create([
+                'appointment_id' => $appointment->id,
+                'current_doctor_id' => $doctorId,
+                'requested_doctor_id' => $request->requested_doctor_id,
+                'reason' => $request->reason,
+                'status' => 'pending',
+            ]);
+
+            return $this->sendResponse(
+                $transferRequest,
+                'Transfer request submitted successfully.'
+            );
+
+        } catch (Exception $e) {
+
+            return $this->sendError($e->getMessage());
+        }
+    }
+
+    public function myTransferRequests()
+    {
+        try {
+
+            $requests = AppointmentTransferRequest::with([
+                'appointment',
+                'requestedDoctor'
+            ])
+            ->where('current_doctor_id', Auth::id())
+            ->latest()
+            ->get();
+
+            return $this->sendResponse(
+                $requests,
+                'Transfer requests fetched successfully.'
+            );
+
+        } catch (Exception $e) {
+
+            return $this->sendError($e->getMessage());
+        }
+    }
+
+
+    public function transferRequestDetail($id)
+    {
+        try {
+
+            $requestData = AppointmentTransferRequest::with([
+                'appointment',
+                'currentDoctor',
+                'requestedDoctor',
+                'admin'
+            ])
+            ->where('current_doctor_id', Auth::id())
+            ->findOrFail($id);
+
+            return $this->sendResponse(
+                $requestData,
+                'Transfer request details fetched successfully.'
+            );
+
+        } catch (Exception $e) {
+
+            return $this->sendError($e->getMessage());
+        }
+    }
+
+    public function cancelTransferRequest($id)
+    {
+        try {
+
+            $requestData = AppointmentTransferRequest::where(
+                'current_doctor_id',
+                Auth::id()
+            )
+            ->findOrFail($id);
+
+            if ($requestData->status != 'pending') {
+
+                return $this->sendError(
+                    'Only pending requests can be cancelled.'
+                );
+            }
+
+            $requestData->delete();
+
+            return $this->sendResponse(
+                [],
+                'Transfer request cancelled successfully.'
+            );
+
+        } catch (Exception $e) {
+
+            return $this->sendError($e->getMessage());
+        }
     }
 }

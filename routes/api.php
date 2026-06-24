@@ -237,6 +237,26 @@ Route::middleware(['auth:api', 'role:doctor'])->group(function () {
     Route::get('/doctor/cancelled-appointments', [AppointmentController::class, 'doctorCancelledAppointments']);
 
     Route::get('/doctor/appointments/shifted', [AppointmentController::class, 'doctorShiftedAppointments']);
+
+    Route::post(
+        '/doctor/appointment-transfer-request',
+        [AppointmentController::class, 'requestAppointmentTransfer']
+    );
+
+    Route::get(
+        '/doctor/my-transfer-requests',
+        [AppointmentController::class, 'myTransferRequests']
+    );
+
+    Route::get(
+        '/doctor/transfer-request/{id}',
+        [AppointmentController::class, 'transferRequestDetail']
+    );
+
+    Route::delete(
+        '/transfer-request/{id}',
+        [AppointmentController::class, 'cancelTransferRequest']
+    );
 });
 
 

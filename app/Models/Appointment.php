@@ -25,7 +25,8 @@ class Appointment extends Model
         'end_time',
         'status',
         'payment_status',
-        'is_rescheduled'
+        'is_rescheduled',
+        'is_transferred' 
     ];
 
     protected $casts = [
@@ -74,6 +75,22 @@ class Appointment extends Model
     {
         return $this->hasOne(AppointmentCancellation::class, 'appointment_id', 'id')
                     ->with('reason');
+    }
+
+    public function transferRequest()
+    {
+        return $this->hasOne(
+            AppointmentTransferRequest::class,
+            'appointment_id'
+        );
+    }
+
+    public function transfers()
+    {
+        return $this->hasMany(
+            AppointmentTransfer::class,
+            'appointment_id'
+        );
     }
     
 }

@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+ use App\Http\Controllers\AppointmentTransferRequestController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -71,5 +73,23 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
         'patient-plan-subscriptions',
         [PatientPlanSubscriptionController::class, 'index']
     )->name('patient-plan-subscriptions.index');
+
+
+   
+
+    Route::prefix('appointment-transfer-requests')->group(function () {
+
+        Route::get('/', [AppointmentTransferRequestController::class, 'index'])
+            ->name('appointment-transfer-requests.index');
+
+        Route::get('/{id}', [AppointmentTransferRequestController::class, 'show'])
+            ->name('appointment-transfer-requests.show');
+
+        Route::post('/{id}/approve', [AppointmentTransferRequestController::class, 'approve'])
+            ->name('appointment-transfer-requests.approve');
+
+        Route::post('/{id}/reject', [AppointmentTransferRequestController::class, 'reject'])
+            ->name('appointment-transfer-requests.reject');
+    });
 });
 

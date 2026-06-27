@@ -43,7 +43,9 @@ class DoctorProfileController extends BaseApiController
                     'clinic_address'   => $request->clinic_address,
                     'bio'              => $request->bio,
                     'career_path'      => $request->career_path,
-                    'highlights'       => $request->highlights
+                    'highlights'       => $request->highlights,
+                    'city'             => $request->city ?? null,
+                    'state'            => $request->state ?? null
                 ]
             );
 

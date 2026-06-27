@@ -1,163 +1,151 @@
 @extends('admin.layouts.admin')
 
 @section('content')
-<div class="container mt-4">
+
+<div class="container">
+
     <div class="card">
 
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Appointment Transfer Requests</h5>
+        <div class="card-header">
+            <h5>Transfer Request Details</h5>
         </div>
 
         <div class="card-body">
 
-            <form method="GET" class="row g-3 mb-3">
+            <div class="mb-3">
+                <strong>Doctor:</strong>
+                {{ $requestData->doctor->name }}
+            </div>
 
-                <div class="col-md-4">
-                    <input type="text"
-                           name="search"
-                           class="form-control"
-                           placeholder="Search Doctor"
-                           value="{{ request('search') }}">
-                </div>
+            <div class="mb-3">
+                <strong>Period:</strong>
+                {{ $requestData->from_date }}
+                -
+                {{ $requestData->to_date }}
+            </div>
 
-                <div class="col-md-3">
-                    <select name="status" class="form-select">
-                        <option value="">All Status</option>
+            <div class="mb-3">
+                <strong>Reason:</strong>
+                {{ $requestData->reason }}
+            </div>
 
-                        <option value="pending"
-                            {{ request('status') == 'pending' ? 'selected' : '' }}>
-                            Pending
+            <hr>
+
+            <h5>Affected Appointments</h5>
+
+            <form method="POST"
+      action="{{ route('admin.appointment-transfer-requests.approve',$requestData->id) }}">
+
+    @csrf
+
+    <table class="table table-bordered">
+
+        <thead>
+            <tr>
+                <th>Patient</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Transfer To Doctor</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            @foreach($appointments as $appointment)
+
+            <tr>
+
+                <td>
+                    {{ $appointment->patient_name }}
+                </td>
+
+                <td>
+                    {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y') }}
+                </td>
+
+                <td>
+                    {{ \Carbon\Carbon::parse($appointment->start_time)->format('h:i A') }}
+                    -
+                    {{ \Carbon\Carbon::parse($appointment->end_time)->format('h:i A') }}
+                </td>
+
+                <td>
+
+                    <select
+                        name="appointments[{{ $appointment->id }}]"
+                        class="form-control">
+
+                        <option value="">
+                            Select Doctor
                         </option>
 
-                        <option value="approved"
-                            {{ request('status') == 'approved' ? 'selected' : '' }}>
-                            Approved
-                        </option>
+                        @foreach($appointment->available_doctors as $doctor)
 
-                        <option value="rejected"
-                            {{ request('status') == 'rejected' ? 'selected' : '' }}>
-                            Rejected
-                        </option>
+                            <option value="{{ $doctor->id }}">
+                                {{ $doctor->name }}
+                            </option>
+
+                        @endforeach
+
                     </select>
-                </div>
 
-                <div class="col-md-2">
-                    <button class="btn btn-primary w-100">
-                        Filter
-                    </button>
-                </div>
+                </td>
+
+            </tr>
+
+            @endforeach
+
+        </tbody>
+
+    </table>
+
+    <div class="mb-3">
+        <label>Admin Remark</label>
+
+        <textarea
+            name="admin_remark"
+            class="form-control"></textarea>
+    </div>
+
+    <button
+        type="submit"
+        class="btn btn-success">
+
+        Approve & Transfer
+    </button>
+
+</form>
+
+            <hr>
+
+            
+
+           
+
+            <form method="POST"
+                  class="mt-2"
+                  action="{{ route('admin.appointment-transfer-requests.reject',$requestData->id) }}">
+
+                @csrf
+
+                <textarea
+                    name="admin_remark"
+                    class="form-control mb-2"
+                    placeholder="Reason for rejection"></textarea>
+
+                <button
+                    type="submit"
+                    class="btn btn-danger">
+
+                    Reject Request
+                </button>
 
             </form>
-
-            <div class="table-responsive">
-
-                <table class="table table-bordered align-middle">
-
-                    <thead class="table-light">
-                        <tr>
-                            <th>#</th>
-                            <th>Doctor</th>
-                            <th>From Date</th>
-                            <th>To Date</th>
-                            <th>Reason</th>
-                            <th>Status</th>
-                            <th>Requested On</th>
-                            <th width="120">Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        @forelse($requests as $key => $request)
-
-                        <tr>
-
-                            <td>
-                                {{ $requests->firstItem() + $key }}
-                            </td>
-
-                            <td>
-                                {{ $request->doctor->name ?? 'N/A' }}
-                            </td>
-
-                            <td>
-                                {{ \Carbon\Carbon::parse($request->from_date)->format('d M Y') }}
-                            </td>
-
-                            <td>
-                                {{ \Carbon\Carbon::parse($request->to_date)->format('d M Y') }}
-                            </td>
-
-                            <td>
-                                {{ $request->reason }}
-                            </td>
-
-                            <td>
-
-                                <span class="badge
-                                    @if($request->status == 'approved')
-                                        bg-success
-                                    @elseif($request->status == 'pending')
-                                        bg-warning
-                                    @else
-                                        bg-danger
-                                    @endif">
-
-                                    {{ ucfirst($request->status) }}
-
-                                </span>
-
-                            </td>
-
-                            <td>
-                                {{ $request->created_at->format('d M Y') }}
-                            </td>
-
-                            <td>
-
-                                @if($request->status == 'pending')
-
-                                    <a href="{{ route('admin.appointment-transfer-requests.show',$request->id) }}"
-                                       class="btn btn-sm btn-primary">
-                                        Review
-                                    </a>
-
-                                @else
-
-                                    <button
-                                        class="btn btn-sm btn-secondary"
-                                        disabled>
-                                        Closed
-                                    </button>
-
-                                @endif
-
-                            </td>
-
-                        </tr>
-
-                        @empty
-
-                        <tr>
-                            <td colspan="8" class="text-center">
-                                No Requests Found
-                            </td>
-                        </tr>
-
-                        @endforelse
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-            <div class="mt-3">
-                {{ $requests->links('pagination::bootstrap-5') }}
-            </div>
 
         </div>
 
     </div>
+
 </div>
+
 @endsection

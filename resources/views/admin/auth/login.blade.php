@@ -547,7 +547,7 @@
                     <input type="checkbox" name="remember">
                     Keep me signed in
                 </label>
-                <a href="#" class="forgot-link">Forgot password?</a>
+                <!-- <a href="#" class="forgot-link">Forgot password?</a> -->
             </div>
 
             <button type="submit" class="login-btn">

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Admin Login — MedAdmin Pro</title>
+<title>BookmyRehab</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -449,7 +449,7 @@
                 </svg>
             </div>
             <div>
-                <div class="brand-name">MedAdmin Pro</div>
+                <div class="brand-name">BookmyRehab</div>
                 <div class="brand-sub">Healthcare Management</div>
             </div>
         </div>

@@ -605,7 +605,7 @@
                         <th>Date &amp; Time</th>
                         <th>Problem</th>
                         <th>Amount</th>
-                        <th>Payment</th>
+                        
                         <th>Doctor Paid</th>
                     </tr>
                 </thead>
@@ -663,11 +663,7 @@
                             <td>
                                 <span class="amount-val">₹{{ number_format($amount) }}</span>
                             </td>
-                            <td>
-                                <span class="badge {{ $appt->payment_status === 'paid' ? 'paid' : 'unpaid' }}">
-                                    {{ ucfirst($appt->payment_status ?? 'unpaid') }}
-                                </span>
-                            </td>
+                            
                             <td>
                                 <span class="badge {{ $isPaid ? 'paid' : 'unpaid' }}">
                                     {{ $isPaid ? 'Paid' : 'Pending' }}

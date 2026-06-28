@@ -457,7 +457,9 @@
 </style>
 
 
-
+<pre>
+{{ dd($doctor->profile->specialization) }}
+</pre>
 
 <div class="doctor-wrap">
 

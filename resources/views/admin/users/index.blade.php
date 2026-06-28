@@ -831,47 +831,48 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-$('#doctor_id, #appointment_date').change(function() {
 
-    let doctor_id = $('#doctor_id').val();
-    let date = $('#appointment_date').val();
-
-    if (!doctor_id || !date) return;
-
-    $.ajax({
-        url: "{{ route('admin.doctor.slots') }}",
-        type: "GET",
-        data: {
-            doctor_id: doctor_id,
-            date: date
-        },
-        success: function(response) {
-
-            $('#slot_container').html('');
-
-            response.data.forEach(function(slot) {
-
-                $('#slot_container').append(`
-                    <div class="form-check">
-                        <input type="radio"
-                            name="time_slot_id"
-                            value="${slot.id}"
-                            required>
-
-                        <label>
-                            ${slot.start_time}
-                            -
-                            ${slot.end_time}
-                        </label>
-                    </div>
-                `);
-            });
-        }
-    });
-});
 
 document.addEventListener("DOMContentLoaded", function () {
 
+    $('#doctor_id, #appointment_date').change(function() {
+
+        let doctor_id = $('#doctor_id').val();
+        let date = $('#appointment_date').val();
+
+        if (!doctor_id || !date) return;
+
+        $.ajax({
+            url: "{{ route('admin.doctor.slots') }}",
+            type: "GET",
+            data: {
+                doctor_id: doctor_id,
+                date: date
+            },
+            success: function(response) {
+
+                $('#slot_container').html('');
+
+                response.data.forEach(function(slot) {
+
+                    $('#slot_container').append(`
+                        <div class="form-check">
+                            <input type="radio"
+                                name="time_slot_id"
+                                value="${slot.id}"
+                                required>
+
+                            <label>
+                                ${slot.start_time}
+                                -
+                                ${slot.end_time}
+                            </label>
+                        </div>
+                    `);
+                });
+            }
+        });
+    });
     const modal = new bootstrap.Modal(document.getElementById('feeModal'));
 
     // ── Live total preview ──────────────────────────

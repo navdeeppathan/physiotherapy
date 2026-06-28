@@ -25,6 +25,7 @@ class Appointment extends Model
         'end_time',
         'status',
         'payment_status',
+        'doctor_payment_status',
         'is_rescheduled',
         'is_transferred' 
     ];

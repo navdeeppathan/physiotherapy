@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Appointment;
+use App\Models\AppointmentFee;
 use App\Models\DoctorProfile;
 use App\Models\PatientPlanSubscription;
 use App\Models\Payment;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class DashboardController extends Controller
 {
@@ -112,5 +116,138 @@ class DashboardController extends Controller
             'chartLabels',
             'chartData'
         ));
+    }
+
+
+
+    public function appointments($id)
+    {
+        $doctor = User::where('role', 'doctor')->findOrFail($id);
+    
+        $appointments = Appointment::with(['patient', 'timeSlot'])
+            ->where('doctor_id', $id)
+            ->where('status', 'completed')
+            ->latest('appointment_date')
+            ->paginate(15);
+    
+        $completedCount = Appointment::where('doctor_id', $id)
+            ->where('status', 'completed')
+            ->count();
+
+        $doctorFee = AppointmentFee::where('doctor_id', $id)
+            ->value('doctor_fee') ?? 0;
+
+        $totalAmount = $completedCount * $doctorFee;
+    
+        // Sum already paid to doctor
+        $paidAmount = Payment::where('doctor_id', $id)
+            ->where('status', 'success')
+            ->sum('amount');
+    
+        $remainingAmount = max(0, $totalAmount - $paidAmount);
+    
+        // Count of unpaid completed appointments
+        $unpaidCount = Appointment::where('doctor_id', $id)
+            ->where('status', 'completed')
+            ->where('doctor_payment_status', '!=', 'paid')
+            ->count();
+    
+        return view('admin.doctors.payments', compact(
+            'doctor',
+            'appointments',
+            'totalAmount',
+            'paidAmount',
+            'remainingAmount',
+            'unpaidCount'
+        ));
+    }
+ 
+    // ── 2. Pay doctor — mark appointments paid + create Payment record ────────────
+ 
+    public function pay(Request $request, $id)
+    {
+        try {
+            $doctor = User::where('role', 'doctor')->findOrFail($id);
+    
+            $request->validate([
+                'appointment_ids'   => 'required|array|min:1',
+                'appointment_ids.*' => 'integer|exists:appointments,id',
+                
+            ]);
+    
+            $appointmentIds = $request->appointment_ids;
+    
+            // Verify all belong to this doctor and are completed + unpaid
+            $appointments = Appointment::where('doctor_id', $id)
+                ->where('status', 'completed')
+                ->where('doctor_payment_status', '!=', 'paid')
+                ->whereIn('id', $appointmentIds)
+                ->get();
+    
+            if ($appointments->isEmpty()) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'No valid unpaid appointments found for this doctor.',
+                ], 422);
+            }
+    
+            DB::transaction(function () use ($appointments, $doctor) {
+
+                // Doctor fee
+                $doctorFee = AppointmentFee::where('doctor_id', $doctor->id)
+                    ->value('doctor_fee');
+
+                if (!$doctorFee) {
+                    throw new \Exception('Doctor fee not found.');
+                }
+
+                foreach ($appointments as $appointment) {
+
+                    // Mark appointment as paid
+                    $appointment->update([
+                        'doctor_payment_status' => 'paid'
+                    ]);
+
+                    // Create payment for this appointment
+                    Payment::create([
+                        'appointment_id' => $appointment->id,
+                        'doctor_id'      => $doctor->id,
+                        'amount'         => $doctorFee,
+                        'currency'       => 'INR',
+                        'payment_method' => 'admin_manual',
+                        'transaction_id' => 'TXN-' . strtoupper(Str::random(12)),
+                        'status'         => 'success',
+                        'paid_at'        => now(),
+                    ]);
+                }
+
+            });
+
+            $doctorFees = AppointmentFee::where('doctor_id', $doctor->id)
+                    ->value('doctor_fee');
+
+            $totalPaid = $appointments->count() * $doctorFees;
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'Successfully paid ₹' . number_format($totalPaid, 2) .
+                            ' for ' . $appointments->count() . ' appointment(s).',
+            ]);
+    
+            
+    
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => $e->validator->errors()->first(),
+            ], 422);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Something went wrong.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
     }
 }

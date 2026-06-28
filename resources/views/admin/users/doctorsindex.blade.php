@@ -713,6 +713,13 @@
                                     style="background:#ECFDF5;color:#059669;border:1px solid #A7F3D0;text-decoration:none;">
                                         👁 Details
                                     </a>
+
+                                    <!-- Payments -->
+                                    <a href="{{ route('admin.doctors.payments', $user->id) }}"
+                                        class="act-btn"
+                                        style="background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE;text-decoration:none;">
+                                        💰 Payments
+                                    </a>
                                
                                     <button
                                         class="act-btn fee open-fee-modal"

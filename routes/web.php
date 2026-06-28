@@ -42,6 +42,9 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
     Route::get('/doctors/{id}', [AuthController::class, 'showDoctor'])
     ->name('doctors.show');
 
+    Route::get('doctors/{id}/payments',      [DashboardController::class, 'appointments'])->name('doctors.payments');
+    Route::post('doctors/{id}/pay',          [DashboardController::class, 'pay'])         ->name('doctors.pay');
+
     Route::get('/appointments', [AppointmentController::class, 'adminIndex'])
       ->name('appointments.index');
 

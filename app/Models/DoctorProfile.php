@@ -48,7 +48,7 @@ class DoctorProfile extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function specialization ()
+    public function specializationdata ()
     {
         return $this->belongsTo(Specializations::class, 'specialization', 'id');
     }

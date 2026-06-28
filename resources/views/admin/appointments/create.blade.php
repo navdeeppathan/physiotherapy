@@ -587,101 +587,101 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <script>
-$(document).ready(function () {
+    $(document).ready(function () {
 
-    function loadSlots() {
-        const doctorId = $('#doctor_id').val();
-        const date     = $('#appointment_date').val();
+        function loadSlots() {
+            const doctorId = $('#doctor_id').val();
+            const date     = $('#appointment_date').val();
 
-        if (!doctorId || !date) {
-            $('#slot_container').html(`
-                <div class="slot-placeholder">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                    </svg>
-                    Select a doctor and date to see available slots.
-                </div>
-            `);
-            return;
-        }
+            if (!doctorId || !date) {
+                $('#slot_container').html(`
+                    <div class="slot-placeholder">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        Select a doctor and date to see available slots.
+                    </div>
+                `);
+                return;
+            }
 
-        // Show skeleton
-        let skelHtml = '<div class="slot-skeleton">';
-        for (let i = 0; i < 6; i++) {
-            skelHtml += '<div class="slot-skel-item"></div>';
-        }
-        skelHtml += '</div>';
-        $('#slot_container').html(skelHtml);
+            // Show skeleton
+            let skelHtml = '<div class="slot-skeleton">';
+            for (let i = 0; i < 6; i++) {
+                skelHtml += '<div class="slot-skel-item"></div>';
+            }
+            skelHtml += '</div>';
+            $('#slot_container').html(skelHtml);
 
-        $.ajax({
-            url:    "{{ route('admin.doctor.slots') }}",
-            method: "GET",
-            data:   { doctor_id: doctorId, date: date },
+            $.ajax({
+                url:    "{{ route('admin.doctor.slots') }}",
+                method: "GET",
+                data:   { doctor_id: doctorId, date: date },
 
-            success: function (response) {
+                success: function (response) {
 
-                if (!response.data || response.data.length === 0) {
+                    if (!response.data || response.data.length === 0) {
+                        $('#slot_container').html(`
+                            <div class="slot-empty">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                                </svg>
+                                No slots available for this doctor on the selected date.
+                            </div>
+                        `);
+                        return;
+                    }
+
+                    let html = '<div class="slots-grid">';
+                    response.data.forEach(function (slot) {
+                        // Format times nicely
+                        const fmt = t => {
+                            const [h, m] = t.split(':');
+                            const hr = parseInt(h);
+                            const ampm = hr >= 12 ? 'PM' : 'AM';
+                            const h12  = hr % 12 || 12;
+                            return `${h12}:${m} ${ampm}`;
+                        };
+                        const start = fmt(slot.start_time);
+                        const end   = fmt(slot.end_time);
+
+                        html += `
+                            <div class="slot-option">
+                                <input
+                                    type="radio"
+                                    name="time_slot_id"
+                                    id="slot_${slot.id}"
+                                    value="${slot.id}"
+                                    required
+                                >
+                                <label class="slot-label" for="slot_${slot.id}">
+                                    <span class="slot-time">${start}</span>
+                                    <span class="slot-sep">to ${end}</span>
+                                </label>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+
+                    $('#slot_container').html(html);
+                },
+
+                error: function (xhr) {
                     $('#slot_container').html(`
                         <div class="slot-empty">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
                             </svg>
-                            No slots available for this doctor on the selected date.
+                            Failed to load slots. Please try again.
                         </div>
                     `);
-                    return;
+                    console.error(xhr.responseText);
                 }
+            });
+        }
 
-                let html = '<div class="slots-grid">';
-                response.data.forEach(function (slot) {
-                    // Format times nicely
-                    const fmt = t => {
-                        const [h, m] = t.split(':');
-                        const hr = parseInt(h);
-                        const ampm = hr >= 12 ? 'PM' : 'AM';
-                        const h12  = hr % 12 || 12;
-                        return `${h12}:${m} ${ampm}`;
-                    };
-                    const start = fmt(slot.start_time);
-                    const end   = fmt(slot.end_time);
-
-                    html += `
-                        <div class="slot-option">
-                            <input
-                                type="radio"
-                                name="time_slot_id"
-                                id="slot_${slot.id}"
-                                value="${slot.id}"
-                                required
-                            >
-                            <label class="slot-label" for="slot_${slot.id}">
-                                <span class="slot-time">${start}</span>
-                                <span class="slot-sep">to ${end}</span>
-                            </label>
-                        </div>
-                    `;
-                });
-                html += '</div>';
-
-                $('#slot_container').html(html);
-            },
-
-            error: function (xhr) {
-                $('#slot_container').html(`
-                    <div class="slot-empty">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                        </svg>
-                        Failed to load slots. Please try again.
-                    </div>
-                `);
-                console.error(xhr.responseText);
-            }
-        });
-    }
-
-    $('#doctor_id, #appointment_date').on('change', loadSlots);
-});
+        $('#doctor_id, #appointment_date').on('change', loadSlots);
+    });
 </script>
 
 @endsection

@@ -547,9 +547,7 @@
             <form id="payForm" action="{{ route('admin.doctors.pay', $doctor->id) }}" method="POST">
                 @csrf
 
-                <input type="hidden"
-                    name="appointment_ids"
-                    id="appointmentIdsInput">
+                <div id="hiddenAppointments"></div>
 
                 <button type="submit"
                         class="pay-btn"
@@ -701,12 +699,25 @@
     const payBtn        = document.getElementById('payBtn');
     const selectionBar  = document.getElementById('selectionBar');
     const selectionText = document.getElementById('selectionText');
-    const idsInput      = document.getElementById('appointmentIdsInput');
+    
 
     function updateUI() {
         const count = selectedIds.size;
         payBtn.disabled = count === 0;
-        idsInput.value  = JSON.stringify([...selectedIds]);
+        const hiddenContainer = document.getElementById('hiddenAppointments');
+
+        hiddenContainer.innerHTML = '';
+
+        selectedIds.forEach(id => {
+
+            hiddenContainer.innerHTML += `
+                <input
+                    type="hidden"
+                    name="appointment_ids[]"
+                    value="${id}">
+            `;
+
+        });
 
         if (count > 0) {
             selectionBar.classList.add('visible');
@@ -755,53 +766,7 @@
         updateUI();
     }
 
-    // Form submit — AJAX
-    document.getElementById('payForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        alert('submit fired');
-
-        if (selectedIds.size === 0) { showToast('Select at least one appointment.', 'error'); return; }
-
-        console.log("Action:", this.action);
-        console.log("Selected:", [...selectedIds]);
-        payBtn.disabled = true;
-        payBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 0.8s linear infinite"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.22-3.36"/></svg> Processing…`;
-
-        try {
-            const res  = await fetch(this.action, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    appointment_ids: [...selectedIds],
-                   
-                })
-            });
-        console.log("After Fetch");
-
-    console.log("Status:", res.status);
-            const data = await res.json();
-
-            console.log(data);
-
-            if (data.status) {
-                showToast(data.message ?? 'Payment recorded successfully.', 'success');
-                setTimeout(() => location.reload(), 1200);
-            } else {
-                showToast(data.message ?? 'Something went wrong.', 'error');
-                payBtn.disabled = false;
-                payBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Pay Doctor`;
-            }
-        } catch {
-            showToast('Network error. Please try again.', 'error');
-            payBtn.disabled = false;
-            payBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Pay Doctor`;
-        }
-    });
+    
 
     function showToast(msg, type = 'success') {
         const t = document.createElement('div');

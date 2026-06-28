@@ -680,15 +680,17 @@
                                     </label>
                                 @endif
                             </td>
-                             @if($user->role == 'patient')
-                                <a href="{{ route(
-                                    'admin.appointments.create',
-                                    $user->id
-                                ) }}"
-                                class="btn btn-primary btn-sm">
-                                    Book Appointment
-                                </a>
-                            @endif
+                             <td>
+                                @if($user->role == 'patient')
+                                    <a href="{{ route(
+                                        'admin.appointments.create',
+                                        $user->id
+                                    ) }}"
+                                    class="btn btn-primary btn-sm">
+                                        Book Appointment
+                                    </a>
+                                @endif
+                            </td>
 
                             {{-- <td>
                                 @if($user->fee && $user->fee->doctor_fee)

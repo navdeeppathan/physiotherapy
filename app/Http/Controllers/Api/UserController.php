@@ -1103,23 +1103,44 @@ class UserController extends BaseApiController
                             ->orderBy('appointment_date', 'desc')
                             ->get();
 
-            $transactions = $appointments->map(function ($appointment) use ($doctorFee) {
+            $transactions = $appointments->map(function ($appointment) use ($doctorFee, $doctorId) {
 
                 return [
-                    'appointment_id'      => $appointment->id,
-                    'patient_name'        => $appointment->patient->name ?? '',
-                    'patient_id'          => $appointment->patient->id ?? '',
-                    'appointment_date'    => $appointment->appointment_date,
-                    'start_time'          => $appointment->start_time,
-                    'end_time'            => $appointment->end_time,
-                    'fee'                 => $doctorFee,
+                    'transaction_id' => 'TXN-' .
+                                        $doctorId . '-' .
+                                        ($appointment->patient->id ?? 0) . '-' .
+                                        $appointment->id,
 
-                    'transaction_status'  =>
+                    'appointment_id' => $appointment->id,
+
+                    'patient_name' => $appointment->patient->name ?? '',
+
+                    'patient_id' => $appointment->patient->id ?? '',
+
+                    'appointment_date' => Carbon::parse(
+                        $appointment->appointment_date
+                    )->format('d M Y'),
+
+                    'start_time' => Carbon::parse(
+                        $appointment->start_time
+                    )->format('h:i A'),
+
+                    'end_time' => Carbon::parse(
+                        $appointment->end_time
+                    )->format('h:i A'),
+
+                    'fee' => number_format($doctorFee, 2),
+
+                    'transaction_status' =>
                         $appointment->status == 'completed'
                             ? 'Completed'
-                            : 'Upcoming',
+                            : (
+                                $appointment->status == 'cancelled'
+                                    ? 'Cancelled'
+                                    : 'Upcoming'
+                            ),
 
-                    'appointment_status'  => $appointment->status,
+                    'appointment_status' => ucfirst($appointment->status),
                 ];
             });
 

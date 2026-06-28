@@ -546,31 +546,29 @@
         <div>
             <form id="payForm" action="{{ route('admin.doctors.pay', $doctor->id) }}" method="POST">
                 @csrf
-                <input type="hidden" name="appointment_ids" id="appointmentIdsInput">
-                <div class="pay-form-row">
-                    <div class="pay-input-wrap">
-                        <span class="pay-input-symbol">₹</span>
-                        <input
-                            type="number"
-                            name="amount"
-                            id="payAmountInput"
-                            class="pay-input"
-                            placeholder="0"
-                            min="1"
-                            step="0.01"
-                            required
-                        >
-                    </div>
-                    <button type="submit" class="pay-btn" id="payBtn" disabled>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                        </svg>
-                        Pay Doctor
-                    </button>
-                </div>
+
+                <input type="hidden"
+                    name="appointment_ids"
+                    id="appointmentIdsInput">
+
+                <button type="submit"
+                        class="pay-btn"
+                        id="payBtn"
+                        disabled>
+
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <line x1="12" y1="1" x2="12" y2="23"/>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+
+                    Pay Selected Appointments
+
+                </button>
+
                 <div style="margin-top:8px;font-size:11.5px;color:rgba(255,255,255,0.3);">
-                    Select appointments below, then enter an amount to pay.
+                    Select unpaid appointments below. The payment amount will be calculated automatically using the doctor's configured fee.
                 </div>
+
             </form>
         </div>
     </div>
@@ -616,7 +614,7 @@
                         @php
                             $isPaid = $appt->doctor_payment_status === 'paid';
                             $patientName = $appt->patient_name ?? ($appt->patient->name ?? '—');
-                            $amount = $appt->timeSlot->fee ?? $appt->profile->consultation_fee ?? 0;
+                            $amount = $doctor->fee->doctor_fee ?? 0;
                         @endphp
                         <tr class="{{ $isPaid ? '' : 'unpaid-row' }}" data-id="{{ $appt->id }}" data-paid="{{ $isPaid ? '1' : '0' }}">
                             <td>
@@ -716,7 +714,10 @@
 
         if (count > 0) {
             selectionBar.classList.add('visible');
-            selectionText.textContent = `${count} appointment(s) selected`;
+            const doctorFee = {{ optional($doctor->fee)->doctor_fee ?? 0 }};
+
+            selectionText.textContent =
+            `${count} appointment(s) selected • Total ₹${(count * doctorFee).toLocaleString()}`;
         } else {
             selectionBar.classList.remove('visible');
         }
@@ -764,8 +765,6 @@
 
         if (selectedIds.size === 0) { showToast('Select at least one appointment.', 'error'); return; }
 
-        const amount = document.getElementById('payAmountInput').value;
-        if (!amount || parseFloat(amount) <= 0) { showToast('Enter a valid amount.', 'error'); return; }
 
         payBtn.disabled = true;
         payBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 0.8s linear infinite"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.22-3.36"/></svg> Processing…`;
@@ -780,7 +779,7 @@
                 },
                 body: JSON.stringify({
                     appointment_ids: [...selectedIds],
-                    amount: amount
+                   
                 })
             });
 

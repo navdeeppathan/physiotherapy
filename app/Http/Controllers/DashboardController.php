@@ -122,7 +122,7 @@ class DashboardController extends Controller
 
     public function appointments($id)
     {
-        $doctor = User::where('role', 'doctor')->findOrFail($id);
+        $doctor = User::with('fee')->where('role', 'doctor')->findOrFail($id);
     
         $appointments = Appointment::with(['patient', 'timeSlot'])
             ->where('doctor_id', $id)

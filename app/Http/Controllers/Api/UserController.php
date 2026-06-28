@@ -1091,6 +1091,7 @@ class UserController extends BaseApiController
 
     public function doctorPaymentHistory($doctorId)
     {
+        \Log::info($doctorId);
         try {
 
             // Doctor Fee

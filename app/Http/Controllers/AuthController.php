@@ -53,6 +53,18 @@ class AuthController extends Controller
 
         return view('admin.users.doctorsindex', compact('users'));
     }
+
+    public function showDoctor($id)
+    {
+        $doctor = User::with([
+            'profile',
+            'documents',
+        ])
+        ->where('role', 'doctor')
+        ->findOrFail($id);
+
+        return view('admin.users.show', compact('doctor'));
+    }
     /* ================= REGISTER ================= */
     public function showRegister()
     {

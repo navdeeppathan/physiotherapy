@@ -706,7 +706,14 @@
                             </td> --}}
 
                             <td>
-                                @if($user->role == 'doctor')
+                                <div class="d-flex gap-2">
+
+                                    <a href="{{ route('admin.doctors.show', $user->id) }}"
+                                    class="act-btn"
+                                    style="background:#ECFDF5;color:#059669;border:1px solid #A7F3D0;text-decoration:none;">
+                                        👁 Details
+                                    </a>
+                               
                                     <button
                                         class="act-btn fee open-fee-modal"
                                         data-id="{{ $user->id }}"
@@ -717,9 +724,7 @@
                                         </svg>
                                         Set Fee
                                     </button>
-                                @else
-                                    <span class="fee-na">—</span>
-                                @endif
+                                </div>
                             </td>
                         </tr>
                     @empty

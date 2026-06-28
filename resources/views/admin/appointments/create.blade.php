@@ -99,49 +99,50 @@
 
 @endsection
 
-@section('scripts')
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
 
-$('#doctor_id, #appointment_date').change(function(){
+    $('#doctor_id, #appointment_date').change(function(){
 
-    let doctor_id = $('#doctor_id').val();
-    let date = $('#appointment_date').val();
+        let doctor_id = $('#doctor_id').val();
+        let date = $('#appointment_date').val();
 
-    if(!doctor_id || !date){
-        return;
-    }
-
-    $.ajax({
-        url: "{{ route('admin.doctor.slots') }}",
-        type: "GET",
-        data: {
-            doctor_id: doctor_id,
-            date: date
-        },
-
-        success: function(response){
-
-            let html = '';
-
-            response.data.forEach(function(slot){
-
-                html += `
-                    <div class="form-check mb-2">
-                        <input type="radio"
-                               name="time_slot_id"
-                               value="${slot.id}"
-                               required>
-
-                        ${slot.start_time} - ${slot.end_time}
-                    </div>
-                `;
-            });
-
-            $('#slot_container').html(html);
+        if(!doctor_id || !date){
+            return;
         }
+
+        $.ajax({
+            url: "{{ route('admin.doctor.slots') }}",
+            type: "GET",
+            data: {
+                doctor_id: doctor_id,
+                date: date
+            },
+
+            success: function(response){
+
+                let html = '';
+
+                response.data.forEach(function(slot){
+
+                    html += `
+                        <div class="form-check mb-2">
+                            <input type="radio"
+                                name="time_slot_id"
+                                value="${slot.id}"
+                                required>
+
+                            ${slot.start_time} - ${slot.end_time}
+                        </div>
+                    `;
+                });
+
+                $('#slot_container').html(html);
+            }
+        });
+
     });
 
-});
-
 </script>
-@endsection

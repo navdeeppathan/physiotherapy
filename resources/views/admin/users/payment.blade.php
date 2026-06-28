@@ -759,6 +759,8 @@
     document.getElementById('payForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
+        alert('submit fired');
+
         if (selectedIds.size === 0) { showToast('Select at least one appointment.', 'error'); return; }
 
 

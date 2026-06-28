@@ -15,15 +15,15 @@ class AppointmentFeeController extends Controller
         $request->validate([
             'doctor_id' => 'required|exists:users,id',
             'doctor_fee' => 'required|numeric|min:0',
-            'admin_fee' => 'required|numeric|min:0',
+            // 'admin_fee' => 'required|numeric|min:0',
         ]);
 
         $fee = AppointmentFee::updateOrCreate(
             ['doctor_id' => $request->doctor_id],
             [
                 'doctor_fee' => $request->doctor_fee,
-                'admin_fee' => $request->admin_fee,
-                'total_fee' => $request->doctor_fee + $request->admin_fee
+                // 'admin_fee' => $request->admin_fee,
+                // 'total_fee' => $request->doctor_fee + $request->admin_fee
             ]
         );
 

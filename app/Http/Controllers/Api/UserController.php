@@ -1108,6 +1108,7 @@ class UserController extends BaseApiController
                 return [
                     'appointment_id'      => $appointment->id,
                     'patient_name'        => $appointment->patient->name ?? '',
+                    'patient_id'          => $appointment->patient->id ?? '',
                     'appointment_date'    => $appointment->appointment_date,
                     'start_time'          => $appointment->start_time,
                     'end_time'            => $appointment->end_time,

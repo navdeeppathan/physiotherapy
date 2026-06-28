@@ -510,8 +510,8 @@
                     <div class="profile-name">{{ $doctor->name }}</div>
                     <div class="profile-spec">
                         {{ $doctor->profile->specialization ?? 'General Practitioner' }}
-                        @if($doctor->profile->experience_years)
-                            · {{ $doctor->profile->experience_years }} yrs exp
+                        @if($doctor->profile->experience_years > 0)
+                            · {{ $doctor->profile->experience_years ?? '0' }} yrs exp
                         @endif
                     </div>
 
@@ -740,7 +740,7 @@
             @endif
 
             <!-- Availability -->
-            <div class="card">
+            {{-- <div class="card">
                 <div class="card-head">
                     <div class="card-head-title">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -804,7 +804,7 @@
                     </div>
 
                 </div>
-            </div>
+            </div> --}}
 
             <!-- Documents -->
             <div class="card">

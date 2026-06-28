@@ -763,7 +763,8 @@
 
         if (selectedIds.size === 0) { showToast('Select at least one appointment.', 'error'); return; }
 
-
+        console.log("Action:", this.action);
+        console.log("Selected:", [...selectedIds]);
         payBtn.disabled = true;
         payBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 0.8s linear infinite"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.22-3.36"/></svg> Processing…`;
 
@@ -780,8 +781,12 @@
                    
                 })
             });
+        console.log("After Fetch");
 
+    console.log("Status:", res.status);
             const data = await res.json();
+
+            console.log(data);
 
             if (data.status) {
                 showToast(data.message ?? 'Payment recorded successfully.', 'success');

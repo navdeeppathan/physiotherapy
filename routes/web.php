@@ -36,22 +36,24 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
    Route::get(
             '/patients/{patient}/book',
         [AdminAppointmentController::class, 'create']
-    )->name('admin.appointments.create');
+    )->name('appointments.create');
 
+    
     Route::post(
         '/appointments/store',
         [AdminAppointmentController::class, 'store']
-    )->name('admin.appointments.store');
+    )->name('appointments.store');
 
     Route::get(
         '/doctor-slots',
         [AdminAppointmentController::class, 'getSlots']
-    )->name('admin.doctor.slots');
+    )->name('doctor.slots');
 
     Route::get(
         '/appointments',
         [AdminAppointmentController::class, 'index']
-    )->name('admin.appointments.index');
+    )->name('appointments.index');
+    
     // Route::get('/dashboard', [AdminDashboardController::class,'index'])
     //     ->name('dashboard');
     Route::post('/admin-logout', [AuthController::class, 'logout'])->name('logout');

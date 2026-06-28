@@ -139,10 +139,14 @@ class DashboardController extends Controller
 
         $totalAmount = $completedCount * $doctorFee;
     
-        // Sum already paid to doctor
-        $paidAmount = Payment::where('doctor_id', $id)
-            ->where('status', 'success')
-            ->sum('amount');
+       
+
+        $paidAppointmentsCount = Appointment::where('doctor_id', $id)
+            ->where('status', 'completed')
+            ->where('doctor_payment_status', 'paid')
+            ->count();
+
+        $paidAmount = $paidAppointmentsCount * $doctorFee;
     
         $remainingAmount = max(0, $totalAmount - $paidAmount);
     

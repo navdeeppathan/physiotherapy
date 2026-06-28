@@ -197,9 +197,9 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/appointment/{id}/cancel', [AppointmentController::class, 'cancel']);
 
     Route::get(
-    '/cancellation-reasons',
-    [AppointmentController::class, 'getCancellationReasons']
-);
+        '/cancellation-reasons',
+        [AppointmentController::class, 'getCancellationReasons']
+    );
 });
 
 

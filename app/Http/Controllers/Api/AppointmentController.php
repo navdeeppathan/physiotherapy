@@ -181,13 +181,13 @@ class AppointmentController extends BaseApiController
             ]);
 
             // ✅ 💰 CREDIT DOCTOR WALLET (TEMPORARY HERE)
-            $wallet = DoctorWallet::firstOrCreate(
-                ['doctor_id' => $request->doctor_id],
-                ['balance' => 0, 'currency' => 'INR']
-            );
+            // $wallet = DoctorWallet::firstOrCreate(
+            //     ['doctor_id' => $request->doctor_id],
+            //     ['balance' => 0, 'currency' => 'INR']
+            // );
 
-            $wallet->balance += $request->doctor_fee;
-            $wallet->save();
+            // $wallet->balance += $request->doctor_fee;
+            // $wallet->save();
 
             // Mark slot as booked
             $slot->update(['is_booked' => true]);

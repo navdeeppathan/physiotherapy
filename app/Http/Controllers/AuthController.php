@@ -11,7 +11,8 @@ class AuthController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::where('role', '!=', 'admin');
+        // $query = User::where('role', '!=', 'admin');
+        $query = User::where('role', 'patient');
 
         // 🔍 Search filter (name + email)
         if ($request->search) {
@@ -29,6 +30,28 @@ class AuthController extends Controller
         $users = $query->paginate(10)->withQueryString();
 
         return view('admin.users.index', compact('users'));
+    }
+
+    public function doctors(Request $request)
+    {
+        $query = User::where('role', 'doctor');
+
+        // Search
+        if ($request->search) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                ->orWhere('email', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // Status Filter
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        $users = $query->paginate(10)->withQueryString();
+
+        return view('admin.users.doctorsindex', compact('users'));
     }
     /* ================= REGISTER ================= */
     public function showRegister()

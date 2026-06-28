@@ -38,6 +38,8 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
     Route::post('/admin-logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('/users/toggle-status/{id}', [AuthController::class, 'toggleStatus']);
     Route::get('/users', [AuthController::class, 'index'])->name('users.index');
+    Route::get('/doctors', [AuthController::class, 'doctorsindex'])->name('users.doctorsindex');
+
     Route::get('/appointments', [AppointmentController::class, 'adminIndex'])
       ->name('appointments.index');
 

@@ -456,6 +456,9 @@
     }
 </style>
 
+
+{{dd($doctor)}}
+
 <div class="doctor-wrap">
 
     <!-- ── PAGE HEADER ── -->
@@ -509,7 +512,7 @@
 
                     <div class="profile-name">{{ $doctor->name }}</div>
                     <div class="profile-spec">
-                        {{ $doctor->profile->specialization ?? 'General Practitioner' }}
+                        {{ $doctor->profile->specialization->name ?? 'General Practitioner' }}
                        
                     </div>
 

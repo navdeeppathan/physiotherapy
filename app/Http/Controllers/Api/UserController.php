@@ -1107,8 +1107,8 @@ class UserController extends BaseApiController
 
                 return [
                     'transaction_id' => 'TXN-' .
-                                        $doctorId . 
-                                        ($appointment->patient->id ?? 0)  .
+                                        $doctorId . '-' .
+                                        ($appointment->patient->id ?? 0) . '-' .
                                         $appointment->id,
 
                     'appointment_id' => $appointment->id,

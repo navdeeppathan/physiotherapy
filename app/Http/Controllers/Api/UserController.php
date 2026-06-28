@@ -555,6 +555,17 @@ class UserController extends BaseApiController
             ]);
 
 
+            DoctorProfile::create([
+                'user_id'                => $user->id,
+
+                'experience_years'       => $request->experience,
+                'clinic_address'         => $request->clinic_address,
+
+                'home_visit_available'   => $request->boolean('home_visit_available'),
+                'clinic_visit_available' => $request->boolean('clinic_visit_available'),
+            ]);
+
+
             // doctor documents
             if($request->role == "doctor"){
 

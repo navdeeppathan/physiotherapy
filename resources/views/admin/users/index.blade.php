@@ -632,10 +632,10 @@
                         <th>Phone</th>
                         <th>Role</th>
                         <th>Status</th>
-                        <th>Doctor Fee</th>
+                        {{-- <th>Doctor Fee</th>
                         <th>Admin Fee</th>
-                        <th>Total</th>
-                        <th>Actions</th>
+                        <th>Total</th> --}}
+                        {{-- <th>Actions</th> --}}
                     </tr>
                 </thead>
                 <tbody>
@@ -681,7 +681,7 @@
                                 @endif
                             </td>
 
-                            <td>
+                            {{-- <td>
                                 @if($user->fee && $user->fee->doctor_fee)
                                     <span class="fee-val">₹{{ number_format($user->fee->doctor_fee) }}</span>
                                 @else
@@ -720,7 +720,7 @@
                                 @else
                                     <span class="fee-na">—</span>
                                 @endif
-                            </td>
+                            </td> --}}
                         </tr>
                     @empty
                         <tr>

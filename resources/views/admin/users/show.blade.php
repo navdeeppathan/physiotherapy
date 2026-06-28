@@ -471,7 +471,7 @@
             </a>
             <div>
                 <h1>Doctor Profile</h1>
-                <p>Full details for {{ $doctor->name }}</p>
+                <p>Full details for  adsdgdfg {{ $doctor->name}}</p>
             </div>
         </div>
 

@@ -232,11 +232,11 @@ class DashboardController extends Controller
 
             $totalPaid = $appointments->count() * $doctorFees;
 
-            return response()->json([
-                'status'  => true,
-                'message' => 'Successfully paid ₹' . number_format($totalPaid, 2) .
-                            ' for ' . $appointments->count() . ' appointment(s).',
-            ]);
+            return redirect()->back()->with(
+                'success',
+                'Successfully paid ₹' . number_format($totalPaid, 2) .
+                ' for ' . $appointments->count() . ' appointment(s).'
+            );
     
             
     
@@ -247,11 +247,8 @@ class DashboardController extends Controller
             ], 422);
     
         } catch (\Exception $e) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Something went wrong.',
-                'error'   => $e->getMessage(),
-            ], 500);
+            DB::rollBack();
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 }

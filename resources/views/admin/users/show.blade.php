@@ -457,7 +457,7 @@
 </style>
 
 
-{{dd($doctor)}}
+
 
 <div class="doctor-wrap">
 

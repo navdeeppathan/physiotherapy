@@ -510,9 +510,7 @@
                     <div class="profile-name">{{ $doctor->name }}</div>
                     <div class="profile-spec">
                         {{ $doctor->profile->specialization ?? 'General Practitioner' }}
-                        @if($doctor->profile->experience_years !== null)
-                            · {{ $doctor->profile->experience_years ?? '0' }} yrs exp
-                        @endif
+                       
                     </div>
 
                     <div class="profile-badges">

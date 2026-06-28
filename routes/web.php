@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'showLogin'])->name('admin.login');
 
+Route::get('login', [AuthController::class, 'showLogin'])->name('login');
+
 //user apis
 
 

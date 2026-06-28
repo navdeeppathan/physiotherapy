@@ -1,614 +1,1459 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- ✅ BASIC SEO -->
-  <title>Physiotherapy</title>
-  <meta name="title" content="Physiotherapy">
-  <meta name="description" content="Physiotherapy is a results-driven marketing and branding agency helping businesses grow through strategy, creativity, and performance-focused digital marketing.">
-  <meta name="keywords" content="marketing agency india, branding agency delhi, digital marketing company, Physiotherapy">
-  <meta name="author" content="Physiotherapy">
-
-  <!-- ✅ OPEN GRAPH -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="http://physiotherapy.infoharry.in/">
-  <meta property="og:title" content="Physiotherapy - Marketing & Branding Agency">
-  <meta property="og:description" content="Results-driven marketing and branding agency helping businesses grow.">
-  <meta property="og:image" content="{{asset('logo.png')}}">
-  <meta property="og:site_name" content="Physiotherapy">
-
-  <!-- ✅ TWITTER -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Physiotherapy">
-  <meta name="twitter:description" content="Marketing and Branding Agency in India">
-  <meta name="twitter:image" content="{{asset('logo.png')}}">
-
-  <!-- ✅ CANONICAL -->
-  <link rel="canonical" href="http://physiotherapy.infoharry.in/">
-  <link rel="icon" href="{{asset('logo.png')}}" type="image/jpeg">
-  <link rel="apple-touch-icon" href="{{asset('logo.png')}}">
-
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-  <style>
-    :root{
-      --sidebar-width:          248px;
-      --sidebar-collapsed-width: 68px;
-
-      /* palette */
-      --bg:         #EEF4FB;
-      --white:      #FFFFFF;
-      --blue:       #2D7DD2;
-      --blue-l:     #E8F1FB;
-      --blue-d:     #1A5BA8;
-      --blue-mid:   #4A9AE8;
-      --border:     #D6E4F5;
-      --text:       #1A2B42;
-      --text2:      #4A6080;
-      --text3:      #8FA8C4;
-      --green:      #16A96A;
-      --green-bg:   #E8F8F2;
-      --rose:       #E55A6B;
-      --rose-bg:    #FDEEF0;
-      --ease:       cubic-bezier(0.16,1,0.3,1);
-    }
-
-    *{ margin:0;padding:0;box-sizing:border-box; }
-
-    body{
-      font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-      background:var(--bg);
-      color:var(--text);
-      overflow-x:hidden;
-      line-height:1.5;
-      -webkit-font-smoothing:antialiased;
-    }
-
-    /* ══════════════════════════════
-       SIDEBAR
-    ══════════════════════════════ */
-    .sidebar{
-      position:fixed;left:0;top:0;
-      height:100vh;
-      width:var(--sidebar-width);
-      background:var(--white);
-      border-right:1px solid var(--border);
-      transition:width 0.25s var(--ease);
-      z-index:1000;
-      overflow-y:auto;overflow-x:hidden;
-      display:flex;flex-direction:column;
-      box-shadow:2px 0 16px rgba(45,125,210,.06);
-    }
-
-    .sidebar::-webkit-scrollbar{ width:4px; }
-    .sidebar::-webkit-scrollbar-track{ background:transparent; }
-    .sidebar::-webkit-scrollbar-thumb{ background:var(--border);border-radius:2px; }
-
-    .sidebar.collapsed{ width:var(--sidebar-collapsed-width); }
-
-    /* header */
-    .sidebar-header{
-      padding:16px 14px;
-      display:flex;align-items:center;gap:10px;
-      border-bottom:1px solid var(--border);
-      flex-shrink:0;min-height:64px;
-      position:relative;
-    }
-
-    /* blue accent stripe */
-    .sidebar-header::after{
-      content:'';
-      position:absolute;bottom:0;left:0;right:0;height:2px;
-      background:linear-gradient(90deg,var(--blue-d),var(--blue-mid),transparent);
-      opacity:.4;
-    }
-
-    .sidebar-logo{
-      width:auto;height:36px;
-      object-fit:contain;
-      flex-shrink:0;
-      transition:opacity .25s;
-    }
-    .sidebar.collapsed .sidebar-logo{ opacity:0;width:0;overflow:hidden; }
-
-    .sidebar-logo-icon{
-      width:36px;height:36px;
-      background:linear-gradient(135deg,var(--blue-d),var(--blue));
-      border-radius:10px;
-      display:none;
-      align-items:center;justify-content:center;
-      flex-shrink:0;
-      box-shadow:0 4px 12px rgba(45,125,210,.25);
-    }
-    .sidebar-logo-icon svg{ width:20px;height:20px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round; }
-    .sidebar.collapsed .sidebar-logo-icon{ display:flex; }
-
-    .collapse-btn{
-      margin-left:auto;
-      background:transparent;border:none;
-      color:var(--text3);cursor:pointer;
-      padding:6px;
-      transition:.2s;
-      border-radius:7px;
-      flex-shrink:0;
-      display:flex;align-items:center;justify-content:center;
-    }
-    .collapse-btn:hover{ background:var(--blue-l);color:var(--blue); }
-    .collapse-btn svg{ width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
-    .sidebar.collapsed .collapse-btn{ transform:rotate(180deg); }
-
-    /* nav */
-    .sidebar-nav{
-      padding:12px 0;flex:1;
-    }
-
-    .nav-section-title{
-      padding:10px 16px 4px;
-      font-size:10px;font-weight:700;
-      text-transform:uppercase;letter-spacing:.6px;
-      color:var(--text3);
-    }
-    .sidebar.collapsed .nav-section-title{ opacity:0;height:0;padding:0;overflow:hidden; }
-
-    .nav-item{ margin:1px 8px; }
-
-    .nav-link{
-      display:flex;align-items:center;
-      padding:9px 10px;
-      color:var(--text2);
-      text-decoration:none;
-      border-radius:9px;
-      transition:all .15s ease;
-      cursor:pointer;
-      font-size:13.5px;font-weight:500;
-      gap:0;
-    }
-    .nav-link:hover{ background:var(--blue-l);color:var(--blue); }
-    .nav-link.active{
-      background:linear-gradient(135deg,var(--blue-d),var(--blue));
-      color:#fff;
-      box-shadow:0 4px 12px rgba(45,125,210,.25);
-    }
-    .nav-link.active .nav-icon svg{ stroke:#fff; }
-
-    .nav-icon{
-      width:20px;height:20px;
-      display:flex;align-items:center;justify-content:center;
-      margin-right:10px;flex-shrink:0;
-    }
-    .nav-icon svg{ width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round; }
-    .sidebar.collapsed .nav-icon{ margin-right:0; }
-
-    .nav-text{
-      white-space:nowrap;transition:opacity .2s;flex:1;
-      font-weight:600;
-    }
-    .sidebar.collapsed .nav-text{ opacity:0;width:0;overflow:hidden; }
-
-    /* dropdown arrow */
-    .dropdown-arrow{ margin-left:auto;transition:transform .2s ease; }
-    .dropdown-arrow svg{ width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round; }
-    .nav-item.open .dropdown-arrow{ transform:rotate(180deg); }
-    .sidebar.collapsed .dropdown-arrow{ display:none; }
-
-    /* dropdown */
-    .sidebar-dropdown{ display:none;padding-left:8px; }
-    .nav-item.open .sidebar-dropdown{ display:block; }
-    .sidebar.collapsed .sidebar-dropdown{ display:none; }
-
-    .dropdown-item{
-      display:flex;align-items:center;
-      padding:7px 10px 7px 32px;
-      color:var(--text3);
-      text-decoration:none;
-      border-radius:7px;
-      transition:all .15s ease;
-      margin:1px 0;
-      font-size:12.5px;font-weight:500;
-    }
-    .dropdown-item:hover{ background:var(--blue-l);color:var(--blue); }
-    .dropdown-item.active{ background:rgba(45,125,210,.08);color:var(--blue); }
-
-    /* footer */
-    .sidebar-footer{
-      padding:12px 10px;
-      border-top:1px solid var(--border);
-      flex-shrink:0;
-    }
-
-    .user-card{
-      display:flex;align-items:center;gap:10px;
-      padding:10px;border-radius:10px;
-      transition:background .15s;
-    }
-    .user-card:hover{ background:var(--blue-l); }
-
-    .user-avatar-sm{
-      width:32px;height:32px;border-radius:50%;
-      background:linear-gradient(135deg,var(--blue-d),var(--blue-mid));
-      display:flex;align-items:center;justify-content:center;
-      font-size:12px;font-weight:800;color:#fff;flex-shrink:0;
-    }
-
-    .sidebar.collapsed .user-details{ display:none; }
-
-    .logout-btn{
-      display:flex;align-items:center;justify-content:flex-start;
-      gap:8px;width:100%;
-      background:transparent;border:none;
-      padding:0;cursor:pointer;
-    }
-    .sidebar.collapsed .logout-text{ display:none; }
-    .sidebar.collapsed .logout-btn{ justify-content:center; }
-
-    .logout-inner{
-      display:flex;align-items:center;gap:8px;
-      padding:9px 10px;border-radius:9px;
-      transition:background .15s;
-      width:100%;
-      font-family:'Inter',sans-serif;
-      font-size:13px;font-weight:600;
-      color:var(--rose);
-    }
-    .logout-inner:hover{ background:var(--rose-bg); }
-    .logout-inner svg{ width:16px;height:16px;fill:none;stroke:var(--rose);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0; }
-
-    /* ══════════════════════════════
-       MAIN WRAPPER
-    ══════════════════════════════ */
-    .main-wrapper{
-      margin-left:var(--sidebar-width);
-      transition:margin-left .25s var(--ease);
-      min-height:100vh;
-      background:var(--bg);
-    }
-    .sidebar.collapsed ~ .main-wrapper{ margin-left:var(--sidebar-collapsed-width); }
-
-    /* ══════════════════════════════
-       TOPBAR
-    ══════════════════════════════ */
-    .topbar{
-      background:var(--white);
-      border-bottom:1px solid var(--border);
-      padding:0 24px;
-      height:60px;
-      display:flex;align-items:center;justify-content:flex-end;
-      position:sticky;top:0;z-index:100;
-      box-shadow:0 1px 8px rgba(45,125,210,.05);
-    }
-
-    .topbar-actions{ display:flex;align-items:center;gap:8px; }
-
-    /* user pill */
-    .user-pill{
-      display:flex;align-items:center;gap:8px;
-      padding:5px 12px 5px 5px;
-      background:var(--bg);
-      border:1px solid var(--border);
-      border-radius:24px;
-      cursor:pointer;
-      transition:border-color .2s,box-shadow .2s;
-    }
-    .user-pill:hover{
-      border-color:var(--blue);
-      box-shadow:0 0 0 3px rgba(45,125,210,.08);
-    }
-    .user-pill-avatar{
-      width:28px;height:28px;border-radius:50%;
-      background:linear-gradient(135deg,var(--blue-d),var(--blue-mid));
-      display:flex;align-items:center;justify-content:center;
-      font-size:11px;font-weight:800;color:#fff;
-    }
-    .user-pill-name{
-      font-size:13px;font-weight:600;color:var(--text);
-    }
-    .user-pill-badge{
-      font-size:10px;font-weight:700;
-      padding:2px 7px;border-radius:20px;
-      background:var(--green-bg);color:var(--green);
-      border:1px solid rgba(22,169,106,.2);
-    }
-
-    /* content */
-    .content{ padding:0; }
-
-    /* ══════════════════════════════
-       MOBILE
-    ══════════════════════════════ */
-    .mobile-menu-btn{
-      display:none;
-      background:linear-gradient(135deg,var(--blue-d),var(--blue));
-      border:none;color:#fff;
-      width:48px;height:48px;border-radius:14px;
-      cursor:pointer;
-      position:fixed;bottom:24px;right:24px;z-index:1001;
-      box-shadow:0 6px 20px rgba(45,125,210,.35);
-      align-items:center;justify-content:center;
-    }
-    .mobile-menu-btn svg{ width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
-
-    .overlay{
-      display:none;
-      position:fixed;inset:0;
-      background:rgba(26,43,66,.4);
-      backdrop-filter:blur(4px);
-      z-index:999;opacity:0;
-      transition:opacity .3s;
-    }
-    .overlay.active{ opacity:1; }
-
-    @media(max-width:1024px){
-      .sidebar{ transform:translateX(-100%);box-shadow:none; }
-      .sidebar.mobile-open{ transform:translateX(0);box-shadow:4px 0 24px rgba(45,125,210,.15); }
-      .main-wrapper{ margin-left:0 !important; }
-      .mobile-menu-btn{ display:flex; }
-      .overlay{ display:block; }
-    }
-
-    @media(max-width:640px){
-      .topbar{ padding:0 14px; }
-      .user-pill-name,.user-pill-badge{ display:none; }
-    }
-  </style>
-</head>
-<body>
-
-  <button class="mobile-menu-btn" onclick="toggleMobile()">
-    <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-  </button>
-  <div class="overlay" onclick="toggleMobile()"></div>
-
-  {{-- ══════════════ SIDEBAR ══════════════ --}}
-  <aside class="sidebar" id="sidebar">
-
-    <div class="sidebar-header">
-      {{-- Logo: full when expanded --}}
-      <img src="{{asset('logo.png')}}" class="sidebar-logo" alt="Physiotherapy">
-
-      {{-- Icon fallback when collapsed --}}
-      <div class="sidebar-logo-icon">
-        <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 1 0 0 14A7 7 0 0 0 12 2z"/><path d="M12 8v4l3 2"/></svg>
-      </div>
-
-      <button class="collapse-btn" onclick="toggleSidebar()" title="Toggle Sidebar">
-        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-    </div>
-
-    <nav class="sidebar-nav">
-
-      {{-- Dashboard --}}
-      <div class="nav-item">
-        <a href="{{ route('admin.dashboard') }}"
-           class="nav-link {{ Request::is('admin/dashboard*') ? 'active' : '' }}">
-          <span class="nav-icon">
-            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-          </span>
-          <span class="nav-text">Dashboard</span>
-        </a>
-      </div>
-
-      {{-- Users --}}
-      <div class="nav-item">
-        <a href="{{ route('admin.users.index') }}"
-           class="nav-link {{ Request::is('admin/users*') ? 'active' : '' }}">
-          <span class="nav-icon">
-            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </span>
-          <span class="nav-text">Users</span>
-        </a>
-      </div>
-
-      {{-- Appointments --}}
-      <div class="nav-item">
-        <a href="{{ route('admin.appointments.index') }}"
-           class="nav-link {{ Request::is('admin/appointments*') ? 'active' : '' }}">
-          <span class="nav-icon">
-            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          </span>
-          <span class="nav-text">Appointments</span>
-        </a>
-      </div>
-
-      {{-- Transfer Requests --}}
-      <div class="nav-item">
-        <a href="{{ route('admin.appointment-transfer-requests.index') }}"
-           class="nav-link {{ Request::is('admin/appointment-transfer-requests*') ? 'active' : '' }}">
-          <span class="nav-icon">
-            <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-          </span>
-          <span class="nav-text">Transfer Requests</span>
-        </a>
-      </div>
-
-      {{-- Specializations --}}
-      <div class="nav-item">
-        <a href="{{ route('admin.specializations.index') }}"
-           class="nav-link {{ Request::is('admin/specializations*') ? 'active' : '' }}">
-          <span class="nav-icon">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
-          </span>
-          <span class="nav-text">Specializations</span>
-        </a>
-      </div>
-
-      {{-- Patient Plans --}}
-      <div class="nav-item">
-        <a href="{{ route('admin.patient-plans.index') }}"
-           class="nav-link {{ Request::is('admin/patient-plans*') ? 'active' : '' }}">
-          <span class="nav-icon">
-            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          </span>
-          <span class="nav-text">Patient Plans</span>
-        </a>
-      </div>
-
-      {{-- Patient Subscriptions --}}
-      <div class="nav-item">
-        <a href="{{ route('admin.patient-plan-subscriptions.index') }}"
-           class="nav-link {{ Request::is('admin/patient-plan-subscriptions*') ? 'active' : '' }}">
-          <span class="nav-icon">
-            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </span>
-          <span class="nav-text">Patient Subscriptions</span>
-        </a>
-      </div>
-
-    </nav>
-
-    {{-- Logout footer --}}
-    <div class="sidebar-footer">
-      <form method="POST" action="{{ route('admin.logout') }}">
-        @csrf
-        <button type="submit" class="logout-btn">
-          <div class="logout-inner">
-            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            <span class="logout-text">Logout</span>
-          </div>
-        </button>
-      </form>
-    </div>
-
-  </aside>
-
-  {{-- ══════════════ MAIN ══════════════ --}}
-  <div class="main-wrapper">
-
-    <header class="topbar">
-      <div class="topbar-actions">
-        <div class="user-pill">
-          <div class="user-pill-avatar">{{ Auth::user()->name[0] }}</div>
-          <span class="user-pill-name">{{ Auth::user()->name }}</span>
-          <span class="user-pill-badge">Active</span>
-        </div>
-      </div>
-    </header>
-
-    <main class="content">
-      @yield('content')
-    </main>
-
-  </div>
-
-  <script>
-    function toggleSidebar() {
-      const sb = document.getElementById('sidebar');
-      sb.classList.toggle('collapsed');
-      if (sb.classList.contains('collapsed')) {
-        document.querySelectorAll('.nav-item.open').forEach(i => i.classList.remove('open'));
-      }
-    }
-
-    function toggleDropdown(element) {
-      const sb = document.getElementById('sidebar');
-      if (sb.classList.contains('collapsed')) return;
-      element.closest('.nav-item').classList.toggle('open');
-    }
-
-    function toggleMobile() {
-      const sb      = document.getElementById('sidebar');
-      const overlay = document.querySelector('.overlay');
-      sb.classList.toggle('mobile-open');
-      overlay.classList.toggle('active');
-    }
-
-    // Close mobile menu on nav link click (on mobile)
-    document.querySelectorAll('.nav-link, .dropdown-item').forEach(link => {
-      link.addEventListener('click', function() {
-        if (window.innerWidth <= 1024) toggleMobile();
-      });
-    });
-
-    // Chart init (kept from original for dashboard use)
-    let chart;
-    let isDarkMode = false; // light theme now
-
-    function initChart() {
-      const canvas = document.getElementById('performanceChart');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-
-      const g1 = ctx.createLinearGradient(0, 0, 0, 280);
-      g1.addColorStop(0, 'rgba(45,125,210,0.20)');
-      g1.addColorStop(1, 'rgba(45,125,210,0)');
-
-      const g2 = ctx.createLinearGradient(0, 0, 0, 280);
-      g2.addColorStop(0, 'rgba(22,169,106,0.20)');
-      g2.addColorStop(1, 'rgba(22,169,106,0)');
-
-      const g3 = ctx.createLinearGradient(0, 0, 0, 280);
-      g3.addColorStop(0, 'rgba(208,128,32,0.20)');
-      g3.addColorStop(1, 'rgba(208,128,32,0)');
-
-      chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-          datasets: [{
-            label: 'Sent',
-            data: [2800,2600,5500,3200,4800,3800,3500,4200,5800,8500,5200,7500],
-            borderColor: '#2D7DD2',
-            backgroundColor: g1,
-            tension: 0.4,fill:true,borderWidth:2,
-            pointRadius:0,pointHoverRadius:5,
-            pointBackgroundColor:'#2D7DD2',
-          },{
-            label: 'Opened',
-            data: [2200,2800,9500,3600,4200,3200,3000,3600,4500,9800,6500,5800],
-            borderColor: '#16A96A',
-            backgroundColor: g2,
-            tension: 0.4,fill:true,borderWidth:2,
-            pointRadius:0,pointHoverRadius:5,
-            pointBackgroundColor:'#16A96A',
-          },{
-            label: 'Clicked',
-            data: [800,900,1800,1200,1600,1300,1100,1500,1700,2100,1900,2200],
-            borderColor: '#D08020',
-            backgroundColor: g3,
-            tension: 0.4,fill:true,borderWidth:2,
-            pointRadius:0,pointHoverRadius:5,
-            pointBackgroundColor:'#D08020',
-          }]
-        },
-        options: {
-          responsive:true,maintainAspectRatio:false,
-          interaction:{ mode:'index',intersect:false },
-          plugins:{
-            legend:{ display:false },
-            tooltip:{
-              backgroundColor:'#ffffff',
-              titleColor:'#1A2B42',bodyColor:'#4A6080',
-              borderColor:'#D6E4F5',borderWidth:1,
-              padding:12,cornerRadius:8,
-              boxWidth:8,boxHeight:8,boxPadding:4
-            }
-          },
-          scales:{
-            y:{
-              beginAtZero:true,
-              grid:{ color:'rgba(214,228,245,0.7)',drawBorder:false },
-              ticks:{ color:'#8FA8C4',font:{size:11},padding:8 },
-              border:{ display:false }
-            },
-            x:{
-              grid:{ display:false },
-              ticks:{ color:'#8FA8C4',font:{size:11},padding:8 },
-              border:{ display:false }
-            }
-          }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <!-- ✅ BASIC SEO -->
+<title>Physiotherapy</title>
+
+<meta name="title" content="Physiotherapy">
+<meta name="description" content="Physiotherapy is a results-driven marketing and branding agency helping businesses grow through strategy, creativity, and performance-focused digital marketing.">
+<meta name="keywords" content="marketing agency india, branding agency delhi, digital marketing company, Physiotherapy">
+<meta name="author" content="Physiotherapy">
+
+<!-- ✅ MOBILE -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ✅ OPEN GRAPH (Facebook / LinkedIn / WhatsApp) -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="http://physiotherapy.infoharry.in/">
+<meta property="og:title" content="Physiotherapy - Marketing & Branding Agency">
+<meta property="og:description" content="Results-driven marketing and branding agency helping businesses grow.">
+<meta property="og:image" content="{{asset('logo.png')}}">
+<meta property="og:site_name" content="Physiotherapy">
+
+<!-- ✅ TWITTER -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Physiotherapy">
+<meta name="twitter:description" content="Marketing and Branding Agency in India">
+<meta name="twitter:image" content="{{asset('logo.png')}}">
+
+<!-- ✅ CANONICAL -->
+<link rel="canonical" href="http://physiotherapy.infoharry.in/">
+
+  <!-- Favicons -->
+  {{-- <link href="assets/img/favicon.png" rel="icon"> --}}
+  {{-- <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon"> --}}
+
+  <!-- Favicon -->
+<link rel="icon" href="{{asset('logo.png')}}" type="image/jpeg">
+<link rel="apple-touch-icon" href="{{asset('logo.png')}}">
+
+<!-- Open Graph (WhatsApp, Facebook, LinkedIn) -->
+<meta property="og:title" content="Physiotherapy">
+<meta property="og:description" content="Branding Agency & Digital Solutions">
+<meta property="og:image" content="{{asset('logo.png')}}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="http://physiotherapy.infoharry.in/">
+<meta property="og:type" content="website">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Physiotherapy">
+<meta name="twitter:description" content="Travel, Branding & Digital Solutions">
+<meta name="twitter:image" content="{{asset('logo.png')}}">
+
+
+<meta name="description" content="Physiotherapy is a marketing and branding company helping businesses grow.">
+
+<meta property="og:site_name" content="Physiotherapy">
+<meta property="og:title" content="Physiotherapy">
+<meta property="og:description" content="Marketing and Branding Services">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap JS Bundle (with Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-      });
-    }
 
-    document.addEventListener('DOMContentLoaded', initChart);
-  </script>
+        :root {
+            --sidebar-width: 240px;
+            --sidebar-collapsed-width: 70px;
+            --primary-color: #2260FF;
+            --primary-hover: #2563eb;
+            --bg-dark: #111827;
+            --bg-darker: #0d1117;
+            --bg-card: #1f2937;
+            --bg-card-hover: #374151;
+            --text-light: #f9fafb;
+            --text-muted: #9ca3af;
+            --text-secondary: #6b7280;
+            --border-color: #374151;
+            --hover-bg: #374151;
+            --success: #10b981;
+            --success-bg: rgba(16, 185, 129, 0.15);
+            --danger: #ef4444;
+            --danger-bg: rgba(239, 68, 68, 0.15);
+            --warning: #f59e0b;
+            --warning-bg: rgba(245, 158, 11, 0.15);
+            --purple: #8b5cf6;
+            --purple-bg: rgba(139, 92, 246, 0.15);
+            --cyan: #06b6d4;
+            --cyan-bg: rgba(6, 182, 212, 0.15);
+            --orange: #f97316;
+            --orange-bg: rgba(249, 115, 22, 0.15);
+        }
+
+        /* Light mode variables */
+        .mode-light {
+            --bg-dark: #ffffff;
+            --bg-darker: #f3f4f6;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f9fafb;
+            --text-light: #111827;
+            --text-muted: #6b7280;
+            --text-secondary: #9ca3af;
+            --border-color: #e5e7eb;
+            --hover-bg: #f3f4f6;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-darker);
+            color: var(--text-light);
+            overflow-x: hidden;
+            line-height: 1.5;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: var(--bg-dark);
+            border-right: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 2px;
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        .sidebar-header {
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .logo {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .logo svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+
+        .brand-name {
+            font-size: 1.125rem;
+            font-weight: 700;
+            white-space: nowrap;
+            transition: opacity 0.3s;
+            color: var(--text-light);
+        }
+
+        .sidebar.collapsed .brand-name {
+            opacity: 0;
+            width: 0;
+        }
+
+        .collapse-btn {
+            margin-left: auto;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: 0.3s;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+        }
+
+        .collapse-btn:hover {
+            background: var(--hover-bg);
+            color: var(--text-light);
+        }
+
+        .sidebar.collapsed .collapse-btn {
+            transform: rotate(180deg);
+        }
+
+        /* Navigation */
+        .sidebar-nav {
+            padding: 0.75rem 0;
+            flex: 1;
+        }
+
+        .nav-section {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-section-title {
+            padding: 0.75rem 1rem 0.5rem;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        .sidebar.collapsed .nav-section-title {
+            opacity: 0;
+            height: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .nav-item {
+            margin: 0.125rem 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.625rem 0.75rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.15s ease;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: var(--hover-bg);
+            color: var(--text-light);
+        }
+
+        .nav-link.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .nav-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .sidebar.collapsed .nav-icon {
+            margin-right: 0;
+        }
+
+        .nav-text {
+            white-space: nowrap;
+            transition: opacity 0.3s;
+            flex: 1;
+        }
+
+        .sidebar.collapsed .nav-text {
+            opacity: 0;
+            width: 0;
+        }
+
+        /* Dropdown Arrow */
+        .dropdown-arrow {
+            margin-left: auto;
+            transition: transform 0.2s ease;
+            font-size: 0.625rem;
+        }
+
+        .dropdown-arrow svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .nav-item.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .sidebar.collapsed .dropdown-arrow {
+            opacity: 0;
+        }
+
+        /* Dropdown Menu */
+        .sidebar-dropdown {
+            display: none;
+            padding-left: 10px;
+        }
+
+        .nav-item.open .sidebar-dropdown {
+            display: block;
+        }
+
+        .sidebar.collapsed .dropdown-menu {
+            display: none;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0.75rem 0.5rem 2.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.15s ease;
+            margin: 0.125rem 0;
+            font-size: 0.8125rem;
+        }
+
+        .dropdown-item:hover {
+            background: var(--hover-bg);
+            color: var(--text-light);
+        }
+
+        .dropdown-item.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--primary-color);
+        }
+
+        /* User Profile at Bottom */
+        .sidebar-footer {
+            padding: 0.75rem;
+            border-top: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .user-info:hover {
+            background: var(--hover-bg);
+        }
+
+        .user-avatar-small {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0b9bf5, #2260FF);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+            color: white;
+        }
+
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--text-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar.collapsed .user-details {
+            display: none;
+        }
+
+        /* Main Content */
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.3s ease;
+            min-height: 100vh;
+            background: var(--bg-darker);
+        }
+
+        .sidebar.collapsed ~ .main-wrapper {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+
+        /* Top Bar */
+        .topbar {
+            background: var(--bg-dark);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: end;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.625rem 1rem 0.625rem 2.5rem;
+            background: var(--bg-darker);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-light);
+            font-size: 0.875rem;
+            font-family: inherit;
+            transition: border-color 0.15s;
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            width: 16px;
+            height: 16px;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.15s;
+        }
+
+        .icon-btn:hover {
+            background: var(--hover-bg);
+            color: var(--text-light);
+        }
+
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .icon-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 8px;
+            height: 8px;
+            background: var(--danger);
+            border-radius: 50%;
+            border: 2px solid var(--bg-dark);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.375rem 0.75rem 0.375rem 0.375rem;
+            background: var(--bg-card);
+            border-radius: 24px;
+            cursor: pointer;
+            margin-left: 0.5rem;
+            transition: background 0.15s;
+        }
+
+        .user-profile:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0b9bf5, #2260FF);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.6875rem;
+            color: white;
+        }
+
+        .user-profile-text {
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .status-badge {
+            font-size: 0.625rem;
+            padding: 0.125rem 0.375rem;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border-radius: 4px;
+            font-weight: 600;
+            margin-left: 0.25rem;
+        }
+
+        /* Content */
+        .content {
+            padding: 1.5rem;
+        }
+
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--text-light);
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        /* Action Cards */
+        .action-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .action-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .action-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .action-icon svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .action-card:nth-child(1) .action-icon {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+        }
+
+        .action-card:nth-child(2) .action-icon {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+
+        .action-card:nth-child(3) .action-icon {
+            background: rgba(139, 92, 246, 0.15);
+            color: #8b5cf6;
+        }
+
+        .action-card:nth-child(4) .action-icon {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+
+        .action-card h3 {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--text-light);
+        }
+
+        .action-card p {
+            color: var(--text-muted);
+            font-size: 0.8125rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            /* background: var(--bg-card); */
+            background:  #2260FF;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+            
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 8px 24px #2260FF;
+            cursor: pointer;
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .stat-card:nth-child(1) .stat-icon {
+            background: rgba(139, 92, 246, 0.15);
+            color: #8b5cf6;
+        }
+
+        .stat-card:nth-child(2) .stat-icon {
+            background: rgba(6, 182, 212, 0.15);
+            color: #06b6d4;
+        }
+
+        .stat-card:nth-child(3) .stat-icon {
+            background: rgba(249, 115, 22, 0.15);
+            color: #f97316;
+        }
+
+        .stat-card:nth-child(4) .stat-icon {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+
+        .stat-card:nth-child(5) .stat-icon {
+            background: rgba(236, 72, 153, 0.15);
+            color: #ec4899;
+        }
+
+        .stat-card:nth-child(6) .stat-icon {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+
+        .stat-change {
+            font-size: 0.6875rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.125rem;
+        }
+
+        .stat-change.positive {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: #ffffff;
+        }
+
+        .stat-label {
+            color: #ffffff;
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+
+        .stat-meta {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Chart Card */
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .chart-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+        }
+
+        .chart-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .chart-title-text h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.125rem;
+            color: var(--text-light);
+        }
+
+        .chart-title-text p {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.8125rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 280px;
+        }
+
+        /* Mobile */
+        .mobile-menu-btn {
+            display: none;
+            background: var(--primary-color);
+            border: none;
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            cursor: pointer;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 1001;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+            font-size: 1.25rem;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .overlay.active {
+            opacity: 1;
+        }
+
+        @media (max-width: 1400px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .main-wrapper {
+                margin-left: 0;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .overlay {
+                display: block;
+            }
+
+            .action-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .content {
+                padding: 1rem;
+            }
+
+            .action-cards,
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                padding: 0.75rem 1rem;
+            }
+
+            .search-box {
+                max-width: 200px;
+            }
+
+            .user-profile-text,
+            .status-badge {
+                display: none;
+            }
+        }
+
+        .sidebar-logo{
+            width:100%;
+            height:40px;
+            object-fit:contain;
+            transition:0.3s;
+        }
+
+        /* hide when collapsed */
+        .sidebar.collapsed .sidebar-logo{
+            display:none;
+        }
+
+        .logout-btn{
+            display:flex;
+            align-items:center;
+            gap:8px;
+            width:100%;
+            justify-content:flex-start;
+        }
+
+        /* collapsed → hide text */
+        .sidebar.collapsed .logout-text{
+            display:none;
+        }
+
+        /* collapsed → center icon */
+        .sidebar.collapsed .logout-btn{
+            justify-content:center;
+        }
+    </style>
+</head>
+<body class="mode-dark">
+    <button class="mobile-menu-btn" onclick="toggleMobile()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+    </button>
+    <div class="overlay" onclick="toggleMobile()"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            {{-- <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+            </div> --}}
+            {{-- <span class="brand-name">Physiotherapy</span> --}}
+            <img src="{{asset('logo.png')}}" class="sidebar-logo" alt="">
+            <button class="collapse-btn" onclick="toggleSidebar()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+            </button>
+            
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-item">
+                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ Request::is('admin/dashboard*') ? 'active' : '' }}" >
+                    <span class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h7v7H4V6zm9 0h7v7h-7V6zM4 15h7v3H4v-3zm9 0h7v3h-7v-3z"/>
+                        </svg>
+                    </span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+            </div>
+
+            {{-- @php
+            $homeActive =
+                Request::is('admin/banners*')||
+                Request::is('admin/about-us*') ||
+                Request::is('admin/about-statistics*') ||
+                Request::is('admin/courses*') ||
+                Request::is('admin/top-rankers*')||
+                Request::is('admin/testimonials*') ||
+                Request::is('admin/student-feedback-videos*');
+
+            @endphp --}}
+
+            {{-- <div class="nav-item {{ $homeActive ? 'open' : '' }}">
+                <a href="javascript:void(0)"
+                class="nav-link {{ $homeActive ? 'active' : '' }}"
+                onclick="toggleDropdown(this)">
+
+                    <span class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 9.75L12 4l9 5.75V19a2 2 0 01-2 2h-5a2 2 0 01-2-2v-4H10v4a2 2 0 01-2 2H3a2 2 0 01-2-2V9.75z"/>
+                        </svg>
+                    </span>
+
+                    <span class="nav-text">Home Page</span>
+
+                    <span class="dropdown-arrow {{ $homeActive ? 'rotate' : '' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </span>
+                </a>
+
+                <div class="sidebar-dropdown">
+                    <a href="{{ route('admin.banners.index') }}"
+                    class="dropdown-item {{ Request::is('admin/banners*') ? 'active' : '' }}">
+                    Banners
+                    </a>
+
+                    <a href="{{ route('admin.about.index') }}"
+                    class="dropdown-item {{ Request::is('admin/about-us*') ? 'active' : '' }}">
+                    Aboutus
+                    </a>
+
+                    <a href="{{ route('admin.courses.index') }}"
+                    class="dropdown-item {{ Request::is('admin/courses*') ? 'active' : '' }}">
+                    Courses
+                    </a>
+
+                    <a href="{{ route('admin.top.rankers.index') }}"
+                    class="dropdown-item {{ Request::is('admin/top-rankers*') ? 'active' : '' }}">
+                    Top Rankers
+                    </a>
+
+                    <a href="{{ route('admin.testimonials.index') }}"
+                    class="dropdown-item {{ Request::is('admin/testimonials*') ? 'active' : '' }}">
+                    Testimonials
+                    </a>
+
+                    <a href="{{ route('admin.feedback.videos.index') }}"
+                    class="dropdown-item {{ Request::is('admin/student-feedback-videos*') ? 'active' : '' }}">
+                    Feedback Videos
+                    </a>
+                </div>
+            </div> --}}
+
+            <div class="nav-item">
+                <a href="{{ route('admin.users.index') }}" class="nav-link {{ Request::is('admin/users*') ? 'active' : '' }}" >
+                    <span class="nav-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6M7 4h7l5 5v11a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z"/>
+                    </svg>
+                    </span>
+                    <span class="nav-text">Users</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="{{ route('admin.appointments.index') }}" class="nav-link {{ Request::is('admin/appointments*') ? 'active' : '' }}" >
+                    <span class="nav-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6M7 4h7l5 5v11a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z"/>
+                    </svg>
+                    </span>
+                    <span class="nav-text">Appointments</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{{ route('admin.appointment-transfer-requests.index') }}" class="nav-link {{ Request::is('admin/appointment-transfer-requests*') ? 'active' : '' }}" >
+                    <span class="nav-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6M7 4h7l5 5v11a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z"/>
+                    </svg>
+                    </span>
+                    <span class="nav-text">Transfer Requests</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="{{ route('admin.specializations.index') }}" class="nav-link {{ Request::is('admin/specializations*') ? 'active' : '' }}" >
+                    <span class="nav-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6M7 4h7l5 5v11a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z"/>
+                    </svg>
+                    </span>
+                    <span class="nav-text">Specializations</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="{{ route('admin.patient-plans.index') }}" class="nav-link {{ Request::is('admin/patient-plans*') ? 'active' : '' }}" >
+                    <span class="nav-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6M7 4h7l5 5v11a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z"/>
+                    </svg>
+                    </span>
+                    <span class="nav-text">Patient Plans</span>
+                </a>
+            </div>
+
+
+            <div class="nav-item">
+                <a href="{{ route('admin.patient-plan-subscriptions.index') }}" class="nav-link {{ Request::is('admin/patient-plan-subscriptions*') ? 'active' : '' }}" >
+                    <span class="nav-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6M7 4h7l5 5v11a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z"/>
+                    </svg>
+                    </span>
+                    <span class="nav-text">Patient Subscriptions</span>
+                </a>
+            </div>
+
+            
+             
+
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <form method="POST" action="{{ route('admin.logout') }}" class="logout-form">
+                    @csrf
+                    <button type="submit" class="btn btn-primary logout-btn">
+                        <i class="fa fa-sign-out-alt"></i>
+                        <span class="logout-text">Logout</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            
+            <div class="topbar-actions">
+                <button class="icon-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+                    <svg id="darkIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                    <svg id="lightIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: none;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                </button>
+                {{-- <button class="icon-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                    <span class="notification-badge"></span>
+                </button> --}}
+                <div class="user-profile">
+                    <div class="user-avatar">{{ Auth::user()->name[0] }}</div>
+                    <span class="user-profile-text">{{ Auth::user()->name }}</span>
+                    <span class="status-badge">Active</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="content">
+           @yield('content')
+        </main>
+    </div>
+
+    <script>
+        // Theme Toggle
+        let isDarkMode = true;
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            const body = document.body;
+            const darkIcon = document.getElementById('darkIcon');
+            const lightIcon = document.getElementById('lightIcon');
+
+            if (isDarkMode) {
+                body.classList.remove('mode-light');
+                body.classList.add('mode-dark');
+                darkIcon.style.display = 'block';
+                lightIcon.style.display = 'none';
+            } else {
+                body.classList.remove('mode-dark');
+                body.classList.add('mode-light');
+                darkIcon.style.display = 'none';
+                lightIcon.style.display = 'block';
+            }
+
+            // Update chart colors
+            updateChartColors();
+            
+            // Save preference
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        }
+
+        // Load saved theme preference
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                toggleTheme();
+            }
+        });
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+            
+            // Close all dropdowns when sidebar is collapsed
+            if (document.getElementById('sidebar').classList.contains('collapsed')) {
+                document.querySelectorAll('.nav-item.open').forEach(item => {
+                    item.classList.remove('open');
+                });
+            }
+        }
+
+        function toggleDropdown(element) {
+            const sidebar = document.getElementById('sidebar');
+            
+            // Don't open dropdown if sidebar is collapsed
+            if (sidebar.classList.contains('collapsed')) {
+                return;
+            }
+            
+            const navItem = element.closest('.nav-item');
+            const wasOpen = navItem.classList.contains('open');
+            
+            // Toggle current dropdown
+            navItem.classList.toggle('open');
+        }
+
+        function toggleMobile() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.overlay');
+            
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+        }
+
+        // Handle nav link clicks for routing
+        document.querySelectorAll('.nav-link:not([onclick]), .dropdown-item').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const route = this.getAttribute('data-route');
+                
+                // Remove active class from all links
+                document.querySelectorAll('.nav-link, .dropdown-item').forEach(l => l.classList.remove('active'));
+                
+                // Add active class to clicked link
+                this.classList.add('active');
+                
+                // If it's a dropdown item, also highlight parent
+                if (this.classList.contains('dropdown-item')) {
+                    const parentNavItem = this.closest('.nav-item');
+                    if (parentNavItem) {
+                        parentNavItem.querySelector('.nav-link').classList.add('active');
+                    }
+                }
+                
+                
+                
+                // Close mobile menu if open
+                if (window.innerWidth <= 1024) {
+                    toggleMobile();
+                }
+            });
+        });
+
+        // Close mobile menu when clicking dropdown items
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            item.addEventListener('click', function() {
+                if (window.innerWidth <= 1024) {
+                    toggleMobile();
+                }
+            });
+        });
+
+        // Chart
+        let chart;
+        
+        function initChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            const gradient1 = ctx.createLinearGradient(0, 0, 0, 280);
+            gradient1.addColorStop(0, 'rgba(59, 130, 246, 0.3)');
+            gradient1.addColorStop(1, 'rgba(59, 130, 246, 0)');
+            
+            const gradient2 = ctx.createLinearGradient(0, 0, 0, 280);
+            gradient2.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
+            gradient2.addColorStop(1, 'rgba(16, 185, 129, 0)');
+            
+            const gradient3 = ctx.createLinearGradient(0, 0, 0, 280);
+            gradient3.addColorStop(0, 'rgba(245, 158, 11, 0.3)');
+            gradient3.addColorStop(1, 'rgba(245, 158, 11, 0)');
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Sent',
+                        data: [2800, 2600, 5500, 3200, 4800, 3800, 3500, 4200, 5800, 8500, 5200, 7500],
+                        borderColor: '#3b82f6',
+                        backgroundColor: gradient1,
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#3b82f6',
+                        pointHoverBackgroundColor: '#3b82f6',
+                        pointBorderWidth: 2
+                    }, {
+                        label: 'Opened',
+                        data: [2200, 2800, 9500, 3600, 4200, 3200, 3000, 3600, 4500, 9800, 6500, 5800],
+                        borderColor: '#10b981',
+                        backgroundColor: gradient2,
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#10b981',
+                        pointHoverBackgroundColor: '#10b981',
+                        pointBorderWidth: 2
+                    }, {
+                        label: 'Clicked',
+                        data: [800, 900, 1800, 1200, 1600, 1300, 1100, 1500, 1700, 2100, 1900, 2200],
+                        borderColor: '#f59e0b',
+                        backgroundColor: gradient3,
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#f59e0b',
+                        pointHoverBackgroundColor: '#f59e0b',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: isDarkMode ? '#1f2937' : '#ffffff',
+                            titleColor: isDarkMode ? '#f9fafb' : '#111827',
+                            bodyColor: isDarkMode ? '#9ca3af' : '#6b7280',
+                            borderColor: isDarkMode ? '#374151' : '#e5e7eb',
+                            borderWidth: 1,
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            boxWidth: 8,
+                            boxHeight: 8,
+                            boxPadding: 4
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: isDarkMode ? 'rgba(55, 65, 81, 0.5)' : 'rgba(229, 231, 235, 0.8)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: isDarkMode ? '#6b7280' : '#9ca3af',
+                                font: {
+                                    size: 11
+                                },
+                                padding: 8
+                            },
+                            border: {
+                                display: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: isDarkMode ? '#6b7280' : '#9ca3af',
+                                font: {
+                                    size: 11
+                                },
+                                padding: 8
+                            },
+                            border: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChartColors() {
+            if (chart) {
+                chart.options.plugins.tooltip.backgroundColor = isDarkMode ? '#1f2937' : '#ffffff';
+                chart.options.plugins.tooltip.titleColor = isDarkMode ? '#f9fafb' : '#111827';
+                chart.options.plugins.tooltip.bodyColor = isDarkMode ? '#9ca3af' : '#6b7280';
+                chart.options.plugins.tooltip.borderColor = isDarkMode ? '#374151' : '#e5e7eb';
+                chart.options.scales.y.grid.color = isDarkMode ? 'rgba(55, 65, 81, 0.5)' : 'rgba(229, 231, 235, 0.8)';
+                chart.options.scales.y.ticks.color = isDarkMode ? '#6b7280' : '#9ca3af';
+                chart.options.scales.x.ticks.color = isDarkMode ? '#6b7280' : '#9ca3af';
+                chart.update();
+            }
+        }
+
+        // Initialize chart on page load
+        initChart();
+    </script>
 </body>
 </html>

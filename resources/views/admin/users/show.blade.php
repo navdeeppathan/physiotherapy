@@ -457,7 +457,7 @@
 </style>
 
 
-{{dd($doctor)}}
+
 
 <div class="doctor-wrap">
 
@@ -512,7 +512,7 @@
 
                     <div class="profile-name">{{ $doctor->name }}</div>
                     <div class="profile-spec">
-                        {{ $doctor->profile->specialization->name ?? 'General Practitioner' }}
+                        {{ optional($doctor->profile?->specialization)->name ?? 'General Practitioner' }}
                        
                     </div>
 
@@ -666,7 +666,7 @@
 
                         <div class="kv-item">
                             <div class="kv-label">Specialization</div>
-                            <div class="kv-value">{{ $doctor->profile->specialization->name ?? '—' }}</div>
+                            <div class="kv-value">{{ optional($doctor->profile?->specialization)->name ?? 'General Practitioner' }}</div>
                         </div>
 
                         <div class="kv-item">

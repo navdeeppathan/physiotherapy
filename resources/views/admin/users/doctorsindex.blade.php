@@ -780,7 +780,7 @@
                         >
                     </div>
 
-                    {{-- <div class="fee-field-wrap">
+                    <div class="fee-field-wrap">
                         <label class="fee-field-label" for="admin_fee">Admin Fee (₹)</label>
                         <span class="fee-field-icon">₹</span>
                         <input
@@ -792,12 +792,12 @@
                             min="0"
                             step="1"
                         >
-                    </div> --}}
+                    </div>
 
-                    {{-- <div class="fee-total-preview">
+                    <div class="fee-total-preview">
                         <span class="fee-total-label">Total fee</span>
                         <span class="fee-total-value" id="feeTotalPreview">₹0</span>
-                    </div> --}}
+                    </div>
 
                 </form>
             </div>

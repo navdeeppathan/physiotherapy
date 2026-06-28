@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
+use App\Models\UserSubscription;
+use App\Models\Appointment;
+use App\Models\AppointmentFee;
 
 class UserController extends BaseApiController
 {
@@ -1060,24 +1063,85 @@ class UserController extends BaseApiController
         }
     }
 
+    // public function doctorPaymentHistory($doctorId)
+    // {
+    //     try {
+
+    //         $payments = Payment::with(['patient', 'appointment'])
+    //                         ->where('doctor_id', $doctorId)
+    //                         ->orderBy('created_at', 'desc')
+    //                         ->get();
+
+    //         return response()->json([
+    //             'status' => true,
+    //             'message' => 'Doctor payment history fetched successfully',
+    //             'data' => $payments
+    //         ], 200);
+
+    //     } catch (Exception $e) {
+
+    //         $this->logException($e, 'Doctor Payment History Error');
+
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
     public function doctorPaymentHistory($doctorId)
     {
         try {
 
-            $payments = Payment::with(['patient', 'appointment'])
-                ->where('doctor_id', $doctorId)
-                ->orderBy('created_at', 'desc')
-                ->get();
+            // Doctor Fee
+            $doctorFee = AppointmentFee::where('doctor_id', $doctorId)
+                            ->value('doctor_fee') ?? 0;
+
+            $appointments = Appointment::with('patient')
+                            ->where('doctor_id', $doctorId)
+                            ->orderBy('appointment_date', 'desc')
+                            ->get();
+
+            $transactions = $appointments->map(function ($appointment) use ($doctorFee) {
+
+                return [
+                    'appointment_id'      => $appointment->id,
+                    'patient_name'        => $appointment->patient->name ?? '',
+                    'appointment_date'    => $appointment->appointment_date,
+                    'start_time'          => $appointment->start_time,
+                    'end_time'            => $appointment->end_time,
+                    'fee'                 => $doctorFee,
+
+                    'transaction_status'  =>
+                        $appointment->status == 'completed'
+                            ? 'Completed'
+                            : 'Upcoming',
+
+                    'appointment_status'  => $appointment->status,
+                ];
+            });
+
+            $completedAppointments = $appointments
+                                        ->where('status', 'completed')
+                                        ->count();
+
+            $upcomingAppointments = $appointments
+                                        ->whereIn('status', ['confirmed','pending'])
+                                        ->count();
+
+            $totalEarning = $completedAppointments * $doctorFee;
 
             return response()->json([
                 'status' => true,
-                'message' => 'Doctor payment history fetched successfully',
-                'data' => $payments
-            ], 200);
+                'doctor_fee' => $doctorFee,
+                'total_appointments' => $appointments->count(),
+                'completed_appointments' => $completedAppointments,
+                'upcoming_appointments' => $upcomingAppointments,
+                'total_earnings' => $totalEarning,
+                'transactions' => $transactions
+            ]);
 
-        } catch (Exception $e) {
-
-            $this->logException($e, 'Doctor Payment History Error');
+        } catch (\Exception $e) {
 
             return response()->json([
                 'status' => false,

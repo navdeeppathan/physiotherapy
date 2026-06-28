@@ -152,7 +152,7 @@ class DashboardController extends Controller
             ->where('doctor_payment_status', '!=', 'paid')
             ->count();
     
-        return view('admin.doctors.payments', compact(
+        return view('admin.users.payment', compact(
             'doctor',
             'appointments',
             'totalAmount',

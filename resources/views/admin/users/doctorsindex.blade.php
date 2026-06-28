@@ -569,7 +569,7 @@
     </div>
 
     <!-- ── FILTER BAR ── -->
-    <form method="GET" action="{{ route('admin.users.index') }}">
+    <form method="GET" action="{{ route('admin.users.doctorsindex') }}">
         <div class="filter-bar">
 
             <div class="filter-search">
@@ -601,7 +601,7 @@
                 Filter
             </button>
 
-            <a href="{{ route('admin.users.index') }}" class="filter-btn secondary">
+            <a href="{{ route('admin.users.doctorsindex') }}" class="filter-btn secondary">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
                 </svg>
@@ -830,9 +830,9 @@ document.addEventListener("DOMContentLoaded", function () {
     //     document.getElementById('feeTotalPreview').textContent = '₹' + (df + af).toLocaleString('en-IN');
     // }
 
-    function updateTotal()
+    // function updateTotal()
 
-    document.getElementById('doctor_fee').addEventListener('input', updateTotal);
+    // document.getElementById('doctor_fee').addEventListener('input', updateTotal);
     // document.getElementById('admin_fee').addEventListener('input',  updateTotal);
 
     // ── Open fee modal ──────────────────────────────
@@ -855,7 +855,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (fee) {
                         document.getElementById('doctor_fee').value = fee.doctor_fee || '';
                         // document.getElementById('admin_fee').value  = fee.admin_fee  || '';
-                        updateTotal();
+                        // updateTotal();
                     }
                 })
                 .catch(() => {});

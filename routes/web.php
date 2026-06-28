@@ -10,7 +10,7 @@ use App\Http\Controllers\SpecializationController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Admin\AdminAppointmentController;
  use App\Http\Controllers\AppointmentTransferRequestController;
 
 
@@ -33,6 +33,25 @@ Route::post('/admin-login', [AuthController::class, 'login'])->name('admin.login
 
 Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
 
+   Route::get(
+            '/patients/{patient}/book',
+        [AdminAppointmentController::class, 'create']
+    )->name('admin.appointments.create');
+
+    Route::post(
+        '/appointments/store',
+        [AdminAppointmentController::class, 'store']
+    )->name('admin.appointments.store');
+
+    Route::get(
+        '/doctor-slots',
+        [AdminAppointmentController::class, 'getSlots']
+    )->name('admin.doctor.slots');
+
+    Route::get(
+        '/appointments',
+        [AdminAppointmentController::class, 'index']
+    )->name('admin.appointments.index');
     // Route::get('/dashboard', [AdminDashboardController::class,'index'])
     //     ->name('dashboard');
     Route::post('/admin-logout', [AuthController::class, 'logout'])->name('logout');
@@ -47,6 +66,7 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
 
     Route::get('/appointments', [AppointmentController::class, 'adminIndex'])
       ->name('appointments.index');
+
 
     Route::get('/specializations', [SpecializationController::class,'index'])->name('specializations.index');
 

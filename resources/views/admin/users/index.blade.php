@@ -635,7 +635,7 @@
                         {{-- <th>Doctor Fee</th>
                         <th>Admin Fee</th>
                         <th>Total</th> --}}
-                        {{-- <th>Actions</th> --}}
+                        <th>Actions</th> 
                     </tr>
                 </thead>
                 <tbody>
@@ -680,6 +680,15 @@
                                     </label>
                                 @endif
                             </td>
+                             @if($user->role == 'patient')
+                                <a href="{{ route(
+                                    'admin.appointments.create',
+                                    $user->id
+                                ) }}"
+                                class="btn btn-primary btn-sm">
+                                    Book Appointment
+                                </a>
+                            @endif
 
                             {{-- <td>
                                 @if($user->fee && $user->fee->doctor_fee)
@@ -704,6 +713,7 @@
                                     <span class="fee-na">—</span>
                                 @endif
                             </td>
+                           
 
                             <td>
                                 @if($user->role == 'doctor')
@@ -819,6 +829,45 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+$('#doctor_id, #appointment_date').change(function() {
+
+    let doctor_id = $('#doctor_id').val();
+    let date = $('#appointment_date').val();
+
+    if (!doctor_id || !date) return;
+
+    $.ajax({
+        url: "{{ route('admin.doctor.slots') }}",
+        type: "GET",
+        data: {
+            doctor_id: doctor_id,
+            date: date
+        },
+        success: function(response) {
+
+            $('#slot_container').html('');
+
+            response.data.forEach(function(slot) {
+
+                $('#slot_container').append(`
+                    <div class="form-check">
+                        <input type="radio"
+                            name="time_slot_id"
+                            value="${slot.id}"
+                            required>
+
+                        <label>
+                            ${slot.start_time}
+                            -
+                            ${slot.end_time}
+                        </label>
+                    </div>
+                `);
+            });
+        }
+    });
+});
+
 document.addEventListener("DOMContentLoaded", function () {
 
     const modal = new bootstrap.Modal(document.getElementById('feeModal'));

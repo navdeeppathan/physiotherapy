@@ -677,7 +677,7 @@
                         <div class="kv-item">
                             <div class="kv-label">Experience</div>
                             <div class="kv-value">
-                                {{ $doctor->profile->experience_years ? $doctor->profile->experience_years . ' years' : '—' }}
+                                {{ optional($doctor->profile)->experience_years ? optional($doctor->profile)->experience_years.' years' : '—' }}
                             </div>
                         </div>
 

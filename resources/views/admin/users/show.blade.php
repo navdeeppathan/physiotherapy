@@ -704,7 +704,7 @@
 
                     </div>
 
-                    @if($doctor->profile->highlights)
+                    @if($doctor->profile?->highlights)
                         <div style="margin-top:18px;">
                             <div class="kv-label" style="margin-bottom:6px;">Highlights</div>
                             <div class="kv-value">{{ $doctor->profile->highlights }}</div>

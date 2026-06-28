@@ -18,6 +18,7 @@ class DoctorProfile extends Model
         'career_path',
         'highlights',
         'qualification',
+
         'clinic_name',
         'experience_level',
         'city',
@@ -45,5 +46,10 @@ class DoctorProfile extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function specialization ()
+    {
+        return $this->belongsTo(Specializations::class);
     }
 }

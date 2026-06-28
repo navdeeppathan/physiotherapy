@@ -473,18 +473,18 @@
         </div>
 
         @php
-            $approvalStatus = $doctor->profile->approval_status ?? 'pending';
+            $approvalStatus = $doctor->status ?? 'pending';
         @endphp
         <span class="header-badge {{ $approvalStatus }}">
-            @if($approvalStatus === 'approved')
+            @if($approvalStatus === 'active')
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                Approved
-            @elseif($approvalStatus === 'rejected')
+                Active
+            @elseif($approvalStatus === 'inactive')
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 Rejected
             @else
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                Pending Approval
+                Pending
             @endif
         </span>
     </div>
@@ -663,7 +663,7 @@
 
                         <div class="kv-item">
                             <div class="kv-label">Specialization</div>
-                            <div class="kv-value">{{ $doctor->profile->specialization ?? '—' }}</div>
+                            <div class="kv-value">{{ $doctor->profile->specialization->name ?? '—' }}</div>
                         </div>
 
                         <div class="kv-item">
@@ -678,17 +678,7 @@
                             </div>
                         </div>
 
-                        <div class="kv-item">
-                            <div class="kv-label">Experience Level</div>
-                            <div class="kv-value">{{ ucfirst($doctor->profile->experience_level ?? '—') }}</div>
-                        </div>
-
-                        <div class="kv-item">
-                            <div class="kv-label">Clinic Name</div>
-                            <div class="kv-value">{{ $doctor->profile->clinic_name ?? '—' }}</div>
-                        </div>
-
-                        <div class="kv-item">
+                        {{-- <div class="kv-item">
                             <div class="kv-label">City / State</div>
                             <div class="kv-value">
                                 @php
@@ -697,7 +687,7 @@
                                 @endphp
                                 {{ $city && $state ? $city.', '.$state : ($city ?? $state ?? '—') }}
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div class="kv-item">
                             <div class="kv-label">Pincode</div>
@@ -738,7 +728,7 @@
             @endif
 
             <!-- Availability -->
-            {{-- <div class="card">
+            <div class="card">
                 <div class="card-head">
                     <div class="card-head-title">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -802,7 +792,7 @@
                     </div>
 
                 </div>
-            </div> --}}
+            </div>
 
             <!-- Documents -->
             <div class="card">

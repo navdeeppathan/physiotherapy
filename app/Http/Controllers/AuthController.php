@@ -57,7 +57,7 @@ class AuthController extends Controller
     public function showDoctor($id)
     {
         $doctor = User::with([
-            'profile',
+            'profile.specialization',
             'documents',
         ])
         ->where('role', 'doctor')

@@ -633,8 +633,8 @@
                         <th>Role</th>
                         <th>Status</th>
                         <th>Doctor Fee</th>
-                        <th>Admin Fee</th>
-                        <th>Total</th>
+                        {{-- <th>Admin Fee</th>
+                        <th>Total</th> --}}
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -689,7 +689,7 @@
                                 @endif
                             </td>
 
-                            <td>
+                            {{-- <td>
                                 @if($user->fee && $user->fee->admin_fee)
                                     <span class="fee-val">₹{{ number_format($user->fee->admin_fee) }}</span>
                                 @else
@@ -703,7 +703,7 @@
                                 @else
                                     <span class="fee-na">—</span>
                                 @endif
-                            </td>
+                            </td> --}}
 
                             <td>
                                 @if($user->role == 'doctor')
@@ -824,14 +824,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const modal = new bootstrap.Modal(document.getElementById('feeModal'));
 
     // ── Live total preview ──────────────────────────
-    function updateTotal() {
-        const df = parseFloat(document.getElementById('doctor_fee').value) || 0;
-        const af = parseFloat(document.getElementById('admin_fee').value) || 0;
-        document.getElementById('feeTotalPreview').textContent = '₹' + (df + af).toLocaleString('en-IN');
-    }
+    // function updateTotal() {
+    //     const df = parseFloat(document.getElementById('doctor_fee').value) || 0;
+    //     const af = parseFloat(document.getElementById('admin_fee').value) || 0;
+    //     document.getElementById('feeTotalPreview').textContent = '₹' + (df + af).toLocaleString('en-IN');
+    // }
+
+    function updateTotal()
 
     document.getElementById('doctor_fee').addEventListener('input', updateTotal);
-    document.getElementById('admin_fee').addEventListener('input',  updateTotal);
+    // document.getElementById('admin_fee').addEventListener('input',  updateTotal);
 
     // ── Open fee modal ──────────────────────────────
     document.querySelectorAll('.open-fee-modal').forEach(btn => {
@@ -843,8 +845,8 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById('doctor_id').value         = userId;
             document.getElementById('feeModalDoctorName').textContent = 'Dr. ' + userName;
             document.getElementById('doctor_fee').value        = '';
-            document.getElementById('admin_fee').value         = '';
-            document.getElementById('feeTotalPreview').textContent = '₹0';
+            // document.getElementById('admin_fee').value         = '';
+            // document.getElementById('feeTotalPreview').textContent = '₹0';
 
             fetch(`/admin/fees/${userId}`)
                 .then(res => res.json())
@@ -852,7 +854,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     const fee = data.data;
                     if (fee) {
                         document.getElementById('doctor_fee').value = fee.doctor_fee || '';
-                        document.getElementById('admin_fee').value  = fee.admin_fee  || '';
+                        // document.getElementById('admin_fee').value  = fee.admin_fee  || '';
                         updateTotal();
                     }
                 })

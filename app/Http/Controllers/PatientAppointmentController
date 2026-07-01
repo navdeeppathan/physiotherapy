@@ -12,7 +12,7 @@ use App\Models\Fee;
 use App\Models\Document;
 use App\Models\Address;
 
-Class AppointmentController extends Controller
+Class PatientAppointmentController extends Controller
 {
     public function booking(Doctor $doctor)
     {

@@ -16,7 +16,6 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\AppointmentController;
 
 
 Route::get('/doctor/{id}',[DoctorController::class, 'show'])->name('doctor.profile');
@@ -30,7 +29,7 @@ Route::get('patient-register', [AuthController::class, 'patientregister'])->name
 
 
 Route::middleware('auth')->group(function () {
-     Route::get('/booking/{doctor}',[AppointmentController::class, 'booking'])->name('booking');
+     Route::get('/booking/{doctor}',[PatientAppointmentController::class, 'booking'])->name('booking');
 });
 //user apis
 

@@ -21,11 +21,7 @@
 		<!-- Main CSS -->
 		<link rel="stylesheet" href="assets/css/style.css">
 		
-	<style>
-		.img-fluid {
-			height: 84px !important;
-		}
-	</style>
+	
 	</head>
 	<body>
 

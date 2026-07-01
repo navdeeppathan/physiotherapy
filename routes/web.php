@@ -14,7 +14,9 @@ use App\Http\Controllers\Admin\AdminAppointmentController;
  use App\Http\Controllers\AppointmentTransferRequestController;
 
 
-Route::get('/', [AuthController::class, 'showLogin'])->name('admin.login');
+Route::get('/', function () {
+    return view('patient.index');
+});
 
 Route::get('login', [AuthController::class, 'showLogin'])->name('login');
 

@@ -14,7 +14,9 @@ use App\Http\Controllers\Admin\AdminAppointmentController;
  use App\Http\Controllers\AppointmentTransferRequestController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\HomeController;
-
+use App\Http\Controllers\PatientController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AppointmentController;
 
 
 Route::get('/doctor/{id}',[DoctorController::class, 'show'])->name('doctor.profile');
@@ -26,6 +28,10 @@ Route::get('login', [AuthController::class, 'patientlogin'])->name('login');
 Route::get('patient-login', [AuthController::class, 'patientlogin'])->name('patient.login');
 Route::get('patient-register', [AuthController::class, 'patientregister'])->name('patient.register');
 
+
+Route::middleware('auth')->group(function () {
+     Route::get('/booking/{doctor}',[AppointmentController::class, 'booking'])->name('booking');
+});
 //user apis
 
 

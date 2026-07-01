@@ -32,6 +32,7 @@ class AuthController extends Controller
         return view('admin.users.index', compact('users'));
     }
 
+
     public function doctors(Request $request)
     {
         $query = User::where('role', 'doctor');
@@ -92,12 +93,21 @@ class AuthController extends Controller
 
         return redirect('/admin-login');
     }
+    public function patientregister()
+    {
+        return view('patient.register');
+    }
 
 
     /* ================= LOGIN ================= */
     public function showLogin()
     {
         return view('admin.auth.login');
+    }
+
+    public function patientlogin()
+    {
+        return view('patient.login');
     }
 
    public function login(Request $request)

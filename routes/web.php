@@ -12,13 +12,19 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminAppointmentController;
  use App\Http\Controllers\AppointmentTransferRequestController;
+use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\HomeController;
 
 
-Route::get('/', function () {
-    return view('patient.index');
-});
 
-Route::get('login', [AuthController::class, 'showLogin'])->name('login');
+Route::get('/doctor/{id}',[DoctorController::class, 'show'])->name('doctor.profile');
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+
+Route::get('login', [AuthController::class, 'patientlogin'])->name('login');
+Route::get('patient-login', [AuthController::class, 'patientlogin'])->name('patient.login');
+Route::get('patient-register', [AuthController::class, 'patientregister'])->name('patient.register');
 
 //user apis
 

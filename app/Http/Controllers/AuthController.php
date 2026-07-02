@@ -110,7 +110,7 @@ class AuthController extends Controller
         return view('patient.login');
     }
 
-   public function login(Request $request)
+    public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
 

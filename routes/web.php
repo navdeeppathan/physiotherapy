@@ -25,7 +25,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/search', [HomeController::class, 'index'])->name('search');
 
-
+Route::get('/patient-dashboard', [PatientController::class, 'index'])->name('patient.dashboard');
 Route::get('login', [AuthController::class, 'patientlogin'])->name('login');
 Route::get('patient-login', [AuthController::class, 'patientlogin'])->name('patient.login');
 Route::get('patient-register', [AuthController::class, 'patientregister'])->name('patient.register');

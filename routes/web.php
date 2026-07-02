@@ -23,7 +23,7 @@ Route::get('/doctor/{id}',[DoctorController::class, 'show'])->name('doctor.profi
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 
-Route::get('/search', [HomeController::class, 'index'])->name('home');
+Route::get('/search', [HomeController::class, 'index'])->name('search');
 
 
 Route::get('login', [AuthController::class, 'patientlogin'])->name('login');

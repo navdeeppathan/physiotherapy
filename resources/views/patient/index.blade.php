@@ -2,7 +2,7 @@
 
 @section('content')
 
-<style>
+<!-- <style>
 	/* ===== Physiopii Home — theme-matched refresh ===== */
 	:root{
 		--pp-primary:#09e5ab;
@@ -187,7 +187,7 @@
 		.pp-stats{ gap:30px; flex-wrap:wrap; }
 		.pp-cta{ flex-direction:column; text-align:center; }
 	}
-</style>
+</style> -->
 
 		<!-- Main Wrapper -->
 		<div class="main-wrapper">

@@ -211,7 +211,7 @@
 							<i class="fas fa-search"></i>
 							<input type="text" placeholder="Search Doctors, Clinics, Diseases Etc">
 						</div>
-						<form action="{{ route('search') }}" method="GET" style="display:flex;">
+						<form action="" method="GET" style="display:flex;">
 							<button type="submit" class="pp-search-btn">Search</button>
 						</form>
 					</div>

@@ -42,7 +42,9 @@
 				<div class="container-fluid">
 					<div class="section-header text-center">
 						<h2>Clinic and Specialities</h2>
-						<p class="sub-title">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+						<p class="sub-title">
+							 Our multidisciplinary team of specialists is committed to delivering exceptional healthcare through advanced medical expertise, modern facilities, and personalized treatment plans.
+						</p>
 					</div>
 					<div class="row justify-content-center">
 						<div class="col-md-9">
@@ -50,54 +52,71 @@
 							<div class="specialities-slider slider">
 							
 								<!-- Slider Item -->
-								<div class="speicality-item text-center">
+								{{-- <div class="speicality-item text-center">
 									<div class="speicality-img">
 										<img src="assets/img/specialities/specialities-01.png" class="img-fluid" alt="Speciality">
 										<span><i class="fa fa-circle" aria-hidden="true"></i></span>
 									</div>
 									<p>Urology</p>
-								</div>	
+								</div>	 --}}
 								<!-- /Slider Item -->
 								
 								<!-- Slider Item -->
-								<div class="speicality-item text-center">
+								{{-- <div class="speicality-item text-center">
 									<div class="speicality-img">
 										<img src="assets/img/specialities/specialities-02.png" class="img-fluid" alt="Speciality">
 										<span><i class="fa fa-circle" aria-hidden="true"></i></span>
 									</div>
 									<p>Neurology</p>	
-								</div>							
+								</div>							 --}}
 								<!-- /Slider Item -->
 								
 								<!-- Slider Item -->
-								<div class="speicality-item text-center">
+								{{-- <div class="speicality-item text-center">
 									<div class="speicality-img">
 										<img src="assets/img/specialities/specialities-03.png" class="img-fluid" alt="Speciality">
 										<span><i class="fa fa-circle" aria-hidden="true"></i></span>
 									</div>	
 									<p>Orthopedic</p>	
-								</div>							
+								</div>							 --}}
 								<!-- /Slider Item -->
 								
 								<!-- Slider Item -->
-								<div class="speicality-item text-center">
+								{{-- <div class="speicality-item text-center">
 									<div class="speicality-img">
 										<img src="assets/img/specialities/specialities-04.png" class="img-fluid" alt="Speciality">
 										<span><i class="fa fa-circle" aria-hidden="true"></i></span>
 									</div>	
 									<p>Cardiologist</p>	
-								</div>							
+								</div>							 --}}
 								<!-- /Slider Item -->
 								
 								<!-- Slider Item -->
-								<div class="speicality-item text-center">
+								{{-- <div class="speicality-item text-center">
 									<div class="speicality-img">
 										<img src="assets/img/specialities/specialities-05.png" class="img-fluid" alt="Speciality">
 										<span><i class="fa fa-circle" aria-hidden="true"></i></span>
 									</div>	
 									<p>Dentist</p>
-								</div>							
+								</div>							 --}}
 								<!-- /Slider Item -->
+
+								@foreach($specializations as $specialization)
+									<div class="speicality-item text-center">
+										<div class="speicality-img">
+											<img
+												src="{{ asset('images/specializations/' . $specialization->icon) }}"
+												class="img-fluid"
+												alt="{{ $specialization->name }}"
+											>
+											<span>
+												<i class="fa fa-circle" aria-hidden="true"></i>
+											</span>
+										</div>
+
+										<p>{{ $specialization->name }}</p>
+									</div>
+								@endforeach
 								
 							</div>
 							<!-- /Slider -->
@@ -125,9 +144,110 @@
 						</div>
 						<div class="col-lg-8">
 							<div class="doctor-slider slider">
+
+								@foreach($doctors as $doctor)
+									<div class="profile-widget">
+										<div class="doc-img">
+											<a href="{{ route('doctor.profile', $doctor->id) }}">
+												<img
+													class="img-fluid"
+													src="{{ $doctor->profile_img ? asset($doctor->profile_img) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
+													alt="{{ $doctor->name }}"
+												>
+											</a>
+
+											<a href="javascript:void(0)" class="fav-btn">
+												<i class="far fa-bookmark"></i>
+											</a>
+										</div>
+
+										<div class="pro-content">
+
+											<h3 class="title">
+												<a href="{{ route('doctor.profile', $doctor->id) }}">
+													{{ $doctor->name }}
+												</a>
+
+												{{-- @if(optional($doctor->profile)->approval_status == 'approved') --}}
+													<i class="fas fa-check-circle verified"></i>
+												{{-- @endif --}}
+											</h3>
+
+											<p class="speciality">
+												{{ optional($doctor->profile)->qualification }}
+
+												
+												@if(optional($doctor->profile->specializationdata)->name)
+													,
+													{{ optional($doctor->profile->specializationdata)->name }}
+												@endif
+											</p>
+
+											<div class="rating">
+												@php
+													$rating = round(optional($doctor->profile)->rating ?? 0);
+												@endphp
+
+												@for($i=1;$i<=5;$i++)
+													<i class="fas fa-star {{ $i <= $rating ? 'filled' : '' }}"></i>
+												@endfor
+
+												<span class="d-inline-block average-rating">
+													({{ optional($doctor->profile)->total_reviews ?? 0 }})
+												</span>
+											</div>
+
+											<ul class="available-info">
+
+												<li>
+													<i class="fas fa-map-marker-alt"></i>
+
+													{{ optional($doctor->profile)->city }},
+													{{ optional($doctor->profile)->state }}
+												</li>
+
+												<li>
+													<i class="far fa-clock"></i>
+
+													{{ optional($doctor->profile)->experience_years ?? 0 }}
+													Years Experience
+												</li>
+
+												<li>
+													<i class="far fa-money-bill-alt"></i>
+
+													₹{{ number_format(optional($doctor->fee)->total_fee ?? 0,2) }}
+												</li>
+
+											</ul>
+
+											<div class="row row-sm">
+
+												<div class="col-6">
+													<a 
+													{{-- href="{{ route('doctor.profile', $doctor->id) }}" --}}
+													class="btn view-btn">
+														View Profile
+													</a>
+												</div>
+
+												<div class="col-6">
+													<a 
+													
+													href="{{ route('doctor.booking', $doctor->id) }}"
+													class="btn book-btn">
+														Book Now
+													</a>
+												</div>
+
+											</div>
+
+										</div>
+									</div>
+								@endforeach
 							
 								<!-- Doctor Widget -->
-								<div class="profile-widget">
+								{{-- <div class="profile-widget">
 									<div class="doc-img">
 										<a href="doctor-profile.html">
 											<img class="img-fluid" alt="User Image" src="assets/img/doctors/doctor-01.jpg">
@@ -171,11 +291,11 @@
 											</div>
 										</div>
 									</div>
-								</div>
+								</div> --}}
 								<!-- /Doctor Widget -->
 						
 								<!-- Doctor Widget -->
-								<div class="profile-widget">
+								{{-- <div class="profile-widget">
 									<div class="doc-img">
 										<a href="doctor-profile.html">
 											<img class="img-fluid" alt="User Image" src="assets/img/doctors/doctor-02.jpg">
@@ -219,11 +339,11 @@
 											</div>
 										</div>
 									</div>
-								</div>
+								</div> --}}
 								<!-- /Doctor Widget -->
 						
 								<!-- Doctor Widget -->
-								<div class="profile-widget">
+								{{-- <div class="profile-widget">
 									<div class="doc-img">
 										<a href="doctor-profile.html">
 											<img class="img-fluid" alt="User Image" src="assets/img/doctors/doctor-03.jpg">
@@ -267,11 +387,11 @@
 											</div>
 										</div>
 									</div>
-								</div>
+								</div> --}}
 								<!-- /Doctor Widget -->
 						
 								<!-- Doctor Widget -->
-								<div class="profile-widget">
+								{{-- <div class="profile-widget">
 									<div class="doc-img">
 										<a href="doctor-profile.html">
 											<img class="img-fluid" alt="User Image" src="assets/img/doctors/doctor-04.jpg">
@@ -315,11 +435,11 @@
 											</div>
 										</div>
 									</div>
-								</div>
+								</div> --}}
 								<!-- /Doctor Widget -->
 								
 								<!-- Doctor Widget -->
-								<div class="profile-widget">
+								{{-- <div class="profile-widget">
 									<div class="doc-img">
 										<a href="doctor-profile.html">
 											<img class="img-fluid" alt="User Image" src="assets/img/doctors/doctor-05.jpg">
@@ -363,11 +483,11 @@
 											</div>
 										</div>
 									</div>
-								</div>
+								</div> --}}
 								<!-- /Doctor Widget -->
 								
 								<!-- Doctor Widget -->
-								<div class="profile-widget">
+								{{-- <div class="profile-widget">
 									<div class="doc-img">
 										<a href="doctor-profile.html">
 											<img class="img-fluid" alt="User Image" src="assets/img/doctors/doctor-06.jpg">
@@ -411,11 +531,11 @@
 											</div>
 										</div>
 									</div>
-								</div>
+								</div> --}}
 								<!-- /Doctor Widget -->
 								
 								<!-- Doctor Widget -->
-								<div class="profile-widget">
+								{{-- <div class="profile-widget">
 									<div class="doc-img">
 										<a href="doctor-profile.html">
 											<img class="img-fluid" alt="User Image" src="assets/img/doctors/doctor-07.jpg">
@@ -459,11 +579,11 @@
 											</div>
 										</div>
 									</div>
-								</div>
+								</div> --}}
 								<!-- /Doctor Widget -->
 								
 								<!-- Doctor Widget -->
-								<div class="profile-widget">
+								{{-- <div class="profile-widget">
 									<div class="doc-img">
 										<a href="doctor-profile.html">
 											<img class="img-fluid" alt="User Image" src="assets/img/doctors/doctor-08.jpg">
@@ -507,7 +627,7 @@
 											</div>
 										</div>
 									</div>
-								</div>
+								</div> --}}
 								<!-- Doctor Widget -->
 								
 							</div>
@@ -518,7 +638,7 @@
 			<!-- /Popular Section -->
 		   
 		   <!-- Availabe Features -->
-		   <section class="section section-features">
+		   	<section class="section section-features">
 				<div class="container-fluid">
 				   <div class="row">
 						<div class="col-md-5 features-img">

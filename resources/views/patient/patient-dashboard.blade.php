@@ -37,13 +37,27 @@
 								<div class="widget-profile pro-widget-content">
 									<div class="profile-info-widget">
 										<a href="#" class="booking-doc-img">
-											<img src="assets/img/patients/patient.jpg" alt="User Image">
+											{{-- <img src="assets/img/patients/patient.jpg" alt="User Image"> --}}
+											<img src="{{ $patient->profile_img ? asset($patient->profile_img) : asset('assets/img/patients/patient.jpg') }}"
+                         						alt="{{ $patient->name }}">
 										</a>
 										<div class="profile-det-info">
-											<h3>Richard Wilson</h3>
+											<h3>{{ Auth::user()->name }}</h3>
 											<div class="patient-details">
-												<h5><i class="fas fa-birthday-cake"></i> 24 Jul 1983, 38 years</h5>
-												<h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Newyork, USA</h5>
+												<h5><i class="fas fa-birthday-cake"></i> 
+													@if(Auth::user()->dob)
+														{{ \Carbon\Carbon::parse(Auth::user()->dob)->format('d M Y') }},
+														{{ \Carbon\Carbon::parse(Auth::user()->dob)->age }} Years
+													@else
+														Date of birth not available
+													@endif
+												</h5>
+												<h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> 
+													{{ Auth::user()->city ?? 'N/A' }}
+													@if(Auth::user()->state)
+														, {{ Auth::user()->state }}
+													@endif
+												</h5>
 											</div>
 										</div>
 									</div>
@@ -52,38 +66,38 @@
 									<nav class="dashboard-menu">
 										<ul>
 											<li class="active">
-												<a href="patient-dashboard.html">
+												<a href="{{ route('patient.dashboard') }}">
 													<i class="fas fa-columns"></i>
 													<span>Dashboard</span>
 												</a>
 											</li>
-											<li>
+											{{-- <li>
 												<a href="favourites.html">
 													<i class="fas fa-bookmark"></i>
 													<span>Favourites</span>
 												</a>
-											</li>
-											<li>
+											</li> --}}
+											{{-- <li>
 												<a href="chat.html">
 													<i class="fas fa-comments"></i>
 													<span>Message</span>
 													<small class="unread-msg">23</small>
 												</a>
-											</li>
+											</li> --}}
 											<li>
-												<a href="profile-settings.html">
+												<a href="{{ route('patient.profile') }}">
 													<i class="fas fa-user-cog"></i>
 													<span>Profile Settings</span>
 												</a>
 											</li>
 											<li>
-												<a href="change-password.html">
+												<a href="{{ route('patient.change.password') }}">
 													<i class="fas fa-lock"></i>
 													<span>Change Password</span>
 												</a>
 											</li>
 											<li>
-												<a href="index-2.html">
+												<a href="{{ route('patient.logout') }}">
 													<i class="fas fa-sign-out-alt"></i>
 													<span>Logout</span>
 												</a>
@@ -91,7 +105,6 @@
 										</ul>
 									</nav>
 								</div>
-
 							</div>
 						</div>
 						<!-- / Profile Sidebar -->
@@ -106,12 +119,12 @@
 											<li class="nav-item">
 												<a class="nav-link active" href="#pat_appointments" data-toggle="tab">Appointments</a>
 											</li>
-											<li class="nav-item">
+											{{-- <li class="nav-item">
 												<a class="nav-link" href="#pat_prescriptions" data-toggle="tab">Prescriptions</a>
 											</li>
 											<li class="nav-item">
 												<a class="nav-link" href="#pat_medical_records" data-toggle="tab"><span class="med-records">Medical Records</span></a>
-											</li>
+											</li> --}}
 											<li class="nav-item">
 												<a class="nav-link" href="#pat_billing" data-toggle="tab">Billing</a>
 											</li>
@@ -136,10 +149,10 @@
 																	<th>Amount</th>
 																	<th>Follow Up</th>
 																	<th>Status</th>
-																	<th></th>
+																	{{-- <th></th> --}}
 																</tr>
 															</thead>
-															<tbody>
+															{{-- <tbody>
 																<tr>
 																	<td>
 																		<h2 class="table-avatar">
@@ -390,6 +403,135 @@
 																		</div>
 																	</td>
 																</tr>
+															</tbody> --}}
+															<tbody>
+
+																@forelse($appointments as $appointment)
+
+																<tr>
+
+																	<td>
+																		<h2 class="table-avatar">
+
+																			<a href="#" class="avatar avatar-sm mr-2">
+
+																				<img class="avatar-img rounded-circle"
+																					src="{{ $appointment->doctor->profile_img ? asset($appointment->doctor->profile_img) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
+																					alt="Doctor">
+
+																			</a>
+
+																			<a href="#">
+
+																				Dr. {{ $appointment->doctor->name }}
+
+																				<span>
+																					{{ $appointment->doctor->profile->specializationdata->name ?? 'Doctor' }}
+																				</span>
+
+																			</a>
+
+																		</h2>
+																	</td>
+
+																	<td>
+																		{{ $appointment->appointment_date->format('d M Y') }}
+
+																		<span class="d-block text-info">
+
+																			{{ \Carbon\Carbon::parse($appointment->start_time)->format('h:i A') }}
+
+																		</span>
+																	</td>
+
+																	<td>
+																		{{ $appointment->created_at->format('d M Y') }}
+																	</td>
+
+																	<td>
+																		₹{{ number_format($appointment->doctor->fee->doctor_fee ?? 0,2) }}
+																	</td>
+
+																	<td>
+
+																		@if($appointment->appointment_date->isFuture())
+
+																			{{ $appointment->appointment_date->copy()->addDays(7)->format('d M Y') }}
+
+																		@else
+
+																			-
+
+																		@endif
+
+																	</td>
+
+																	<td>
+
+																		@php
+
+																			$badge = match($appointment->status){
+
+																				'confirmed' => 'success',
+
+																				'pending' => 'warning',
+
+																				'cancelled' => 'danger',
+
+																				'completed' => 'primary',
+
+																				default => 'secondary'
+
+																			};
+
+																		@endphp
+
+																		<span class="badge badge-pill bg-{{ $badge }}-light">
+
+																			{{ ucfirst($appointment->status) }}
+
+																		</span>
+
+																	</td>
+
+																	{{-- <td class="text-right">
+
+																		<div class="table-action">
+
+																			<a 
+																			href="{{ route('appointment.invoice',$appointment->id) }}"
+																			class="btn btn-sm bg-primary-light">
+
+																				<i class="fas fa-print"></i> Print
+
+																			</a>
+
+																			<a 
+																			href="{{ route('appointment.show',$appointment->id) }}"
+																			class="btn btn-sm bg-info-light">
+
+																				<i class="far fa-eye"></i> View
+
+																			</a>
+
+																		</div>
+
+																	</td> --}}
+
+																</tr>
+
+																@empty
+
+																<tr>
+
+																	<td colspan="6" class="text-center">
+																		No appointments found.
+																	</td>
+
+																</tr>
+
+																@endforelse
+
 															</tbody>
 														</table>
 													</div>
@@ -399,7 +541,7 @@
 										<!-- /Appointment Tab -->
 										
 										<!-- Prescription Tab -->
-										<div class="tab-pane fade" id="pat_prescriptions">
+										{{-- <div class="tab-pane fade" id="pat_prescriptions">
 											<div class="card card-table mb-0">
 												<div class="card-body">
 													<div class="table-responsive">
@@ -638,11 +780,11 @@
 													</div>
 												</div>
 											</div>
-										</div>
+										</div> --}}
 										<!-- /Prescription Tab -->
 											
 										<!-- Medical Records Tab -->
-										<div id="pat_medical_records" class="tab-pane fade">
+										{{-- <div id="pat_medical_records" class="tab-pane fade">
 											<div class="card card-table mb-0">
 												<div class="card-body">
 													<div class="table-responsive">
@@ -903,7 +1045,7 @@
 													</div>
 												</div>
 											</div>
-										</div>
+										</div> --}}
 										<!-- /Medical Records Tab -->
 										
 										<!-- Billing Tab -->
@@ -918,10 +1060,11 @@
 																	<th>Doctor</th>
 																	<th>Amount</th>
 																	<th>Paid On</th>
-																	<th></th>
+																	<th>Status</th>
+																	{{-- <th></th> --}}
 																</tr>
 															</thead>
-															<tbody>
+															{{-- <tbody>
 																<tr>
 																	<td>
 																		<a href="invoice-view.html">#INV-0010</a>
@@ -1172,6 +1315,124 @@
 																		</div>
 																	</td>
 																</tr>
+															</tbody> --}}
+															<tbody>
+
+																@forelse($payments as $payment)
+
+																<tr>
+
+																	<td>
+
+																		#INV-{{ str_pad($payment->id,5,'0',STR_PAD_LEFT) }}
+
+																	</td>
+
+																	<td>
+
+																		<h2 class="table-avatar">
+
+																			<a href="#" class="avatar avatar-sm mr-2">
+
+																				<img class="avatar-img rounded-circle"
+																					src="{{ $payment->doctor->profile_img ? asset($payment->doctor->profile_img) : asset('assets/img/doctors/doctor-thumb-01.jpg') }}"
+																					alt="Doctor">
+
+																			</a>
+
+																			<a href="#">
+
+																				Dr. {{ $payment->doctor->name }}
+
+																				<span>
+
+																					{{ $payment->doctor->profile->specializationdata->name ?? 'Doctor' }}
+
+																				</span>
+
+																			</a>
+
+																		</h2>
+
+																	</td>
+
+																	<td>
+
+																		₹{{ number_format($payment->amount,2) }}
+
+																	</td>
+
+																	<td>
+
+																		{{ optional($payment->paid_at)->format('d M Y') ?? $payment->created_at->format('d M Y') }}
+
+																	</td>
+
+																	<td>
+
+																		@php
+
+																			$badge = match($payment->status){
+
+																				'success' => 'success',
+
+																				'pending' => 'warning',
+
+																				'failed' => 'danger',
+
+																				default => 'secondary'
+
+																			};
+
+																		@endphp
+
+																		<span class="badge badge-pill bg-{{ $badge }}-light">
+
+																			{{ ucfirst($payment->status) }}
+
+																		</span>
+
+																	</td>
+																	
+
+																	{{-- <td class="text-right">
+
+																		<div class="table-action">
+
+																			<a
+																			href="{{ route('payment.invoice',$payment->id) }}"
+																			class="btn btn-sm bg-info-light">
+
+																				<i class="far fa-eye"></i> View
+
+																			</a>
+
+																			<a 
+																			href="{{ route('payment.invoice.print',$payment->id) }}"
+																			class="btn btn-sm bg-primary-light">
+
+																				<i class="fas fa-print"></i> Print
+
+																			</a>
+
+																		</div>
+
+																	</td> --}}
+
+																</tr>
+
+																@empty
+
+																<tr>
+
+																	<td colspan="5" class="text-center">
+																		No billing history found.
+																	</td>
+
+																</tr>
+
+																@endforelse
+
 															</tbody>
 														</table>
 													</div>
@@ -1193,163 +1454,10 @@
 			</div>		
 			<!-- /Page Content -->
    
-			<!-- Footer -->
-			<footer class="footer">
-				
-				<!-- Footer Top -->
-				<div class="footer-top">
-					<div class="container-fluid">
-						<div class="row">
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-about">
-									<div class="footer-logo">
-										<img src="assets/img/footer-logo.png" alt="logo">
-									</div>
-									<div class="footer-about-content">
-										<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
-										<div class="social-icon">
-											<ul>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-facebook-f"></i> </a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-twitter"></i> </a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-dribbble"></i> </a>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-menu">
-									<h2 class="footer-title">For Patients</h2>
-									<ul>
-										<li><a href="search.html"><i class="fas fa-angle-double-right"></i> Search for Doctors</a></li>
-										<li><a href="login.html"><i class="fas fa-angle-double-right"></i> Login</a></li>
-										<li><a href="register.html"><i class="fas fa-angle-double-right"></i> Register</a></li>
-										<li><a href="booking.html"><i class="fas fa-angle-double-right"></i> Booking</a></li>
-										<li><a href="patient-dashboard.html"><i class="fas fa-angle-double-right"></i> Patient Dashboard</a></li>
-									</ul>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-menu">
-									<h2 class="footer-title">For Doctors</h2>
-									<ul>
-										<li><a href="appointments.html"><i class="fas fa-angle-double-right"></i> Appointments</a></li>
-										<li><a href="chat.html"><i class="fas fa-angle-double-right"></i> Chat</a></li>
-										<li><a href="login.html"><i class="fas fa-angle-double-right"></i> Login</a></li>
-										<li><a href="doctor-register.html"><i class="fas fa-angle-double-right"></i> Register</a></li>
-										<li><a href="doctor-dashboard.html"><i class="fas fa-angle-double-right"></i> Doctor Dashboard</a></li>
-									</ul>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-contact">
-									<h2 class="footer-title">Contact Us</h2>
-									<div class="footer-contact-info">
-										<div class="footer-address">
-											<span><i class="fas fa-map-marker-alt"></i></span>
-											<p> 3556  Beech Street, San Francisco,<br> California, CA 94108 </p>
-										</div>
-										<p>
-											<i class="fas fa-phone-alt"></i>
-											+1 315 369 5943
-										</p>
-										<p class="mb-0">
-											<i class="fas fa-envelope"></i>
-											doccure@example.com
-										</p>
-									</div>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-						</div>
-					</div>
-				</div>
-				<!-- /Footer Top -->
-				
-				<!-- Footer Bottom -->
-                <div class="footer-bottom">
-					<div class="container-fluid">
-					
-						<!-- Copyright -->
-						<div class="copyright">
-							<div class="row">
-								<div class="col-md-6 col-lg-6">
-									<div class="copyright-text">
-										<p class="mb-0"><a href="templateshub.net">Templates Hub</a></p>
-									</div>
-								</div>
-								<div class="col-md-6 col-lg-6">
-								
-									<!-- Copyright Menu -->
-									<div class="copyright-menu">
-										<ul class="policy-menu">
-											<li><a href="term-condition.html">Terms and Conditions</a></li>
-											<li><a href="privacy-policy.html">Policy</a></li>
-										</ul>
-									</div>
-									<!-- /Copyright Menu -->
-									
-								</div>
-							</div>
-						</div>
-						<!-- /Copyright -->
-						
-					</div>
-				</div>
-				<!-- /Footer Bottom -->
-				
-			</footer>
-			<!-- /Footer -->
+			@include('layouts.footer')
+			
 		   
 		</div>
 		<!-- /Main Wrapper -->
-	  
-		<!-- jQuery -->
-		<script src="assets/js/jquery.min.js"></script>
-		
-		<!-- Bootstrap Core JS -->
-		<script src="assets/js/popper.min.js"></script>
-		<script src="assets/js/bootstrap.min.js"></script>
-		
-		<!-- Sticky Sidebar JS -->
-        <script src="assets/plugins/theia-sticky-sidebar/ResizeSensor.js"></script>
-        <script src="assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js"></script>
-		
-		<!-- Custom JS -->
-		<script src="assets/js/script.js"></script>
-		
-	</body>
-
-<!-- doccure/patient-dashboard.html  30 Nov 2019 04:12:16 GMT -->
-</html>
+	  	
+@endsection		

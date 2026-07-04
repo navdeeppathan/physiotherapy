@@ -35,7 +35,7 @@
 								<div class="card-body">
 								
 									<!-- Checkout Form -->
-									<form action="https://dreamguys.co.in/demo/doccure/booking-success.html">
+									{{-- <form action="https://dreamguys.co.in/demo/doccure/booking-success.html">
 									
 										<!-- Personal Information -->
 										<div class="info-widget">
@@ -141,8 +141,101 @@
 											<!-- /Submit Section -->
 											
 										</div>
-									</form>
+									</form> --}}
 									<!-- /Checkout Form -->
+
+									<form action="{{ route('doctor.book') }}" method="POST">
+
+										@csrf
+
+										<input type="hidden" name="doctor_id" value="{{ $doctor->id }}">
+										<input type="hidden" name="subscription_id" value="{{ $subscriptionId }}">
+										@foreach($slots as $slot)
+
+										<input type="hidden"
+											name="slot_ids[]"
+											value="{{ $slot->id }}">
+
+										@endforeach
+										<input type="hidden" name="doctor_fee" value="{{ $doctor->fee->doctor_fee ?? 0 }}">
+
+										<input type="hidden" name="booking_for" value="self">
+
+										<div class="info-widget">
+											<h4 class="card-title">Personal Information</h4>
+
+											<div class="row">
+
+												<div class="col-md-6 col-sm-12">
+													<div class="form-group card-label">
+														<label>Full Name</label>
+														<input class="form-control" type="text" name="patient_name" required>
+													</div>
+												</div>
+
+												<div class="col-md-6 col-sm-12">
+													<div class="form-group card-label">
+														<label>Age</label>
+														<input class="form-control" type="number" name="patient_age" required>
+													</div>
+												</div>
+
+												<div class="col-md-6 col-sm-12">
+													<div class="form-group card-label">
+														<label>Gender</label>
+
+														<select name="patient_gender" class="form-control">
+
+															<option value="">Select</option>
+															<option value="male">Male</option>
+															<option value="female">Female</option>
+															<option value="other">Other</option>
+
+														</select>
+
+													</div>
+												</div>
+
+												<div class="col-md-12">
+													<div class="form-group card-label">
+														<label>Problem Description</label>
+
+														<textarea
+															name="problem_description"
+															class="form-control"
+															rows="4"></textarea>
+													</div>
+												</div>
+
+											</div>
+										</div>
+
+										<div class="submit-section mt-4">
+											<button class="btn btn-primary submit-btn" @guest disabled @endguest>
+												Confirm and Pay
+											</button>
+										</div>
+
+										@guest
+											<div class="alert alert-info border-left-primary mb-4 mt-4">
+												<h5 class="mb-2">
+													<i class="fas fa-lock"></i>
+													Login Required
+												</h5>
+
+												<p class="mb-3">
+													Please sign in to book your appointment, complete payment, and manage your bookings.
+												</p>
+
+												<a 
+												{{-- href="{{ route('login') }}"  --}}
+												class="btn btn-primary">
+													Login to Continue
+												</a>
+											</div>
+										@endguest
+
+									</form>
 									
 								</div>
 							</div>
@@ -164,7 +257,7 @@
 											<img src="assets/img/doctors/doctor-thumb-02.jpg" alt="User Image">
 										</a>
 										<div class="booking-info">
-											<h4><a href="doctor-profile.html">Dr. Darren Elder</a></h4>
+											<h4><a href="doctor-profile.html">{{ $doctor->name }}</a></h4>
 											<div class="rating">
 												<i class="fas fa-star filled"></i>
 												<i class="fas fa-star filled"></i>
@@ -174,31 +267,105 @@
 												<span class="d-inline-block average-rating">35</span>
 											</div>
 											<div class="clinic-details">
-												<p class="doc-location"><i class="fas fa-map-marker-alt"></i> Newyork, USA</p>
+												<p class="doc-location"><i class="fas fa-map-marker-alt"></i> {{ $doctor->profile->clinic_address ?? '' }}</p>
 											</div>
 										</div>
 									</div>
 									<!-- Booking Doctor Info -->
 									
-									<div class="booking-summary">
+									{{-- <div class="booking-summary">
 										<div class="booking-item-wrap">
 											<ul class="booking-date">
-												<li>Date <span>16 Nov 2019</span></li>
-												<li>Time <span>10:00 AM</span></li>
+												<li>Date <span>{{ $slot->availabilityDate->available_date->format('d M Y') }}</span></li>
+												<li>Time 
+													<span>
+														{{ \Carbon\Carbon::parse($slot->start_time)->format('h:i A') }}
+														-
+														{{ \Carbon\Carbon::parse($slot->end_time)->format('h:i A') }}
+													</span>
+												</li>
 											</ul>
 											<ul class="booking-fee">
-												<li>Consulting Fee <span>$100</span></li>
-												<li>Booking Fee <span>$10</span></li>
-												<li>Video Call <span>$50</span></li>
+												
+												<li>
+													Doctor Fee
+
+													<span>
+														₹{{ number_format($doctor->fee->doctor_fee ?? 0,2) }}
+													</span>
+												</li>
 											</ul>
 											<div class="booking-total">
 												<ul class="booking-total-list">
 													<li>
 														<span>Total</span>
-														<span class="total-cost">$160</span>
+														<span class="total-cost">₹{{ number_format($doctor->fee->doctor_fee ?? 0,2) }}</span>
 													</li>
 												</ul>
 											</div>
+										</div>
+									</div> --}}
+									<div class="booking-summary">
+										<div class="booking-item-wrap">
+
+											@foreach($slots as $index => $slot)
+
+												<div class="border rounded p-3 mb-3">
+
+													<h6 class="mb-3">
+														Appointment {{ $index + 1 }}
+													</h6>
+
+													<ul class="booking-date mb-0">
+
+														<li>
+															Date
+															<span>
+																{{ $slot->availabilityDate->available_date->format('d M Y') }}
+															</span>
+														</li>
+
+														<li>
+															Time
+															<span>
+																{{ \Carbon\Carbon::parse($slot->start_time)->format('h:i A') }}
+																-
+																{{ \Carbon\Carbon::parse($slot->end_time)->format('h:i A') }}
+															</span>
+														</li>
+
+														<li>
+															Consultation Fee
+															<span>
+																₹{{ number_format($doctor->fee->doctor_fee ?? 0,2) }}
+															</span>
+														</li>
+
+													</ul>
+
+												</div>
+
+											@endforeach
+
+											<div class="booking-total">
+												<ul class="booking-total-list">
+
+													<li>
+														<span>Total Appointments</span>
+														<span class="total-cost">{{ $slots->count() }}</span>
+													</li>
+													
+
+													<li>
+														<span>Total Amount</span>
+														<span class="total-cost">
+															₹{{ number_format(($doctor->fee->doctor_fee ?? 0) * $slots->count(),2) }}
+														</span>
+													</li>
+
+												</ul>
+											</div>
+
 										</div>
 									</div>
 								</div>

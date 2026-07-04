@@ -36,13 +36,35 @@
 								<div class="widget-profile pro-widget-content">
 									<div class="profile-info-widget">
 										<a href="#" class="booking-doc-img">
-											<img src="assets/img/patients/patient.jpg" alt="User Image">
+											{{-- <img src="assets/img/patients/patient.jpg" alt="User Image"> --}}
+											<img src="{{ $patient->profile_img ? asset($patient->profile_img) : asset('assets/img/patients/patient.jpg') }}"
+                         						alt="{{ $patient->name }}">
 										</a>
 										<div class="profile-det-info">
-											<h3>Richard Wilson</h3>
+											<h3>{{ $patient->name }}</h3>
 											<div class="patient-details">
-												<h5><i class="fas fa-birthday-cake"></i> 24 Jul 1983, 38 years</h5>
-												<h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Newyork, USA</h5>
+												{{-- <h5><i class="fas fa-birthday-cake"></i> 24 Jul 1983, 38 years</h5> --}}
+												@if($patient->dob)
+													<h5>
+														<i class="fas fa-birthday-cake"></i>
+
+														{{ \Carbon\Carbon::parse($patient->dob)->format('d M Y') }}
+
+														@php
+															$age = \Carbon\Carbon::parse($patient->dob)->age;
+														@endphp
+
+														, {{ $age }} Years
+													</h5>
+												@endif
+												{{-- <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Newyork, USA</h5> --}}
+												<h5 class="mb-0">
+													<i class="fas fa-map-marker-alt"></i>
+
+													{{ collect([$patient->city, $patient->state])
+														->filter()
+														->implode(', ') ?: 'Location not added' }}
+												</h5>
 											</div>
 										</div>
 									</div>
@@ -51,12 +73,12 @@
 									<nav class="dashboard-menu">
 										<ul>
 											<li>
-												<a href="#">
+												<a href="{{ route('patient.dashboard') }}">
 													<i class="fas fa-columns"></i>
 													<span>Dashboard</span>
 												</a>
 											</li>
-											<li>
+											{{-- <li>
 												<a href="favourites.html">
 													<i class="fas fa-bookmark"></i>
 													<span>Favourites</span>
@@ -68,21 +90,21 @@
 													<span>Message</span>
 													<small class="unread-msg">23</small>
 												</a>
-											</li>
+											</li> --}}
 											<li class="active">
-												<a href="profile-settings.html">
+												<a href="{{ route('patient.profile') }}">
 													<i class="fas fa-user-cog"></i>
 													<span>Profile Settings</span>
 												</a>
 											</li>
 											<li>
-												<a href="change-password.html">
+												<a href="{{ route('patient.change.password') }}">
 													<i class="fas fa-lock"></i>
 													<span>Change Password</span>
 												</a>
 											</li>
 											<li>
-												<a href="index-2.html">
+												<a href="{{ route('patient.logout') }}">
 													<i class="fas fa-sign-out-alt"></i>
 													<span>Logout</span>
 												</a>
@@ -100,18 +122,29 @@
 								<div class="card-body">
 									
 									<!-- Profile Settings Form -->
-									<form>
+									<form action="{{ route('patient.profile.update') }}"
+										method="POST"
+										enctype="multipart/form-data">
+
+										@csrf
 										<div class="row form-row">
 											<div class="col-12 col-md-12">
 												<div class="form-group">
 													<div class="change-avatar">
 														<div class="profile-img">
-															<img src="assets/img/patients/patient.jpg" alt="User Image">
+
+															<img src="{{ $patient->profile_img ? asset($patient->profile_img) : asset('assets/img/patients/patient.jpg') }}">
+
 														</div>
 														<div class="upload-img">
 															<div class="change-photo-btn">
-																<span><i class="fa fa-upload"></i> Upload Photo</span>
-																<input type="file" class="upload">
+																<span>
+																	<i class="fa fa-upload"></i> Upload Photo
+																</span>
+
+																<input type="file"
+																	name="profile_img"
+																	class="upload">
 															</div>
 															<small class="form-text text-muted">Allowed JPG, GIF or PNG. Max size of 2MB</small>
 														</div>
@@ -120,81 +153,91 @@
 											</div>
 											<div class="col-12 col-md-6">
 												<div class="form-group">
-													<label>First Name</label>
-													<input type="text" class="form-control" value="Richard">
+													<label>Name</label>
+													<input type="text" name="name" class="form-control" value="{{ old('name',$patient->name) }}">
 												</div>
 											</div>
-											<div class="col-12 col-md-6">
+											{{-- <div class="col-12 col-md-6">
 												<div class="form-group">
-													<label>Last Name</label>
-													<input type="text" class="form-control" value="Wilson">
+													<label>Email</label>
+													<input type="email" disabled readonly class="form-control" value="Wilson">
 												</div>
-											</div>
+											</div> --}}
 											<div class="col-12 col-md-6">
 												<div class="form-group">
-													<label>Date of Birth</label>
+													<label for="dob">Date of Birth</label>
 													<div class="cal-icon">
-														<input type="text" class="form-control datetimepicker" value="24-07-1983">
+														<input type="date" id="dob"  name="dob" class="form-control" value="{{ old('dob',$patient->dob) }}">
 													</div>
 												</div>
 											</div>
 											<div class="col-12 col-md-6">
 												<div class="form-group">
-													<label>Blood Group</label>
-													<select class="form-control select">
-														<option>A-</option>
-														<option>A+</option>
-														<option>B-</option>
-														<option>B+</option>
-														<option>AB-</option>
-														<option>AB+</option>
-														<option>O-</option>
-														<option>O+</option>
+													<label>Gender</label>
+													<select name="gender" class="form-control">
+
+														<option value="">Select</option>
+
+														<option value="male"
+															{{ $patient->gender=='male'?'selected':'' }}>
+															Male
+														</option>
+
+														<option value="female"
+															{{ $patient->gender=='female'?'selected':'' }}>
+															Female
+														</option>
+
+														<option value="other"
+															{{ $patient->gender=='other'?'selected':'' }}>
+															Other
+														</option>
+
 													</select>
 												</div>
 											</div>
 											<div class="col-12 col-md-6">
 												<div class="form-group">
 													<label>Email ID</label>
-													<input type="email" class="form-control" value="richard@example.com">
+													<input type="email"  disabled readonly class="form-control" value="{{ old('email',$patient->email) }}">
 												</div>
 											</div>
 											<div class="col-12 col-md-6">
 												<div class="form-group">
 													<label>Mobile</label>
-													<input type="text" value="+1 202-555-0125" class="form-control">
+													<input type="text"  name="phone" value="{{ old('phone',$patient->phone) }}" class="form-control">
 												</div>
 											</div>
 											<div class="col-12">
 												<div class="form-group">
 												<label>Address</label>
-													<input type="text" class="form-control" value="806 Twin Willow Lane">
+													<input type="text" name="address" class="form-control" value="{{ old('address',$patient->address) }}">
 												</div>
 											</div>
 											<div class="col-12 col-md-6">
 												<div class="form-group">
 													<label>City</label>
-													<input type="text" class="form-control" value="Old Forge">
+													<input type="text" name="city" class="form-control" value="{{ old('city',$patient->city) }}">
 												</div>
 											</div>
 											<div class="col-12 col-md-6">
 												<div class="form-group">
 													<label>State</label>
-													<input type="text" class="form-control" value="Newyork">
+													<input type="text" name="state" class="form-control" value="{{ old('state',$patient->state) }}">
 												</div>
 											</div>
 											<div class="col-12 col-md-6">
 												<div class="form-group">
 													<label>Zip Code</label>
-													<input type="text" class="form-control" value="13420">
+													<input type="text" name="pincode" class="form-control" value="{{ old('pincode',$patient->pincode) }}">
 												</div>
 											</div>
-											<div class="col-12 col-md-6">
+											{{-- <div class="col-12 col-md-6">
 												<div class="form-group">
 													<label>Country</label>
 													<input type="text" class="form-control" value="United States">
 												</div>
-											</div>
+											</div> --}}
 										</div>
 										<div class="submit-section">
 											<button type="submit" class="btn btn-primary submit-btn">Save Changes</button>
@@ -211,170 +254,10 @@
 			</div>		
 			<!-- /Page Content -->
    
-			<!-- Footer -->
-			<footer class="footer">
-				
-				<!-- Footer Top -->
-				<div class="footer-top">
-					<div class="container-fluid">
-						<div class="row">
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-about">
-									<div class="footer-logo">
-										<img src="assets/img/footer-logo.png" alt="logo">
-									</div>
-									<div class="footer-about-content">
-										<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
-										<div class="social-icon">
-											<ul>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-facebook-f"></i> </a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-twitter"></i> </a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-dribbble"></i> </a>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-menu">
-									<h2 class="footer-title">For Patients</h2>
-									<ul>
-										<li><a href="search.html"><i class="fas fa-angle-double-right"></i> Search for Doctors</a></li>
-										<li><a href="login.html"><i class="fas fa-angle-double-right"></i> Login</a></li>
-										<li><a href="register.html"><i class="fas fa-angle-double-right"></i> Register</a></li>
-										<li><a href="booking.html"><i class="fas fa-angle-double-right"></i> Booking</a></li>
-										<li><a href="patient-dashboard.html"><i class="fas fa-angle-double-right"></i> Patient Dashboard</a></li>
-									</ul>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-menu">
-									<h2 class="footer-title">For Doctors</h2>
-									<ul>
-										<li><a href="appointments.html"><i class="fas fa-angle-double-right"></i> Appointments</a></li>
-										<li><a href="chat.html"><i class="fas fa-angle-double-right"></i> Chat</a></li>
-										<li><a href="login.html"><i class="fas fa-angle-double-right"></i> Login</a></li>
-										<li><a href="doctor-register.html"><i class="fas fa-angle-double-right"></i> Register</a></li>
-										<li><a href="doctor-dashboard.html"><i class="fas fa-angle-double-right"></i> Doctor Dashboard</a></li>
-									</ul>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-contact">
-									<h2 class="footer-title">Contact Us</h2>
-									<div class="footer-contact-info">
-										<div class="footer-address">
-											<span><i class="fas fa-map-marker-alt"></i></span>
-											<p> 3556  Beech Street, San Francisco,<br> California, CA 94108 </p>
-										</div>
-										<p>
-											<i class="fas fa-phone-alt"></i>
-											+1 315 369 5943
-										</p>
-										<p class="mb-0">
-											<i class="fas fa-envelope"></i>
-											doccure@example.com
-										</p>
-									</div>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-						</div>
-					</div>
-				</div>
-				<!-- /Footer Top -->
-				
-				<!-- Footer Bottom -->
-                <div class="footer-bottom">
-					<div class="container-fluid">
-					
-						<!-- Copyright -->
-						<div class="copyright">
-							<div class="row">
-								<div class="col-md-6 col-lg-6">
-									<div class="copyright-text">
-										<p class="mb-0"><a href="templateshub.net">Templates Hub</a></p>
-									</div>
-								</div>
-								<div class="col-md-6 col-lg-6">
-								
-									<!-- Copyright Menu -->
-									<div class="copyright-menu">
-										<ul class="policy-menu">
-											<li><a href="term-condition.html">Terms and Conditions</a></li>
-											<li><a href="privacy-policy.html">Policy</a></li>
-										</ul>
-									</div>
-									<!-- /Copyright Menu -->
-									
-								</div>
-							</div>
-						</div>
-						<!-- /Copyright -->
-						
-					</div>
-				</div>
-				<!-- /Footer Bottom -->
-				
-			</footer>
-			<!-- /Footer -->
+			@include('layouts.footer')
+			
 		   
 		</div>
 		<!-- /Main Wrapper -->
-	  
-		<!-- jQuery -->
-		<script src="assets/js/jquery.min.js"></script>
-		
-		<!-- Bootstrap Core JS -->
-		<script src="assets/js/popper.min.js"></script>
-		<script src="assets/js/bootstrap.min.js"></script>
-		
-		<!-- Select2 JS -->
-		<script src="assets/plugins/select2/js/select2.min.js"></script>
-		
-		<!-- Datetimepicker JS -->
-		<script src="assets/js/moment.min.js"></script>
-		<script src="assets/js/bootstrap-datetimepicker.min.js"></script>
-		
-		<!-- Sticky Sidebar JS -->
-        <script src="assets/plugins/theia-sticky-sidebar/ResizeSensor.js"></script>
-        <script src="assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js"></script>
-		
-		<!-- Custom JS -->
-		<script src="assets/js/script.js"></script>
-		
-	</body>
 
-<!-- doccure/profile-settings.html  30 Nov 2019 04:12:18 GMT -->
-</html>
+@endsection		

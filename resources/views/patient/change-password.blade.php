@@ -36,13 +36,35 @@
 								<div class="widget-profile pro-widget-content">
 									<div class="profile-info-widget">
 										<a href="#" class="booking-doc-img">
-											<img src="assets/img/patients/patient.jpg" alt="User Image">
+											{{-- <img src="assets/img/patients/patient.jpg" alt="User Image"> --}}
+											<img src="{{ $patient->profile_img ? asset($patient->profile_img) : asset('assets/img/patients/patient.jpg') }}"
+                         						alt="{{ $patient->name }}">
 										</a>
 										<div class="profile-det-info">
-											<h3>Richard Wilson</h3>
+											<h3>{{ $patient->name }}</h3>
 											<div class="patient-details">
-												<h5><i class="fas fa-birthday-cake"></i> 24 Jul 1983, 38 years</h5>
-												<h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Newyork, USA</h5>
+												{{-- <h5><i class="fas fa-birthday-cake"></i> 24 Jul 1983, 38 years</h5> --}}
+												@if($patient->dob)
+													<h5>
+														<i class="fas fa-birthday-cake"></i>
+
+														{{ \Carbon\Carbon::parse($patient->dob)->format('d M Y') }}
+
+														@php
+															$age = \Carbon\Carbon::parse($patient->dob)->age;
+														@endphp
+
+														, {{ $age }} Years
+													</h5>
+												@endif
+												{{-- <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Newyork, USA</h5> --}}
+												<h5 class="mb-0">
+													<i class="fas fa-map-marker-alt"></i>
+
+													{{ collect([$patient->city, $patient->state])
+														->filter()
+														->implode(', ') ?: 'Location not added' }}
+												</h5>
 											</div>
 										</div>
 									</div>
@@ -51,12 +73,12 @@
 									<nav class="dashboard-menu">
 										<ul>
 											<li>
-												<a href="patient-dashboard.html">
+												<a href="{{ route('patient.dashboard') }}">
 													<i class="fas fa-columns"></i>
 													<span>Dashboard</span>
 												</a>
 											</li>
-											<li>
+											{{-- <li>
 												<a href="favourites.html">
 													<i class="fas fa-bookmark"></i>
 													<span>Favourites</span>
@@ -68,21 +90,21 @@
 													<span>Message</span>
 													<small class="unread-msg">23</small>
 												</a>
-											</li>
+											</li> --}}
 											<li>
-												<a href="profile-settings.html">
+												<a href="{{ route('patient.profile') }}">
 													<i class="fas fa-user-cog"></i>
 													<span>Profile Settings</span>
 												</a>
 											</li>
 											<li class="active">
-												<a href="change-password.html">
+												<a href="{{ route('patient.change.password') }}">
 													<i class="fas fa-lock"></i>
 													<span>Change Password</span>
 												</a>
 											</li>
 											<li>
-												<a href="index-2.html">
+												<a href="{{ route('patient.logout') }}">
 													<i class="fas fa-sign-out-alt"></i>
 													<span>Logout</span>
 												</a>
@@ -103,7 +125,7 @@
 										<div class="col-md-12 col-lg-6">
 										
 											<!-- Change Password Form -->
-											<form>
+											{{-- <form>
 												<div class="form-group">
 													<label>Old Password</label>
 													<input type="password" class="form-control">
@@ -119,8 +141,91 @@
 												<div class="submit-section">
 													<button type="submit" class="btn btn-primary submit-btn">Save Changes</button>
 												</div>
-											</form>
+											</form> --}}
 											<!-- /Change Password Form -->
+											<form action="{{ route('patient.change-password.update') }}" method="POST">
+
+												@csrf
+
+												<div class="form-group">
+													<label>Current Password</label>
+
+													<div class="input-group">
+
+														<input
+															type="password"
+															name="old_password"
+															id="old_password"
+															class="form-control"
+															required>
+
+														<div class="input-group-append">
+															<span class="input-group-text toggle-password" data-target="old_password">
+																<i class="fas fa-eye"></i>
+															</span>
+														</div>
+
+													</div>
+
+													@error('old_password')
+														<small class="text-danger">{{ $message }}</small>
+													@enderror
+												</div>
+
+												<div class="form-group">
+													<label>New Password</label>
+
+													<div class="input-group">
+
+														<input
+															type="password"
+															name="password"
+															id="password"
+															class="form-control"
+															required>
+
+														<div class="input-group-append">
+															<span class="input-group-text toggle-password" data-target="password">
+																<i class="fas fa-eye"></i>
+															</span>
+														</div>
+
+													</div>
+
+													@error('password')
+														<small class="text-danger">{{ $message }}</small>
+													@enderror
+												</div>
+
+												<div class="form-group">
+													<label>Confirm Password</label>
+
+													<div class="input-group">
+
+														<input
+															type="password"
+															name="password_confirmation"
+															id="password_confirmation"
+															class="form-control"
+															required>
+
+														<div class="input-group-append">
+															<span class="input-group-text toggle-password" data-target="password_confirmation">
+																<i class="fas fa-eye"></i>
+															</span>
+														</div>
+
+													</div>
+
+												</div>
+
+												<div class="submit-section">
+													<button type="submit" class="btn btn-primary submit-btn">
+														Save Changes
+													</button>
+												</div>
+
+											</form>
 											
 										</div>
 									</div>
@@ -133,163 +238,52 @@
 			</div>		
 			<!-- /Page Content -->
    
-			<!-- Footer -->
-			<footer class="footer">
-				
-				<!-- Footer Top -->
-				<div class="footer-top">
-					<div class="container-fluid">
-						<div class="row">
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-about">
-									<div class="footer-logo">
-										<img src="assets/img/footer-logo.png" alt="logo">
-									</div>
-									<div class="footer-about-content">
-										<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
-										<div class="social-icon">
-											<ul>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-facebook-f"></i> </a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-twitter"></i> </a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-dribbble"></i> </a>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-menu">
-									<h2 class="footer-title">For Patients</h2>
-									<ul>
-										<li><a href="search.html"><i class="fas fa-angle-double-right"></i> Search for Doctors</a></li>
-										<li><a href="login.html"><i class="fas fa-angle-double-right"></i> Login</a></li>
-										<li><a href="register.html"><i class="fas fa-angle-double-right"></i> Register</a></li>
-										<li><a href="booking.html"><i class="fas fa-angle-double-right"></i> Booking</a></li>
-										<li><a href="patient-dashboard.html"><i class="fas fa-angle-double-right"></i> Patient Dashboard</a></li>
-									</ul>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-menu">
-									<h2 class="footer-title">For Doctors</h2>
-									<ul>
-										<li><a href="appointments.html"><i class="fas fa-angle-double-right"></i> Appointments</a></li>
-										<li><a href="chat.html"><i class="fas fa-angle-double-right"></i> Chat</a></li>
-										<li><a href="login.html"><i class="fas fa-angle-double-right"></i> Login</a></li>
-										<li><a href="doctor-register.html"><i class="fas fa-angle-double-right"></i> Register</a></li>
-										<li><a href="doctor-dashboard.html"><i class="fas fa-angle-double-right"></i> Doctor Dashboard</a></li>
-									</ul>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-contact">
-									<h2 class="footer-title">Contact Us</h2>
-									<div class="footer-contact-info">
-										<div class="footer-address">
-											<span><i class="fas fa-map-marker-alt"></i></span>
-											<p> 3556  Beech Street, San Francisco,<br> California, CA 94108 </p>
-										</div>
-										<p>
-											<i class="fas fa-phone-alt"></i>
-											+1 315 369 5943
-										</p>
-										<p class="mb-0">
-											<i class="fas fa-envelope"></i>
-											doccure@example.com
-										</p>
-									</div>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-						</div>
-					</div>
-				</div>
-				<!-- /Footer Top -->
-				
-				<!-- Footer Bottom -->
-                <div class="footer-bottom">
-					<div class="container-fluid">
-					
-						<!-- Copyright -->
-						<div class="copyright">
-							<div class="row">
-								<div class="col-md-6 col-lg-6">
-									<div class="copyright-text">
-										<p class="mb-0"><a href="templateshub.net">Templates Hub</a></p>
-									</div>
-								</div>
-								<div class="col-md-6 col-lg-6">
-								
-									<!-- Copyright Menu -->
-									<div class="copyright-menu">
-										<ul class="policy-menu">
-											<li><a href="term-condition.html">Terms and Conditions</a></li>
-											<li><a href="privacy-policy.html">Policy</a></li>
-										</ul>
-									</div>
-									<!-- /Copyright Menu -->
-									
-								</div>
-							</div>
-						</div>
-						<!-- /Copyright -->
-						
-					</div>
-				</div>
-				<!-- /Footer Bottom -->
-				
-			</footer>
-			<!-- /Footer -->
+			@include('layouts.footer')
+			
 		   
 		</div>
 		<!-- /Main Wrapper -->
-	  
-		<!-- jQuery -->
-		<script src="assets/js/jquery.min.js"></script>
-		
-		<!-- Bootstrap Core JS -->
-		<script src="assets/js/popper.min.js"></script>
-		<script src="assets/js/bootstrap.min.js"></script>
-		
-		<!-- Sticky Sidebar JS -->
-        <script src="assets/plugins/theia-sticky-sidebar/ResizeSensor.js"></script>
-        <script src="assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js"></script>
-		
-		<!-- Custom JS -->
-		<script src="assets/js/script.js"></script>
-		
-	</body>
 
-<!-- doccure/change-password.html  30 Nov 2019 04:12:18 GMT -->
-</html>
+		<script>
+			document.querySelectorAll(".toggle-password").forEach(function(button){
+
+				button.addEventListener("click", function(){
+
+					let input = document.getElementById(this.dataset.target);
+					let icon = this.querySelector("i");
+
+					if(input.type === "password"){
+
+						input.type = "text";
+						icon.classList.remove("fa-eye");
+						icon.classList.add("fa-eye-slash");
+
+					}else{
+
+						input.type = "password";
+						icon.classList.remove("fa-eye-slash");
+						icon.classList.add("fa-eye");
+
+					}
+
+				});
+
+			});
+		</script>
+		<style>
+			.input-group-text{
+				cursor:pointer;
+				background:#fff;
+			}
+
+			.input-group-text i{
+				color:#6c757d;
+			}
+		</style>
+
+@endsection
+		
+
+
+
+	  

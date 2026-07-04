@@ -98,6 +98,43 @@ class AuthController extends Controller
         return view('patient.register');
     }
 
+    public function registerPatientWeb(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|max:150',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'required|unique:users,phone',
+            'password' => 'required|min:6|confirmed',
+            'dob' => 'required|date',
+            'gender' => 'required|in:male,female,other',
+        ],[
+            'name.required' => 'Name is required.',
+            'email.required' => 'Email is required.',
+            'email.unique' => 'Email already exists.',
+            'phone.required' => 'Phone number is required.',
+            'phone.unique' => 'Phone number already exists.',
+            'password.required' => 'Password is required.',
+            'password.confirmed' => 'Passwords do not match.',
+        ]);
+
+        $user = User::create([
+            'role' => 'patient',
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'password' => Hash::make($request->password),
+            'dob' => $request->dob,
+            'gender' => $request->gender,
+            'status' => 'active',
+        ]);
+
+        Auth::login($user);
+
+        return redirect()
+            ->route('home')
+            ->with('success', 'Registration completed successfully.');
+    }
+
 
     /* ================= LOGIN ================= */
     public function showLogin()
@@ -110,6 +147,60 @@ class AuthController extends Controller
         return view('patient.login');
     }
 
+    public function loginpatient(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (Auth::attempt([
+            'email' => $request->email,
+            'password' => $request->password,
+        ])) {
+
+            $request->session()->regenerate();
+
+            $user = Auth::user();
+
+            // Check role
+            if ($user->role !== 'patient') {
+                Auth::logout();
+
+                return back()->with('error', 'Only patients can login from this portal.');
+            }
+
+            // Check active status
+            if (!$user->is_active) {
+                Auth::logout();
+
+                return back()->with('error', 'Your account is inactive.');
+            }
+
+            // Check blocked status
+            if ($user->is_blocked) {
+                Auth::logout();
+
+                return back()->with('error', 'Your account has been blocked.');
+            }
+
+            return redirect()->route('home')
+                ->with('success', 'Welcome back, ' . $user->name . '!');
+        }
+
+        return back()->withInput($request->only('email'))
+                    ->with('error', 'Invalid email or password.');
+    }
+
+    public function logoutpatient(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
+    }
+
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
@@ -119,6 +210,10 @@ class AuthController extends Controller
 
             if (Auth::user()->role === 'admin') {
                 return redirect()->route('admin.dashboard');
+            }
+
+            if (Auth::user()->role === 'patient') {
+                return redirect()->route('home');
             }
 
             return redirect('/admin/dashboard');

@@ -15,7 +15,7 @@ use App\Http\Controllers\Admin\AdminAppointmentController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PatientController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PatientAppointmentController;
 
 
 Route::get('/doctor/{id}',[DoctorController::class, 'show'])->name('doctor.profile');
@@ -26,15 +26,32 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [HomeController::class, 'index'])->name('search');
 
 Route::get('/patient-dashboard', [PatientController::class, 'index'])->name('patient.dashboard');
+Route::get('/patient-profile', [PatientController::class, 'profile'])->name('patient.profile');
+Route::post('/patient/profile/update', [PatientController::class, 'updateProfile'])
+    ->name('patient.profile.update');
+
+Route::get('/change-password', [PatientController::class, 'changePassword'])->name('patient.change.password');
+Route::post('/patient/change-password', [PatientController::class, 'updatePassword'])
+    ->name('patient.change-password.update');
+
 Route::get('login', [AuthController::class, 'patientlogin'])->name('login');
 Route::get('patient-login', [AuthController::class, 'patientlogin'])->name('patient.login');
-Route::get('patient-register', [AuthController::class, 'patientregister'])->name('patient.register');
+Route::get('/patient-register', [AuthController::class, 'patientregister'])->name('patient.register');
+Route::post('/patient-login', [AuthController::class, 'loginpatient'])->name('patient.login.check');
+Route::get('/logout-patient', [AuthController::class, 'logoutpatient'])->name('patient.logout');
+Route::post('/patient/register', [AuthController::class, 'registerPatientWeb'])
+    ->name('patient.register.store');
 
-
-Route::middleware('auth')->group(function () {
-     Route::get('/booking/{doctor}',[PatientAppointmentController::class, 'booking'])->name('booking');
-});
+// Route::middleware('auth')->group(function () {
+     Route::get('/booking/{id}',[PatientAppointmentController::class, 'booking'])->name('doctor.booking');
+// });
 //user apis
+    Route::get('/doctor-payment',[PatientAppointmentController::class, 'bookingpay'])->name('doctor.payment');
+    Route::post('/doctor-book', [PatientAppointmentController::class, 'store'])
+        ->name('doctor.book');
+
+    Route::post('/patient/subscribe-web', [PatientAppointmentController::class, 'subscribeWeb'])
+        ->name('patient.subscribe.web');
 
 
 

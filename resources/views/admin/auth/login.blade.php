@@ -498,7 +498,7 @@
 
         <form method="POST" action="{{ route('admin.login.check') }}">
             @csrf
-
+            
             <div class="field-group">
                 <label class="field-label" for="email">Email address</label>
                 <div class="field-wrap">

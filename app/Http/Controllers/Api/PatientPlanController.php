@@ -121,6 +121,7 @@ class PatientPlanController extends BaseApiController
                 'status' => 'active',
             ]);
 
+            
             return $this->sendResponse([
                 'status' => true,
                 'data' => $subscription

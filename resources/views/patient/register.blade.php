@@ -25,7 +25,7 @@
 										</div>
 										
 										<!-- Register Form -->
-										<form action="https://dreamguys.co.in/demo/doccure/doctor-dashboard.html">
+										{{-- <form action="https://dreamguys.co.in/demo/doccure/doctor-dashboard.html">
 											<div class="form-group form-focus">
 												<input type="text" class="form-control floating">
 												<label class="focus-label">Name</label>
@@ -54,8 +54,104 @@
 													<a href="#" class="btn btn-google btn-block"><i class="fab fa-google mr-1"></i> Login</a>
 												</div>
 											</div>
-										</form>
+										</form> --}}
 										<!-- /Register Form -->
+
+										<form action="{{ route('patient.register.store') }}" method="POST">
+
+											@csrf
+
+											<div class="form-group form-focus">
+												<input
+													type="text"
+													name="name"
+													class="form-control floating"
+													value="{{ old('name') }}"
+													required>
+												<label class="focus-label">Name</label>
+											</div>
+
+											<div class="form-group form-focus">
+												<input
+													type="email"
+													name="email"
+													class="form-control floating"
+													value="{{ old('email') }}"
+													required>
+												<label class="focus-label">Email Address</label>
+											</div>
+
+											<div class="form-group form-focus">
+												<input
+													type="text"
+													name="phone"
+													class="form-control floating"
+													value="{{ old('phone') }}"
+													required>
+												<label class="focus-label">Mobile Number</label>
+											</div>
+
+											<div class="form-group">
+												<label for="dob">Date of Birth <span class="text-danger">*</span></label>
+
+												<input
+													type="date"
+													id="dob"
+													name="dob"
+													class="form-control floating"
+													value="{{ old('dob') }}"
+													required>
+											</div>
+
+											<div class="form-group">
+												<select name="gender" class="form-control" required>
+													<option value="">Select Gender</option>
+
+													<option value="male" {{ old('gender')=='male'?'selected':'' }}>
+														Male
+													</option>
+
+													<option value="female" {{ old('gender')=='female'?'selected':'' }}>
+														Female
+													</option>
+
+													<option value="other" {{ old('gender')=='other'?'selected':'' }}>
+														Other
+													</option>
+												</select>
+											</div>
+
+											<div class="form-group form-focus">
+												<input
+													type="password"
+													name="password"
+													class="form-control floating"
+													required>
+												<label class="focus-label">Create Password</label>
+											</div>
+
+											<div class="form-group form-focus">
+												<input
+													type="password"
+													name="password_confirmation"
+													class="form-control floating"
+													required>
+												<label class="focus-label">Confirm Password</label>
+											</div>
+
+											<div class="text-right">
+												<a class="forgot-link" href="{{ route('login') }}">
+													Already have an account?
+												</a>
+											</div>
+
+											<button
+												class="btn btn-primary btn-block btn-lg login-btn"
+												type="submit">
+												Signup
+											</button>
+
+										</form>
 										
 									</div>
 								</div>

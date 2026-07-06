@@ -334,12 +334,12 @@
 															</span>
 														</li>
 
-														<li>
+														{{-- <li>
 															Consultation Fee
 															<span>
 																₹{{ number_format($doctor->fee->doctor_fee ?? 0,2) }}
 															</span>
-														</li>
+														</li> --}}
 
 													</ul>
 
@@ -356,12 +356,12 @@
 													</li>
 													
 
-													<li>
+													{{-- <li>
 														<span>Total Amount</span>
 														<span class="total-cost">
 															₹{{ number_format(($doctor->fee->doctor_fee ?? 0) * $slots->count(),2) }}
 														</span>
-													</li>
+													</li> --}}
 
 												</ul>
 											</div>

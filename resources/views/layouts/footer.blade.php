@@ -11,7 +11,7 @@
 								<div class="footer-widget footer-about">
 									<div class="footer-logo">
 										{{-- <img src="assets/img/footer-logo.png" alt="logo"> --}}
-										<img src="{{ asset('assets/img/logo.png') }}" class="img-fluid" alt="Logo">
+										<img src="{{ asset('assets/img/logo.png') }}" class="img-fluid w-50" alt="Logo">
 
 									</div>
 									<div class="footer-about-content">
@@ -141,12 +141,12 @@
 						<!-- Copyright -->
 						<div class="copyright">
 							<div class="row">
-								<div class="col-md-6 col-lg-6">
+								{{-- <div class="col-md-6 col-lg-6">
 									<div class="copyright-text">
 										<p class="mb-0"><a href="templateshub.net">Templates Hub</a></p>
 									</div>
-								</div>
-								<div class="col-md-6 col-lg-6">
+								</div> --}}
+								<div class="col-md-12 col-lg-12 text-right">
 								
 									<!-- Copyright Menu -->
 									<div class="copyright-menu">

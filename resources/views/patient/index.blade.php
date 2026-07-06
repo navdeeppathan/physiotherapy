@@ -12,25 +12,44 @@
 				<div class="container-fluid">
 					<div class="banner-wrapper">
 						<div class="banner-header text-center">
-							<h1>Search Doctor, Make an Appointment</h1>
-							<p>Discover the best doctors, clinic & hospital the city nearest to you.</p>
+							<h1>Expert Physiotherapy at Your Home</h1>
+							<p>Book trusted physiotherapists for personalized home care.</p>
 						</div>
                          
 						<!-- Search -->
-						<div class="search-box">
+						{{-- <div class="search-box">
 							<form action="templateshub.net">
 								<div class="form-group search-location">
 									<input type="text" class="form-control" placeholder="Search Location">
 									<span class="form-text">Based on your Location</span>
 								</div>
 								<div class="form-group search-info">
-									<input type="text" class="form-control" placeholder="Search Doctors, Clinics, Hospitals, Diseases Etc">
-									<span class="form-text">Ex : Dental or Sugar Check up etc</span>
+									<input type="text" class="form-control" placeholder="Search by Physiotherapy Category or Name">
+									<span class="form-text">Ex: Orthopedic, Neurological, Sports, Pediatric</span>
 								</div>
 								<button type="submit" class="btn btn-primary search-btn"><i class="fas fa-search"></i> <span>Search</span></button>
 							</form>
-						</div>
+						</div> --}}
 						<!-- /Search -->
+						<div class="search-box">
+
+							<div class="form-group search-info">
+
+								<input
+									type="text"
+									id="doctorSearch"
+									class="form-control"
+									placeholder="Search Doctor or Physiotherapy Category">
+
+								<span class="form-text">
+									Ex: Orthopedic, Neurological, Dr. Rahul
+								</span>
+
+								<div id="doctorDropdown"></div>
+
+							</div>
+
+						</div>
 						
 					</div>
 				</div>
@@ -41,77 +60,41 @@
 			<section class="section section-specialities">
 				<div class="container-fluid">
 					<div class="section-header text-center">
-						<h2>Clinic and Specialities</h2>
+						<h2>Specialities</h2>
 						<p class="sub-title">
-							 Our multidisciplinary team of specialists is committed to delivering exceptional healthcare through advanced medical expertise, modern facilities, and personalized treatment plans.
+							Choose from trusted physiotherapy specialties for personalized care.
 						</p>
 					</div>
 					<div class="row justify-content-center">
 						<div class="col-md-9">
 							<!-- Slider -->
-							<div class="specialities-slider slider">
 							
-								<!-- Slider Item -->
-								{{-- <div class="speicality-item text-center">
-									<div class="speicality-img">
-										<img src="assets/img/specialities/specialities-01.png" class="img-fluid" alt="Speciality">
-										<span><i class="fa fa-circle" aria-hidden="true"></i></span>
-									</div>
-									<p>Urology</p>
-								</div>	 --}}
-								<!-- /Slider Item -->
-								
-								<!-- Slider Item -->
-								{{-- <div class="speicality-item text-center">
-									<div class="speicality-img">
-										<img src="assets/img/specialities/specialities-02.png" class="img-fluid" alt="Speciality">
-										<span><i class="fa fa-circle" aria-hidden="true"></i></span>
-									</div>
-									<p>Neurology</p>	
-								</div>							 --}}
-								<!-- /Slider Item -->
-								
-								<!-- Slider Item -->
-								{{-- <div class="speicality-item text-center">
-									<div class="speicality-img">
-										<img src="assets/img/specialities/specialities-03.png" class="img-fluid" alt="Speciality">
-										<span><i class="fa fa-circle" aria-hidden="true"></i></span>
-									</div>	
-									<p>Orthopedic</p>	
-								</div>							 --}}
-								<!-- /Slider Item -->
-								
-								<!-- Slider Item -->
-								{{-- <div class="speicality-item text-center">
-									<div class="speicality-img">
-										<img src="assets/img/specialities/specialities-04.png" class="img-fluid" alt="Speciality">
-										<span><i class="fa fa-circle" aria-hidden="true"></i></span>
-									</div>	
-									<p>Cardiologist</p>	
-								</div>							 --}}
-								<!-- /Slider Item -->
-								
-								<!-- Slider Item -->
-								{{-- <div class="speicality-item text-center">
-									<div class="speicality-img">
-										<img src="assets/img/specialities/specialities-05.png" class="img-fluid" alt="Speciality">
-										<span><i class="fa fa-circle" aria-hidden="true"></i></span>
-									</div>	
-									<p>Dentist</p>
-								</div>							 --}}
+							<div class="specialities-slider slider">
+						
 								<!-- /Slider Item -->
 
+								{{-- <div class="speicality-item text-center specialization-filter active"
+									data-id="all">
+
+									<div class="speicality-img">
+										<img src="{{ asset('assets/img/fulllogo.png') }}" class="img-fluid">
+									</div>
+
+									<p>All</p>
+
+								</div> --}}
+
 								@foreach($specializations as $specialization)
-									<div class="speicality-item text-center">
+									<div class="speicality-item text-center specialization-filter" data-id="{{ $specialization->id }}">
 										<div class="speicality-img">
 											<img
 												src="{{ asset('images/specializations/' . $specialization->icon) }}"
 												class="img-fluid"
 												alt="{{ $specialization->name }}"
 											>
-											<span>
+											{{-- <span>
 												<i class="fa fa-circle" aria-hidden="true"></i>
-											</span>
+											</span> --}}
 										</div>
 
 										<p>{{ $specialization->name }}</p>
@@ -131,22 +114,12 @@
 			<section class="section section-doctor">
 				<div class="container-fluid">
 				   <div class="row">
-						<div class="col-lg-4">
-							<div class="section-header ">
-								<h2>Book Our Doctor</h2>
-								<p>Lorem Ipsum is simply dummy text </p>
-							</div>
-							<div class="about-content">
-								<p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum.</p>
-								<p>web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes</p>					
-								<a href="javascript:;">Read More..</a>
-							</div>
-						</div>
-						<div class="col-lg-8">
+						
+						<div class="col-lg-12">
 							<div class="doctor-slider slider">
 
 								@foreach($doctors as $doctor)
-									<div class="profile-widget">
+									<div class="profile-widget doctor-card" data-specialization="{{ optional($doctor->profile)->specialization }}">
 										<div class="doc-img">
 											<a href="{{ route('doctor.profile', $doctor->id) }}">
 												<img
@@ -202,8 +175,8 @@
 												<li>
 													<i class="fas fa-map-marker-alt"></i>
 
-													{{ optional($doctor->profile)->city }},
-													{{ optional($doctor->profile)->state }}
+													{{ optional($doctor->address) ? $doctor->address : $doctor->profile->clinic_address }}
+													{{-- {{ optional($doctor->profile)->clinic_address ?? '' }} --}}
 												</li>
 
 												<li>
@@ -213,11 +186,11 @@
 													Years Experience
 												</li>
 
-												<li>
+												{{-- <li>
 													<i class="far fa-money-bill-alt"></i>
 
 													₹{{ number_format(optional($doctor->fee)->total_fee ?? 0,2) }}
-												</li>
+												</li> --}}
 
 											</ul>
 
@@ -225,7 +198,7 @@
 
 												<div class="col-6">
 													<a 
-													{{-- href="{{ route('doctor.profile', $doctor->id) }}" --}}
+													href="{{ route('doctor.profile', $doctor->id) }}"
 													class="btn view-btn">
 														View Profile
 													</a>
@@ -638,7 +611,7 @@
 			<!-- /Popular Section -->
 		   
 		   <!-- Availabe Features -->
-		   	<section class="section section-features">
+		   	{{-- <section class="section section-features">
 				<div class="container-fluid">
 				   <div class="row">
 						<div class="col-md-5 features-img">
@@ -695,11 +668,11 @@
 						</div>
 				   </div>
 				</div>
-			</section>		
+			</section>		 --}}
 			<!-- Availabe Features -->
 	
 			<!-- CTA -->
-			<section class="section" style="padding:0 0 80px;">
+			{{-- <section class="section" style="padding:0 0 80px;">
 				<div class="container-fluid">
 					<div class="pp-cta">
 						<div>
@@ -709,10 +682,349 @@
 						<a href="{{ route('search') }}">Find a Doctor</a>
 					</div>
 				</div>
-			</section>
+			</section> --}}
 			<!-- /CTA -->
+
+			<!-- About Section -->
+			<section class="section section-features">
+				<div class="container-fluid">
+
+					<div class="row align-items-center">
+
+						{{-- <div class="col-lg-5">
+
+							<img src="{{ asset('assets/img/img-01.jpg') }}"
+								class="img-fluid rounded shadow"
+								alt="About">
+
+						</div> --}}
+
+						<div class="col-lg-12">
+
+							<div class="section-header text-center">
+
+								<h2>Expert Physiotherapy at Your Doorstep</h2>
+
+								<p class="mb-4">
+									We connect patients with experienced and certified physiotherapists
+									who provide personalized home visit treatments. Our goal is to make
+									professional physiotherapy accessible, convenient, and comfortable for
+									everyone.
+								</p>
+
+							</div>
+
+							<div class="row">
+
+								<div class="col-md-6">
+
+									<div class="feature-item text-center">
+
+										<i class="fas fa-user-md fa-3x text-primary mb-3"></i>
+
+										<h5>Certified Experts</h5>
+
+										<p>
+											Experienced physiotherapists delivering quality care.
+										</p>
+
+									</div>
+
+								</div>
+
+								<div class="col-md-6">
+
+									<div class="feature-item text-center">
+
+										<i class="fas fa-home fa-3x text-primary mb-3"></i>
+
+										<h5>Home Visits</h5>
+
+										<p>
+											Comfortable treatment at your home without travel.
+										</p>
+
+									</div>
+
+								</div>
+
+								<div class="col-md-6">
+
+									<div class="feature-item text-center">
+
+										<i class="fas fa-heartbeat fa-3x text-primary mb-3"></i>
+
+										<h5>Personalized Care</h5>
+
+										<p>
+											Treatment plans designed for every patient's recovery.
+										</p>
+
+									</div>
+
+								</div>
+
+								<div class="col-md-6">
+
+									<div class="feature-item text-center">
+
+										<i class="fas fa-calendar-check fa-3x text-primary mb-3"></i>
+
+										<h5>Easy Booking</h5>
+
+										<p>
+											Book appointments online anytime with a few clicks.
+										</p>
+
+									</div>
+
+								</div>
+
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+			</section>
+
+
+			<!-- Why Choose Us -->
+
+			<section class="section">
+
+				<div class="container">
+
+					<div class="section-header text-center">
+
+						<h2>Why Choose Us</h2>
+
+						<p class="sub-title">
+							Trusted physiotherapy services focused on your recovery.
+						</p>
+
+					</div>
+
+					<div class="row">
+
+						<div class="col-lg-3 col-md-6">
+
+							<div class="card text-center">
+
+								<div class="card-body">
+
+									<i class="fas fa-user-md fa-3x text-primary mb-3"></i>
+
+									<h3>100+</h3>
+
+									<p>Physiotherapists</p>
+
+								</div>
+
+							</div>
+
+						</div>
+
+						<div class="col-lg-3 col-md-6">
+
+							<div class="card text-center">
+
+								<div class="card-body">
+
+									<i class="fas fa-users fa-3x text-success mb-3"></i>
+
+									<h3>5,000+</h3>
+
+									<p>Happy Patients</p>
+
+								</div>
+
+							</div>
+
+						</div>
+
+						<div class="col-lg-3 col-md-6">
+
+							<div class="card text-center">
+
+								<div class="card-body">
+
+									<i class="fas fa-star fa-3x text-warning mb-3"></i>
+
+									<h3>4.9</h3>
+
+									<p>Average Rating</p>
+
+								</div>
+
+							</div>
+
+						</div>
+
+						<div class="col-lg-3 col-md-6">
+
+							<div class="card text-center">
+
+								<div class="card-body">
+
+									<i class="fas fa-home fa-3x text-danger mb-3"></i>
+
+									<h3>24×7</h3>
+
+									<p>Home Visit Support</p>
+
+								</div>
+
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+
+			</section>
+
+
+   
 
 			@include('layouts.footer')
 
 		</div>
+
+		<style>
+			.specialization-filter{
+				cursor:pointer;
+			}
+
+			
+
+			.specialization-filter.active p{
+
+				color:#09e5ab;
+
+			}
+
+		</style>
+
+		<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+
+
+		<script>
+
+			$('#doctorSearch').keyup(function(){
+
+				let keyword=$(this).val();
+
+				if(keyword.length<1){
+
+					$('#doctorDropdown').hide();
+
+					return;
+
+				}
+
+				$.ajax({
+
+					url:"{{ route('search.doctors') }}",
+
+					type:"GET",
+
+					data:{
+						keyword:keyword
+					},
+
+					success:function(response){
+
+						let html='';
+
+						if(response.length==0){
+
+							html='<div class="doctor-item">No Doctor Found</div>';
+
+						}else{
+
+							response.forEach(function(item){
+
+								let image=item.profile_img
+								?"/uploads/profile/"+item.profile_img
+								:"{{ asset('assets/img/doctors/doctor-thumb-01.jpg') }}";
+
+								let specialization='';
+
+								let specialization_id='';
+
+								if(item.profile && item.profile.specializationdata){
+
+									specialization=item.profile.specializationdata.name;
+
+									specialization_id=item.profile.specializationdata.id;
+
+								}
+
+								html+=`
+
+								<div class="doctor-item"
+
+									onclick="window.location='/doctor/${item.id}'">
+
+									<img src="${image}">
+
+									<div>
+
+										<div class="doctor-name">${item.name}</div>
+
+										<div class="doctor-specialization">${specialization}</div>
+
+									</div>
+
+								</div>
+
+								`;
+
+							});
+
+						}
+
+						$('#doctorDropdown').html(html).show();
+
+					}
+
+				});
+
+			});
+
+			$(document).click(function(e){
+
+				if(!$(e.target).closest('.search-info').length){
+
+					$('#doctorDropdown').hide();
+
+				}
+
+			});
+
+			$('.specialization-filter').click(function () {
+
+				$('.specialization-filter').removeClass('active');
+				$(this).addClass('active');
+
+				let id = $(this).data('id');
+
+				$('.doctor-slider').slick('slickUnfilter');
+
+				if(id != 'all'){
+
+					$('.doctor-slider').slick('slickFilter', function () {
+
+						return $(this).find('.doctor-card').data('specialization') == id;
+
+					});
+
+				}
+
+			});
+
+		</script>
 @endsection

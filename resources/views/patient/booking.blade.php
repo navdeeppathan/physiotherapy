@@ -288,12 +288,22 @@
 							{{-- <div class="submit-section proceed-btn text-right">
 								<a href="{{route('doctor.payment')}}" class="btn btn-primary submit-btn">Proceed to Pay</a>
 							</div> --}}
+							
 							<div class="submit-section proceed-btn text-right">
-								<a href="javascript:void(0)"
-								id="proceedPayment"
-								class="btn btn-primary submit-btn">
-									Proceed to Pay
-								</a>
+
+								@auth
+									<a href="javascript:void(0)"
+									id="proceedPayment"
+									class="btn btn-primary submit-btn">
+										Proceed to Pay
+									</a>
+								@else
+									<a href="{{ route('login') }}"
+									class="btn btn-primary submit-btn">
+										Login to Continue
+									</a>
+								@endauth
+
 							</div>
 							<!-- /Submit Section -->
 							

@@ -21,8 +21,9 @@ use App\Http\Controllers\PatientAppointmentController;
 Route::get('/doctor/{id}',[DoctorController::class, 'show'])->name('doctor.profile');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-
-
+Route::get('/search-doctors', [HomeController::class, 'searchDoctors'])->name('search.doctors');
+Route::get('/doctor/{id}', [HomeController::class,'doctorProfile'])
+    ->name('doctor.profile');
 Route::get('/search', [HomeController::class, 'index'])->name('search');
 
 Route::get('/patient-dashboard', [PatientController::class, 'index'])->name('patient.dashboard');

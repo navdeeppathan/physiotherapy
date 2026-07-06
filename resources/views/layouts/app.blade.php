@@ -64,55 +64,55 @@
 
 		@if(session('success'))
 		<script>
-		Swal.fire({
-			icon: 'success',
-			title: 'Success',
-			text: @json(session('success')),
-			confirmButtonColor: '#09dca4'
-		});
+			Swal.fire({
+				icon: 'success',
+				title: 'Success',
+				text: @json(session('success')),
+				confirmButtonColor: '#09dca4'
+			});
 		</script>
 		@endif
 
 		@if(session('error'))
 		<script>
-		Swal.fire({
-			icon: 'error',
-			title: 'Oops...',
-			text: @json(session('error')),
-			confirmButtonColor: '#e74c3c'
-		});
+			Swal.fire({
+				icon: 'error',
+				title: 'Oops...',
+				text: @json(session('error')),
+				confirmButtonColor: '#e74c3c'
+			});
 		</script>
 		@endif
 
 		@if(session('warning'))
 		<script>
-		Swal.fire({
-			icon: 'warning',
-			title: 'Warning',
-			text: @json(session('warning')),
-			confirmButtonColor: '#f39c12'
-		});
+			Swal.fire({
+				icon: 'warning',
+				title: 'Warning',
+				text: @json(session('warning')),
+				confirmButtonColor: '#f39c12'
+			});
 		</script>
 		@endif
 
 		@if(session('info'))
 		<script>
-		Swal.fire({
-			icon: 'info',
-			title: 'Information',
-			text: @json(session('info')),
-			confirmButtonColor: '#3498db'
-		});
+			Swal.fire({
+				icon: 'info',
+				title: 'Information',
+				text: @json(session('info')),
+				confirmButtonColor: '#3498db'
+			});
 		</script>
 		@endif
 
 		@if ($errors->any())
 		<script>
-		Swal.fire({
-			icon: 'error',
-			title: 'Validation Error',
-			html: `{!! implode('<br>', $errors->all()) !!}`
-		});
+			Swal.fire({
+				icon: 'error',
+				title: 'Validation Error',
+				html: `{!! implode('<br>', $errors->all()) !!}`
+			});
 		</script>
 		@endif
 	</body>

@@ -603,10 +603,10 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    @if($doctor->profile && $doctor->profile->consultation_fee)
+                    @if($doctor->profile && $doctor->fee)
                         <div class="fee-highlight">
                             <span class="fee-highlight-label">Doctor Fee</span>
-                            <span class="fee-highlight-value">₹{{ number_format($doctor->profile->consultation_fee) }}</span>
+                            <span class="fee-highlight-value">₹{{ number_format($doctor->fee->doctor_fee ) }}</span>
                         </div>
                     @else
                         <div class="no-data">

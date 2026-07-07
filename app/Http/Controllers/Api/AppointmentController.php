@@ -168,7 +168,15 @@ class AppointmentController extends BaseApiController
                 
             ]);
 
-            
+            // Add address details if booking for other table user_addresses
+            $address = DB::table('user_addresses')->insert([
+                'user_id' => $patient->id ,
+                'state' => $request->state ?? "Maharashtra",
+                'city' => $request->city ?? "Mumbai",
+                'postal_code' => $request->pincode ?? null,
+                'country' => "India",
+                'address' => $request->address_description ?? "Mumbai, Maharashtra, India",
+            ]);
 
             // ✅ Create Payment (NEW)
             $payment = Payment::create([
@@ -700,12 +708,13 @@ class AppointmentController extends BaseApiController
     {
         $patient = Auth::user();
 
-        $appointments = Appointment::with(['doctor','timeSlot'])
-            ->where('patient_id', $patient->id)
-            ->whereIn('status', ['pending', 'confirmed'])
-            ->whereDate('appointment_date', '>=', Carbon::today())
-            ->orderBy('appointment_date')
-            ->get();
+        $appointments = Appointment::with(['doctor','timeSlot','patient'])
+                        ->where('patient_id', $patient->id)
+                        ->whereIn('status', ['pending', 'confirmed'])
+                        ->whereDate('appointment_date', '>=', Carbon::today())
+                        ->orderBy('appointment_date')
+                        ->get();
+
 
         return $this->sendResponse(
             $appointments,
@@ -717,7 +726,7 @@ class AppointmentController extends BaseApiController
     {
         $patient = Auth::user();
 
-        $appointments = Appointment::with(['doctor','timeSlot'])
+        $appointments = Appointment::with(['doctor','timeSlot','patient'])
             ->where('patient_id', $patient->id)
             ->where('status', 'completed')
             ->latest()
@@ -733,7 +742,7 @@ class AppointmentController extends BaseApiController
     {
         $patient = Auth::user();
 
-        $appointments = Appointment::with(['doctor','timeSlot'])
+        $appointments = Appointment::with(['doctor','timeSlot','patient'])
             ->where('patient_id', $patient->id)
             ->where('is_rescheduled', true)
             ->whereHas('reschedules')

@@ -131,11 +131,6 @@ use App\Http\Controllers\Api\SpecializationControllerApi;
 use App\Http\Controllers\Api\UserSubscriptionController;
 use App\Http\Controllers\Api\PatientPlanController;
 
-/*
-|--------------------------------------------------------------------------
-| PUBLIC ROUTES
-|--------------------------------------------------------------------------
-*/
 
 // Authentication
 Route::post('/login', [UserController::class, 'login']);
@@ -143,11 +138,7 @@ Route::post('/login-patient', [UserController::class, 'loginPatient']);
 Route::post('/verify-otp', [UserController::class, 'verifyOtp']);
 Route::post('/register-patient', [UserController::class, 'registerPatient']);
 
-/*
-|--------------------------------------------------------------------------
-| AUTHENTICATED ROUTES
-|--------------------------------------------------------------------------
-*/
+
 Route::post('users', [UserController::class, 'store']);
 
 Route::middleware('auth:api')->group(function () {
@@ -155,7 +146,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [UserController::class, 'logout']);
 
     // Users
-     Route::apiResource('users', UserController::class)->except(['store']);
+    Route::apiResource('users', UserController::class)->except(['store']);
 
     Route::post('/change-password', [UserController::class, 'changePassword']);
 
@@ -196,10 +187,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/expire-subscriptions', [UserSubscriptionController::class, 'expireSubscriptions']);
     Route::post('/appointment/{id}/cancel', [AppointmentController::class, 'cancel']);
 
-    Route::get(
-        '/cancellation-reasons',
-        [AppointmentController::class, 'getCancellationReasons']
-    );
+    Route::get('/cancellation-reasons',[AppointmentController::class, 'getCancellationReasons']);
 });
 
 
@@ -232,31 +220,14 @@ Route::middleware(['auth:api', 'role:doctor'])->group(function () {
     Route::post('/doctor/appointments/{id}/reschedule', [AppointmentController::class, 'reschedule']);
 
     Route::get('/doctor/appointments/upcoming', [AppointmentController::class, 'doctorUpcomingAppointments']);
-
     Route::get('/doctor/appointments/completed', [AppointmentController::class, 'doctorCompletedAppointments']);
     Route::get('/doctor/cancelled-appointments', [AppointmentController::class, 'doctorCancelledAppointments']);
-
     Route::get('/doctor/appointments/shifted', [AppointmentController::class, 'doctorShiftedAppointments']);
+    Route::post('/doctor/appointment-transfer-request',[AppointmentController::class, 'requestAppointmentTransfer']);
 
-    Route::post(
-        '/doctor/appointment-transfer-request',
-        [AppointmentController::class, 'requestAppointmentTransfer']
-    );
-
-    Route::get(
-        '/doctor/my-transfer-requests',
-        [AppointmentController::class, 'myTransferRequests']
-    );
-
-    Route::get(
-        '/doctor/transfer-request/{id}',
-        [AppointmentController::class, 'transferRequestDetail']
-    );
-
-    Route::delete(
-        '/transfer-request/{id}',
-        [AppointmentController::class, 'cancelTransferRequest']
-    );
+    Route::get('/doctor/my-transfer-requests',[AppointmentController::class, 'myTransferRequests']);
+    Route::get('/doctor/transfer-request/{id}',[AppointmentController::class, 'transferRequestDetail']);
+    Route::delete('/transfer-request/{id}',[AppointmentController::class, 'cancelTransferRequest']);
 });
 
 
@@ -264,7 +235,6 @@ Route::middleware(['auth:api', 'role:patient'])->group(function () {
 
     Route::post('/appointment/book', [AppointmentController::class, 'book']);
     Route::get('/patient/appointments', [AppointmentController::class, 'patientAppointments']);
-
 
     Route::post('/update-patient/{id}', [UserController::class, 'updatePatient']);
     Route::get('/patient/{id}/payments', [UserController::class, 'patientPaymentHistory']);
@@ -275,4 +245,5 @@ Route::middleware(['auth:api', 'role:patient'])->group(function () {
     Route::get('/patient/cancelled-appointments', [AppointmentController::class, 'patientCancelledAppointments']);
 
     Route::get('/patient/appointments/shifted', [AppointmentController::class, 'patientShiftedAppointments']);
+
 });

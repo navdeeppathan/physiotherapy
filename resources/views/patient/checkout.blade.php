@@ -34,122 +34,58 @@
 							<div class="card">
 								<div class="card-body">
 								
-									<!-- Checkout Form -->
-									{{-- <form action="https://dreamguys.co.in/demo/doccure/booking-success.html">
-									
-										<!-- Personal Information -->
-										<div class="info-widget">
-											<h4 class="card-title">Personal Information</h4>
-											<div class="row">
-												<div class="col-md-6 col-sm-12">
-													<div class="form-group card-label">
-														<label>First Name</label>
-														<input class="form-control" type="text">
-													</div>
-												</div>
-												<div class="col-md-6 col-sm-12">
-													<div class="form-group card-label">
-														<label>Last Name</label>
-														<input class="form-control" type="text">
-													</div>
-												</div>
-												<div class="col-md-6 col-sm-12">
-													<div class="form-group card-label">
-														<label>Email</label>
-														<input class="form-control" type="email">
-													</div>
-												</div>
-												<div class="col-md-6 col-sm-12">
-													<div class="form-group card-label">
-														<label>Phone</label>
-														<input class="form-control" type="text">
-													</div>
-												</div>
-											</div>
-											<div class="exist-customer">Existing Customer? <a href="#">Click here to login</a></div>
-										</div>
-										<!-- /Personal Information -->
-										
-										<div class="payment-widget">
-											<h4 class="card-title">Payment Method</h4>
-											
-											<!-- Credit Card Payment -->
-											<div class="payment-list">
-												<label class="payment-radio credit-card-option">
-													<input type="radio" name="radio" checked>
-													<span class="checkmark"></span>
-													Credit card
-												</label>
-												<div class="row">
-													<div class="col-md-6">
-														<div class="form-group card-label">
-															<label for="card_name">Name on Card</label>
-															<input class="form-control" id="card_name" type="text">
-														</div>
-													</div>
-													<div class="col-md-6">
-														<div class="form-group card-label">
-															<label for="card_number">Card Number</label>
-															<input class="form-control" id="card_number" placeholder="1234  5678  9876  5432" type="text">
-														</div>
-													</div>
-													<div class="col-md-4">
-														<div class="form-group card-label">
-															<label for="expiry_month">Expiry Month</label>
-															<input class="form-control" id="expiry_month" placeholder="MM" type="text">
-														</div>
-													</div>
-													<div class="col-md-4">
-														<div class="form-group card-label">
-															<label for="expiry_year">Expiry Year</label>
-															<input class="form-control" id="expiry_year" placeholder="YY" type="text">
-														</div>
-													</div>
-													<div class="col-md-4">
-														<div class="form-group card-label">
-															<label for="cvv">CVV</label>
-															<input class="form-control" id="cvv" type="text">
-														</div>
-													</div>
-												</div>
-											</div>
-											<!-- /Credit Card Payment -->
-											
-											<!-- Paypal Payment -->
-											<div class="payment-list">
-												<label class="payment-radio paypal-option">
-													<input type="radio" name="radio">
-													<span class="checkmark"></span>
-													Paypal
-												</label>
-											</div>
-											<!-- /Paypal Payment -->
-											
-											<!-- Terms Accept -->
-											<div class="terms-accept">
-												<div class="custom-checkbox">
-												   <input type="checkbox" id="terms_accept">
-												   <label for="terms_accept">I have read and accept <a href="#">Terms &amp; Conditions</a></label>
-												</div>
-											</div>
-											<!-- /Terms Accept -->
-											
-											<!-- Submit Section -->
-											<div class="submit-section mt-4">
-												<button type="submit" class="btn btn-primary submit-btn">Confirm and Pay</button>
-											</div>
-											<!-- /Submit Section -->
-											
-										</div>
-									</form> --}}
-									<!-- /Checkout Form -->
-
 									<form action="{{ route('doctor.book') }}" method="POST">
 
 										@csrf
 
+										{{-- Selected Plan --}}
+										<div class="card mb-4 border-primary">
+											<div class="card-header bg-primary text-white">
+												<h5 class="mb-0">Selected Plan</h5>
+											</div>
+
+											<div class="card-body">
+												<div class="row">
+
+													<div class="col-md-6 mb-3">
+														<strong>Plan Name</strong>
+														<p class="mb-0">{{ $plan->name }}</p>
+													</div>
+
+													<div class="col-md-6 mb-3">
+														<strong>Price</strong>
+														<p class="mb-0">₹{{ number_format($plan->price, 2) }}</p>
+													</div>
+
+													<div class="col-md-6 mb-3">
+														<strong>Total Appointments</strong>
+														<p class="mb-0">{{ $plan->total_appointments }}</p>
+													</div>
+
+													@if($plan->duration)
+														<div class="col-md-6 mb-3">
+															<strong>Validity</strong>
+															<p class="mb-0">{{ $plan->duration }}</p>
+														</div>
+													@endif
+
+													@if($plan->description)
+														<div class="col-12">
+															<strong>Description</strong>
+															<p class="mb-0 text-muted">
+																{{ $plan->description }}
+															</p>
+														</div>
+													@endif
+
+												</div>
+											</div>
+										</div>
+
+										<input type="hidden" name="plan_id" value="{{ $plan->id }}">
+
 										<input type="hidden" name="doctor_id" value="{{ $doctor->id }}">
-										<input type="hidden" name="subscription_id" value="{{ $subscriptionId }}">
+										{{-- <input type="hidden" name="subscription_id" value="{{ $subscriptionId }}"> --}}
 										@foreach($slots as $slot)
 
 										<input type="hidden"
@@ -162,29 +98,29 @@
 										<input type="hidden" name="booking_for" value="self">
 
 										<div class="info-widget">
-											<h4 class="card-title">Personal Information</h4>
+											<h4 class="card-title">Problem Description</h4>
 
 											<div class="row">
 
-												<div class="col-md-6 col-sm-12">
+												{{-- <div class="col-md-6 col-sm-12">
 													<div class="form-group card-label">
 														<label>Full Name</label>
-														<input class="form-control" type="text" name="patient_name" required>
+														<input class="form-control" type="text" value="{{ old('patient_name') }}" name="patient_name" required>
 													</div>
-												</div>
+												</div> --}}
 
-												<div class="col-md-6 col-sm-12">
+												{{-- <div class="col-md-6 col-sm-12">
 													<div class="form-group card-label">
 														<label>Age</label>
-														<input class="form-control" type="number" name="patient_age" required>
+														<input class="form-control" type="number" value="{{ old('patient_age') }}" name="patient_age" required>
 													</div>
-												</div>
+												</div> --}}
 
-												<div class="col-md-6 col-sm-12">
+												{{-- <div class="col-md-6 col-sm-12">
 													<div class="form-group card-label">
 														<label>Gender</label>
 
-														<select name="patient_gender" class="form-control">
+														<select name="patient_gender"  class="form-control">
 
 															<option value="">Select</option>
 															<option value="male">Male</option>
@@ -194,11 +130,11 @@
 														</select>
 
 													</div>
-												</div>
+												</div> --}}
 
 												<div class="col-md-12">
 													<div class="form-group card-label">
-														<label>Problem Description</label>
+														{{-- <label>Problem Description</label> --}}
 
 														<textarea
 															name="problem_description"
@@ -307,45 +243,47 @@
 									</div> --}}
 									<div class="booking-summary">
 										<div class="booking-item-wrap">
+											{{-- Appointment List --}}
+											<div style="max-height:320px; overflow-y:auto; padding-right:5px;">
+												@foreach($slots as $index => $slot)
 
-											@foreach($slots as $index => $slot)
+													<div class="border rounded p-3 mb-3">
 
-												<div class="border rounded p-3 mb-3">
+														<h6 class="mb-3">
+															Appointment {{ $index + 1 }}
+														</h6>
 
-													<h6 class="mb-3">
-														Appointment {{ $index + 1 }}
-													</h6>
+														<ul class="booking-date mb-0">
 
-													<ul class="booking-date mb-0">
+															<li>
+																Date
+																<span>
+																	{{ $slot->availabilityDate->available_date->format('d M Y') }}
+																</span>
+															</li>
 
-														<li>
-															Date
-															<span>
-																{{ $slot->availabilityDate->available_date->format('d M Y') }}
-															</span>
-														</li>
+															<li>
+																Time
+																<span>
+																	{{ \Carbon\Carbon::parse($slot->start_time)->format('h:i A') }}
+																	-
+																	{{ \Carbon\Carbon::parse($slot->end_time)->format('h:i A') }}
+																</span>
+															</li>
 
-														<li>
-															Time
-															<span>
-																{{ \Carbon\Carbon::parse($slot->start_time)->format('h:i A') }}
-																-
-																{{ \Carbon\Carbon::parse($slot->end_time)->format('h:i A') }}
-															</span>
-														</li>
+															{{-- <li>
+																Consultation Fee
+																<span>
+																	₹{{ number_format($doctor->fee->doctor_fee ?? 0,2) }}
+																</span>
+															</li> --}}
 
-														{{-- <li>
-															Consultation Fee
-															<span>
-																₹{{ number_format($doctor->fee->doctor_fee ?? 0,2) }}
-															</span>
-														</li> --}}
+														</ul>
 
-													</ul>
+													</div>
 
-												</div>
-
-											@endforeach
+												@endforeach
+											</div>	
 
 											<div class="booking-total">
 												<ul class="booking-total-list">
@@ -353,6 +291,13 @@
 													<li>
 														<span>Total Appointments</span>
 														<span class="total-cost">{{ $slots->count() }}</span>
+													</li>
+
+													<li>
+														<span>Total Amount</span>
+														<span class="total-cost">
+															₹{{ number_format($plan->price, 2) }}
+														</span>
 													</li>
 													
 

@@ -60,8 +60,10 @@
 
                             <p>
                                 <strong>Location</strong><br>
-                                {{ optional($doctor->profile)->city }},
-                                {{ optional($doctor->profile)->state }}
+								{{ optional($doctor->address) ? $doctor->address : $doctor->profile->clinic_address }}
+
+                                {{-- {{ optional($doctor->profile)->city }},
+                                {{ optional($doctor->profile)->state }} --}}
                             </p>
 
                             @if(optional($doctor->profile)->home_visit_available)

@@ -30,7 +30,10 @@ Class PatientAppointmentController extends Controller
             'availabilityDates.timeSlots' => function ($query) {
                 $query->where('is_booked', false)
                     ->orderBy('start_time');
-            }
+            },
+
+            'profile.specializationdata'
+
         ])->findOrFail($id);
 
         $patientPlans =PatientPlan::where('status','active')->get();            
@@ -52,14 +55,16 @@ Class PatientAppointmentController extends Controller
                     ->whereIn('id', explode(',', $request->slots))
                     ->get();
 
-        $subscriptionId = $request->subscription_id;
+        // $subscriptionId = $request->subscription_id;
+
+        $plan = PatientPlan::findOrFail($request->plan_id);
         return view('patient.checkout',compact(
 
             'doctor',
 
             'slots',
 
-            'subscriptionId'
+            'plan'
 
         ));
     }
@@ -71,33 +76,88 @@ Class PatientAppointmentController extends Controller
     {
         $request->validate([
             'doctor_id' => 'required|exists:users,id',
+            'plan_id' => 'required|exists:patient_plans,id',
             'slot_ids'=>'required|array',
             'slot_ids.*'=>'exists:doctor_time_slots,id',
             'booking_for' => 'required|in:self,other',
-            'patient_name' => 'required|string|max:150',
-            'patient_age' => 'nullable|integer',
-            'patient_gender' => 'nullable|in:male,female,other',
+            // 'patient_name' => 'required|string|max:150',
+            // 'patient_age' => 'nullable|integer',
+            // 'patient_gender' => 'nullable|in:male,female,other',
             'problem_description' => 'nullable|string',
-            'subscription_id' => 'required|exists:patient_plan_subscriptions,id',
+            // 'subscription_id' => 'required|exists:patient_plan_subscriptions,id',
         ]);
 
         DB::beginTransaction();
 
+        $patient = Auth::user();
+
+        
+
+        $patient_age = Carbon::parse($patient->dob)->age;
+
         try {
 
-            $patient = Auth::user();
+            // $patient = Auth::user();
 
             $bookedCount = 0;
 
-            $subscription = PatientPlanSubscription::where('id', $request->subscription_id)
-                ->where('patient_id', $patient->id)
-                ->where('status', 'active')
-                ->lockForUpdate()
-                ->first();
+            // $subscription = PatientPlanSubscription::where('id', $request->subscription_id)
+            //     ->where('patient_id', $patient->id)
+            //     ->where('status', 'active')
+            //     ->lockForUpdate()
+            //     ->first();
 
-            if (!$subscription) {
-                return back()->with('error','Invalid subscription.');
+            $patient = Auth::user();
+
+            $plan = PatientPlan::findOrFail($request->plan_id);
+
+            $start = now();
+
+            switch ($plan->duration) {
+                case 'weekly':
+                    $end = $start->copy()->addWeek();
+                    break;
+                case 'monthly':
+                    $end = $start->copy()->addMonth();
+                    break;
+                case 'quarterly':
+                    $end = $start->copy()->addMonths(3);
+                    break;
+                case 'half_yearly':
+                    $end = $start->copy()->addMonths(6);
+                    break;
+                case 'yearly':
+                    $end = $start->copy()->addYear();
+                    break;
+                default:
+                    $end = $start->copy()->addMonth();
             }
+
+            $subscription = PatientPlanSubscription::create([
+                'patient_id' => $patient->id,
+                'patient_plan_id' => $plan->id,
+                'start_date' => $start,
+                'end_date' => $end,
+                'used_appointments' => 0,
+                'remaining_appointments' => $plan->total_appointments,
+                'payment_status' => 'paid',
+                'payment_method' => 'Manual',
+                'status' => 'active',
+            ]);
+
+            
+
+            Payment::create([
+                'appointment_id' => null,
+                'patient_id' => $patient->id,
+                'doctor_id' => $request->doctor_id,
+                'amount' => $plan->price,
+                'currency' => 'INR',
+                'payment_method' => 'Manual',
+                'transaction_id' => 'TXN-' . time(),
+                'status' => 'success',
+                'paid_at' => now(),
+            ]);
 
             foreach($request->slot_ids as $slotId){
 
@@ -140,11 +200,11 @@ Class PatientAppointmentController extends Controller
 
                     'booking_for'=>$request->booking_for,
 
-                    'patient_name'=>$request->patient_name,
+                    'patient_name'=>$patient->name,
 
-                    'patient_age'=>$request->patient_age,
+                    'patient_age'=>$patient_age,
 
-                    'patient_gender'=>$request->patient_gender,
+                    'patient_gender'=>$patient->gender,
 
                     'problem_description'=>$request->problem_description,
 

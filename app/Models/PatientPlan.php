@@ -20,6 +20,9 @@ class PatientPlan extends Model
         'total_appointments',
         'duration',
         'status',
+        'discount_percentage',
+        'discount_amount',
+        'original_price'
     ];
 
     protected $casts = [

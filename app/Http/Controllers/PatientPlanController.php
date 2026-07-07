@@ -27,13 +27,21 @@ class PatientPlanController extends Controller
             'price' => 'required|numeric',
             'total_appointments' => 'required|integer',
             'duration' => 'required',
+            'original_price' => 'nullable|numeric',
+            'discount_percentage' => 'nullable|numeric',
+            
         ]);
 
+         $originalPrice = $request->original_price ?: $request->price;
+        $discountAmount = $originalPrice - $request->price;
         PatientPlan::create([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
             'price' => $request->price,
+            'original_price' => $originalPrice,
+            'discount_percentage' => $request->discount_percentage ?? 0,
+            'discount_amount' => $discountAmount,
             'currency' => $request->currency ?? 'INR',
             'total_appointments' => $request->total_appointments,
             'duration' => $request->duration,
@@ -61,13 +69,22 @@ class PatientPlanController extends Controller
             'price' => 'required|numeric',
             'total_appointments' => 'required|integer',
             'duration' => 'required',
+            'original_price' => 'nullable|numeric',
+            'discount_percentage' => 'nullable|numeric',
         ]);
+
+         $originalPrice = $request->original_price ?: $request->price;
+
+        $discountAmount = $originalPrice - $request->price;
 
         $plan->update([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
             'price' => $request->price,
+            'original_price' => $originalPrice,
+            'discount_percentage' => $request->discount_percentage ?? 0,
+            'discount_amount' => $discountAmount,
             'currency' => $request->currency ?? 'INR',
             'total_appointments' => $request->total_appointments,
             'duration' => $request->duration,

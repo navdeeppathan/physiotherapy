@@ -205,12 +205,19 @@
 												</div>
 
 												<div class="col-6">
+													@auth
 													<a 
-													
-													href="{{ route('doctor.booking', $doctor->id) }}"
-													class="btn book-btn">
+														href="{{ route('doctor.booking', $doctor->id) }}"
+														class="btn book-btn">
 														Book Now
 													</a>
+													@else
+													<a 
+														href="{{ route('login') }}"
+														class="btn book-btn">
+														Book Now
+													</a>
+													@endauth
 												</div>
 
 											</div>

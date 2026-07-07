@@ -212,7 +212,9 @@ table.plans-table{ width:100%;border-collapse:collapse; }
           <tr>
             <th>#</th>
             <th>Plan Name</th>
-            <th>Price</th>
+            <th>Original Price</th>
+            <th>Discount</th>
+            <th>Final Price</th>
             <th>Appointments</th>
             <th>Duration</th>
             <th>Status</th>
@@ -228,9 +230,39 @@ table.plans-table{ width:100%;border-collapse:collapse; }
 
             <td><div class="cell-plan-name">{{ $plan->name }}</div></td>
 
-            <td>
+            {{-- <td>
               <div class="price-cur">{{ $plan->currency }}</div>
               <div class="price-val">{{ $plan->price }}</div>
+            </td> --}}
+            {{-- Original Price --}}
+            <td>
+                ₹{{ number_format($plan->original_price,2) }}
+            </td>
+
+            {{-- Discount --}}
+            <td>
+                @if($plan->discount_percentage > 0)
+
+                    <span class="badge-pill bp-active">
+                        {{ rtrim(rtrim($plan->discount_percentage,'0'),'.') }}%
+                    </span>
+
+                    <br>
+
+                    <small class="text-danger">
+                        -₹{{ number_format($plan->discount_amount,2) }}
+                    </small>
+
+                @else
+
+                    <span class="text-muted">No Discount</span>
+
+                @endif
+            </td>
+
+            {{-- Final Price --}}
+            <td>
+                <strong>₹{{ number_format($plan->price,2) }}</strong>
             </td>
 
             <td>

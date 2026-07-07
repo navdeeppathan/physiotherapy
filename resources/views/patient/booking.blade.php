@@ -40,13 +40,14 @@
 										</a>
 										<div class="booking-info">
 											<h4><a href="doctor-profile.html">{{ $doctor->name }}</a></h4>
+											<p>{{ $doctor->profile->specializationdata->name }}, {{ $doctor->profile->qualification }}</p>
 											<div class="rating">
 												<i class="fas fa-star filled"></i>
 												<i class="fas fa-star filled"></i>
 												<i class="fas fa-star filled"></i>
 												<i class="fas fa-star filled"></i>
 												<i class="fas fa-star"></i>
-												<span class="d-inline-block average-rating">35</span>
+												<span class="d-inline-block average-rating">{{ $doctor->profile->experience_years }} Years</span>
 											</div>
 											<p class="text-muted mb-0"><i class="fas fa-map-marker-alt"></i> {{ $doctor->profile->clinic_address }}</p>
 										</div>
@@ -58,54 +59,11 @@
 							<div class="card booking-schedule schedule-widget">
 							
 								<!-- Schedule Header -->
-								<div class="schedule-header">
+								{{-- <div class="schedule-header">
 									<div class="row">
 										<div class="col-md-12">
 										
-											<!-- Day Slot -->
-											{{-- <div class="day-slot">
-												<ul>
-													<li class="left-arrow">
-														<a href="#">
-															<i class="fa fa-chevron-left"></i>
-														</a>
-													</li>
-													<li>
-														<span>Mon</span>
-														<span class="slot-date">11 Nov <small class="slot-year">2019</small></span>
-													</li>
-													<li>
-														<span>Tue</span>
-														<span class="slot-date">12 Nov <small class="slot-year">2019</small></span>
-													</li>
-													<li>
-														<span>Wed</span>
-														<span class="slot-date">13 Nov <small class="slot-year">2019</small></span>
-													</li>
-													<li>
-														<span>Thu</span>
-														<span class="slot-date">14 Nov <small class="slot-year">2019</small></span>
-													</li>
-													<li>
-														<span>Fri</span>
-														<span class="slot-date">15 Nov <small class="slot-year">2019</small></span>
-													</li>
-													<li>
-														<span>Sat</span>
-														<span class="slot-date">16 Nov <small class="slot-year">2019</small></span>
-													</li>
-													<li>
-														<span>Sun</span>
-														<span class="slot-date">17 Nov <small class="slot-year">2019</small></span>
-													</li>
-													<li class="right-arrow">
-														<a href="#">
-															<i class="fa fa-chevron-right"></i>
-														</a>
-													</li>
-												</ul>
-											</div> --}}
-											<!-- /Day Slot -->
+											
 
 											<div class="day-slot">
 												<ul>
@@ -147,97 +105,15 @@
 											
 										</div>
 									</div>
-								</div>
+								</div> --}}
 								<!-- /Schedule Header -->
 								
 								<!-- Schedule Content -->
-								<div class="schedule-cont">
+								{{-- <div class="schedule-cont">
 									<div class="row">
 										<div class="col-md-12">
 										
-											<!-- Time Slot -->
-											{{-- <div class="time-slot">
-												<ul class="clearfix">
-													<li>
-														<a class="timing" href="#">
-															<span>9:00</span> <span>AM</span>
-														</a>
-														<a class="timing" href="#">
-															<span>10:00</span> <span>AM</span>
-														</a>
-														<a class="timing" href="#">
-															<span>11:00</span> <span>AM</span>
-														</a>
-													</li>
-													<li>
-														<a class="timing" href="#">
-															<span>9:00</span> <span>AM</span>
-														</a>
-														<a class="timing" href="#">
-															<span>10:00</span> <span>AM</span>
-														</a>
-														<a class="timing" href="#">
-															<span>11:00</span> <span>AM</span>
-														</a>
-													</li>
-													<li>
-														<a class="timing" href="#">
-															<span>9:00</span> <span>AM</span>
-														</a>
-														<a class="timing" href="#">
-															<span>10:00</span> <span>AM</span>
-														</a>
-														<a class="timing" href="#">
-															<span>11:00</span> <span>AM</span>
-														</a>
-													</li>
-													<li>
-														<a class="timing" href="#">
-															<span>9:00</span> <span>AM</span>
-														</a>
-														<a class="timing" href="#">
-															<span>10:00</span> <span>AM</span>
-														</a>
-														<a class="timing" href="#">
-															<span>11:00</span> <span>AM</span>
-														</a>
-													</li>
-													<li>
-														<a class="timing" href="#">
-															<span>9:00</span> <span>AM</span>
-														</a>
-														<a class="timing selected" href="#">
-															<span>10:00</span> <span>AM</span>
-														</a>
-														<a class="timing" href="#">
-															<span>11:00</span> <span>AM</span>
-														</a>
-													</li>
-													<li>
-														<a class="timing" href="#">
-															<span>9:00</span> <span>AM</span>
-														</a>
-														<a class="timing" href="#">
-															<span>10:00</span> <span>AM</span>
-														</a>
-														<a class="timing" href="#">
-															<span>11:00</span> <span>AM</span>
-														</a>
-													</li>
-													<li>
-														<a class="timing" href="#">
-															<span>9:00</span> <span>AM</span>
-														</a>
-														<a class="timing" href="#">
-															<span>10:00</span> <span>AM</span>
-														</a>
-														<a class="timing" href="#">
-															<span>11:00</span> <span>AM</span>
-														</a>
-													</li>
-												</ul>
-											</div> --}}
-											<!-- /Time Slot -->
+											
 
 											<div class="time-slot">
 												<ul class="clearfix">
@@ -275,6 +151,61 @@
 												</ul>
 											</div>
 											
+										</div>
+									</div>
+								</div> --}}
+								<!-- /Schedule Content -->
+
+								<!-- Schedule Content -->
+								<!-- Schedule Content -->
+								<div class="schedule-cont">
+									<div class="row">
+										<div class="col-md-12">
+
+											@foreach($doctor->availabilityDates as $availability)
+
+												<div class="mb-4">
+
+													<!-- Date Heading -->
+													<div class="d-flex align-items-center mb-3">
+														<h5 class="mb-0 font-weight-bold">
+															{{ \Carbon\Carbon::parse($availability->available_date)->format('l, d M Y') }}
+														</h5>
+													</div>
+
+													<!-- Slots -->
+													<div class="time-slot">
+														<ul class="clearfix">
+
+															@forelse($availability->timeSlots as $slot)
+
+																<li class="d-inline-block mb-2 mr-2">
+																	<a href="javascript:void(0)"
+																		class="timing {{ $slot->is_booked ? 'disabled' : '' }}"
+																		data-slot-id="{{ $slot->id }}">
+
+																		<span>
+																			{{ \Carbon\Carbon::parse($slot->start_time)->format('h:i A') }}
+																		</span>
+
+																	</a>
+																</li>
+
+															@empty
+
+																<li class="text-muted">
+																	No Slots Available
+																</li>
+
+															@endforelse
+
+														</ul>
+													</div>
+
+												</div>
+
+											@endforeach
+
 										</div>
 									</div>
 								</div>
@@ -321,6 +252,14 @@
 		   
 		</div>
 
+		<form id="paymentForm" action="{{ route('doctor.payment') }}" method="POST" style="display:none;">
+			@csrf
+
+			<input type="hidden" name="doctor_id" id="paymentDoctorId">
+			<input type="hidden" name="plan_id" id="paymentPlanId">
+			<input type="hidden" name="slots" id="paymentSlots">
+		</form>
+
 		<div class="modal fade" id="planModal" tabindex="-1">
 			<div class="modal-dialog modal-xl modal-dialog-centered">
 				<div class="modal-content border-0 shadow-lg">
@@ -337,77 +276,92 @@
 
 						<div class="row justify-content-center">
 
-							@foreach($patientPlans as $plan)
+							<div class="plan-list">
 
-							<div class="col-lg-4 col-md-6 mb-4">
+								@foreach($patientPlans as $plan)
 
-								<div class="pricing-card plan-card"
+								@php
+									$perSession = $plan->total_appointments > 0
+										? $plan->price / $plan->total_appointments
+										: 0;
+								@endphp
+
+								<div class="plan-card"
 									data-id="{{ $plan->id }}"
 									data-total="{{ $plan->total_appointments }}">
 
-									<div class="pricing-header">
+									<div class="plan-radio">
+										<span class="radio-circle"></span>
+									</div>
 
-										<h6>{{ strtoupper($plan->name) }}</h6>
+									<div class="plan-content">
 
-										<h2>
+										<div class="plan-top">
 
-											₹{{ number_format($plan->price,0) }}
+											<div class="plan-name">
+												{{ $plan->name }}
+											</div>
 
-											<small>/ {{ ucfirst($plan->duration) }}</small>
+											<div class="plan-price">
+												₹{{ number_format($plan->price,2) }}
+											</div>
 
-										</h2>
+										</div>
+
+										<div class="plan-bottom">
+
+											<div class="session-price">
+												₹{{ number_format($perSession,0) }} per session
+											</div>
+
+											<div class="discount-area">
+
+												@if($plan->discount_percentage > 0)
+
+													<span class="old-price">
+														₹{{ number_format($plan->original_price,2) }}
+													</span>
+
+													<span class="discount-badge">
+														{{ rtrim(rtrim($plan->discount_percentage,'0'),'.') }}% Off
+													</span>
+
+												@endif
+
+											</div>
+
+										</div>
 
 									</div>
 
-									<ul class="pricing-features">
-
-										<li>
-											<i class="fa fa-check text-success"></i>
-
-											{{ $plan->total_appointments }}
-											Appointments
-										</li>
-
-										<li>
-											<i class="fa fa-check text-success"></i>
-
-											{{ ucfirst($plan->duration) }}
-											Validity
-										</li>
-
-										<li>
-											<i class="fa fa-check text-success"></i>
-
-											Online Consultation
-										</li>
-
-										<li>
-											<i class="fa fa-check text-success"></i>
-
-											Priority Booking
-										</li>
-
-									</ul>
-
-									<div class="p-4">
-
-										<button
-											type="button"
-											class="btn btn-block btn-primary choose-plan">
-
-											Choose Plan
-
-										</button>
-
-									</div>
+									<button
+										type="button"
+										class="choose-plan d-none">
+									</button>
 
 								</div>
 
+								@endforeach
+
 							</div>
 
-							@endforeach
-
 						</div>
+
+					</div>
+
+					<div class="modal-footer justify-content-end">
+
+						<button
+							type="button"
+							class="btn btn-primary px-5"
+							id="continuePlan"
+							style="display:none; border-radius:30px;">
+
+							Continue
+
+							<i class="fa fa-arrow-right ml-2"></i>
+
+						</button>
 
 					</div>
 
@@ -417,7 +371,7 @@
 		
 		<script>
 
-			document.addEventListener("DOMContentLoaded", function () {
+			/*document.addEventListener("DOMContentLoaded", function () {
 
 				const visibleCount = 7;
 				let start = 0;
@@ -511,7 +465,7 @@
 
 				};
 
-			});
+			});*/
 
 
 			let selectedSlots = [];
@@ -572,13 +526,9 @@
 			});
 
 
-			let selectedPlan = null;
-
 			document.querySelectorAll(".plan-card").forEach(function(card){
 
-				card.querySelector(".choose-plan").onclick=function(e){
-
-					e.stopPropagation();
+				card.addEventListener("click",function(){
 
 					document.querySelectorAll(".plan-card").forEach(function(c){
 						c.classList.remove("active");
@@ -586,85 +536,56 @@
 
 					card.classList.add("active");
 
-					let total=parseInt(card.dataset.total);
+					selectedPlan = card;
 
-					if(selectedSlots.length!=total){
+					document.getElementById("continuePlan").style.display="inline-block";
 
-						Swal.fire({
-							icon: "info",
-							title: "Plan & Appointment Mismatch",
-							html: `
-								<p><strong>${card.querySelector('h6').innerText}</strong> includes <strong>${total} appointment(s)</strong>.</p>
-								<p>You have currently selected <strong>${selectedSlots.length}</strong> appointment slot(s).</p>
-								<p>Please select exactly <strong>${total}</strong> appointment slot(s) to proceed with this plan.</p>
-							`,
-							confirmButtonText: "Got it"
-						});
+				});
 
-						return;
+			});
 
-					}
+			document.getElementById("continuePlan").addEventListener("click", function () {
 
-					let doctorId=document.getElementById("doctor_id").value;
+				if (!selectedPlan) {
 
-					let query=new URLSearchParams({
-
-						doctor_id:doctorId,
-
-						plan_id:card.dataset.id,
-
-						slots:selectedSlots.join(",")
-
+					Swal.fire({
+						icon: "warning",
+						title: "Select Plan",
+						text: "Please select a subscription plan."
 					});
 
-					// window.location.href="{{ route('doctor.payment') }}?"+query;
+					return;
+				}
 
-					fetch("{{ route('patient.subscribe.web') }}",{
+				let total = parseInt(selectedPlan.dataset.total);
 
-						method:"POST",
+				if (selectedSlots.length != total) {
 
-						headers:{
-							"Content-Type":"application/json",
-							"X-CSRF-TOKEN":"{{ csrf_token() }}"
-						},
+					Swal.fire({
+						icon: "info",
+						title: "Plan & Appointment Mismatch",
+						html: `
+							<p><strong>${selectedPlan.querySelector('.plan-name').innerText}</strong> includes <strong>${total}</strong> appointment(s).</p>
 
-						body:JSON.stringify({
+							<p>You selected <strong>${selectedSlots.length}</strong> appointment(s).</p>
 
-							plan_id:card.dataset.id,
-
-							doctor_id:doctorId,
-
-							slots:selectedSlots.join(",")
-
-						})
-
-					})
-					.then(res=>res.json())
-					.then(function(res){
-
-						if(res.status){
-
-							let query=new URLSearchParams({
-
-								doctor_id:doctorId,
-
-								subscription_id:res.subscription_id,
-
-								slots:selectedSlots.join(",")
-
-							});
-
-							window.location.href="{{ route('doctor.payment') }}?"+query;
-
-						}else{
-
-							Swal.fire("Error",res.message,"error");
-
-						}
-
+							<p>Please select exactly <strong>${total}</strong> appointment(s).</p>
+						`
 					});
 
-				};
+					return;
+				}
+
+				document.getElementById("paymentDoctorId").value =
+					document.getElementById("doctor_id").value;
+
+				document.getElementById("paymentPlanId").value =
+					selectedPlan.dataset.id;
+
+				document.getElementById("paymentSlots").value =
+					selectedSlots.join(",");
+
+				document.getElementById("paymentForm").submit();
 
 			});
 
@@ -690,88 +611,193 @@
 		pointer-events: none;
 	}
 
-	.pricing-card{
+	.plan-list{
+		display:flex;
+		flex-direction:column;
+		gap:18px;
+	}
+
+	.plan-card{
+
+		display:flex;
+		align-items:flex-start;
+		gap:18px;
 
 		background:#fff;
-		border-radius:10px;
-		overflow:hidden;
-		transition:.35s;
-		box-shadow:0 8px 25px rgba(0,0,0,.08);
+
+		border:2px solid #ededed;
+
+		border-radius:18px;
+
+		padding:18px;
+
 		cursor:pointer;
-		text-align:center;
-		border:2px solid transparent;
+
+		transition:.3s;
+
+		position:relative;
+
+		
+
+		
 
 	}
 
-	.pricing-card:hover{
+	.plan-card:hover{
 
-		transform:translateY(-10px);
+		border-color:#09e5ab;
 
-	}
-
-	.pricing-header{
-
-		background:#09e5ab;
-		color:#fff;
-		padding:30px 20px;
-
-	}
-
-	.pricing-header h6{
-
-		font-size:18px;
-		font-weight:700;
-		margin-bottom:15px;
-
-	}
-
-	.pricing-header h2{
-
-		font-size:42px;
-		font-weight:700;
-		margin:0;
-
-	}
-
-	.pricing-header small{
-
-		font-size:16px;
-
-	}
-
-	.pricing-features{
-
-		list-style:none;
-		padding:25px;
-		margin:0;
-
-	}
-
-	.pricing-features li{
-
-		padding:12px 0;
-		border-bottom:1px solid #eee;
-		font-size:15px;
+		box-shadow:0 10px 25px rgba(0,0,0,.08);
 
 	}
 
 	.plan-card.active{
 
-		transform:scale(1.08);
-		border:3px solid #09e5ab;
-		box-shadow:0 15px 35px rgba(9,229,171,.35);
+		border-color:#09e5ab;
+
+		box-shadow:0 12px 30px rgba(9,229,171,.20);
 
 	}
 
-	.plan-card.active .pricing-header{
+	.plan-radio{
 
-		background:#00c897;
+		margin-top:3px;
 
 	}
 
-	.choose-plan{
+	.radio-circle{
 
-		border-radius:30px;
+		width:22px;
+
+		height:22px;
+
+		border-radius:50%;
+
+		border:2px solid #cfcfcf;
+
+		display:block;
+
+		position:relative;
+
+	}
+
+	.plan-card.active .radio-circle{
+
+		border-color:#09e5ab;
+
+	}
+
+	.plan-card.active .radio-circle:after{
+
+		content:"";
+
+		position:absolute;
+
+		width:10px;
+
+		height:10px;
+
+		background:#09e5ab;
+
+		border-radius:50%;
+
+		left:50%;
+
+		top:50%;
+
+		transform:translate(-50%,-50%);
+
+	}
+
+	.plan-content{
+
+		flex:1;
+		
+
+	}
+
+	.plan-top{
+
+		display:flex;
+
+		justify-content:space-between;
+
+		align-items:center;
+
+		margin-bottom:10px;
+
+	}
+
+	.plan-name{
+
+		font-size:22px;
+
+		font-weight:700;
+
+		color:#222;
+
+	}
+
+	.plan-price{
+
+		font-size:32px;
+
+		font-weight:700;
+
+		color:#222;
+
+	}
+
+	.plan-bottom{
+
+		display:flex;
+
+		justify-content:space-between;
+
+		align-items:center;
+
+	}
+
+	.session-price{
+
+		color:#666;
+
+		font-size:17px;
+
+	}
+
+	.discount-area{
+
+		display:flex;
+
+		align-items:center;
+
+		gap:10px;
+
+	}
+
+	.old-price{
+
+		text-decoration:line-through;
+
+		color:#9d9d9d;
+
+		font-size:17px;
+
+	}
+
+	.discount-badge{
+
+		background:#eafaf2;
+
+		color:#2d9d59;
+
+		padding:5px 10px;
+
+		border-radius:8px;
+
+		font-size:14px;
+
 		font-weight:600;
 
 	}

@@ -139,7 +139,7 @@ textarea.field-input{ resize:vertical;min-height:90px; }
     <span class="breadcrumb-cur">Create Plan</span>
   </div>
 
-  <div class="page-eyebrow">Admin Panel</div>
+  {{-- <div class="page-eyebrow">Admin Panel</div> --}}
   <div class="page-title">Create <span>Patient Plan</span></div>
 
   <div class="panel">
@@ -171,11 +171,17 @@ textarea.field-input{ resize:vertical;min-height:90px; }
 
           <div class="field-row">
 
-            <div class="field-wrap">
+            {{-- <div class="field-wrap">
               <label class="field-label">Price</label>
               <input type="number" step="0.01" name="price" class="field-input" placeholder="0.00" required>
+            </div> --}}
+            <div class="field-wrap">
+                <label class="field-label">Status</label>
+                <select name="status" class="field-select">
+                    <option value="active" selected>Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
             </div>
-
             <div class="field-wrap">
               <label class="field-label">Total Appointments</label>
               <input type="number" name="total_appointments" class="field-input" placeholder="e.g. 10" required>
@@ -194,6 +200,47 @@ textarea.field-input{ resize:vertical;min-height:90px; }
 
           </div>
 
+
+
+          <div class="field-row">
+
+                <div class="field-wrap">
+                    <label class="field-label">Original Price</label>
+                    <input
+                        type="number"
+                        step="0.01"
+                        id="original_price"
+                        name="original_price"
+                        class="field-input"
+                        placeholder="18000"
+                        required>
+                </div>
+
+                <div class="field-wrap">
+                    <label class="field-label">Discount (%)</label>
+                    <input
+                        type="number"
+                        step="0.01"
+                        id="discount_percentage"
+                        name="discount_percentage"
+                        class="field-input"
+                        placeholder="17">
+                </div>
+
+                <div class="field-wrap">
+                    <label class="field-label">Final Price</label>
+                    <input
+                        type="number"
+                        step="0.01"
+                        id="price"
+                        name="price"
+                        class="field-input"
+                        readonly
+                        required>
+                </div>
+
+            </div>
+
           <div class="form-actions">
             <button type="submit" class="btn-save">
               <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
@@ -211,5 +258,29 @@ textarea.field-input{ resize:vertical;min-height:90px; }
 
   </div>
 </div>
+
+<script>
+function updatePrice() {
+
+    let original = parseFloat(document.getElementById('original_price').value) || 0;
+    let discount = parseFloat(document.getElementById('discount_percentage').value) || 0;
+
+    if (discount < 0) discount = 0;
+    if (discount > 100) discount = 100;
+
+    let finalPrice = original;
+
+    if (discount > 0) {
+        finalPrice = original - (original * discount / 100);
+    }
+
+    document.getElementById('price').value = finalPrice.toFixed(2);
+}
+
+document.getElementById('original_price').addEventListener('input', updatePrice);
+document.getElementById('discount_percentage').addEventListener('input', updatePrice);
+
+updatePrice();
+</script>
 
 @endsection

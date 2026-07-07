@@ -800,11 +800,12 @@ class UserController extends BaseApiController
                     [
                         'specialization'   => $request->specialization,
                         'experience_years' => $request->experience_years,
-                        
+                    
                         'clinic_address'   => $request->clinic_address,
                         'bio'              => $request->bio,
                         'career_path'      => $request->career_path,
                         'highlights'       => $request->highlights,
+                        'services'         => $request->service ?? null,
                     ]
                 );
 
@@ -1105,44 +1106,7 @@ class UserController extends BaseApiController
         \Log::info($doctorId);
         try {
 
-            // Doctor Fee
-            $doctorFee = AppointmentFee::where('doctor_id', $doctorId)
-                            ->value('doctor_fee') ?? 0;
-
-            $appointments = Appointment::with('patient')
-                            ->where('doctor_id', $doctorId)
-                            ->orderBy('appointment_date', 'desc')
-                            ->get();
-
-            $transactions = $appointments->map(function ($appointment) use ($doctorFee, $doctorId) {
-
-                return [
-                    'transaction_id' => 'TXN-' .
-                                        $doctorId . '-' .
-                                        ($appointment->patient->id ?? 0) . '-' .
-                                        $appointment->id,
-
-                    'appointment_id' => $appointment->id,
-
-                    'patient_name' => $appointment->patient->name ?? '',
-
-                    'patient_id' => $appointment->patient->id ?? '',
-
-                    'appointment_date' => Carbon::parse(
-                        $appointment->appointment_date
-                    )->format('d M Y'),
-
-                    'start_time' => Carbon::parse(
-                        $appointment->start_time
-                    )->format('h:i A'),
-
-                    'end_time' => Carbon::parse(
-                        $appointment->end_time
-                    )->format('h:i A'),
-
-                    'fee' => number_format($doctorFee, 2),
-
-                    'transaction_status' =>
+            // DoctmyProfile     'transaction_status' =>
                         $appointment->status == 'completed'
                             ? 'Completed'
                             : (

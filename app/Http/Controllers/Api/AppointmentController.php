@@ -761,11 +761,11 @@ class AppointmentController extends BaseApiController
 
 
         $appointments = Appointment::with(['patient', 'timeSlot' , 'cancellation.reason'])
-            ->where('doctor_id', $doctor->id)
-            ->where('status', 'cancelled')
-            ->latest()
-            ->get();
-            
+                        ->where('doctor_id', $doctor->id)
+                        ->where('status', 'cancelled')
+                        ->latest()
+                        ->get();
+                        
 
         return $this->sendResponse(
             $appointments,

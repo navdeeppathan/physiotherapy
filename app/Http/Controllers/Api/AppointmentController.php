@@ -726,7 +726,7 @@ class AppointmentController extends BaseApiController
     {
         $patient = Auth::user();
 
-        $appointments = Appointment::with(['doctor','timeSlot','patient'])
+        $appointments = Appointment::with(['doctor','timeSlot','patient' , 'patient.address'])
             ->where('patient_id', $patient->id)
             ->where('status', 'completed')
             ->latest()
@@ -742,7 +742,7 @@ class AppointmentController extends BaseApiController
     {
         $patient = Auth::user();
 
-        $appointments = Appointment::with(['doctor','timeSlot','patient'])
+        $appointments = Appointment::with(['doctor','timeSlot','patient', 'patient.address'])
             ->where('patient_id', $patient->id)
             ->where('is_rescheduled', true)
             ->whereHas('reschedules')
@@ -760,7 +760,7 @@ class AppointmentController extends BaseApiController
         $doctor = Auth::user();
 
 
-        $appointments = Appointment::with(['patient', 'timeSlot' , 'cancellation.reason'])
+        $appointments = Appointment::with(['patient', 'patient.address', 'timeSlot' , 'cancellation.reason'])
                         ->where('doctor_id', $doctor->id)
                         ->where('status', 'cancelled')
                         ->latest()

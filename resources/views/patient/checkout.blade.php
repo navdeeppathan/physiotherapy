@@ -546,116 +546,116 @@
 
 		<div class="modal fade" id="editAddressModal">
 
-    <div class="modal-dialog modal-dialog-centered">
+			<div class="modal-dialog modal-dialog-centered">
 
-        <div class="modal-content">
+				<div class="modal-content">
 
-            <div class="modal-header">
+					<div class="modal-header">
 
-                <h5 class="modal-title">Edit Address</h5>
+						<h5 class="modal-title">Edit Address</h5>
 
-                <button type="button"
-                    class="close"
-                    data-dismiss="modal">
+						<button type="button"
+							class="close"
+							data-dismiss="modal">
 
-                    <span>&times;</span>
+							<span>&times;</span>
 
-                </button>
+						</button>
 
-            </div>
+					</div>
 
-            <form id="editAddressForm" method="POST">
+					<form id="editAddressForm" method="POST">
 
-                @csrf
-                @method('PUT')
+						@csrf
+						@method('PUT')
 
-                <div class="modal-body">
+						<div class="modal-body">
 
-                    <div class="form-group">
-                        <label>Address</label>
-                        <input
-                            type="text"
-                            class="form-control"
-                            name="address"
-                            id="edit_address"
-                            required>
-                    </div>
+							<div class="form-group">
+								<label>Address</label>
+								<input
+									type="text"
+									class="form-control"
+									name="address"
+									id="edit_address"
+									required>
+							</div>
 
-                    <div class="form-group">
-                        <label>City</label>
-                        <input
-                            type="text"
-                            class="form-control"
-                            name="city"
-                            id="edit_city"
-                            required>
-                    </div>
+							<div class="form-group">
+								<label>City</label>
+								<input
+									type="text"
+									class="form-control"
+									name="city"
+									id="edit_city"
+									required>
+							</div>
 
-                    <div class="form-group">
-                        <label>State</label>
-                        <input
-                            type="text"
-                            class="form-control"
-                            name="state"
-                            id="edit_state"
-                            required>
-                    </div>
+							<div class="form-group">
+								<label>State</label>
+								<input
+									type="text"
+									class="form-control"
+									name="state"
+									id="edit_state"
+									required>
+							</div>
 
-                    <div class="form-group">
-                        <label>Country</label>
-                        <input
-                            type="text"
-                            class="form-control"
-                            name="country"
-                            id="edit_country"
-                            required>
-                    </div>
+							<div class="form-group">
+								<label>Country</label>
+								<input
+									type="text"
+									class="form-control"
+									name="country"
+									id="edit_country"
+									required>
+							</div>
 
-                    <div class="form-group">
-                        <label>Postal Code</label>
-                        <input
-                            type="text"
-                            class="form-control"
-                            name="postal_code"
-                            id="edit_postal"
-                            required>
-                    </div>
+							<div class="form-group">
+								<label>Postal Code</label>
+								<input
+									type="text"
+									class="form-control"
+									name="postal_code"
+									id="edit_postal"
+									required>
+							</div>
 
-                    <div class="form-check">
+							<div class="form-check">
 
-                        <input
-                            type="checkbox"
-                            class="form-check-input"
-                            name="is_default"
-                            id="edit_default"
-                            value="1">
+								<input
+									type="checkbox"
+									class="form-check-input"
+									name="is_default"
+									id="edit_default"
+									value="1">
 
-                        <label class="form-check-label">
-                            Make Default
-                        </label>
+								<label class="form-check-label">
+									Make Default
+								</label>
 
-                    </div>
+							</div>
 
-                </div>
+						</div>
 
-                <div class="modal-footer">
+						<div class="modal-footer">
 
-                    <button
-                        class="btn btn-success">
+							<button
+								class="btn btn-success">
 
-                        Update Address
+								Update Address
 
-                    </button>
+							</button>
 
-                </div>
+						</div>
 
-            </form>
+					</form>
 
-        </div>
+				</div>
 
-    </div>
+			</div>
 
-</div>
+		</div>
 
 		
 	  

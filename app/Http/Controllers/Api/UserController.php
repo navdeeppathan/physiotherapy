@@ -1103,10 +1103,31 @@ class UserController extends BaseApiController
 
     public function doctorPaymentHistory($doctorId)
     {
-        \Log::info($doctorId);
+        \Log::info("Doctor ID: " . $doctorId);
+
         try {
 
-            // DoctmyProfile     'transaction_status' =>
+            $doctor = Doctor::findOrFail($doctorId);
+
+            // Doctor consultation fee
+            $doctorFee = $doctor->consultation_fee ?? 0;
+
+            // Get all appointments
+            $appointments = Appointment::where('doctor_id', $doctorId)
+                ->latest()
+                ->get();
+
+            // Prepare transaction history
+            $transactions = $appointments->map(function ($appointment) use ($doctorFee) {
+
+                return [
+                    'appointment_id'      => $appointment->id,
+                    'appointment_date'    => $appointment->appointment_date,
+                    'appointment_time'    => $appointment->appointment_time,
+                    'patient_name'        => optional($appointment->patient)->name,
+                    'amount'              => $doctorFee,
+
+                    'transaction_status' =>
                         $appointment->status == 'completed'
                             ? 'Completed'
                             : (
@@ -1120,12 +1141,16 @@ class UserController extends BaseApiController
             });
 
             $completedAppointments = $appointments
-                                        ->where('status', 'completed')
-                                        ->count();
+                ->where('status', 'completed')
+                ->count();
 
             $upcomingAppointments = $appointments
-                                        ->whereIn('status', ['confirmed','pending'])
-                                        ->count();
+                ->whereIn('status', ['confirmed', 'pending'])
+                ->count();
+
+            $cancelledAppointments = $appointments
+                ->where('status', 'cancelled')
+                ->count();
 
             $totalEarning = $completedAppointments * $doctorFee;
 
@@ -1135,11 +1160,14 @@ class UserController extends BaseApiController
                 'total_appointments' => $appointments->count(),
                 'completed_appointments' => $completedAppointments,
                 'upcoming_appointments' => $upcomingAppointments,
+                'cancelled_appointments' => $cancelledAppointments,
                 'total_earnings' => $totalEarning,
                 'transactions' => $transactions
             ]);
 
         } catch (\Exception $e) {
+
+            \Log::error($e);
 
             return response()->json([
                 'status' => false,

@@ -63,6 +63,11 @@ class User extends Authenticatable
         return $this->hasOne(UserAddress::class, 'user_id', 'id');
     }
 
+    public function addresses()
+    {
+        return $this->hasMany(UserAddress::class);
+    }
+
     public function availabilityDates()
     {
         return $this->hasMany(DoctorAvailabilityDate::class, 'user_id');

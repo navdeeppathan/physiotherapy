@@ -175,70 +175,70 @@
 
 									@auth
 
-<div class="card mt-4">
+										<div class="card mt-4">
 
-    <div class="card-header d-flex justify-content-between align-items-center">
+											<div class="card-header d-flex justify-content-between align-items-center">
 
-        <h4 class="mb-0">
-            Select Address
-        </h4>
+												<h4 class="mb-0">
+													Select Address
+												</h4>
 
-        <button
-            class="btn btn-primary btn-sm"
-            data-toggle="modal"
-			data-target="#addressModal"
-			>
+												<button
+													class="btn btn-primary btn-sm"
+													data-toggle="modal"
+													data-target="#addressModal"
+													>
 
-            + Add New
+													+ Add New
 
-        </button>
+												</button>
 
-    </div>
+											</div>
 
-    <div class="card-body">
+											<div class="card-body">
 
-        @php
+												@php
 
-        $addresses = Auth::user()->addresses;
+												$addresses = Auth::user()->addresses;
 
-        @endphp
+												@endphp
 
-        @forelse($addresses as $address)
+												@forelse($addresses as $address)
 
-            <label class="border rounded p-3 w-100 mb-3">
+													<label class="border rounded p-3 w-100 mb-3">
 
-                <input
-                    type="radio"
-                    name="address_id"
-                    value="{{ $address->id }}"
-                    {{ $address->is_default ? 'checked' : '' }}>
+														<input
+															type="radio"
+															name="address_id"
+															value="{{ $address->id }}"
+															{{ $address->is_default ? 'checked' : '' }}>
 
-                <strong>{{ $address->address }}</strong>
+														<strong>{{ $address->address }}</strong>
 
-                <br>
+														<br>
 
-                {{ $address->city }},
-                {{ $address->state }}
+														{{ $address->city }},
+														{{ $address->state }}
 
-                <br>
+														<br>
 
-                {{ $address->country }}
-                -
-                {{ $address->postal_code }}
+														{{ $address->country }}
+														-
+														{{ $address->postal_code }}
 
-            </label>
+													</label>
 
-        @empty
+												@empty
 
-            <p>No Address Found.</p>
+													<p>No Address Found.</p>
 
-        @endforelse
+												@endforelse
 
-    </div>
+											</div>
 
-</div>
+										</div>
 
-@endauth
+									@endauth
 									
 								</div>
 							</div>

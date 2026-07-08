@@ -58,6 +58,8 @@ Class PatientAppointmentController extends Controller
         // $subscriptionId = $request->subscription_id;
 
         $plan = PatientPlan::findOrFail($request->plan_id);
+
+        
         return view('patient.checkout',compact(
 
             'doctor',

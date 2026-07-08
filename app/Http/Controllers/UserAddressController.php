@@ -68,10 +68,6 @@ class UserAddressController extends Controller
             'is_default' => $request->is_default ?? 0,
         ]);
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Address added successfully.',
-            'address' => $address
-        ]);
+        return back()->with('success', 'Address added successfully.');
     }
 }

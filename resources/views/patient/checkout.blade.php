@@ -185,8 +185,9 @@
 
         <button
             class="btn btn-primary btn-sm"
-            data-bs-toggle="modal"
-            data-bs-target="#addressModal">
+            data-toggle="modal"
+			data-target="#addressModal"
+			>
 
             + Add New
 
@@ -409,9 +410,11 @@
 <h5>Add Address</h5>
 
 <button
-type="button"
-class="btn-close"
-data-bs-dismiss="modal"></button>
+    type="button"
+    class="close"
+    data-dismiss="modal">
+    <span>&times;</span>
+</button>
 
 </div>
 
@@ -495,12 +498,7 @@ Make Default
 
 </div>
 	  
-		<!-- jQuery -->
-		<script src="assets/js/jquery.min.js"></script>
 		
-		<!-- Bootstrap Core JS -->
-		<script src="assets/js/popper.min.js"></script>
-		<script src="assets/js/bootstrap.min.js"></script>
 		
 		<!-- Sticky Sidebar JS -->
         <script src="assets/plugins/theia-sticky-sidebar/ResizeSensor.js"></script>

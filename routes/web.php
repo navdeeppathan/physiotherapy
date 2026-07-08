@@ -47,6 +47,8 @@ Route::post('/patient/register', [AuthController::class, 'registerPatientWeb'])
      Route::get('/booking/{id}',[PatientAppointmentController::class, 'booking'])->name('doctor.booking');
 // });
 //user apis
+    // Route::post('/doctor-payment', [PatientAppointmentController::class, 'bookingpay'])
+    // ->name('doctor.payment');
     Route::get('/doctor-payment', [PatientAppointmentController::class, 'bookingpay'])
     ->name('doctor.payment');
     Route::post('/doctor-book', [PatientAppointmentController::class, 'store'])

@@ -252,13 +252,13 @@
 		   
 		</div>
 
-		<form id="paymentForm" action="{{ route('doctor.payment') }}" method="POST" style="display:none;">
+		{{-- <form id="paymentForm" action="{{ route('doctor.payment') }}" method="POST" style="display:none;">
 			@csrf
 
 			<input type="hidden" name="doctor_id" id="paymentDoctorId">
 			<input type="hidden" name="plan_id" id="paymentPlanId">
 			<input type="hidden" name="slots" id="paymentSlots">
-		</form>
+		</form> --}}
 
 		<div class="modal fade" id="planModal" tabindex="-1">
 			<div class="modal-dialog modal-xl modal-dialog-centered">
@@ -537,16 +537,25 @@
 					return;
 				}
 
-				document.getElementById("paymentDoctorId").value =
-					document.getElementById("doctor_id").value;
+				// document.getElementById("paymentDoctorId").value =
+				// 	document.getElementById("doctor_id").value;
 
-				document.getElementById("paymentPlanId").value =
-					selectedPlan.dataset.id;
+				// document.getElementById("paymentPlanId").value =
+				// 	selectedPlan.dataset.id;
 
-				document.getElementById("paymentSlots").value =
-					selectedSlots.join(",");
+				// document.getElementById("paymentSlots").value =
+				// 	selectedSlots.join(",");
 
-				document.getElementById("paymentForm").submit();
+				// document.getElementById("paymentForm").submit();
+				const doctorId = document.getElementById("doctor_id").value;
+				const planId = selectedPlan.dataset.id;
+				const slots = selectedSlots.join(",");
+
+				window.location.href =
+					"{{ route('doctor.payment') }}" +
+					"?doctor_id=" + encodeURIComponent(doctorId) +
+					"&plan_id=" + encodeURIComponent(planId) +
+					"&slots=" + encodeURIComponent(slots);
 			});
 
 		</script>

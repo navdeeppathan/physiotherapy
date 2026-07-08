@@ -258,7 +258,7 @@ class AppointmentController extends BaseApiController
 
             $doctor = Auth::user();
 
-            $appointments = Appointment::with(['patient', 'timeSlot'])
+            $appointments = Appointment::with(['patient',  'patient.address','timeSlot'])
                 ->where('doctor_id', $doctor->id)
                 ->orderBy('appointment_date', 'desc')
                 ->get();
@@ -658,7 +658,7 @@ class AppointmentController extends BaseApiController
     {
         $doctor = Auth::user();
 
-        $appointments = Appointment::with(['patient','timeSlot'])
+        $appointments = Appointment::with(['patient', 'patient.address', 'timeSlot'])
             ->where('doctor_id', $doctor->id)
             ->whereIn('status', ['pending', 'confirmed'])
             ->whereDate('appointment_date', '>=', Carbon::today())
@@ -675,7 +675,7 @@ class AppointmentController extends BaseApiController
     {
         $doctor = Auth::user();
 
-        $appointments = Appointment::with(['patient','timeSlot'])
+        $appointments = Appointment::with(['patient', 'patient.address', 'timeSlot'])
             ->where('doctor_id', $doctor->id)
             ->where('status', 'completed')
             ->latest()
@@ -691,7 +691,7 @@ class AppointmentController extends BaseApiController
     {
         $doctor = Auth::user();
 
-        $appointments = Appointment::with(['patient','timeSlot'])
+        $appointments = Appointment::with(['patient', 'patient.address', 'timeSlot'])
             ->where('doctor_id', $doctor->id)
             ->where('is_rescheduled', true)
             ->whereHas('reschedules')
@@ -708,7 +708,7 @@ class AppointmentController extends BaseApiController
     {
         $patient = Auth::user();
 
-        $appointments = Appointment::with(['doctor','timeSlot','patient'])
+        $appointments = Appointment::with(['doctor','timeSlot','patient', 'patient.address'])
                         ->where('patient_id', $patient->id)
                         ->whereIn('status', ['pending', 'confirmed'])
                         ->whereDate('appointment_date', '>=', Carbon::today())

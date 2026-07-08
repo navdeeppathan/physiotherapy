@@ -70,4 +70,46 @@ class UserAddressController extends Controller
 
         return back()->with('success', 'Address added successfully.');
     }
+
+    public function update(Request $request, $id)
+{
+    $request->validate([
+        'address' => 'required',
+        'city' => 'required',
+        'state' => 'required',
+        'country' => 'required',
+        'postal_code' => 'required',
+    ]);
+
+    $address = UserAddress::where('user_id', Auth::id())
+        ->findOrFail($id);
+
+    if ($request->is_default) {
+        UserAddress::where('user_id', Auth::id())
+            ->update([
+                'is_default' => 0
+            ]);
+    }
+
+    $address->update([
+        'address' => $request->address,
+        'city' => $request->city,
+        'state' => $request->state,
+        'country' => $request->country,
+        'postal_code' => $request->postal_code,
+        'is_default' => $request->has('is_default'),
+    ]);
+
+    return back()->with('success', 'Address updated successfully.');
+}
+
+public function destroy($id)
+{
+    $address = UserAddress::where('user_id', Auth::id())
+        ->findOrFail($id);
+
+    $address->delete();
+
+    return back()->with('success', 'Address deleted successfully.');
+}
 }

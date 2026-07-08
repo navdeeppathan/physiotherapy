@@ -205,28 +205,70 @@
 
 												@forelse($addresses as $address)
 
-													<label class="border rounded p-3 w-100 mb-3">
+													<div class="border rounded p-3 mb-3">
 
-														<input
-															type="radio"
-															name="address_id"
-															value="{{ $address->id }}"
-															{{ $address->is_default ? 'checked' : '' }}>
+														<div class="d-flex justify-content-between">
 
-														<strong>{{ $address->address }}</strong>
+															<div>
 
-														<br>
+																<input
+																	type="radio"
+																	name="address_id"
+																	value="{{ $address->id }}"
+																	{{ $address->is_default ? 'checked' : '' }}>
 
-														{{ $address->city }},
-														{{ $address->state }}
+																<strong>{{ $address->address }}</strong>
 
-														<br>
+																<br>
 
-														{{ $address->country }}
-														-
-														{{ $address->postal_code }}
+																{{ $address->city }},
+																{{ $address->state }}
 
-													</label>
+																<br>
+
+																{{ $address->country }}
+																-
+																{{ $address->postal_code }}
+
+															</div>
+
+															<div>
+
+																<button
+																	type="button"
+																	class="btn btn-sm btn-warning"
+																	data-toggle="modal"
+																	data-target="#editAddressModal{{ $address->id }}">
+
+																	Edit
+
+																</button>
+
+																<form
+																	action="{{ route('user.address.destroy',$address->id) }}"
+																	method="POST"
+																	class="d-inline">
+
+																	@csrf
+																	@method('DELETE')
+
+																	<button
+																		class="btn btn-sm btn-danger"
+																		onclick="return confirm('Delete this address?')">
+
+																		Delete
+
+																	</button>
+
+																</form>
+
+															</div>
+
+														</div>
+
+													</div>
+
+													@include('patient.edit-address-modal')
 
 												@empty
 

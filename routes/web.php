@@ -57,11 +57,17 @@ Route::post('/patient/register', [AuthController::class, 'registerPatientWeb'])
     Route::post('/patient/subscribe-web', [PatientAppointmentController::class, 'subscribeWeb'])
         ->name('patient.subscribe.web');
 
- Route::get('/user/addresses', [UserAddressController::class, 'index'])
-        ->name('user.address.index');
+    Route::get('/user/addresses', [UserAddressController::class, 'index'])
+            ->name('user.address.index');
 
     Route::post('/user/address/store', [UserAddressController::class, 'store'])
         ->name('user.address.store');
+
+    Route::put('/user/address/{id}', [UserAddressController::class, 'update'])
+    ->name('user.address.update');
+
+    Route::delete('/user/address/{id}', [UserAddressController::class, 'destroy'])
+        ->name('user.address.destroy');    
 
 //admin 
 

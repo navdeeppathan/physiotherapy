@@ -111,4 +111,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Feedback::class, 'doctor_id');
     }
+
+    public function addresses()
+    {
+        return $this->hasMany(UserAddress::class);
+    }
 }

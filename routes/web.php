@@ -16,7 +16,7 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientAppointmentController;
-
+use App\Http\Controllers\UserAddressController;
 
 Route::get('/doctor/{id}',[DoctorController::class, 'show'])->name('doctor.profile');
 
@@ -55,7 +55,11 @@ Route::post('/patient/register', [AuthController::class, 'registerPatientWeb'])
     Route::post('/patient/subscribe-web', [PatientAppointmentController::class, 'subscribeWeb'])
         ->name('patient.subscribe.web');
 
+ Route::get('/user/addresses', [UserAddressController::class, 'index'])
+        ->name('user.address.index');
 
+    Route::post('/user/address/store', [UserAddressController::class, 'store'])
+        ->name('user.address.store');
 
 //admin 
 

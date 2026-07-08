@@ -262,107 +262,82 @@
 
 		<div class="modal fade" id="planModal" tabindex="-1">
 			<div class="modal-dialog modal-xl modal-dialog-centered">
-				<div class="modal-content border-0 shadow-lg">
+				<div class="modal-content plan-modal-content">
 
-					<div class="modal-header">
-						<h3 class="font-weight-bold mb-0">Choose Your Subscription Plan</h3>
-
-						<button type="button" class="close" data-dismiss="modal">
+					<div class="modal-header plan-modal-header">
+						<h3 class="plan-modal-title">Choose Your Plan</h3>
+						<button type="button" class="plan-close-btn" data-dismiss="modal">
 							<span>&times;</span>
 						</button>
 					</div>
 
-					<div class="modal-body">
+					<div class="modal-body plan-modal-body">
 
-						<div class="row justify-content-center">
+						<div class="plan-list">
 
-							<div class="plan-list">
+							@foreach($patientPlans as $plan)
 
-								@foreach($patientPlans as $plan)
+							@php
+								$perSession = $plan->total_appointments > 0
+									? $plan->price / $plan->total_appointments
+									: 0;
+							@endphp
 
-								@php
-									$perSession = $plan->total_appointments > 0
-										? $plan->price / $plan->total_appointments
-										: 0;
-								@endphp
+							<div class="plan-card"
+								data-id="{{ $plan->id }}"
+								data-total="{{ $plan->total_appointments }}">
 
-								<div class="plan-card"
-									data-id="{{ $plan->id }}"
-									data-total="{{ $plan->total_appointments }}">
+								<div class="plan-radio">
+									<span class="radio-circle"></span>
+								</div>
 
-									<div class="plan-radio">
-										<span class="radio-circle"></span>
+								<div class="plan-content">
+
+									<div class="plan-top">
+										<div class="plan-name">
+											{{ $plan->name }}
+										</div>
+										<div class="plan-price">
+											₹{{ number_format($plan->price,2) }}
+										</div>
 									</div>
 
-									<div class="plan-content">
+									<div class="plan-bottom">
 
-										<div class="plan-top">
-
-											<div class="plan-name">
-												{{ $plan->name }}
-											</div>
-
-											<div class="plan-price">
-												₹{{ number_format($plan->price,2) }}
-											</div>
-
+										<div class="session-price">
+											₹{{ number_format($perSession,0) }} per session
 										</div>
 
-										<div class="plan-bottom">
-
-											<div class="session-price">
-												₹{{ number_format($perSession,0) }} per session
-											</div>
-
-											<div class="discount-area">
-
-												@if($plan->discount_percentage > 0)
-
-													<span class="old-price">
-														₹{{ number_format($plan->original_price,2) }}
-													</span>
-
-													<span class="discount-badge">
-														{{ rtrim(rtrim($plan->discount_percentage,'0'),'.') }}% Off
-													</span>
-
-												@endif
-
-											</div>
-
+										<div class="discount-area">
+											@if($plan->discount_percentage > 0)
+												<span class="old-price">
+													₹{{ number_format($plan->original_price,2) }}
+												</span>
+												<span class="discount-badge">
+													{{ rtrim(rtrim($plan->discount_percentage,'0'),'.') }}% Off
+												</span>
+											@endif
 										</div>
 
 									</div>
-
-									<button
-										type="button"
-										class="choose-plan d-none">
-									</button>
 
 								</div>
 
-								@endforeach
+								<button type="button" class="choose-plan d-none"></button>
 
 							</div>
+
+							@endforeach
 
 						</div>
 
 					</div>
 
-					<div class="modal-footer justify-content-end">
-
-						<button
-							type="button"
-							class="btn btn-primary px-5"
-							id="continuePlan"
-							style="display:none; border-radius:30px;">
-
+					<div class="modal-footer plan-modal-footer">
+						<button type="button" class="continue-plan-btn" id="continuePlan" style="display:none;">
 							Continue
-
 							<i class="fa fa-arrow-right ml-2"></i>
-
 						</button>
-
 					</div>
 
 				</div>
@@ -527,52 +502,38 @@
 
 
 			document.querySelectorAll(".plan-card").forEach(function(card){
-
 				card.addEventListener("click",function(){
-
 					document.querySelectorAll(".plan-card").forEach(function(c){
 						c.classList.remove("active");
 					});
-
 					card.classList.add("active");
-
 					selectedPlan = card;
-
 					document.getElementById("continuePlan").style.display="inline-block";
-
 				});
-
 			});
 
 			document.getElementById("continuePlan").addEventListener("click", function () {
-
 				if (!selectedPlan) {
-
 					Swal.fire({
 						icon: "warning",
 						title: "Select Plan",
 						text: "Please select a subscription plan."
 					});
-
 					return;
 				}
 
 				let total = parseInt(selectedPlan.dataset.total);
 
 				if (selectedSlots.length != total) {
-
 					Swal.fire({
 						icon: "info",
 						title: "Plan & Appointment Mismatch",
 						html: `
 							<p><strong>${selectedPlan.querySelector('.plan-name').innerText}</strong> includes <strong>${total}</strong> appointment(s).</p>
-
 							<p>You selected <strong>${selectedSlots.length}</strong> appointment(s).</p>
-
 							<p>Please select exactly <strong>${total}</strong> appointment(s).</p>
 						`
 					});
-
 					return;
 				}
 
@@ -586,221 +547,265 @@
 					selectedSlots.join(",");
 
 				document.getElementById("paymentForm").submit();
-
 			});
 
 		</script>
 
-<style>
-	.day-item.active {
-		background: #09e5ab;
-		color: #fff;
-		border-radius: 5px;
-	}
-
-	.day-item {
-		cursor: pointer;
-	}
-
-	.slot-item {
-		list-style: none;
-	}
-
-	.disabled {
-		opacity: .4;
-		pointer-events: none;
-	}
-
-	.plan-list{
-		display:flex;
-		flex-direction:column;
-		gap:18px;
-	}
-
-	.plan-card{
-
-		display:flex;
-		align-items:flex-start;
-		gap:18px;
-
-		background:#fff;
-
-		border:2px solid #ededed;
-
-		border-radius:18px;
-
-		padding:18px;
-
-		cursor:pointer;
-
-		transition:.3s;
-
-		position:relative;
-
-		
-
-		
-
-	}
-
-	.plan-card:hover{
-
-		border-color:#09e5ab;
-
-		box-shadow:0 10px 25px rgba(0,0,0,.08);
-
-	}
-
-	.plan-card.active{
-
-		border-color:#09e5ab;
-
-		box-shadow:0 12px 30px rgba(9,229,171,.20);
-
-	}
-
-	.plan-radio{
-
-		margin-top:3px;
-
-	}
-
-	.radio-circle{
-
-		width:22px;
-
-		height:22px;
-
-		border-radius:50%;
-
-		border:2px solid #cfcfcf;
-
-		display:block;
-
-		position:relative;
-
-	}
-
-	.plan-card.active .radio-circle{
-
-		border-color:#09e5ab;
-
-	}
-
-	.plan-card.active .radio-circle:after{
-
-		content:"";
-
-		position:absolute;
-
-		width:10px;
-
-		height:10px;
-
-		background:#09e5ab;
-
-		border-radius:50%;
-
-		left:50%;
-
-		top:50%;
-
-		transform:translate(-50%,-50%);
-
-	}
-
-	.plan-content{
-
-		flex:1;
-		
-
-	}
-
-	.plan-top{
-
-		display:flex;
-
-		justify-content:space-between;
-
-		align-items:center;
-
-		margin-bottom:10px;
-
-	}
-
-	.plan-name{
-
-		font-size:22px;
-
-		font-weight:700;
-
-		color:#222;
-
-	}
-
-	.plan-price{
-
-		font-size:32px;
-
-		font-weight:700;
-
-		color:#222;
-
-	}
-
-	.plan-bottom{
-
-		display:flex;
-
-		justify-content:space-between;
-
-		align-items:center;
-
-	}
-
-	.session-price{
-
-		color:#666;
-
-		font-size:17px;
-
-	}
-
-	.discount-area{
-
-		display:flex;
-
-		align-items:center;
-
-		gap:10px;
-
-	}
-
-	.old-price{
-
-		text-decoration:line-through;
-
-		color:#9d9d9d;
-
-		font-size:17px;
-
-	}
-
-	.discount-badge{
-
-		background:#eafaf2;
-
-		color:#2d9d59;
-
-		padding:5px 10px;
-
-		border-radius:8px;
-
-		font-size:14px;
-
-		font-weight:600;
-
-	}
-</style>
+		<style>
+			.day-item.active {
+				background: #09e5ab;
+				color: #fff;
+				border-radius: 5px;
+			}
+
+			.day-item {
+				cursor: pointer;
+			}
+
+			.slot-item {
+				list-style: none;
+			}
+
+			.disabled {
+				opacity: .4;
+				pointer-events: none;
+			}
+
+			/* ===== Modal shell (kept minimal so Bootstrap's JS open/close still works) ===== */
+			.plan-modal-content{
+				border:none;
+				border-radius:20px;
+				overflow:hidden;
+				box-shadow:0 20px 50px rgba(0,0,0,.15);
+			}
+
+			.plan-modal-header{
+				display:flex;
+				align-items:center;
+				justify-content:space-between;
+				padding:20px 24px;
+				border-bottom:1px solid #f0f0f0;
+			}
+
+			.plan-modal-title{
+				font-size:clamp(18px,2.2vw,24px);
+				font-weight:700;
+				color:#1a1a1a;
+				margin:0;
+			}
+
+			.plan-close-btn{
+				background:none;
+				border:none;
+				font-size:22px;
+				line-height:1;
+				color:#999;
+				cursor:pointer;
+				padding:4px 8px;
+				border-radius:50%;
+				transition:.2s;
+			}
+			.plan-close-btn:hover{
+				background:#f5f5f5;
+				color:#333;
+			}
+
+			.plan-modal-body{
+				padding:24px;
+				background:linear-gradient(135deg,#fff 60%,#fff2e8 100%);
+				max-height:70vh;
+				overflow-y:auto;
+			}
+
+			.plan-modal-footer{
+				display:flex;
+				justify-content:flex-end;
+				padding:16px 24px;
+				border-top:1px solid #f0f0f0;
+			}
+
+			/* ===== Plan list / cards ===== */
+			.plan-list{
+				display:flex;
+				flex-direction:column;
+				gap:16px;
+			}
+
+			.plan-card{
+				display:flex;
+				align-items:flex-start;
+				gap:16px;
+				background:#fff;
+				border:2px solid #ededed;
+				border-radius:18px;
+				padding:18px 20px;
+				cursor:pointer;
+				transition:.25s ease;
+				position:relative;
+			}
+
+			.plan-card:hover{
+				border-color:#09e5ab;
+				box-shadow:0 10px 25px rgba(0,0,0,.08);
+			}
+
+			.plan-card.active{
+				border-color:#09e5ab;
+				box-shadow:0 12px 28px rgba(255,122,30,.18);
+				background:#fffaf6;
+			}
+
+			.plan-radio{
+				margin-top:4px;
+				flex-shrink:0;
+			}
+
+			.radio-circle{
+				width:22px;
+				height:22px;
+				border-radius:50%;
+				border:2px solid #d5d5d5;
+				display:block;
+				position:relative;
+				transition:.25s ease;
+			}
+
+			.plan-card.active .radio-circle{
+				border-color:#09e5ab;
+			}
+
+			.plan-card.active .radio-circle:after{
+				content:"";
+				position:absolute;
+				width:11px;
+				height:11px;
+				background:#09e5ab;
+				border-radius:50%;
+				left:50%;
+				top:50%;
+				transform:translate(-50%,-50%);
+			}
+
+			.plan-content{
+				flex:1;
+				min-width:0;
+			}
+
+			.plan-top{
+				display:flex;
+				justify-content:space-between;
+				align-items:center;
+				gap:10px;
+				margin-bottom:8px;
+				flex-wrap:wrap;
+			}
+
+			.plan-name{
+				font-size:clamp(16px,2.4vw,20px);
+				font-weight:700;
+				color:#1e1e1e;
+			}
+
+			.plan-price{
+				font-size:clamp(18px,2.8vw,26px);
+				font-weight:700;
+				color:#1e1e1e;
+				white-space:nowrap;
+			}
+
+			.plan-bottom{
+				display:flex;
+				justify-content:space-between;
+				align-items:center;
+				gap:10px;
+				flex-wrap:wrap;
+			}
+
+			.session-price{
+				color:#767676;
+				font-size:clamp(13px,1.8vw,15px);
+			}
+
+			.discount-area{
+				display:flex;
+				align-items:center;
+				gap:8px;
+				flex-wrap:wrap;
+			}
+
+			.old-price{
+				text-decoration:line-through;
+				color:#a3a3a3;
+				font-size:clamp(13px,1.8vw,15px);
+			}
+
+			.discount-badge{
+				background:#e6f8ef;
+				color:#2d9d59;
+				padding:4px 10px;
+				border-radius:8px;
+				font-size:12px;
+				font-weight:600;
+				white-space:nowrap;
+			}
+
+			/* ===== Continue button ===== */
+			.continue-plan-btn{
+				display:inline-flex;
+				align-items:center;
+				gap:8px;
+				background:#09e5ab;
+				color:#fff;
+				border:none;
+				font-weight:600;
+				font-size:15px;
+				padding:12px 28px;
+				border-radius:30px;
+				cursor:pointer;
+				transition:.2s;
+			}
+			.continue-plan-btn:hover{
+				background:#09e5ab;
+				box-shadow:0 8px 18px rgba(255,122,30,.3);
+			}
+
+			.d-none{
+				display:none !important;
+			}
+
+			/* ===== Responsive ===== */
+			@media (max-width:576px){
+				.plan-modal-header{ padding:16px 18px; }
+				.plan-modal-body{ padding:16px; }
+				.plan-modal-footer{ padding:12px 18px; }
+
+				.plan-card{
+					padding:14px 16px;
+					gap:12px;
+				}
+
+				.plan-top{
+					flex-direction:row;
+					justify-content:space-between;
+				}
+
+				.plan-bottom{
+					flex-direction:column;
+					align-items:flex-start;
+					gap:6px;
+				}
+
+				.continue-plan-btn{
+					width:100%;
+					justify-content:center;
+				}
+			}
+
+			@media (max-width:360px){
+				.radio-circle{ width:18px; height:18px; }
+				.plan-name{ font-size:15px; }
+				.plan-price{ font-size:18px; }
+			}
+		</style>
 @endsection		
 	

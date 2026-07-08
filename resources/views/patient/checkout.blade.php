@@ -401,102 +401,97 @@
 
 		<div class="modal fade" id="addressModal">
 
-<div class="modal-dialog">
+			<div class="modal-dialog">
 
-<div class="modal-content">
+				<div class="modal-content">
 
-<div class="modal-header">
+					<div class="modal-header">
 
-<h5>Add Address</h5>
+						<h5>Add Address</h5>
 
-<button
-    type="button"
-    class="close"
-    data-dismiss="modal">
-    <span>&times;</span>
-</button>
+						<button
+							type="button"
+							class="close"
+							data-dismiss="modal">
+							<span>&times;</span>
+						</button>
 
-</div>
+					</div>
 
-<div class="modal-body">
+					<div class="modal-body">
 
-<form id="addressForm">
+						<form action="{{ route('user.address.store') }}" method="POST">
+							@csrf
 
-@csrf
+							<div class="mb-3">
+								<input
+									type="text"
+									class="form-control"
+									name="address"
+									placeholder="Address"
+									required>
+							</div>
 
-<div class="mb-3">
+							<div class="mb-3">
+								<input
+									type="text"
+									class="form-control"
+									name="city"
+									placeholder="City"
+									required>
+							</div>
 
-<input
-class="form-control"
-name="address"
-placeholder="Address">
+							<div class="mb-3">
+								<input
+									type="text"
+									class="form-control"
+									name="state"
+									placeholder="State"
+									required>
+							</div>
 
-</div>
+							<div class="mb-3">
+								<input
+									type="text"
+									class="form-control"
+									name="country"
+									value="India"
+									required>
+							</div>
 
-<div class="mb-3">
+							<div class="mb-3">
+								<input
+									type="text"
+									class="form-control"
+									name="postal_code"
+									placeholder="Postal Code"
+									required>
+							</div>
 
-<input
-class="form-control"
-name="city"
-placeholder="City">
+							<div class="form-check">
+								<input
+									class="form-check-input"
+									type="checkbox"
+									name="is_default"
+									value="1">
 
-</div>
+								<label class="form-check-label">
+									Make Default
+								</label>
+							</div>
 
-<div class="mb-3">
+							<button type="submit" class="btn btn-primary mt-3">
+								Save Address
+							</button>
+						</form>
 
-<input
-class="form-control"
-name="state"
-placeholder="State">
+					</div>
 
-</div>
+				</div>
 
-<div class="mb-3">
+			</div>
 
-<input
-class="form-control"
-name="country"
-value="India">
-
-</div>
-
-<div class="mb-3">
-
-<input
-class="form-control"
-name="postal_code"
-placeholder="Postal Code">
-
-</div>
-
-<div class="form-check">
-
-<input
-type="checkbox"
-name="is_default"
-value="1">
-
-<label>
-
-Make Default
-
-</label>
-
-</div>
-
-<button type="submit" class="btn btn-primary mt-3">
-    Save Address
-</button>
-
-</form>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
+		</div>
 	  
 		
 		
@@ -507,43 +502,6 @@ Make Default
 		<!-- Custom JS -->
 		<script src="assets/js/script.js"></script>
 
-		<script>
-			$(document).ready(function () {
-
-				$(document).on('submit', '#addressForm', function (e) {
-
-					e.preventDefault();
-
-					$.ajax({
-						url: "{{ route('user.address.store') }}",
-						type: "POST",
-						data: $(this).serialize(),
-
-						success: function (res) {
-
-							console.log(res);
-
-							if (res.status) {
-								location.reload();
-							} else {
-								alert(res.message);
-							}
-
-						},
-
-						error: function (xhr) {
-
-							console.log(xhr.status);
-							console.log(xhr.responseText);
-
-						}
-
-					});
-
-				});
-
-			});
-
-		</script>
+		
 		
 @endsection

@@ -29,11 +29,9 @@ class UserAddress extends Model
         'is_default' => 'boolean',
     ];
 
-    /**
-     * Address belongs to a user.
-     */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
+
 }

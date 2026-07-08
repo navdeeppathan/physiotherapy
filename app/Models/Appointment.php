@@ -53,6 +53,8 @@ class Appointment extends Model
     {
         return $this->belongsTo(User::class, 'patient_id');
     }
+    
+    
 
     /**
      * Related Time Slot

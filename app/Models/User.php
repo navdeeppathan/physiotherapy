@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\DoctorDocument;
+use App\Models\UserAddress;
 
 class User extends Authenticatable
 {
@@ -56,6 +58,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(DoctorDocument::class, 'user_id');
     }
+    public function address()
+    {
+        return $this->hasOne(UserAddress::class, 'user_id', 'id');
+    }
+
     public function availabilityDates()
     {
         return $this->hasMany(DoctorAvailabilityDate::class, 'user_id');

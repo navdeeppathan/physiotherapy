@@ -28,8 +28,8 @@
 											@csrf
 
 											<div class="form-group form-focus">
-												<input type="email" name="email" class="form-control floating">
-												<label class="focus-label">Email</label>
+												<input type="text" name="phone" class="form-control floating">
+												<label class="focus-label">Phone</label>
 											</div>
 											<div class="form-group form-focus">
 												<input type="password" name="password" class="form-control floating">

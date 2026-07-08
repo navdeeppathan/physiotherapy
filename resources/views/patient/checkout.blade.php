@@ -172,6 +172,226 @@
 										@endguest
 
 									</form>
+
+									@auth
+
+										<div class="card mt-4">
+
+											<div class="card-header d-flex justify-content-between align-items-center">
+
+												<h4 class="mb-0">
+													Select Address
+												</h4>
+
+												<button
+													class="btn btn-primary btn-sm"
+													data-toggle="modal"
+													data-target="#addressModal"
+													>
+
+													+ Add New
+
+												</button>
+
+											</div>
+
+											<div class="card-body">
+
+												@php
+
+												$addresses = Auth::user()->addresses;
+
+												@endphp
+
+												@forelse($addresses as $address)
+
+													<div class="border rounded p-3 mb-3">
+
+														<div class="d-flex justify-content-between">
+
+															<div>
+
+																<input
+																	type="radio"
+																	name="address_id"
+																	value="{{ $address->id }}"
+																	{{ $address->is_default ? 'checked' : '' }}>
+
+																<strong>{{ $address->address }}</strong>
+
+																<br>
+
+																{{ $address->city }},
+																{{ $address->state }}
+
+																<br>
+
+																{{ $address->country }}
+																-
+																{{ $address->postal_code }}
+
+															</div>
+
+															<div>
+
+																<button
+																	type="button"
+																	class="btn btn-sm btn-warning"
+																	data-toggle="modal"
+																	data-target="#editAddressModal{{ $address->id }}">
+
+																	Edit
+
+																</button>
+
+																<form
+																	action="{{ route('user.address.destroy',$address->id) }}"
+																	method="POST"
+																	class="d-inline">
+
+																	@csrf
+																	@method('DELETE')
+
+																	<button
+																		class="btn btn-sm btn-danger"
+																		onclick="return confirm('Delete this address?')">
+
+																		Delete
+
+																	</button>
+
+																</form>
+
+															</div>
+
+														</div>
+
+													</div>
+
+													<div class="modal fade" id="editAddressModal{{ $address->id }}">
+
+														<div class="modal-dialog">
+
+															<div class="modal-content">
+
+																<div class="modal-header">
+
+																	<h5>Edit Address</h5>
+
+																	<button
+																		class="close"
+																		data-dismiss="modal">
+
+																		<span>&times;</span>
+
+																	</button>
+
+																</div>
+
+																<div class="modal-body">
+
+																	<form
+																		action="{{ route('user.address.update',$address->id) }}"
+																		method="POST">
+
+																		@csrf
+																		@method('PUT')
+
+																		<div class="mb-3">
+
+																			<input
+																				class="form-control"
+																				name="address"
+																				value="{{ $address->address }}"
+																				required>
+
+																		</div>
+
+																		<div class="mb-3">
+
+																			<input
+																				class="form-control"
+																				name="city"
+																				value="{{ $address->city }}"
+																				required>
+
+																		</div>
+
+																		<div class="mb-3">
+
+																			<input
+																				class="form-control"
+																				name="state"
+																				value="{{ $address->state }}"
+																				required>
+
+																		</div>
+
+																		<div class="mb-3">
+
+																			<input
+																				class="form-control"
+																				name="country"
+																				value="{{ $address->country }}"
+																				required>
+
+																		</div>
+
+																		<div class="mb-3">
+
+																			<input
+																				class="form-control"
+																				name="postal_code"
+																				value="{{ $address->postal_code }}"
+																				required>
+
+																		</div>
+
+																		<div class="form-check">
+
+																			<input
+																				type="checkbox"
+																				class="form-check-input"
+																				name="is_default"
+																				value="1"
+																				{{ $address->is_default ? 'checked' : '' }}>
+
+																			<label>
+
+																				Make Default
+
+																			</label>
+
+																		</div>
+
+																		<button
+																			class="btn btn-primary mt-3">
+
+																			Update Address
+
+																		</button>
+
+																	</form>
+
+																</div>
+
+															</div>
+
+														</div>
+
+													</div>
+
+												@empty
+
+													<p>No Address Found.</p>
+
+												@endforelse
+
+											</div>
+
+										</div>
+
+									@endauth
 									
 								</div>
 							</div>
@@ -326,153 +546,109 @@
 			<!-- /Page Content -->
    
 			<!-- Footer -->
-			<footer class="footer">
-				
-				<!-- Footer Top -->
-				<div class="footer-top">
-					<div class="container-fluid">
-						<div class="row">
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-about">
-									<div class="footer-logo">
-										<img src="assets/img/footer-logo.png" alt="logo">
-									</div>
-									<div class="footer-about-content">
-										<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
-										<div class="social-icon">
-											<ul>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-facebook-f"></i> </a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-twitter"></i> </a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-												</li>
-												<li>
-													<a href="#" target="_blank"><i class="fab fa-dribbble"></i> </a>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-menu">
-									<h2 class="footer-title">For Patients</h2>
-									<ul>
-										<li><a href="search.html"><i class="fas fa-angle-double-right"></i> Search for Doctors</a></li>
-										<li><a href="login.html"><i class="fas fa-angle-double-right"></i> Login</a></li>
-										<li><a href="register.html"><i class="fas fa-angle-double-right"></i> Register</a></li>
-										<li><a href="booking.html"><i class="fas fa-angle-double-right"></i> Booking</a></li>
-										<li><a href="patient-dashboard.html"><i class="fas fa-angle-double-right"></i> Patient Dashboard</a></li>
-									</ul>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-menu">
-									<h2 class="footer-title">For Doctors</h2>
-									<ul>
-										<li><a href="appointments.html"><i class="fas fa-angle-double-right"></i> Appointments</a></li>
-										<li><a href="chat.html"><i class="fas fa-angle-double-right"></i> Chat</a></li>
-										<li><a href="login.html"><i class="fas fa-angle-double-right"></i> Login</a></li>
-										<li><a href="doctor-register.html"><i class="fas fa-angle-double-right"></i> Register</a></li>
-										<li><a href="doctor-dashboard.html"><i class="fas fa-angle-double-right"></i> Doctor Dashboard</a></li>
-									</ul>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-							<div class="col-lg-3 col-md-6">
-							
-								<!-- Footer Widget -->
-								<div class="footer-widget footer-contact">
-									<h2 class="footer-title">Contact Us</h2>
-									<div class="footer-contact-info">
-										<div class="footer-address">
-											<span><i class="fas fa-map-marker-alt"></i></span>
-											<p> 3556  Beech Street, San Francisco,<br> California, CA 94108 </p>
-										</div>
-										<p>
-											<i class="fas fa-phone-alt"></i>
-											+1 315 369 5943
-										</p>
-										<p class="mb-0">
-											<i class="fas fa-envelope"></i>
-											doccure@example.com
-										</p>
-									</div>
-								</div>
-								<!-- /Footer Widget -->
-								
-							</div>
-							
-						</div>
-					</div>
-				</div>
-				<!-- /Footer Top -->
-				
-				<!-- Footer Bottom -->
-                <div class="footer-bottom">
-					<div class="container-fluid">
-					
-						<!-- Copyright -->
-						<div class="copyright">
-							<div class="row">
-								<div class="col-md-6 col-lg-6">
-									<div class="copyright-text">
-										<p class="mb-0"><a href="templateshub.net">Templates Hub</a></p>
-									</div>
-								</div>
-								<div class="col-md-6 col-lg-6">
-								
-									<!-- Copyright Menu -->
-									<div class="copyright-menu">
-										<ul class="policy-menu">
-											<li><a href="term-condition.html">Terms and Conditions</a></li>
-											<li><a href="privacy-policy.html">Policy</a></li>
-										</ul>
-									</div>
-									<!-- /Copyright Menu -->
-									
-								</div>
-							</div>
-						</div>
-						<!-- /Copyright -->
-						
-					</div>
-				</div>
-				<!-- /Footer Bottom -->
-				
-			</footer>
+			@include('layouts.footer')
 			<!-- /Footer -->
 		   
 		</div>
 		<!-- /Main Wrapper -->
-	  
-		<!-- jQuery -->
-		<script src="assets/js/jquery.min.js"></script>
+
+		<div class="modal fade" id="addressModal">
+
+			<div class="modal-dialog">
+
+				<div class="modal-content">
+
+					<div class="modal-header">
+
+						<h5>Add Address</h5>
+
+						<button
+							type="button"
+							class="close"
+							data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+
+					</div>
+
+					<div class="modal-body">
+
+						<form action="{{ route('user.address.store') }}" method="POST">
+							@csrf
+
+							<div class="mb-3">
+								<input
+									type="text"
+									class="form-control"
+									name="address"
+									placeholder="Address"
+									required>
+							</div>
+
+							<div class="mb-3">
+								<input
+									type="text"
+									class="form-control"
+									name="city"
+									placeholder="City"
+									required>
+							</div>
+
+							<div class="mb-3">
+								<input
+									type="text"
+									class="form-control"
+									name="state"
+									placeholder="State"
+									required>
+							</div>
+
+							<div class="mb-3">
+								<input
+									type="text"
+									class="form-control"
+									name="country"
+									value="India"
+									required>
+							</div>
+
+							<div class="mb-3">
+								<input
+									type="text"
+									class="form-control"
+									name="postal_code"
+									placeholder="Postal Code"
+									required>
+							</div>
+
+							<div class="form-check">
+								<input
+									class="form-check-input"
+									type="checkbox"
+									name="is_default"
+									value="1">
+
+								<label class="form-check-label">
+									Make Default
+								</label>
+							</div>
+
+							<button type="submit" class="btn btn-primary mt-3">
+								Save Address
+							</button>
+						</form>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+
 		
-		<!-- Bootstrap Core JS -->
-		<script src="assets/js/popper.min.js"></script>
-		<script src="assets/js/bootstrap.min.js"></script>
+	  
+		
 		
 		<!-- Sticky Sidebar JS -->
         <script src="assets/plugins/theia-sticky-sidebar/ResizeSensor.js"></script>
@@ -480,8 +656,7 @@
 		
 		<!-- Custom JS -->
 		<script src="assets/js/script.js"></script>
-		
-	</body>
 
-<!-- doccure/checkout.html  30 Nov 2019 04:12:16 GMT -->
-</html>
+		
+		
+@endsection

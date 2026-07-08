@@ -147,15 +147,60 @@ class AuthController extends Controller
         return view('patient.login');
     }
 
+    // public function loginpatient(Request $request)
+    // {
+    //     $request->validate([
+    //         'email' => 'required|email',
+    //         'password' => 'required',
+    //     ]);
+
+    //     if (Auth::attempt([
+    //         'email' => $request->email,
+    //         'password' => $request->password,
+    //     ])) {
+
+    //         $request->session()->regenerate();
+
+    //         $user = Auth::user();
+
+    //         // Check role
+    //         if ($user->role !== 'patient') {
+    //             Auth::logout();
+
+    //             return back()->with('error', 'Only patients can login from this portal.');
+    //         }
+
+    //         // Check active status
+    //         if (!$user->is_active) {
+    //             Auth::logout();
+
+    //             return back()->with('error', 'Your account is inactive.');
+    //         }
+
+    //         // Check blocked status
+    //         if ($user->is_blocked) {
+    //             Auth::logout();
+
+    //             return back()->with('error', 'Your account has been blocked.');
+    //         }
+
+    //         return redirect()->route('home')
+    //             ->with('success', 'Welcome back, ' . $user->name . '!');
+    //     }
+
+    //     return back()->withInput($request->only('email'))
+    //                 ->with('error', 'Invalid email or password.');
+    // }
+
     public function loginpatient(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'phone' => 'required',
             'password' => 'required',
         ]);
 
         if (Auth::attempt([
-            'email' => $request->email,
+            'phone' => $request->phone,
             'password' => $request->password,
         ])) {
 
@@ -188,8 +233,8 @@ class AuthController extends Controller
                 ->with('success', 'Welcome back, ' . $user->name . '!');
         }
 
-        return back()->withInput($request->only('email'))
-                    ->with('error', 'Invalid email or password.');
+        return back()->withInput($request->only('phone'))
+                    ->with('error', 'Invalid mobile number or password.');
     }
 
     public function logoutpatient(Request $request)

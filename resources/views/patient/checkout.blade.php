@@ -268,7 +268,7 @@
 
 													</div>
 
-													@include('patient.edit-address-modal')
+													
 
 												@empty
 
@@ -534,6 +534,8 @@
 			</div>
 
 		</div>
+
+		@include('patient.edit-address-modal')
 	  
 		
 		

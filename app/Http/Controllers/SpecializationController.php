@@ -13,25 +13,7 @@ class SpecializationController extends Controller
         $specializations = Specializations::latest()->get();
         return view('admin.specializations.index', compact('specializations'));
     }
-
-
     
-
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'description' => 'nullable|string',
-    //     ]);
-
-    //     Specializations::create([
-    //         'name' => $request->name,
-    //         'description' => $request->description,
-    //         'status' => 'active'
-    //     ]);
-
-    //     return back()->with('success','Specialization added successfully');
-    // }
     public function store(Request $request)
     {
         $request->validate([

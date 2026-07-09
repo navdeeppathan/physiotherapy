@@ -134,6 +134,9 @@ class SpecializationControllerApi extends BaseApiController
 
                 $doctor->today_slots = $todaySlots->count();
 
+                   $doctor->distance = isset($doctor->distance)
+                                        ? $doctor->distance . ' KM'
+                                        : '15KM';
                 return $doctor;
             });
 

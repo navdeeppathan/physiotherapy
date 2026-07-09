@@ -43,76 +43,6 @@ class AppointmentController extends BaseApiController
 
         return view('admin.appointments.index', compact('appointments'));
     }
-
-    /**
-     * Book Appointment (Patient)
-     */
-    
-    // public function book(Request $request)
-    // {
-    //     try {
-
-    //         $request->validate([
-    //             'doctor_id'    => 'required|exists:users,id',
-    //             'time_slot_id' => 'required|exists:doctor_time_slots,id',
-    //             'booking_for'        => 'required|in:self,other',
-    //             'patient_name'       => 'required|string|max:150',
-    //             'patient_age'        => 'nullable|integer|min:0|max:120',
-    //             'patient_gender'     => 'nullable|in:male,female,other',
-    //             'problem_description'=> 'nullable|string'
-    //         ]);
-
-    //         $patient = Auth::user();
-
-    //         if ($patient->role !== 'patient') {
-    //             return $this->sendError('Only patients can book appointments', [], 403);
-    //         }
-
-    //         $slot = DoctorTimeSlot::where('id', $request->time_slot_id)
-    //                 ->where('user_id', $request->doctor_id)
-    //                 ->first();
-
-    //         if (!$slot) {
-    //             return $this->sendError('Invalid slot selected', [], 404);
-    //         }
-
-    //         if ($slot->is_booked) {
-    //             return $this->sendError('Slot already booked', [], 400);
-    //         }
-
-    //         $appointment = Appointment::create([
-    //             'doctor_id'       => $request->doctor_id,
-    //             'patient_id'      => $patient->id,
-    //             'time_slot_id'    => $slot->id,
-    //             'appointment_date'=> $slot->availabilityDate->available_date,
-    //             'start_time'      => $slot->start_time,
-    //             'end_time'        => $slot->end_time,
-    //             'status'          => 'pending',
-    //             'booking_for'     => $request->booking_for,
-    //             'patient_name'    => $request->patient_name,
-    //             'patient_age'     => $request->patient_age,
-    //             'patient_gender'  => $request->patient_gender,
-    //             'problem_description' => $request->problem_description
-
-    //         ]);
-
-    //         // Mark slot as booked
-    //         $slot->update(['is_booked' => true]);
-
-    //         return $this->sendResponse($appointment, 'Appointment booked successfully');
-
-    //     } catch (Exception $e) {
-
-    //         $this->logException($e, 'Appointment Booking Error');
-
-    //         return response()->json([
-    //             'status'  => false,
-    //             'message' => 'Something went wrong',
-    //             'error'   => $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
-
     
 
     public function book(Request $request)
@@ -726,7 +656,7 @@ class AppointmentController extends BaseApiController
     {
         $patient = Auth::user();
 
-        $appointments = Appointment::with(['doctor','timeSlot','patient' , 'patient.address'])
+        $appointments = Appointment::with(['doctor','timeSlot','patient'])
             ->where('patient_id', $patient->id)
             ->where('status', 'completed')
             ->latest()
@@ -742,7 +672,7 @@ class AppointmentController extends BaseApiController
     {
         $patient = Auth::user();
 
-        $appointments = Appointment::with(['doctor','timeSlot','patient', 'patient.address'])
+        $appointments = Appointment::with(['doctor','timeSlot','patient'])
             ->where('patient_id', $patient->id)
             ->where('is_rescheduled', true)
             ->whereHas('reschedules')
@@ -760,7 +690,7 @@ class AppointmentController extends BaseApiController
         $doctor = Auth::user();
 
 
-        $appointments = Appointment::with(['patient', 'patient.address', 'timeSlot' , 'cancellation.reason'])
+        $appointments = Appointment::with(['patient', 'timeSlot' , 'cancellation.reason'])
                         ->where('doctor_id', $doctor->id)
                         ->where('status', 'cancelled')
                         ->latest()

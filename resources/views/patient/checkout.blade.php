@@ -236,18 +236,9 @@
 
 																<button
 																	type="button"
-																	class="btn btn-sm btn-warning editAddressBtn"
-
+																	class="btn btn-sm btn-warning"
 																	data-toggle="modal"
-																	data-target="#editAddressModal"
-
-																	data-id="{{ $address->id }}"
-																	data-address="{{ $address->address }}"
-																	data-city="{{ $address->city }}"
-																	data-state="{{ $address->state }}"
-																	data-country="{{ $address->country }}"
-																	data-postal="{{ $address->postal_code }}"
-																	data-default="{{ $address->is_default }}">
+																	data-target="#editAddressModal{{ $address->id }}">
 
 																	Edit
 
@@ -277,7 +268,118 @@
 
 													</div>
 
-													
+													<div class="modal fade" id="editAddressModal{{ $address->id }}">
+
+														<div class="modal-dialog">
+
+															<div class="modal-content">
+
+																<div class="modal-header">
+
+																	<h5>Edit Address</h5>
+
+																	<button
+																		class="close"
+																		data-dismiss="modal">
+
+																		<span>&times;</span>
+
+																	</button>
+
+																</div>
+
+																<div class="modal-body">
+
+																	<form
+																		action="{{ route('user.address.update',$address->id) }}"
+																		method="POST">
+
+																		@csrf
+																		@method('PUT')
+
+																		<div class="mb-3">
+
+																			<input
+																				class="form-control"
+																				name="address"
+																				value="{{ $address->address }}"
+																				required>
+
+																		</div>
+
+																		<div class="mb-3">
+
+																			<input
+																				class="form-control"
+																				name="city"
+																				value="{{ $address->city }}"
+																				required>
+
+																		</div>
+
+																		<div class="mb-3">
+
+																			<input
+																				class="form-control"
+																				name="state"
+																				value="{{ $address->state }}"
+																				required>
+
+																		</div>
+
+																		<div class="mb-3">
+
+																			<input
+																				class="form-control"
+																				name="country"
+																				value="{{ $address->country }}"
+																				required>
+
+																		</div>
+
+																		<div class="mb-3">
+
+																			<input
+																				class="form-control"
+																				name="postal_code"
+																				value="{{ $address->postal_code }}"
+																				required>
+
+																		</div>
+
+																		<div class="form-check">
+
+																			<input
+																				type="checkbox"
+																				class="form-check-input"
+																				name="is_default"
+																				value="1"
+																				{{ $address->is_default ? 'checked' : '' }}>
+
+																			<label>
+
+																				Make Default
+
+																			</label>
+
+																		</div>
+
+																		<button
+																			class="btn btn-primary mt-3">
+
+																			Update Address
+
+																		</button>
+
+																	</form>
+
+																</div>
+
+															</div>
+
+														</div>
+
+													</div>
 
 												@empty
 
@@ -544,122 +646,8 @@
 
 		</div>
 
-		<div class="modal fade" id="editAddressModal">
-
-			<div class="modal-dialog modal-dialog-centered">
-
-				<div class="modal-content">
-
-					<div class="modal-header">
-
-						<h5 class="modal-title">Edit Address</h5>
-
-						<button type="button"
-							class="close"
-							data-dismiss="modal">
-
-							<span>&times;</span>
-
-						</button>
-
-					</div>
-
-					<form id="editAddressForm" method="POST">
-
-						@csrf
-						@method('PUT')
-
-						<div class="modal-body">
-
-							<div class="form-group">
-								<label>Address</label>
-								<input
-									type="text"
-									class="form-control"
-									name="address"
-									id="edit_address"
-									required>
-							</div>
-
-							<div class="form-group">
-								<label>City</label>
-								<input
-									type="text"
-									class="form-control"
-									name="city"
-									id="edit_city"
-									required>
-							</div>
-
-							<div class="form-group">
-								<label>State</label>
-								<input
-									type="text"
-									class="form-control"
-									name="state"
-									id="edit_state"
-									required>
-							</div>
-
-							<div class="form-group">
-								<label>Country</label>
-								<input
-									type="text"
-									class="form-control"
-									name="country"
-									id="edit_country"
-									required>
-							</div>
-
-							<div class="form-group">
-								<label>Postal Code</label>
-								<input
-									type="text"
-									class="form-control"
-									name="postal_code"
-									id="edit_postal"
-									required>
-							</div>
-
-							<div class="form-check">
-
-								<input
-									type="checkbox"
-									class="form-check-input"
-									name="is_default"
-									id="edit_default"
-									value="1">
-
-								<label class="form-check-label">
-									Make Default
-								</label>
-
-							</div>
-
-						</div>
-
-						<div class="modal-footer">
-
-							<button
-								class="btn btn-success">
-
-								Update Address
-
-							</button>
-
-						</div>
-
-					</form>
-
-				</div>
-
-			</div>
-
-		</div>
-
 		
 	  
-		<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
 		
 		
 		<!-- Sticky Sidebar JS -->
@@ -669,31 +657,6 @@
 		<!-- Custom JS -->
 		<script src="assets/js/script.js"></script>
 
-		<script>
-
-			$(document).on("click",".editAddressBtn",function(){
-
-				let id=$(this).data("id");
-
-				$("#editAddressForm").attr(
-					"action",
-					"/user/address/"+id
-				);
-
-				$("#edit_address").val($(this).data("address"));
-				$("#edit_city").val($(this).data("city"));
-				$("#edit_state").val($(this).data("state"));
-				$("#edit_country").val($(this).data("country"));
-				$("#edit_postal").val($(this).data("postal"));
-
-				if($(this).data("default")==1){
-					$("#edit_default").prop("checked",true);
-				}else{
-					$("#edit_default").prop("checked",false);
-				}
-
-			});
-
-		</script>
+		
 		
 @endsection

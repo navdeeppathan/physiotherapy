@@ -44,7 +44,16 @@ class SpecializationControllerApi extends BaseApiController
                     ->where('status', 'active')
                     ->with([
                         'profile',
-                        'fee'
+                        'fee',
+                       'availabilityDates' => function ($q) {
+                            $q->whereDate('available_date', today())
+                            ->where('is_available', true) // doctor_availability_dates table
+                            ->with([
+                                'timeSlots' => function ($slot) {
+                                    $slot->where('is_booked', false);
+                                }
+                            ]);
+                        }
                     ]);
 
             /*
@@ -74,25 +83,39 @@ class SpecializationControllerApi extends BaseApiController
                 });
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | Distance Calculation (Haversine Formula)
-            |--------------------------------------------------------------------------
-            */
+            // if ($latitude && $longitude) {
 
+            //     $query->select(
+            //         'users.*',
+            //         DB::raw("
+            //             (
+            //                 6371 * acos(
+            //                     cos(radians($latitude))
+            //                     * cos(radians(latitude))
+            //                     * cos(radians(longitude) - radians($longitude))
+            //                     + sin(radians($latitude))
+            //                     * sin(radians(latitude))
+            //                 )
+            //             ) AS distance
+            //         ")
+            //     )
+            //     ->orderBy('distance', 'ASC');
+            // }
             if ($latitude && $longitude) {
 
                 $query->select(
                     'users.*',
                     DB::raw("
-                        (
-                            6371 * acos(
-                                cos(radians($latitude))
-                                * cos(radians(latitude))
-                                * cos(radians(longitude) - radians($longitude))
-                                + sin(radians($latitude))
-                                * sin(radians(latitude))
-                            )
+                        ROUND(
+                            (
+                                6371 * acos(
+                                    cos(radians($latitude))
+                                    * cos(radians(users.latitude))
+                                    * cos(radians(users.longitude) - radians($longitude))
+                                    + sin(radians($latitude))
+                                    * sin(radians(users.latitude))
+                                )
+                            ),2
                         ) AS distance
                     ")
                 )
@@ -100,6 +123,22 @@ class SpecializationControllerApi extends BaseApiController
             }
 
             $doctors = $query->paginate(20);
+
+            $doctors->getCollection()->transform(function ($doctor) {
+
+                $todaySlots = collect();
+
+                foreach ($doctor->availabilityDates as $availability) {
+                    $todaySlots = $todaySlots->merge($availability->timeSlots);
+                }
+
+                $doctor->today_slots = $todaySlots->count();
+
+                   $doctor->distance = isset($doctor->distance)
+                                        ? $doctor->distance . ' KM'
+                                        : '15KM';
+                return $doctor;
+            });
 
             \Log::info($doctors);
 

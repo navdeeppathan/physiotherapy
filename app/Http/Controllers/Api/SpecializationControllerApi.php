@@ -45,11 +45,14 @@ class SpecializationControllerApi extends BaseApiController
                     ->with([
                         'profile',
                         'fee',
-                        'availabilityDates' => function ($q) {
+                       'availabilityDates' => function ($q) {
                             $q->whereDate('available_date', today())
-                            ->with(['timeSlots' => function ($slot) {
-                                $slot->where('is_available', true);
-                            }]);
+                            ->where('is_available', true) // doctor_availability_dates table
+                            ->with([
+                                'timeSlots' => function ($slot) {
+                                    $slot->where('is_booked', false);
+                                }
+                            ]);
                         }
                     ]);
 

@@ -48,7 +48,7 @@ class SpecializationControllerApi extends BaseApiController
                         'availabilityDates' => function ($q) {
                             $q->whereDate('available_date', today())
                             ->with(['timeSlots' => function ($slot) {
-                                $slot->where('is_available', 1);
+                                $slot->where('is_available', true);
                             }]);
                         }
                     ]);

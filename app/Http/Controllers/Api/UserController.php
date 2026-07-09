@@ -1107,7 +1107,7 @@ class UserController extends BaseApiController
 
         try {
 
-            $doctor = Doctor::findOrFail($doctorId);
+            $doctor = User::findOrFail($doctorId);
 
             // Doctor consultation fee
             $doctorFee = $doctor->consultation_fee ?? 0;

@@ -147,7 +147,7 @@ class DoctorAvailabilityController extends BaseApiController
 
                     $slotStart = $start->format('H:i:s');
 
-                    $start->addMinutes(30);
+                    $start->addMinutes(60);
 
                     $slotEnd = $start->format('H:i:s');
 

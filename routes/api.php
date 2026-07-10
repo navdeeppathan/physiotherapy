@@ -12,7 +12,7 @@ use App\Http\Controllers\Api\PlanController;
 use App\Http\Controllers\Api\SpecializationControllerApi;
 use App\Http\Controllers\Api\UserSubscriptionController;
 use App\Http\Controllers\Api\PatientPlanController;
-
+use App\Http\Controllers\Api\UserAddressController;
 
 // Authentication
 Route::post('/login', [UserController::class, 'login']);
@@ -127,5 +127,10 @@ Route::middleware(['auth:api', 'role:patient'])->group(function () {
     Route::get('/patient/cancelled-appointments', [AppointmentController::class, 'patientCancelledAppointments']);
 
     Route::get('/patient/appointments/shifted', [AppointmentController::class, 'patientShiftedAppointments']);
+
+    Route::get('/patient/addresses', [UserAddressController::class, 'index']);
+    Route::post('/patient/addresses', [UserAddressController::class, 'store']);
+    Route::put('/patient/addresses/{id}', [UserAddressController::class, 'update']);
+    Route::delete('/patient/addresses/{id}', [UserAddressController::class, 'destroy']);
 
 });

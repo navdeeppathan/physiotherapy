@@ -97,6 +97,8 @@
 
 										<input type="hidden" name="booking_for" value="self">
 
+										<input type="hidden" name="address" id="selected_address">
+
 										<div class="info-widget">
 											<h4 class="card-title">Problem Description</h4>
 
@@ -214,8 +216,13 @@
 																<input
 																	type="radio"
 																	name="address_id"
-																	value="{{ $address->id }}"
-																	{{ $address->is_default ? 'checked' : '' }}>
+																	value="{{ $address->address }},
+																			{{ $address->city }},
+																			{{ $address->state }},
+																			{{ $address->country }} - {{ $address->postal_code }}"
+																	{{ $address->is_default ? 'checked' : '' }}
+																	onchange="setSelectedAddress(this)"
+																	>
 
 																<strong>{{ $address->address }}</strong>
 
@@ -648,6 +655,23 @@
 
 		
 	  
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+
+				function updateAddress() {
+					const checked = document.querySelector('input[name="address_id"]:checked');
+					if (checked) {
+						document.getElementById('selected_address').value = checked.value;
+					}
+				}
+
+				document.querySelectorAll('input[name="address_id"]').forEach(function(radio){
+					radio.addEventListener('change', updateAddress);
+				});
+
+				updateAddress(); // set default checked address
+			});
+		</script>
 		
 		
 		<!-- Sticky Sidebar JS -->
@@ -656,6 +680,7 @@
 		
 		<!-- Custom JS -->
 		<script src="assets/js/script.js"></script>
+
 
 		
 		

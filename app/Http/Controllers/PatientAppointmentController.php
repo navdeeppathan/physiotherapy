@@ -76,6 +76,8 @@ Class PatientAppointmentController extends Controller
 
     public function store(Request $request)
     {
+
+    
         $request->validate([
             'doctor_id' => 'required|exists:users,id',
             'plan_id' => 'required|exists:patient_plans,id',
@@ -86,6 +88,7 @@ Class PatientAppointmentController extends Controller
             // 'patient_age' => 'nullable|integer',
             // 'patient_gender' => 'nullable|in:male,female,other',
             'problem_description' => 'nullable|string',
+            'address' => 'nullable',
             // 'subscription_id' => 'required|exists:patient_plan_subscriptions,id',
         ]);
 
@@ -146,8 +149,6 @@ Class PatientAppointmentController extends Controller
                 'payment_method' => 'Manual',
                 'status' => 'active',
             ]);
-
-            
 
             Payment::create([
                 'appointment_id' => null,
@@ -210,7 +211,9 @@ Class PatientAppointmentController extends Controller
 
                     'problem_description'=>$request->problem_description,
 
-                    'status'=>'confirmed'
+                    'status'=>'confirmed',
+
+                    'patient_address'=>$request->address
 
                 ]);
 
@@ -249,7 +252,7 @@ Class PatientAppointmentController extends Controller
             DB::commit();
 
             return redirect()
-                ->route('home')
+                ->route('patient.dashboard')
                 ->with(
                     'success',
                     $bookedCount.' appointment(s) booked successfully.'

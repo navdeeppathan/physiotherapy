@@ -44,7 +44,7 @@ Route::post('/patient/register', [AuthController::class, 'registerPatientWeb'])
     ->name('patient.register.store');
 
 // Route::middleware('auth')->group(function () {
-     Route::get('/booking/{id}',[PatientAppointmentController::class, 'booking'])->name('doctor.booking');
+    Route::get('/booking/{id}',[PatientAppointmentController::class, 'booking'])->name('doctor.booking');
 // });
 //user apis
     // Route::post('/doctor-payment', [PatientAppointmentController::class, 'bookingpay'])

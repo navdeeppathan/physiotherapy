@@ -16,7 +16,7 @@ class UserAddressController extends Controller
     {
         $addresses = UserAddress::where('user_id', Auth::id())
             ->latest()
-            ->first();
+            ->get();
 
         return response()->json([
             'status' => true,

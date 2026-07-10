@@ -60,6 +60,7 @@ class AppointmentController extends BaseApiController
                 'patient_gender'     => 'nullable|in:male,female,other',
                 'problem_description'=> 'nullable|string',
                 'doctor_fee' => 'nullable|numeric|min:0',
+                'address' => 'nullable',
             ]);
 
             $patient = Auth::user();
@@ -95,18 +96,12 @@ class AppointmentController extends BaseApiController
                 'patient_age'     => $request->patient_age,
                 'patient_gender'  => $request->patient_gender,
                 'problem_description' => $request->problem_description,
+                'patient_address' => $request->address,
                 
             ]);
 
             // Add address details if booking for other table user_addresses
-            $address = DB::table('user_addresses')->insert([
-                'user_id' => $patient->id ,
-                'state' => $request->state ?? "Maharashtra",
-                'city' => $request->city ?? "Mumbai",
-                'postal_code' => $request->pincode ?? null,
-                'country' => "India",
-                'address' => $request->address_description ?? "Mumbai, Maharashtra, India",
-            ]);
+            
 
             // ✅ Create Payment (NEW)
             $payment = Payment::create([

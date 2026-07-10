@@ -1052,6 +1052,7 @@ class UserController extends BaseApiController
     public function patientPaymentHistory($patientId)
     {
         try {
+            
 
             $payments = Payment::with(['doctor', 'appointment'])
                 ->where('patient_id', $patientId)

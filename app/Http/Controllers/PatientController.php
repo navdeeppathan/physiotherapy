@@ -5,6 +5,7 @@ use App\Models\Appointment;
 use App\Models\Payment;
 use App\Models\Specializations;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -22,9 +23,60 @@ Class PatientController extends Controller
         $payments = Payment::with(['doctor', 'appointment'])
                 ->where('patient_id', $patient->id)
                 ->orderBy('created_at', 'desc')
-                ->get();        
-           
-        return view('patient.patient-dashboard', compact('patient', 'appointments', 'payments'));
+                ->get(); 
+
+      
+        $totalPaymentAmount = Payment::where('patient_id', $patient->id)
+            ->where('status', 'success') // Optional: only successful payments
+            ->sum('amount');
+                
+                 // Upcoming Appointments
+        $upcomingAppointments = Appointment::with([
+                'doctor',
+                'timeSlot',
+                'patient'
+            ])
+            ->where('patient_id', $patient->id)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->whereDate('appointment_date', '>=', Carbon::today())
+            ->orderBy('appointment_date')
+            ->get();
+
+        // Completed Appointments
+        $completedAppointments = Appointment::with([
+                'doctor',
+                'timeSlot',
+                'patient'
+            ])
+            ->where('patient_id', $patient->id)
+            ->where('status', 'completed')
+            ->latest()
+            ->get();
+
+        // Shifted / Rescheduled Appointments
+        $shiftedAppointments = Appointment::with([
+                'doctor',
+                'timeSlot',
+                'patient'
+            ])
+            ->where('patient_id', $patient->id)
+            ->where('is_rescheduled', true)
+            ->whereHas('reschedules')
+            ->latest()
+            ->get();
+
+        // Cancelled Appointments
+        $cancelledAppointments = Appointment::with([
+                'doctor',
+                'timeSlot',
+                'cancellation.reason'
+            ])
+            ->where('patient_id', $patient->id)
+            ->where('status', 'cancelled')
+            ->latest()
+            ->get();
+            
+        return view('patient.patient-dashboard', compact('patient', 'appointments', 'payments', 'upcomingAppointments', 'completedAppointments', 'shiftedAppointments', 'cancelledAppointments', 'totalPaymentAmount'));
     }
 
     public function profile(){

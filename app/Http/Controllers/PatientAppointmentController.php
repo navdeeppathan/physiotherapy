@@ -15,7 +15,8 @@ use App\Models\AppointmentFee;
 use App\Models\PatientPlan;
 use App\Models\PatientPlanSubscription;
 use App\Models\Payment;
-
+use App\Models\AppointmentCancellation;
+use App\Models\CancellationReason;
 
 Class PatientAppointmentController extends Controller
 {
@@ -380,4 +381,86 @@ Class PatientAppointmentController extends Controller
         }
 
     }
+
+
+    public function show(Appointment $appointment)
+    {
+        if ($appointment->patient_id != auth()->id()) {
+            abort(403);
+        }
+
+        $appointment->load([
+            'doctor.profile.specializationdata',
+            'doctor.fee',
+            'review',
+            'cancellation.reason',
+            // 'transferRequest',
+            'timeSlot',
+        ]);
+
+        $reasons = CancellationReason::where('is_active',1)->get();
+        return view('patient.appointment-details', compact('appointment', 'reasons'));
+    }
+
+
+   
+
+    public function cancel(Request $request, Appointment $appointment)
+    {
+        $request->validate([
+            'reason_id' => 'nullable|exists:cancellation_reasons,id',
+            'custom_reason' => 'nullable|string|max:500'
+        ]);
+
+        if ($appointment->patient_id != auth()->id()) {
+            abort(403);
+        }
+
+        if ($appointment->status == 'cancelled') {
+            return back()->with('error', 'Appointment already cancelled.');
+        }
+
+        DB::beginTransaction();
+
+        try {
+
+            $appointment->update([
+                'status' => 'cancelled'
+            ]);
+
+            if ($appointment->timeSlot) {
+
+                $appointment->timeSlot->update([
+                    'is_booked' => 0
+                ]);
+
+            }
+
+            AppointmentCancellation::create([
+
+                'user_id' => Auth::id(),
+
+                'appointment_id' => $appointment->id,
+
+                'reason_id' => $request->reason_id,
+
+                'custom_reason' => $request->custom_reason,
+
+                'cancelled_by' => 'patient'
+
+            ]);
+
+            DB::commit();
+
+            return back()->with('success','Appointment cancelled successfully.');
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return back()->with('error',$e->getMessage());
+
+        }
+    }
+
 }

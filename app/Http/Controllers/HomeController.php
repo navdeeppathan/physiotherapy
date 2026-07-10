@@ -60,28 +60,28 @@ class HomeController extends Controller
 
    
 
-public function doctorProfile($id)
-{
-    $doctor = User::with([
-        'profile.specializationdata',
-        'receivedReviews.patient',
-        'documents',
-        'fee'
-    ])->where('role', 'doctor')
-      ->findOrFail($id);
+    public function doctorProfile($id)
+    {
+        $doctor = User::with([
+            'profile.specializationdata',
+            'receivedReviews.patient',
+            'documents',
+            'fee'
+        ])->where('role', 'doctor')
+        ->findOrFail($id);
 
-    $avgRating = $doctor->receivedReviews()
-        ->where('is_approved',1)
-        ->avg('rating');
+        $avgRating = $doctor->receivedReviews()
+            ->where('is_approved',1)
+            ->avg('rating');
 
-    $totalReviews = $doctor->receivedReviews()
-        ->where('is_approved',1)
-        ->count();
+        $totalReviews = $doctor->receivedReviews()
+            ->where('is_approved',1)
+            ->count();
 
-    return view('patient.doctor_profile', compact(
-        'doctor',
-        'avgRating',
-        'totalReviews'
-    ));
-}
+        return view('patient.doctor_profile', compact(
+            'doctor',
+            'avgRating',
+            'totalReviews'
+        ));
+    }
 }

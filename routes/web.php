@@ -67,7 +67,17 @@ Route::post('/patient/register', [AuthController::class, 'registerPatientWeb'])
     ->name('user.address.update');
 
     Route::delete('/user/address/{id}', [UserAddressController::class, 'destroy'])
-        ->name('user.address.destroy');    
+        ->name('user.address.destroy');   
+        
+        
+    Route::get('/patient/appointments/{appointment}', [PatientAppointmentController::class, 'show'])
+        ->middleware('auth')
+        ->name('patient.appointments.show');  
+    
+    Route::post(
+        '/patient/appointment/{appointment}/cancel',
+        [PatientAppointmentController::class, 'cancel']
+    )->name('patient.appointment.cancel');    
 
 //admin 
 

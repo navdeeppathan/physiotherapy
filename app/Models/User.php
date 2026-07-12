@@ -7,6 +7,14 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\DoctorDocument;
 use App\Models\UserAddress;
+use App\Models\DoctorAvailabilityDate;
+use App\Models\DoctorTimeSlot;
+use App\Models\Appointment;
+use App\Models\DoctorReview;
+use App\Models\AppointmentFee;
+use App\Models\DoctorWallet;
+use App\Models\DoctorProfile;
+use App\Models\Feedback;
 
 class User extends Authenticatable
 {
@@ -119,6 +127,11 @@ class User extends Authenticatable
     public function feedbacks()
     {
         return $this->hasMany(Feedback::class, 'doctor_id');
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'doctor_id');
     }
 
     public function addresses()

@@ -518,7 +518,7 @@ class AppointmentController extends BaseApiController
 
             // Appointment History
             $appointments = Appointment::with([
-                    'patient:id,name,email,phone,image',
+                    'patient:id,name,email,phone',
                     'timeSlot:id,start_time,end_time'
                 ])
                 ->where('doctor_id', $doctor_id)

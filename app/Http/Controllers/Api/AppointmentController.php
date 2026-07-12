@@ -401,77 +401,180 @@ class AppointmentController extends BaseApiController
     //     }
     // }
 
+    // public function getDoctorWallet(Request $request, $doctor_id)
+    // {
+    //     try {
+
+    //         $wallet = DoctorWallet::firstOrCreate(
+    //             ['doctor_id' => $doctor_id],
+    //             ['balance' => 0, 'currency' => 'INR']
+    //         );
+
+    //         $payments = Payment::with([
+    //                 'patient:id,name,email,phone',
+    //                 'appointment:id,appointment_date,start_time,end_time,status'
+    //             ])
+    //             ->where('doctor_id', $doctor_id);
+
+    //         // Filter by patient
+    //         if ($request->filled('patient_id')) {
+    //             $payments->where('patient_id', $request->patient_id);
+    //         }
+
+    //         // Filter by payment date range
+    //         if ($request->filled('start_date')) {
+    //             $payments->whereDate('created_at', '>=', $request->start_date);
+    //         }
+
+    //         if ($request->filled('end_date')) {
+    //             $payments->whereDate('created_at', '<=', $request->end_date);
+    //         }
+
+    //         $payments = $payments
+    //             ->orderBy('created_at', 'desc')
+    //             ->get();
+
+    //         $payments->transform(function ($payment) {
+    //             return [
+    //                 'id' => $payment->id,
+    //                 'amount' => $payment->amount,
+    //                 'currency' => $payment->currency,
+    //                 'status' => $payment->status,
+    //                 'created_at' => $payment->created_at->toDateTimeString(),
+    //                 'patient' => $payment->patient ? [
+    //                     'id' => $payment->patient->id,
+    //                     'name' => $payment->patient->name,
+    //                     'email' => $payment->patient->email,
+    //                     'phone' => $payment->patient->phone
+    //                 ] : null,
+    //                 'appointment' => $payment->appointment ? [
+    //                     'id' => $payment->appointment->id,
+    //                     'date' => $payment->appointment->appointment_date,
+    //                     'start_time' => $payment->appointment->start_time,
+    //                     'end_time' => $payment->appointment->end_time,
+    //                     'status' => $payment->appointment->status
+    //                 ] : null
+    //             ];
+    //         });
+
+    //         return $this->sendResponse([
+    //             'balance' => $wallet->balance,
+    //             'currency' => $wallet->currency,
+    //             'total_transactions' => $payments->count(),
+    //             'transactions' => $payments
+    //         ], 'Wallet fetched successfully');
+
+    //     } catch (\Exception $e) {
+
+    //         $this->logException($e, 'Get Doctor Wallet Error');
+
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Failed to fetch wallet',
+    //             'error' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
     public function getDoctorWallet(Request $request, $doctor_id)
     {
         try {
 
-            $wallet = DoctorWallet::firstOrCreate(
-                ['doctor_id' => $doctor_id],
-                ['balance' => 0, 'currency' => 'INR']
-            );
+            $doctor = User::with('fee')->findOrFail($doctor_id);
 
-            $payments = Payment::with([
-                    'patient:id,name,email,phone',
-                    'appointment:id,appointment_date,start_time,end_time,status'
+            $doctorFee = AppointmentFee::where('doctor_id', $doctor_id)
+                ->value('doctor_fee') ?? 0;
+
+            // Completed appointments
+            $completedAppointments = Appointment::where('doctor_id', $doctor_id)
+                ->where('status', 'completed');
+
+            // Total completed appointments
+            $completedCount = (clone $completedAppointments)->count();
+
+            // Total earnings
+            $totalAmount = $completedCount * $doctorFee;
+
+            // Paid appointments
+            $paidAppointmentsCount = Appointment::where('doctor_id', $doctor_id)
+                ->where('status', 'completed')
+                ->where('doctor_payment_status', 'paid')
+                ->count();
+
+            // Paid amount
+            $paidAmount = $paidAppointmentsCount * $doctorFee;
+
+            // Remaining amount
+            $remainingAmount = max(0, $totalAmount - $paidAmount);
+
+            // Unpaid appointments
+            $unpaidCount = Appointment::where('doctor_id', $doctor_id)
+                ->where('status', 'completed')
+                ->where('doctor_payment_status', '!=', 'paid')
+                ->count();
+
+            // Appointment History
+            $appointments = Appointment::with([
+                    'patient:id,name,email,phone,image',
+                    'timeSlot:id,start_time,end_time'
                 ])
-                ->where('doctor_id', $doctor_id);
+                ->where('doctor_id', $doctor_id)
+                ->where('status', 'completed')
+                ->when($request->filled('payment_status'), function ($q) use ($request) {
+                    $q->where('doctor_payment_status', $request->payment_status);
+                })
+                ->latest('appointment_date')
+                ->paginate(20);
 
-            // Filter by patient
-            if ($request->filled('patient_id')) {
-                $payments->where('patient_id', $request->patient_id);
-            }
+            $appointments->getCollection()->transform(function ($appointment) use ($doctorFee) {
 
-            // Filter by payment date range
-            if ($request->filled('start_date')) {
-                $payments->whereDate('created_at', '>=', $request->start_date);
-            }
-
-            if ($request->filled('end_date')) {
-                $payments->whereDate('created_at', '<=', $request->end_date);
-            }
-
-            $payments = $payments
-                ->orderBy('created_at', 'desc')
-                ->get();
-
-            $payments->transform(function ($payment) {
                 return [
-                    'id' => $payment->id,
-                    'amount' => $payment->amount,
-                    'currency' => $payment->currency,
-                    'status' => $payment->status,
-                    'created_at' => $payment->created_at->toDateTimeString(),
-                    'patient' => $payment->patient ? [
-                        'id' => $payment->patient->id,
-                        'name' => $payment->patient->name,
-                        'email' => $payment->patient->email,
-                        'phone' => $payment->patient->phone
-                    ] : null,
-                    'appointment' => $payment->appointment ? [
-                        'id' => $payment->appointment->id,
-                        'date' => $payment->appointment->appointment_date,
-                        'start_time' => $payment->appointment->start_time,
-                        'end_time' => $payment->appointment->end_time,
-                        'status' => $payment->appointment->status
-                    ] : null
+                    'appointment_id' => $appointment->id,
+                    'appointment_date' => $appointment->appointment_date,
+                    'payment_status' => $appointment->doctor_payment_status,
+                    'doctor_fee' => $doctorFee,
+
+                    'patient' => [
+                        'id' => optional($appointment->patient)->id,
+                        'name' => optional($appointment->patient)->name,
+                        'email' => optional($appointment->patient)->email,
+                        'phone' => optional($appointment->patient)->phone,
+                        'image' => optional($appointment->patient)->image,
+                    ],
+
+                    'time_slot' => [
+                        'start_time' => optional($appointment->timeSlot)->start_time,
+                        'end_time' => optional($appointment->timeSlot)->end_time,
+                    ],
                 ];
             });
 
             return $this->sendResponse([
-                'balance' => $wallet->balance,
-                'currency' => $wallet->currency,
-                'total_transactions' => $payments->count(),
-                'transactions' => $payments
-            ], 'Wallet fetched successfully');
+                'doctor' => [
+                    'id' => $doctor->id,
+                    'name' => $doctor->name,
+                    'fee' => $doctorFee,
+                ],
+
+                'summary' => [
+                    'completed_appointments' => $completedCount,
+                    'paid_appointments' => $paidAppointmentsCount,
+                    'unpaid_appointments' => $unpaidCount,
+
+                    'total_amount' => $totalAmount,
+                    'paid_amount' => $paidAmount,
+                    'remaining_amount' => $remainingAmount,
+                ],
+
+                'appointments' => $appointments
+
+            ], 'Doctor wallet fetched successfully');
 
         } catch (\Exception $e) {
 
-            $this->logException($e, 'Get Doctor Wallet Error');
-
             return response()->json([
                 'status' => false,
-                'message' => 'Failed to fetch wallet',
-                'error' => $e->getMessage()
+                'message' => $e->getMessage()
             ], 500);
         }
     }

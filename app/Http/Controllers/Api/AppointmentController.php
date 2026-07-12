@@ -512,9 +512,8 @@ class AppointmentController extends BaseApiController
 
             // Unpaid appointments
             $unpaidCount = Appointment::where('doctor_id', $doctor_id)
-                ->where('status', 'completed')
-                ->where('doctor_payment_status', '!=', 'paid')
-                ->count();
+                            ->where('doctor_payment_status', '!=', 'paid')
+                            ->count();
 
             // Appointment History
             $appointments = Appointment::with([
@@ -522,7 +521,6 @@ class AppointmentController extends BaseApiController
                     'timeSlot:id,start_time,end_time'
                 ])
                 ->where('doctor_id', $doctor_id)
-                ->where('status', 'completed')
                 ->when($request->filled('payment_status'), function ($q) use ($request) {
                     $q->where('doctor_payment_status', $request->payment_status);
                 })

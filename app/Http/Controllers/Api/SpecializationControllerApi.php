@@ -45,15 +45,41 @@ class SpecializationControllerApi extends BaseApiController
                     ->with([
                         'profile',
                         'fee',
-                        'feedbacks',
-                       'availabilityDates' => function ($q) {
+
+                        // Reviews with Patient Details
+                        'feedbacks.patient:id,name,image,email',
+
+                        'availabilityDates' => function ($q) {
                             $q->whereDate('available_date', today())
-                            ->where('is_available', true) // doctor_availability_dates table
+                            ->where('is_available', true)
                             ->with([
-                                'timeSlots' => function ($slot) {
-                                    $slot->where('is_booked', false);
-                                }
+                                    'timeSlots' => function ($slot) {
+                                        $slot->where('is_booked', false);
+                                    }
                             ]);
+                        }
+                    ])
+
+                    // Average Rating
+                    ->withAvg('feedbacks', 'rating')
+
+                    // Total Ratings
+                    ->withCount('feedbacks')
+
+                    // Total Appointments
+                    ->withCount('appointments')
+
+                    // Completed Appointments (optional)
+                    ->withCount([
+                        'appointments as completed_appointments_count' => function ($q) {
+                            $q->where('status', 'completed');
+                        }
+                    ])
+
+                    // Distinct Patients
+                    ->withCount([
+                        'appointments as total_patients' => function ($q) {
+                            $q->select(DB::raw('count(distinct patient_id)'));
                         }
                     ]);
 
@@ -84,24 +110,11 @@ class SpecializationControllerApi extends BaseApiController
                 });
             }
 
-            // if ($latitude && $longitude) {
-
-            //     $query->select(
-            //         'users.*',
-            //         DB::raw("
-            //             (
-            //                 6371 * acos(
-            //                     cos(radians($latitude))
-            //                     * cos(radians(latitude))
-            //                     * cos(radians(longitude) - radians($longitude))
-            //                     + sin(radians($latitude))
-            //                     * sin(radians(latitude))
-            //                 )
-            //             ) AS distance
-            //         ")
-            //     )
-            //     ->orderBy('distance', 'ASC');
-            // }
+            /*
+            |--------------------------------------------------------------------------
+            | Filter by Distance
+            |--------------------------------------------------------------------------
+            */
             if ($latitude && $longitude) {
 
                 $query->select(
@@ -135,12 +148,25 @@ class SpecializationControllerApi extends BaseApiController
 
                 $doctor->today_slots = $todaySlots->count();
 
-                   $doctor->distance = isset($doctor->distance)
-                                        ? $doctor->distance . ' KM'
-                                        : '15KM';
+                $doctor->distance = isset($doctor->distance)
+                    ? $doctor->distance . ' KM'
+                    : '15 KM';
+
+                $doctor->average_rating = round($doctor->feedbacks_avg_rating ?? 0, 1);
+
+                $doctor->rating_count = $doctor->feedbacks_count;
+
+                $doctor->patient_count = $doctor->total_patients;
+
+                $doctor->appointment_count = $doctor->appointments_count;
+
+                $doctor->completed_appointments = $doctor->completed_appointments_count;
+
                 return $doctor;
             });
 
+
+            
             \Log::info($doctors);
 
             return $this->sendResponse([

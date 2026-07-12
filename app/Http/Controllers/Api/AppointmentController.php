@@ -542,7 +542,6 @@ class AppointmentController extends BaseApiController
                         'name' => optional($appointment->patient)->name,
                         'email' => optional($appointment->patient)->email,
                         'phone' => optional($appointment->patient)->phone,
-                        'image' => optional($appointment->patient)->image,
                     ],
 
                     'time_slot' => [

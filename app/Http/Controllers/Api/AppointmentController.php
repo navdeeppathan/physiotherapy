@@ -434,6 +434,29 @@ class AppointmentController extends BaseApiController
                 ->orderBy('created_at', 'desc')
                 ->get();
 
+            $payments->transform(function ($payment) {
+                return [
+                    'id' => $payment->id,
+                    'amount' => $payment->amount,
+                    'currency' => $payment->currency,
+                    'status' => $payment->status,
+                    'created_at' => $payment->created_at->toDateTimeString(),
+                    'patient' => $payment->patient ? [
+                        'id' => $payment->patient->id,
+                        'name' => $payment->patient->name,
+                        'email' => $payment->patient->email,
+                        'phone' => $payment->patient->phone
+                    ] : null,
+                    'appointment' => $payment->appointment ? [
+                        'id' => $payment->appointment->id,
+                        'date' => $payment->appointment->appointment_date,
+                        'start_time' => $payment->appointment->start_time,
+                        'end_time' => $payment->appointment->end_time,
+                        'status' => $payment->appointment->status
+                    ] : null
+                ];
+            });
+
             return $this->sendResponse([
                 'balance' => $wallet->balance,
                 'currency' => $wallet->currency,

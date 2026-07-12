@@ -47,7 +47,7 @@ class SpecializationControllerApi extends BaseApiController
                         'fee',
 
                         // Reviews with Patient Details
-                        'feedbacks.patient:id,name,image,email',
+                        'feedbacks.patient:id,name,email',
 
                         'availabilityDates' => function ($q) {
                             $q->whereDate('available_date', today())

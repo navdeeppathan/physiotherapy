@@ -60,9 +60,9 @@ class FeedbackController extends BaseApiController
         try {
 
             $feedbacks = Feedback::with('patient')
-                ->where('doctor_id', $doctor_id)
-                ->latest()
-                ->get();
+                        ->where('doctor_id', $doctor_id)
+                        ->latest()
+                        ->get();
 
             return response()->json([
                 'status' => true,

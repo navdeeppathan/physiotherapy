@@ -45,6 +45,7 @@ class SpecializationControllerApi extends BaseApiController
                     ->with([
                         'profile',
                         'fee',
+                        'feedbacks',
                        'availabilityDates' => function ($q) {
                             $q->whereDate('available_date', today())
                             ->where('is_available', true) // doctor_availability_dates table

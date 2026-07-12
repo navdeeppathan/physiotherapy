@@ -16,6 +16,9 @@ use App\Models\DoctorWallet;
 use App\Models\Payment;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Log;
+use App\Models\AppointmentFee;
+use App\Models\User;
 
 class AppointmentController extends BaseApiController
 {

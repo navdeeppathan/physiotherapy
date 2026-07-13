@@ -500,9 +500,9 @@ class AppointmentController extends BaseApiController
 
             // Paid appointments
             $paidAppointmentsCount = Appointment::where('doctor_id', $doctor_id)
-                ->where('status', 'completed')
-                ->where('doctor_payment_status', 'paid')
-                ->count();
+                                    ->where('status', 'completed')
+                                    ->where('doctor_payment_status', 'paid')
+                                    ->count();
 
             // Paid amount
             $paidAmount = $paidAppointmentsCount * $doctorFee;

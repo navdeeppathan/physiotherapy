@@ -44,8 +44,8 @@ class SpecializationControllerApi extends BaseApiController
                     ->where('status', 'active')
                     ->with([
                         'profile',
+                        'profile.specializationData',
                         'fee',
-
                         // Reviews with Patient Details
                         'feedbacks.patient:id,name,email',
 
@@ -95,6 +95,7 @@ class SpecializationControllerApi extends BaseApiController
                 });
 
             }
+
 
             /*
             |--------------------------------------------------------------------------
@@ -161,6 +162,12 @@ class SpecializationControllerApi extends BaseApiController
                 $doctor->appointment_count = $doctor->appointments_count;
 
                 $doctor->completed_appointments = $doctor->completed_appointments_count;
+
+                    // Replace specialization id with name
+                if ($doctor->profile && $doctor->profile->specializationData) {
+                    $doctor->profile->specialization = $doctor->profile->specializationData->name;
+                    unset($doctor->profile->specializationData);
+                }
 
                 return $doctor;
             });

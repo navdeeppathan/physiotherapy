@@ -557,7 +557,7 @@ class UserController extends BaseApiController
 
             DoctorProfile::create([
                 'user_id'                => $user->id,
-
+                'specialization_id'       => $request->specialization ?? '1',
                 'experience_years'       => $request->experience,
                 'clinic_address'         => $request->clinic_address,
 

@@ -22,6 +22,7 @@ Route::post('/register-patient', [UserController::class, 'registerPatient']);
 
 
 Route::post('users', [UserController::class, 'store']);
+   Route::get('/all-specializations', [SpecializationControllerApi::class, 'index']);
 
 Route::middleware('auth:api')->group(function () {
 
@@ -43,7 +44,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/doctor/{doctor_id}/rating', [FeedbackController::class, 'getDoctorRating']);
 
     // Specializations
-    Route::get('/all-specializations', [SpecializationControllerApi::class, 'index']);
+    // Route::get('/all-specializations', [SpecializationControllerApi::class, 'index']);
     Route::get('/find-doctors', [SpecializationControllerApi::class, 'findDoctors']);
 
     // Plans

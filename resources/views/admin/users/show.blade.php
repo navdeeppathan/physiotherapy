@@ -757,11 +757,7 @@
                         </div>
                     </div>
 
-                    @php
-                        $days = $doctor->default_available_days
-                            ? json_decode($doctor->default_available_days, true)
-                            : [];
-                    @endphp
+                    
 
 
                     <div style="margin-top:18px;">

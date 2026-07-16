@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Specialization;
+use App\Models\Specializations;
 use App\Http\Controllers\Admin\AdminAppointmentController;
 
 class AuthController extends Controller
@@ -78,7 +78,7 @@ class AuthController extends Controller
         ->where('role','doctor')
         ->findOrFail($id);
 
-        $specializations = Specialization::where('status','active')->get();
+        $specializations = Specializations::where('status','active')->get();
 
         return view(
             'admin.users.edit-doctor',

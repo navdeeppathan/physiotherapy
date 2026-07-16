@@ -66,6 +66,89 @@ class AuthController extends Controller
 
         return view('admin.users.show', compact('doctor'));
     }
+    public function editDoctor($id)
+    {
+        $doctor = User::with([
+            'profile.specializationdata',
+            'documents',
+            'fee'
+        ])
+        ->where('role','doctor')
+        ->findOrFail($id);
+
+        $specializations = Specialization::where('status','active')->get();
+
+        return view(
+            'admin.users.edit-doctor',
+            compact('doctor','specializations')
+        );
+    }
+
+    public function updateDoctor(Request $request,$id)
+    {
+        $doctor = User::where('role','doctor')->findOrFail($id);
+
+        $request->validate([
+            'name'=>'required',
+            'email'=>'required|email|unique:users,email,'.$doctor->id,
+            'phone'=>'required|unique:users,phone,'.$doctor->id,
+        ]);
+
+        $doctor->update([
+
+            'name'=>$request->name,
+            'email'=>$request->email,
+            'phone'=>$request->phone,
+            'dob'=>$request->dob,
+            'gender'=>$request->gender,
+            'status'=>$request->status,
+
+            'default_start_time'=>$request->default_start_time,
+            'default_end_time'=>$request->default_end_time,
+
+            'default_available_days'=>json_encode($request->available_days),
+
+            'address'=>$request->address,
+            'city'=>$request->city,
+            'state'=>$request->state,
+            'pincode'=>$request->pincode,
+
+        ]);
+
+        if($request->filled('password')){
+            $doctor->password = Hash::make($request->password);
+            $doctor->save();
+        }
+
+        $doctor->profile()->updateOrCreate(
+            ['user_id'=>$doctor->id],
+            [
+
+                'specialization'=>$request->specialization,
+                'qualification'=>$request->qualification,
+                'experience_years'=>$request->experience_years,
+                'bio'=>$request->bio,
+                'career_path'=>$request->career_path,
+                'highlights'=>$request->highlights,
+                'clinic_address'=>$request->clinic_address,
+
+                'home_visit_available'=>$request->home_visit_available ?? 0,
+                'clinic_visit_available'=>$request->clinic_visit_available ?? 0,
+
+            ]
+        );
+
+        $doctor->fee()->updateOrCreate(
+            ['doctor_id'=>$doctor->id],
+            [
+                'doctor_fee'=>$request->doctor_fee
+            ]
+        );
+
+        return redirect()
+                ->route('admin.doctors.show',$doctor->id)
+                ->with('success','Doctor updated successfully.');
+    }
     /* ================= REGISTER ================= */
     public function showRegister()
     {

@@ -707,6 +707,10 @@
 
                             <td>
                                 <div class="d-flex gap-2">
+                                    <a href="{{ route('admin.doctors.edit',$user->id) }}"class="act-btn"
+                                    style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;text-decoration:none;">
+                                        ✏️ Edit
+                                    </a>
 
                                     <a href="{{ route('admin.doctors.show', $user->id) }}"
                                     class="act-btn"

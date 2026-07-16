@@ -268,7 +268,7 @@
     }
 </style>
 
-<form action="{{ route('admin.users.doctorsupdate', $doctor->id) }}" method="POST">
+<form action="{{ route('admin.doctors.update', $doctor->id) }}" method="POST">
 @csrf
 @method('PUT')
 

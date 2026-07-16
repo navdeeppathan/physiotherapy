@@ -763,7 +763,7 @@
                             : [];
                     @endphp
 
-                    @if(count($days))
+                    <!-- @if(count($days))
                         <div class="kv-label" style="margin-bottom:8px;">Available Days</div>
                         <div class="avail-days">
                             @foreach($days as $day)
@@ -773,7 +773,7 @@
                     @else
                         <div class="kv-label" style="margin-bottom:6px;">Available Days</div>
                         <div style="font-size:13px;color:#cbd5e1;">Not set</div>
-                    @endif
+                    @endif -->  
 
                     <div style="margin-top:18px;">
                         <div class="kv-label" style="margin-bottom:8px;">Visit Types</div>

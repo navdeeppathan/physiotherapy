@@ -30,7 +30,9 @@ class Appointment extends Model
         'is_transferred',
         'patient_address',
         'payment_gateway_responce',
+        'transaction_id'
     ];
+
 
     protected $casts = [
         'appointment_date' => 'date',

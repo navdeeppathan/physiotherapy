@@ -89,6 +89,7 @@ class AppointmentController extends BaseApiController
                 'doctor_id'       => $request->doctor_id,
                 'patient_id'      => $patient->id,
                 'time_slot_id'    => $slot->id,
+                'transaction_id' => $request->transaction_id ?? 'TX-' . time() . '-' . rand(1000, 9999),
                 'appointment_date'=> $slot->availabilityDate->available_date,
                 'start_time'      => $slot->start_time,
                 'end_time'        => $slot->end_time,

@@ -28,7 +28,8 @@ class Appointment extends Model
         'doctor_payment_status',
         'is_rescheduled',
         'is_transferred',
-        'patient_address'
+        'patient_address',
+        'payment_gateway_responce',
     ];
 
     protected $casts = [

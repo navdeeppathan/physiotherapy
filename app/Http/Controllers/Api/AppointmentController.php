@@ -93,6 +93,7 @@ class AppointmentController extends BaseApiController
                 'start_time'      => $slot->start_time,
                 'end_time'        => $slot->end_time,
                 // 'status'          => 'pending',
+                'payment_gateway_responce'=> $request->payment_gateway_responce ?? null,
                 'status' => 'confirmed',
                 'booking_for'     => $request->booking_for,
                 'patient_name'    => $request->patient_name,

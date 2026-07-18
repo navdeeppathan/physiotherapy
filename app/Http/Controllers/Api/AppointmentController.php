@@ -91,6 +91,7 @@ class AppointmentController extends BaseApiController
             }
 
             $appointments = [];
+            $appointmentIds = [];
 
             foreach ($slots as $slot) {
 
@@ -125,30 +126,34 @@ class AppointmentController extends BaseApiController
 
                 ]);
 
-                Payment::create([
 
-                    'appointment_id' => $appointment->id,
-                    'transaction_id' => $request->payment_gateway_responce['razorpay_payment_id'] ?? 'TX-' . time() . '-' . rand(1000,9999),
-
-                    'patient_id' => $patient->id,
-
-                    'doctor_id' => $request->doctor_id,
-
-                    'amount' => $request->doctor_fee,
-
-                    'currency' => 'INR',
-
-                    'status' => 'success',
-
-                ]);
+                
+                
 
                 $slot->update([
                     'is_booked' => true
                 ]);
 
                 $appointments[] = $appointment;
+                $appointmentIds[] = $appointment->id;
             }
 
+           Payment::create([
+                // First appointment (optional)
+                'appointment_id' => $appointmentIds[0],
+
+                // All appointment ids
+                'appointment_ids' => $appointmentIds,
+
+                'transaction_id' => $request->payment_gateway_responce['razorpay_payment_id']
+                    ?? 'TX-' . time() . '-' . rand(1000,9999),
+
+                'patient_id' => $patient->id,
+                'doctor_id' => $request->doctor_id,
+                'amount' => $request->doctor_fee,
+                'currency' => 'INR',
+                'status' => 'success',
+            ]);
             DB::commit();
 
             return $this->sendResponse([

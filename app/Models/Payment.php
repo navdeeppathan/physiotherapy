@@ -17,12 +17,14 @@ class Payment extends Model
         'payment_method',
         'transaction_id',
         'status',
-        'paid_at'
+        'paid_at',
+        'appointment_ids'
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
         'paid_at' => 'datetime',
+        'appointment_ids' => 'array',
     ];
 
     /*

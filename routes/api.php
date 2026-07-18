@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\SpecializationControllerApi;
 use App\Http\Controllers\Api\UserSubscriptionController;
 use App\Http\Controllers\Api\PatientPlanController;
 use App\Http\Controllers\Api\UserAddressController;
+use App\Http\Controllers\Api\PaymentGatewayController;
 
 // Authentication
 Route::post('/login', [UserController::class, 'login']);
@@ -112,7 +113,10 @@ Route::middleware(['auth:api', 'role:doctor'])->group(function () {
     Route::get('/doctor/transfer-request/{id}',[AppointmentController::class, 'transferRequestDetail']);
     Route::delete('/transfer-request/{id}',[AppointmentController::class, 'cancelTransferRequest']);
 });
-
+Route::middleware('auth:api')->get(
+    '/payment-gateway-settings',
+    [PaymentGatewayController::class, 'settings']
+);
 
 Route::middleware(['auth:api', 'role:patient'])->group(function () {
 

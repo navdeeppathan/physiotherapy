@@ -52,6 +52,7 @@ class AppointmentController extends BaseApiController
     {
         try {
 
+            \Log::info($request->all());
             DB::beginTransaction(); // 🔥 Important
 
             $request->validate([
@@ -142,6 +143,8 @@ class AppointmentController extends BaseApiController
             DB::rollBack(); // 🔥 rollback everything
 
             $this->logException($e, 'Appointment Booking Error');
+            \Log::error('Request Data: ' . json_encode($request->all()));
+            \Log::error('Error: ' . $e->getMessage());
 
             return response()->json([
                 'status'  => false,

@@ -38,8 +38,8 @@ class Appointment extends Model
         'appointment_date' => 'date',
         'start_time' => 'datetime:H:i:s',
         'end_time' => 'datetime:H:i:s',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+
+        'payment_gateway_responce' => 'array',
     ];
 
     /**

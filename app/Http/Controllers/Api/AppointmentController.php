@@ -52,104 +52,139 @@ class AppointmentController extends BaseApiController
     {
         try {
 
-            \Log::info($request->all());
-            DB::beginTransaction(); // 🔥 Important
+            DB::beginTransaction();
 
             $request->validate([
-                'doctor_id'    => 'required|exists:users,id',
-                'time_slot_id' => 'required|exists:doctor_time_slots,id',
-                'booking_for'        => 'required|in:self,other',
-                'patient_name'       => 'required|string|max:150',
-                'patient_age'        => 'nullable|integer|min:0|max:120',
-                'patient_gender'     => 'nullable|in:male,female,other',
-                'problem_description'=> 'nullable|string',
+                'doctor_id' => 'required|exists:users,id',
+
+                'time_slot_id' => 'required|array|min:1',
+                'time_slot_id.*' => 'exists:doctor_time_slots,id',
+
+                'booking_for' => 'required|in:self,other',
+
+                'patient_name' => 'required|string|max:150',
+                'patient_age' => 'nullable|integer|min:0|max:120',
+                'patient_gender' => 'nullable|in:male,female,other',
+                'problem_description' => 'nullable|string',
+
                 'doctor_fee' => 'nullable|numeric|min:0',
-                'address' => 'nullable',
+
+                'address' => 'nullable|string',
             ]);
 
             $patient = Auth::user();
 
-            if ($patient->role !== 'patient') {
-                return $this->sendError('Only patients can book appointments', [], 403);
+            if ($patient->role != 'patient') {
+                return $this->sendError(
+                    'Only patients can book appointments',
+                    [],
+                    403
+                );
             }
 
-            $slot = DoctorTimeSlot::where('id', $request->time_slot_id)
-                    ->where('user_id', $request->doctor_id)
-                    ->first();
+            $slots = DoctorTimeSlot::with('availabilityDate')
+                ->where('user_id', $request->doctor_id)
+                ->whereIn('id', $request->time_slot_id)
+                ->get();
 
-            if (!$slot) {
-                return $this->sendError('Invalid slot selected', [], 404);
+            if ($slots->count() != count($request->time_slot_id)) {
+                return $this->sendError(
+                    'One or more slots are invalid.',
+                    [],
+                    404
+                );
             }
 
-            if ($slot->is_booked) {
-                return $this->sendError('Slot already booked', [], 400);
+            $appointments = [];
+
+            foreach ($slots as $slot) {
+
+                if ($slot->is_booked) {
+
+                    DB::rollBack();
+
+                    return $this->sendError(
+                        "Slot {$slot->id} already booked.",
+                        [],
+                        400
+                    );
+                }
+
+                $appointment = Appointment::create([
+
+                    'doctor_id' => $request->doctor_id,
+
+                    'patient_id' => $patient->id,
+
+                    'time_slot_id' => $slot->id,
+
+                    'transaction_id' => $request->transaction_id
+                        ?? 'TX-' . time() . '-' . rand(1000,9999),
+
+                    'appointment_date' => $slot->availabilityDate->available_date,
+
+                    'start_time' => $slot->start_time,
+
+                    'end_time' => $slot->end_time,
+
+                    'payment_gateway_responce' =>
+                        json_encode($request->payment_gateway_responce),
+
+                    'status' => 'confirmed',
+
+                    'booking_for' => $request->booking_for,
+
+                    'patient_name' => $request->patient_name,
+
+                    'patient_age' => $request->patient_age,
+
+                    'patient_gender' => $request->patient_gender,
+
+                    'problem_description' => $request->problem_description,
+
+                    'patient_address' => $request->address,
+
+                ]);
+
+                Payment::create([
+
+                    'appointment_id' => $appointment->id,
+
+                    'patient_id' => $patient->id,
+
+                    'doctor_id' => $request->doctor_id,
+
+                    'amount' => $request->doctor_fee,
+
+                    'currency' => 'INR',
+
+                    'status' => 'success',
+
+                ]);
+
+                $slot->update([
+                    'is_booked' => true
+                ]);
+
+                $appointments[] = $appointment;
             }
-
-            // ✅ Create Appointment
-            $appointment = Appointment::create([
-                'doctor_id'       => $request->doctor_id,
-                'patient_id'      => $patient->id,
-                'time_slot_id'    => $slot->id,
-                'transaction_id' => $request->transaction_id ?? 'TX-' . time() . '-' . rand(1000, 9999),
-                'appointment_date'=> $slot->availabilityDate->available_date,
-                'start_time'      => $slot->start_time,
-                'end_time'        => $slot->end_time,
-                // 'status'          => 'pending',
-                'payment_gateway_responce'=> $request->payment_gateway_responce ?? null,
-                'status' => 'confirmed',
-                'booking_for'     => $request->booking_for,
-                'patient_name'    => $request->patient_name,
-                'patient_age'     => $request->patient_age,
-                'patient_gender'  => $request->patient_gender,
-                'problem_description' => $request->problem_description,
-                'patient_address' => $request->address,
-                
-            ]);
-
-            // Add address details if booking for other table user_addresses
-            
-
-            // ✅ Create Payment (NEW)
-            $payment = Payment::create([
-                'appointment_id' => $appointment->id,
-                'patient_id'     => $patient->id,
-                'doctor_id'      => $request->doctor_id,
-                'amount'         => $request->doctor_fee, // 🔥 Replace with dynamic doctor fee
-                'currency'       => 'INR',
-                'status'         => 'success'
-            ]);
-
-            // ✅ 💰 CREDIT DOCTOR WALLET (TEMPORARY HERE)
-            // $wallet = DoctorWallet::firstOrCreate(
-            //     ['doctor_id' => $request->doctor_id],
-            //     ['balance' => 0, 'currency' => 'INR']
-            // );
-
-            // $wallet->balance += $request->doctor_fee;
-            // $wallet->save();
-
-            // Mark slot as booked
-            $slot->update(['is_booked' => true]);
 
             DB::commit();
 
             return $this->sendResponse([
-                'appointment' => $appointment,
-                'payment'     => $payment
-            ], 'Appointment booked, proceed to payment');
+                'appointments' => $appointments
+            ], 'Appointments booked successfully.');
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
 
-            DB::rollBack(); // 🔥 rollback everything
+            DB::rollBack();
 
-            $this->logException($e, 'Appointment Booking Error');
-            \Log::error('Request Data: ' . json_encode($request->all()));
-            \Log::error('Error: ' . $e->getMessage());
+            \Log::error($e);
 
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Something went wrong',
-                'error'   => $e->getMessage()
+                'error' => $e->getMessage()
             ], 500);
         }
     }

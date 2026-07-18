@@ -56,19 +56,14 @@ class AppointmentController extends BaseApiController
 
             $request->validate([
                 'doctor_id' => 'required|exists:users,id',
-
                 'time_slot_id' => 'required|array|min:1',
                 'time_slot_id.*' => 'exists:doctor_time_slots,id',
-
                 'booking_for' => 'required|in:self,other',
-
                 'patient_name' => 'required|string|max:150',
                 'patient_age' => 'nullable|integer|min:0|max:120',
                 'patient_gender' => 'nullable|in:male,female,other',
                 'problem_description' => 'nullable|string',
-
                 'doctor_fee' => 'nullable|numeric|min:0',
-
                 'address' => 'nullable|string',
             ]);
 
@@ -83,9 +78,9 @@ class AppointmentController extends BaseApiController
             }
 
             $slots = DoctorTimeSlot::with('availabilityDate')
-                ->where('user_id', $request->doctor_id)
-                ->whereIn('id', $request->time_slot_id)
-                ->get();
+                    ->where('user_id', $request->doctor_id)
+                    ->whereIn('id', $request->time_slot_id)
+                    ->get();
 
             if ($slots->count() != count($request->time_slot_id)) {
                 return $this->sendError(
@@ -100,9 +95,7 @@ class AppointmentController extends BaseApiController
             foreach ($slots as $slot) {
 
                 if ($slot->is_booked) {
-
                     DB::rollBack();
-
                     return $this->sendError(
                         "Slot {$slot->id} already booked.",
                         [],
@@ -113,35 +106,21 @@ class AppointmentController extends BaseApiController
                 $appointment = Appointment::create([
 
                     'doctor_id' => $request->doctor_id,
-
                     'patient_id' => $patient->id,
-
                     'time_slot_id' => $slot->id,
-
-                    'transaction_id' => $request->transaction_id
+                    'transaction_id' => $request->payment_gateway_responce['razorpay_payment_id']
                         ?? 'TX-' . time() . '-' . rand(1000,9999),
-
                     'appointment_date' => $slot->availabilityDate->available_date,
-
                     'start_time' => $slot->start_time,
-
                     'end_time' => $slot->end_time,
-
                     'payment_gateway_responce' =>
                         json_encode($request->payment_gateway_responce),
-
                     'status' => 'confirmed',
-
                     'booking_for' => $request->booking_for,
-
                     'patient_name' => $request->patient_name,
-
                     'patient_age' => $request->patient_age,
-
                     'patient_gender' => $request->patient_gender,
-
                     'problem_description' => $request->problem_description,
-
                     'patient_address' => $request->address,
 
                 ]);
@@ -149,6 +128,7 @@ class AppointmentController extends BaseApiController
                 Payment::create([
 
                     'appointment_id' => $appointment->id,
+                    'transaction_id' => $request->payment_gateway_responce['razorpay_payment_id'] ?? 'TX-' . time() . '-' . rand(1000,9999),
 
                     'patient_id' => $patient->id,
 

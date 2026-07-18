@@ -127,7 +127,7 @@ class AuthController extends Controller
             [
 
                 'specialization'=>$request->specialization,
-                'qualification'=>$request->qualification,
+                'qualification'=>$request->qualification ?? '',
                 'experience_years'=>$request->experience_years,
                 'bio'=>$request->bio,
                 'career_path'=>$request->career_path,

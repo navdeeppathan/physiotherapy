@@ -13,7 +13,7 @@
 						</a>
 						<a href="/" class="navbar-brand logo">
 							<img src="{{ asset('assets/img/logo.png') }}" class="img-fluid" alt="Logo">
-							 {{-- <img src="assets/img/logo.png" class="img-fluid" alt="Logo"> --}}
+							
 						</a>
 					</div>
 					<div class="main-menu-wrapper">
@@ -29,33 +29,10 @@
 							<li class="active">
 								<a href="/">Home</a>
 							</li>	
-							{{-- <li class="has-submenu">
-								<a href="#">Patients <i class="fas fa-chevron-down"></i></a>
-								<ul class="submenu">
-									<li><a href="/patient-dashboard">Patient Dashboard</a></li>
-								
-								</ul>
-							</li>	 --}}
 							
-							{{-- <li class="login-link">
-								<a href="/login">Login / Signup</a>
-							</li> --}}
 						</ul>		 
 					</div>		 
-					{{-- <ul class="nav header-navbar-rht">
-						<li class="nav-item contact-item">
-							<div class="header-contact-img">
-								<i class="far fa-hospital"></i>							
-							</div>
-							<div class="header-contact-detail">
-								<p class="contact-header">Contact</p>
-								<p class="contact-info-header"> +1 315 369 5943</p>
-							</div>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link header-login" href="/login">login / Signup </a>
-						</li>
-					</ul> --}}
+					
 					<ul class="nav header-navbar-rht">
 						<li class="nav-item contact-item">
 							<div class="header-contact-img">
@@ -68,9 +45,20 @@
 						</li>
 
 						@guest
-							<li class="nav-item">
+							{{-- <li class="nav-item">
 								<a class="nav-link header-login" href="{{ route('login') }}">
 									Login / Signup
+								</a>
+							</li> --}}
+							<li class="nav-item">
+								<a class="nav-link header-login" href="{{ route('login') }}">
+									Login
+								</a>
+							</li>
+
+							<li class="nav-item ms-3">
+								<a class="nav-link header-register" href="{{ route('patient.register') }}">
+									Sign Up Free
 								</a>
 							</li>
 						@endguest
@@ -105,9 +93,7 @@
 										Dashboard
 									</a>
 
-									{{-- <a class="dropdown-item" href="{{ route('patient.profile') }}">
-										Profile Settings
-									</a> --}}
+									
 
 									<form action="{{ route('patient.logout') }}" method="GET">
 										@csrf

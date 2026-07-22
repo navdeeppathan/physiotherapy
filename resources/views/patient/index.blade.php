@@ -26,7 +26,7 @@
 body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--body); background: var(--white); overflow-x: hidden; }
 a { text-decoration: none; color: inherit; }
 img { max-width: 100%; display: block; }
-section { overflow: hidden; }
+section { overflow: visible; }
 
 /* ── CONTAINERS ── */
 .hp-container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
@@ -52,7 +52,7 @@ section { overflow: hidden; }
     background: linear-gradient(160deg, #0c4a6e 0%, #0369a1 55%, #0ea5e9 100%);
     padding: 80px 0 0;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 .hp-hero::before {
     content: '';
@@ -806,8 +806,8 @@ section { overflow: hidden; }
                         </div>
                         <p class="hp-doc-spec c{{ $c }}">
                             {{ optional($doctor->profile)->qualification }}
-                            @if(optional($doctor->profile->specializationdata)->name)
-                                &middot; {{ $doctor->profile->specializationdata->name }}
+                            @if(optional(optional($doctor->profile)->specializationdata)->name)
+                                &middot; {{ optional($doctor->profile)->specializationdata->name }}
                             @endif
                         </p>
                         <ul class="hp-doc-meta">

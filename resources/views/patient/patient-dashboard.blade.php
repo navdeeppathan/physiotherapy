@@ -607,7 +607,7 @@ table.pd-table tr:hover td { background: #fafbff; }
                         'id'       => $a->id,
                         'imgSrc'   => $a->doctor->profile_img ? (str_contains($a->doctor->profile_img, '/') ? asset($a->doctor->profile_img) : asset('uploads/profile/'.$a->doctor->profile_img)) : null,
                         'docName'  => $a->doctor->name ?? '—',
-                        'spec'     => optional($a->doctor->profile->specializationdata)->name ?? 'Doctor',
+                        'spec'     => optional(optional($a->doctor->profile)->specializationdata)->name ?? 'Physiotherapist',
                         'date'     => $a->appointment_date->format('d M Y'),
                         'time'     => \Carbon\Carbon::parse($a->start_time)->format('h:i A'),
                         'booked'   => $a->created_at->format('d M Y'),
@@ -742,7 +742,7 @@ table.pd-table tr:hover td { background: #fafbff; }
                                                 @else <div class="pd-doc-ph">{{ strtoupper(substr($pn,0,2)) }}</div> @endif
                                                 <div>
                                                     <div class="pd-doc-name">Dr. {{ $pn }}</div>
-                                                    <div class="pd-doc-spec">{{ optional($payment->doctor->profile->specializationdata)->name ?? 'Doctor' }}</div>
+                                                    <div class="pd-doc-spec">{{ optional(optional($payment->doctor->profile)->specializationdata)->name ?? 'Physiotherapist' }}</div>
                                                 </div>
                                             </div>
                                         </td>

@@ -168,7 +168,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
             </div>
             <div class="ad-doc-body">
                 <div class="ad-doc-name">Dr. {{ $appointment->doctor->name }}</div>
-                <div class="ad-doc-spec">{{ optional($appointment->doctor->profile->specializationdata)->name }}</div>
+                <div class="ad-doc-spec">{{ optional(optional($appointment->doctor->profile)->specializationdata)->name ?? 'Physiotherapist' }}</div>
             </div>
 
             <div class="ad-divider"></div>

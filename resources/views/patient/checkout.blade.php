@@ -348,7 +348,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color:
                         <div class="co-doc-name">Dr. {{ $doctor->name }}</div>
                         <div class="co-doc-loc">
                             <i class="fa-solid fa-location-dot" style="color:#0ea5e9"></i>
-                            {{ $doctor->profile->clinic_address ?? 'India' }}
+                            {{ optional($doctor->profile)->clinic_address ?? 'India' }}
                         </div>
                     </div>
                 </div>

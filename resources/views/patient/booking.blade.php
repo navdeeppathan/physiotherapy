@@ -188,15 +188,15 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
             </div>
             <div class="bk-doc-body">
                 <div class="bk-doc-name">Dr. {{ $doctor->name }}</div>
-                <div class="bk-doc-spec">{{ $doctor->profile->specializationdata->name ?? '' }}, {{ $doctor->profile->qualification ?? '' }}</div>
+                <div class="bk-doc-spec">{{ optional(optional($doctor->profile)->specializationdata)->name ?? 'Physiotherapist' }}{{ optional($doctor->profile)->qualification ? ', '.optional($doctor->profile)->qualification : '' }}</div>
                 <div class="bk-doc-meta">
                     <div class="bk-doc-meta-item">
                         <i class="fa-solid fa-location-dot"></i>
-                        {{ $doctor->profile->clinic_address ?? '—' }}
+                        {{ optional($doctor->profile)->clinic_address ?? '—' }}
                     </div>
                     <div class="bk-doc-meta-item">
                         <i class="fa-regular fa-clock"></i>
-                        {{ $doctor->profile->experience_years ?? 0 }} Years Experience
+                        {{ optional($doctor->profile)->experience_years ?? 0 }} Years Experience
                     </div>
                 </div>
             </div>

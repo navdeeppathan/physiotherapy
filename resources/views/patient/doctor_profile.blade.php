@@ -224,7 +224,7 @@ a { text-decoration: none; color: inherit; }
                 </div>
                 <div class="dp-profile-body">
                     <div class="dp-profile-name">Dr. {{ $doctor->name }}</div>
-                    <div class="dp-profile-spec">{{ optional($doctor->profile->specializationdata)->name }}</div>
+                    <div class="dp-profile-spec">{{ optional(optional($doctor->profile)->specializationdata)->name ?? 'Physiotherapist' }}</div>
                     <div class="dp-profile-rating">
                         <i class="fa-solid fa-star"></i> {{ number_format($avgRating,1) }}
                     </div>

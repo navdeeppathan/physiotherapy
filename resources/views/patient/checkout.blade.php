@@ -89,11 +89,11 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color:
 .co-addr-title { font-size: 14.5px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px; }
 .co-addr-default { background: #d1fae5; color: #065f46; border-radius: 6px; padding: 2px 7px; font-size: 11px; font-weight: 700; }
 .co-addr-text { font-size: 13px; color: #64748b; margin-top: 4px; line-height: 1.5; }
-.co-addr-actions { display: flex; gap: 6px; margin-top: 8px; }
+.co-addr-actions { display: flex; gap: 6px; margin-top: 10px; }
 .co-addr-act-btn {
     background: #f1f5f9; border: 1px solid #e2e8f0; color: #475569;
-    border-radius: 8px; padding: 4px 10px; font-size: 11.5px; font-weight: 700;
-    cursor: pointer; transition: all .15s;
+    border-radius: 8px; padding: 5px 12px; font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all .15s; font-family: 'Plus Jakarta Sans', sans-serif;
 }
 .co-addr-act-btn:hover { background: #e2e8f0; color: #0f172a; }
 .co-addr-act-btn.delete { color: #dc2626; border-color: #fecaca; background: #fef2f2; }
@@ -165,6 +165,10 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color:
 }
 </style>
 
+@php
+    $finalPrice = ($plan->price > 0) ? $plan->price : ($plan->original_price ?? 0);
+@endphp
+
 <div class="main-wrapper">
 @include('layouts.header')
 
@@ -209,7 +213,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color:
                                 <div class="co-plan-name">{{ $plan->name }}</div>
                             </div>
                             <div>
-                                <div class="co-plan-price">₹{{ number_format($plan->price, 2) }}</div>
+                                <div class="co-plan-price">₹{{ number_format($finalPrice, 2) }}</div>
                             </div>
                         </div>
 
@@ -256,7 +260,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color:
                                     @php
                                         $fullAddr = "{$address->address}, {$address->city}, {$address->state}, {$address->country} - {$address->postal_code}";
                                     @endphp
-                                    <label class="co-addr-card {{ $address->is_default ? 'selected' : '' }}" onclick="selectAddrCard(this)">
+                                    <div class="co-addr-card {{ $address->is_default ? 'selected' : '' }}" onclick="selectAddrCard(this)">
                                         <input type="radio" name="address_id" value="{{ $fullAddr }}" class="co-addr-radio" {{ $address->is_default ? 'checked' : '' }} onchange="updateSelectedAddress(this)">
                                         <div class="co-addr-content">
                                             <div class="co-addr-title">
@@ -268,19 +272,16 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color:
                                             <div class="co-addr-text">
                                                 {{ $address->city }}, {{ $address->state }}, {{ $address->country }} - {{ $address->postal_code }}
                                             </div>
-                                            <div class="co-addr-actions">
+                                            <div class="co-addr-actions" onclick="event.stopPropagation()">
                                                 <button type="button" class="co-addr-act-btn" data-toggle="modal" data-target="#editAddressModal{{ $address->id }}">
                                                     <i class="fa-solid fa-pen-to-square"></i> Edit
                                                 </button>
-                                                <form action="{{ route('user.address.destroy', $address->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Delete this address?')">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit" class="co-addr-act-btn delete">
-                                                        <i class="fa-solid fa-trash"></i> Delete
-                                                    </button>
-                                                </form>
+                                                <button type="button" class="co-addr-act-btn delete" onclick="deleteAddress({{ $address->id }})">
+                                                    <i class="fa-solid fa-trash"></i> Delete
+                                                </button>
                                             </div>
                                         </div>
-                                    </label>
+                                    </div>
                                 @endforeach
                             </div>
                         @else
@@ -310,8 +311,8 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color:
             {{-- Submit Action --}}
             <div style="margin-top:24px">
                 @auth
-                    <button type="submit" class="co-submit-btn">
-                        <i class="fa-solid fa-lock"></i> Confirm &amp; Pay ₹{{ number_format($plan->price, 2) }}
+                    <button type="submit" class="co-submit-btn" id="confirmPayBtn">
+                        <i class="fa-solid fa-lock"></i> Confirm &amp; Pay ₹{{ number_format($finalPrice, 2) }}
                     </button>
                 @else
                     <div class="co-card" style="border-color:#bae6fd;background:#f0f9ff">
@@ -378,7 +379,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color:
                 <div class="co-total-box">
                     <div class="co-total-row">
                         <span>Package ({{ $plan->name }})</span>
-                        <span>₹{{ number_format($plan->price, 2) }}</span>
+                        <span>₹{{ number_format($finalPrice, 2) }}</span>
                     </div>
                     <div class="co-total-row">
                         <span>Total Sessions</span>
@@ -386,7 +387,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color:
                     </div>
                     <div class="co-total-row grand">
                         <span>Total Amount</span>
-                        <span>₹{{ number_format($plan->price, 2) }}</span>
+                        <span>₹{{ number_format($finalPrice, 2) }}</span>
                     </div>
                 </div>
             </div>
@@ -500,13 +501,23 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color:
                 </div>
             </div>
         </div>
+
+        {{-- Hidden Delete Form --}}
+        <form id="deleteAddrForm{{ $address->id }}" action="{{ route('user.address.destroy', $address->id) }}" method="POST" style="display:none">
+            @csrf @method('DELETE')
+        </form>
     @endforeach
 @endauth
 
 <script>
-function selectAddrCard(labelEl) {
+function selectAddrCard(cardEl) {
     document.querySelectorAll('.co-addr-card').forEach(c => c.classList.remove('selected'));
-    labelEl.classList.add('selected');
+    cardEl.classList.add('selected');
+    const radio = cardEl.querySelector('input[type="radio"]');
+    if (radio) {
+        radio.checked = true;
+        updateSelectedAddress(radio);
+    }
 }
 
 function updateSelectedAddress(radioEl) {
@@ -516,10 +527,37 @@ function updateSelectedAddress(radioEl) {
     }
 }
 
+function deleteAddress(id) {
+    if (confirm('Delete this address?')) {
+        const form = document.getElementById('deleteAddrForm' + id);
+        if (form) form.submit();
+    }
+}
+
 window.addEventListener('DOMContentLoaded', function () {
     const checkedRadio = document.querySelector('input[name="address_id"]:checked');
     if (checkedRadio) {
         updateSelectedAddress(checkedRadio);
+    }
+
+    const form = document.getElementById('checkoutForm');
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            const addr = document.getElementById('selected_address').value;
+            if (!addr) {
+                e.preventDefault();
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Address Required',
+                        text: 'Please select or add a visit address to continue.',
+                        confirmButtonColor: '#0ea5e9'
+                    });
+                } else {
+                    alert('Please select or add a visit address to continue.');
+                }
+            }
+        });
     }
 });
 </script>

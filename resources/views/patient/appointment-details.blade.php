@@ -7,6 +7,10 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
 
+/* Fix Bootstrap 4 modal stacking context from backdrop-filter navbar */
+.modal-backdrop { z-index: 99998 !important; }
+.modal           { z-index: 99999 !important; }
+
 /* Breadcrumb */
 .ad-bc {
     background: linear-gradient(135deg, #0c4a6e, #0369a1);

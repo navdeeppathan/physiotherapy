@@ -21,6 +21,8 @@
         border-bottom: 1px solid rgba(0,0,0,0.06);
         box-shadow: 0 1px 20px rgba(0,0,0,0.06);
         padding: 0;
+        /* Prevent backdrop-filter from creating a stacking context that traps modals */
+        isolation: isolate;
     }
 
     .pt-nav-inner {

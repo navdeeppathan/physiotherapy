@@ -7,6 +7,10 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
 
+/* ── Fix Bootstrap 4 modal z-index stacking context (backdrop-filter conflict) ── */
+.modal-backdrop { z-index: 99998 !important; }
+.modal           { z-index: 99999 !important; }
+
 /* Breadcrumb */
 .bk-breadcrumb {
     background: linear-gradient(135deg, #0c4a6e, #0369a1);
@@ -270,13 +274,15 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
     </main>
 </div>
 
-{{-- PLAN MODAL --}}
-<div class="modal fade" id="planModal" tabindex="-1">
-    <div class="modal-dialog pm-modal-dialog modal-dialog-centered">
+</div>{{-- /main-wrapper --}}
+
+{{-- ── PLAN MODAL (outside main-wrapper to avoid stacking context) ── --}}
+<div class="modal fade" id="planModal" tabindex="-1" role="dialog" aria-labelledby="planModalTitle" aria-hidden="true">
+    <div class="modal-dialog pm-modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content pm-modal-content">
             <div class="pm-modal-header">
-                <div class="pm-modal-title">Choose Your Plan</div>
-                <button type="button" class="pm-close-btn" data-dismiss="modal">&times;</button>
+                <div class="pm-modal-title" id="planModalTitle">Choose Your Plan</div>
+                <button type="button" class="pm-close-btn" data-dismiss="modal" aria-label="Close">&times;</button>
             </div>
             <div class="pm-modal-body">
                 <div class="pm-plan-list">
@@ -290,7 +296,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
                                     <div class="pm-plan-price">₹{{ number_format($plan->price,2) }}</div>
                                 </div>
                                 <div class="pm-plan-bottom">
-                                    <span class="pm-session-price">₹{{ number_format($perSession,0) }} per session</span>
+                                    <span class="pm-session-price">₹{{ number_format($perSession,0) }} per session &middot; {{ $plan->total_appointments }} session(s)</span>
                                     @if($plan->discount_percentage > 0)
                                         <span class="pm-old-price">₹{{ number_format($plan->original_price,2) }}</span>
                                         <span class="pm-discount-badge">{{ rtrim(rtrim($plan->discount_percentage,'0'),'.') }}% Off</span>
@@ -302,6 +308,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
                 </div>
             </div>
             <div class="pm-modal-footer">
+                <button type="button" class="pm-close-btn-text" data-dismiss="modal">Cancel</button>
                 <button type="button" class="pm-continue-btn" id="continuePlan" style="display:none">
                     Continue <i class="fa-solid fa-arrow-right"></i>
                 </button>
@@ -309,73 +316,79 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
         </div>
     </div>
 </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-let selectedSlots = [];
-let selectedPlan = null;
-
-// Slot selection
-document.addEventListener('click', function(e) {
-    const slot = e.target.closest('.bk-slot');
-    if (!slot || slot.classList.contains('booked')) return;
-    const id = slot.dataset.slotId;
-    if (slot.classList.contains('selected')) {
-        slot.classList.remove('selected');
-        selectedSlots = selectedSlots.filter(x => x != id);
-    } else {
-        slot.classList.add('selected');
-        selectedSlots.push(id);
-    }
-    document.getElementById('slotCount').textContent = selectedSlots.length;
-});
-
-// Proceed
-const proceedBtn = document.getElementById('proceedPayment');
-if (proceedBtn) {
-    proceedBtn.addEventListener('click', function() {
-        if (selectedSlots.length === 0) {
-            Swal.fire({ icon:'warning', title:'No Slot Selected', text:'Please select at least one time slot to continue.', confirmButtonColor:'#0ea5e9', customClass:{popup:'sj-swal'} });
-            return;
-        }
-        const modal = new bootstrap.Modal(document.getElementById('planModal'));
-        modal.show();
-    });
-}
-
-// Plan select
-document.querySelectorAll('.pm-plan-card').forEach(function(card) {
-    card.addEventListener('click', function() {
-        document.querySelectorAll('.pm-plan-card').forEach(c => c.classList.remove('active'));
-        card.classList.add('active');
-        selectedPlan = card;
-        document.getElementById('continuePlan').style.display = 'flex';
-    });
-});
-
-// Continue
-document.getElementById('continuePlan').addEventListener('click', function() {
-    if (!selectedPlan) return;
-    const total = parseInt(selectedPlan.dataset.total);
-    if (selectedSlots.length !== total) {
-        Swal.fire({
-            icon:'info',
-            title:'Appointment Count Mismatch',
-            html:`<p><strong>${selectedPlan.querySelector('.pm-plan-name').innerText}</strong> includes <strong>${total}</strong> appointment(s).</p><p>You selected <strong>${selectedSlots.length}</strong>. Please select exactly <strong>${total}</strong> slot(s).</p>`,
-            confirmButtonColor:'#0ea5e9', customClass:{popup:'sj-swal'}
-        });
-        return;
-    }
-    const doctorId = document.getElementById('doctor_id').value;
-    window.location.href = "{{ route('doctor.payment') }}" +
-        "?doctor_id=" + encodeURIComponent(doctorId) +
-        "&plan_id=" + encodeURIComponent(selectedPlan.dataset.id) +
-        "&slots=" + encodeURIComponent(selectedSlots.join(","));
-});
-</script>
 <style>
 .sj-swal { font-family: 'Plus Jakarta Sans', sans-serif !important; border-radius: 16px !important; }
+.pm-close-btn-text { background: #f1f5f9; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 10px 20px; font-size: 14px; font-weight: 700; color: #64748b; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all .15s; }
+.pm-close-btn-text:hover { background: #e2e8f0; }
 </style>
+
+<script>
+$(document).ready(function () {
+    var selectedSlots = [];
+    var selectedPlan  = null;
+
+    /* ── Slot selection (event delegation) ── */
+    $(document).on('click', '.bk-slot', function () {
+        if ($(this).hasClass('booked')) return;
+        var id = $(this).data('slot-id');
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+            selectedSlots = selectedSlots.filter(function(x){ return x != id; });
+        } else {
+            $(this).addClass('selected');
+            selectedSlots.push(id);
+        }
+        $('#slotCount').text(selectedSlots.length);
+    });
+
+    /* ── Proceed button ── */
+    $('#proceedPayment').on('click', function () {
+        if (selectedSlots.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'No Slot Selected',
+                text: 'Please select at least one time slot to continue.',
+                confirmButtonColor: '#0ea5e9',
+                customClass: { popup: 'sj-swal' }
+            });
+            return;
+        }
+        /* Bootstrap 4: use jQuery modal */
+        $('#planModal').modal('show');
+    });
+
+    /* ── Plan card selection ── */
+    $(document).on('click', '.pm-plan-card', function () {
+        $('.pm-plan-card').removeClass('active');
+        $(this).addClass('active');
+        selectedPlan = this;
+        $('#continuePlan').show();
+    });
+
+    /* ── Continue / proceed to payment ── */
+    $('#continuePlan').on('click', function () {
+        if (!selectedPlan) return;
+        var total = parseInt($(selectedPlan).data('total'));
+        if (selectedSlots.length !== total) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Appointment Count Mismatch',
+                html: '<p><strong>' + $(selectedPlan).find('.pm-plan-name').text() + '</strong> includes <strong>' + total + '</strong> appointment(s).</p>' +
+                      '<p>You selected <strong>' + selectedSlots.length + '</strong>. Please select exactly <strong>' + total + '</strong> slot(s).</p>',
+                confirmButtonColor: '#0ea5e9',
+                customClass: { popup: 'sj-swal' }
+            });
+            return;
+        }
+        var doctorId = $('#doctor_id').val();
+        var planId   = $(selectedPlan).data('id');
+        window.location.href = "{{ route('doctor.payment') }}" +
+            '?doctor_id=' + encodeURIComponent(doctorId) +
+            '&plan_id='   + encodeURIComponent(planId) +
+            '&slots='     + encodeURIComponent(selectedSlots.join(','));
+    });
+});
+</script>
 
 @endsection

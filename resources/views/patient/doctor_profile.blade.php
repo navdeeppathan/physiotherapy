@@ -217,7 +217,7 @@ a { text-decoration: none; color: inherit; }
                 <div class="dp-profile-banner"></div>
                 <div class="dp-profile-av-wrap">
                     @if($doctor->profile_img)
-                        <img src="{{ asset('uploads/profile/'.$doctor->profile_img) }}" alt="{{ $doctor->name }}" class="dp-profile-av">
+                        <img src="{{ str_contains($doctor->profile_img, '/') ? asset($doctor->profile_img) : asset('uploads/profile/'.$doctor->profile_img) }}" alt="{{ $doctor->name }}" class="dp-profile-av">
                     @else
                         <div class="dp-profile-av-placeholder">{{ strtoupper(substr($doctor->name,0,1)) }}</div>
                     @endif
@@ -327,7 +327,7 @@ a { text-decoration: none; color: inherit; }
                     @forelse($doctor->receivedReviews as $review)
                         <div class="dp-review-item">
                             @if($review->patient->profile_img)
-                                <img src="{{ asset('uploads/profile/'.$review->patient->profile_img) }}" alt="{{ $review->patient->name }}" class="dp-review-av">
+                                <img src="{{ str_contains($review->patient->profile_img, '/') ? asset($review->patient->profile_img) : asset('uploads/profile/'.$review->patient->profile_img) }}" alt="{{ $review->patient->name }}" class="dp-review-av">
                             @else
                                 <div class="dp-review-av-placeholder">{{ strtoupper(substr($review->patient->name,0,1)) }}</div>
                             @endif

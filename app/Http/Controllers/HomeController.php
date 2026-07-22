@@ -31,7 +31,7 @@ class HomeController extends Controller
 
     public function searchDoctors(Request $request)
     {
-        $keyword = trim($request->keyword);
+        $keyword = trim($request->keyword ?? $request->q);
 
         if (!$keyword) {
             return response()->json([]);

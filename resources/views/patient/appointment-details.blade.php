@@ -161,7 +161,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
             <div class="ad-doc-banner"></div>
             <div class="ad-doc-av-wrap">
                 @if($appointment->doctor->profile_img)
-                    <img src="{{ asset('uploads/profile/'.$appointment->doctor->profile_img) }}" alt="{{ $appointment->doctor->name }}" class="ad-doc-av">
+                    <img src="{{ str_contains($appointment->doctor->profile_img, '/') ? asset($appointment->doctor->profile_img) : asset('uploads/profile/'.$appointment->doctor->profile_img) }}" alt="{{ $appointment->doctor->name }}" class="ad-doc-av">
                 @else
                     <div class="ad-doc-av-ph">{{ strtoupper(substr($appointment->doctor->name,0,1)) }}</div>
                 @endif

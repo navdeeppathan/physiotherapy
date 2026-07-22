@@ -437,7 +437,7 @@ table.pd-table tr:hover td { background: #fafbff; }
     <div class="pd-mobile-topbar">
         <div class="pd-mobile-user">
             @if($patient->profile_img)
-                <img src="{{ asset($patient->profile_img) }}" class="pd-mobile-avatar" alt="{{ Auth::user()->name }}">
+                <img src="{{ str_contains($patient->profile_img, '/') ? asset($patient->profile_img) : asset('uploads/profile/'.$patient->profile_img) }}" class="pd-mobile-avatar" alt="{{ Auth::user()->name }}">
             @else
                 <div class="pd-mobile-avatar-ph">{{ strtoupper(substr(Auth::user()->name,0,1)) }}</div>
             @endif
@@ -459,7 +459,7 @@ table.pd-table tr:hover td { background: #fafbff; }
         <div class="pd-drawer-profile">
             <button class="pd-drawer-close" id="pdDrawerClose">&times;</button>
             @if($patient->profile_img)
-                <img src="{{ asset($patient->profile_img) }}" class="pd-drawer-avatar" alt="{{ Auth::user()->name }}">
+                <img src="{{ str_contains($patient->profile_img, '/') ? asset($patient->profile_img) : asset('uploads/profile/'.$patient->profile_img) }}" class="pd-drawer-avatar" alt="{{ Auth::user()->name }}">
             @else
                 <div class="pd-drawer-avatar-ph">{{ strtoupper(substr(Auth::user()->name,0,1)) }}</div>
             @endif
@@ -501,7 +501,7 @@ table.pd-table tr:hover td { background: #fafbff; }
         <aside class="pd-sidebar">
             <div class="pd-profile-card">
                 @if($patient->profile_img)
-                    <img src="{{ asset($patient->profile_img) }}" class="pd-avatar" alt="{{ Auth::user()->name }}">
+                    <img src="{{ str_contains($patient->profile_img, '/') ? asset($patient->profile_img) : asset('uploads/profile/'.$patient->profile_img) }}" class="pd-avatar" alt="{{ Auth::user()->name }}">
                 @else
                     <div class="pd-avatar-ph">{{ strtoupper(substr(Auth::user()->name,0,1)) }}</div>
                 @endif
@@ -605,7 +605,7 @@ table.pd-table tr:hover td { background: #fafbff; }
                 function buildRow($a) {
                     return [
                         'id'       => $a->id,
-                        'imgSrc'   => $a->doctor->profile_img ? asset($a->doctor->profile_img) : null,
+                        'imgSrc'   => $a->doctor->profile_img ? (str_contains($a->doctor->profile_img, '/') ? asset($a->doctor->profile_img) : asset('uploads/profile/'.$a->doctor->profile_img)) : null,
                         'docName'  => $a->doctor->name ?? '—',
                         'spec'     => optional($a->doctor->profile->specializationdata)->name ?? 'Doctor',
                         'date'     => $a->appointment_date->format('d M Y'),

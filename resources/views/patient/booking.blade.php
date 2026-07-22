@@ -181,7 +181,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
             <div class="bk-doc-banner"></div>
             <div class="bk-doc-av-wrap">
                 @if($doctor->profile_img)
-                    <img src="{{ asset($doctor->profile_img) }}" alt="{{ $doctor->name }}" class="bk-doc-av">
+                    <img src="{{ str_contains($doctor->profile_img, '/') ? asset($doctor->profile_img) : asset('uploads/profile/'.$doctor->profile_img) }}" alt="{{ $doctor->name }}" class="bk-doc-av">
                 @else
                     <div class="bk-doc-av-placeholder">{{ strtoupper(substr($doctor->name,0,1)) }}</div>
                 @endif

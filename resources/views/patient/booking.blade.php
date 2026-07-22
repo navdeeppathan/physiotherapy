@@ -324,11 +324,11 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
 </style>
 
 <script>
-$(document).ready(function () {
+window.addEventListener('DOMContentLoaded', function () {
     var selectedSlots = [];
     var selectedPlan  = null;
 
-    /* ── Slot selection (event delegation) ── */
+    /* ── Slot selection ── */
     $(document).on('click', '.bk-slot', function () {
         if ($(this).hasClass('booked')) return;
         var id = $(this).data('slot-id');
@@ -354,7 +354,7 @@ $(document).ready(function () {
             });
             return;
         }
-        /* Bootstrap 4: use jQuery modal */
+        /* Bootstrap 4 modal open */
         $('#planModal').modal('show');
     });
 
@@ -363,7 +363,7 @@ $(document).ready(function () {
         $('.pm-plan-card').removeClass('active');
         $(this).addClass('active');
         selectedPlan = this;
-        $('#continuePlan').show();
+        $('#continuePlan').css('display', 'inline-flex').show();
     });
 
     /* ── Continue / proceed to payment ── */

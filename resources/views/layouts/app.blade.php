@@ -27,6 +27,10 @@
 		<link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 	
+		<!-- jQuery and Bootstrap Core JS -->
+		<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+		<script src="{{ asset('assets/js/popper.min.js') }}"></script>
+		<script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
 	</head>
 	<body>
 

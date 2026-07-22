@@ -277,9 +277,9 @@ section { overflow: hidden; }
     margin: 0 auto 14px;
     transition: background .22s;
 }
-.hp-spec-card:hover .hp-spec-icon-wrap { background: linear-gradient(135deg, #0ea5e9, #38bdf8); }
+.hp-spec-card:hover .hp-spec-icon-wrap { background: #bae6fd; }
 .hp-spec-icon-wrap img { width: 32px; height: 32px; object-fit: contain; filter: none; }
-.hp-spec-card:hover .hp-spec-icon-wrap img { filter: brightness(0) invert(1); }
+.hp-spec-card:hover .hp-spec-icon-wrap img { filter: none; }
 .hp-spec-name { font-size: 13px; font-weight: 700; color: var(--ink); line-height: 1.3; }
 
 .hp-spec-viewall {

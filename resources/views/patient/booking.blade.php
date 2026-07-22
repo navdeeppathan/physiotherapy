@@ -1,820 +1,381 @@
 @extends('layouts.app')
-
 @section('content')
-
-		<!-- Main Wrapper -->
-		<div class="main-wrapper">
-		
-			@include('layouts.header')
-			
-			<!-- Breadcrumb -->
-			<div class="breadcrumb-bar">
-				<div class="container-fluid">
-					<div class="row align-items-center">
-						<div class="col-md-12 col-12">
-							<nav aria-label="breadcrumb" class="page-breadcrumb">
-								<ol class="breadcrumb">
-									<li class="breadcrumb-item"><a href="index-2.html">Home</a></li>
-									<li class="breadcrumb-item active" aria-current="page">Booking</li>
-								</ol>
-							</nav>
-							<h2 class="breadcrumb-title">Booking</h2>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- /Breadcrumb -->
-			
-			<!-- Page Content -->
-			<div class="content">
-				<div class="container">
-				
-					<div class="row">
-						<div class="col-12">
-						
-							<div class="card">
-								<div class="card-body">
-									<div class="booking-doc-info">
-										<a href="doctor-profile.html" class="booking-doc-img">
-											<img src="{{asset('assets/img/doctors/doctor-thumb-02.jpg')}}" alt="User Image">
-										</a>
-										<div class="booking-info">
-											<h4><a href="doctor-profile.html">{{ $doctor->name }}</a></h4>
-											<p>{{ $doctor->profile->specializationdata->name }}, {{ $doctor->profile->qualification }}</p>
-											<div class="rating">
-												<i class="fas fa-star filled"></i>
-												<i class="fas fa-star filled"></i>
-												<i class="fas fa-star filled"></i>
-												<i class="fas fa-star filled"></i>
-												<i class="fas fa-star"></i>
-												<span class="d-inline-block average-rating">{{ $doctor->profile->experience_years }} Years</span>
-											</div>
-											<p class="text-muted mb-0"><i class="fas fa-map-marker-alt"></i> {{ $doctor->profile->clinic_address }}</p>
-										</div>
-									</div>
-								</div>
-							</div>
-							
-							<!-- Schedule Widget -->
-							<div class="card booking-schedule schedule-widget">
-							
-								<!-- Schedule Header -->
-								{{-- <div class="schedule-header">
-									<div class="row">
-										<div class="col-md-12">
-										
-											
-
-											<div class="day-slot">
-												<ul>
-
-													<li class="left-arrow">
-														<a href="javascript:void(0)" id="prevDays">
-															<i class="fa fa-chevron-left"></i>
-														</a>
-													</li>
-
-													@foreach($doctor->availabilityDates as $index => $availability)
-
-													<li class="day-item {{ $index==0 ? 'active' : '' }}"
-														data-target="day{{ $availability->id }}">
-
-														<span>
-															{{ \Carbon\Carbon::parse($availability->available_date)->format('D') }}
-														</span>
-
-														<span class="slot-date">
-															{{ \Carbon\Carbon::parse($availability->available_date)->format('d M') }}
-															<small class="slot-year">
-																{{ \Carbon\Carbon::parse($availability->available_date)->format('Y') }}
-															</small>
-														</span>
-
-													</li>
-
-													@endforeach
-
-													<li class="right-arrow">
-														<a href="javascript:void(0)" id="nextDays">
-															<i class="fa fa-chevron-right"></i>
-														</a>
-													</li>
-
-												</ul>
-											</div>
-											
-										</div>
-									</div>
-								</div> --}}
-								<!-- /Schedule Header -->
-								
-								<!-- Schedule Content -->
-								{{-- <div class="schedule-cont">
-									<div class="row">
-										<div class="col-md-12">
-										
-											
-
-											<div class="time-slot">
-												<ul class="clearfix">
-
-													@foreach($doctor->availabilityDates as $index => $availability)
-
-														<li class="slot-item {{ $index == 0 ? 'active' : '' }}"
-															id="day{{ $availability->id }}"
-															style="{{ $index == 0 ? '' : 'display:none' }}">
-
-															@forelse($availability->timeSlots as $slot)
-
-																<a href="javascript:void(0)"
-																class="timing {{ $slot->is_booked ? 'disabled' : '' }}"
-																data-slot-id="{{ $slot->id }}">
-
-																	<span>
-																		{{ \Carbon\Carbon::parse($slot->start_time)->format('h:i A') }}
-																	</span>
-
-																</a>
-
-															@empty
-
-																<div class="text-muted p-3">
-																	No Slots Available
-																</div>
-
-															@endforelse
-
-														</li>
-
-													@endforeach
-
-												</ul>
-											</div>
-											
-										</div>
-									</div>
-								</div> --}}
-								<!-- /Schedule Content -->
-
-								<!-- Schedule Content -->
-								<!-- Schedule Content -->
-								<div class="schedule-cont">
-									<div class="row">
-										<div class="col-md-12">
-
-											@foreach($doctor->availabilityDates as $availability)
-
-												<div class="mb-4">
-
-													<!-- Date Heading -->
-													<div class="d-flex align-items-center mb-3">
-														<h5 class="mb-0 font-weight-bold">
-															{{ \Carbon\Carbon::parse($availability->available_date)->format('l, d M Y') }}
-														</h5>
-													</div>
-
-													<!-- Slots -->
-													<div class="time-slot">
-														<ul class="clearfix">
-
-															@forelse($availability->timeSlots as $slot)
-
-																<li class="d-inline-block mb-2 mr-2">
-																	<a href="javascript:void(0)"
-																		class="timing {{ $slot->is_booked ? 'disabled' : '' }}"
-																		data-slot-id="{{ $slot->id }}">
-
-																		<span>
-																			{{ \Carbon\Carbon::parse($slot->start_time)->format('h:i A') }}
-																		</span>
-
-																	</a>
-																</li>
-
-															@empty
-
-																<li class="text-muted">
-																	No Slots Available
-																</li>
-
-															@endforelse
-
-														</ul>
-													</div>
-
-												</div>
-
-											@endforeach
-
-										</div>
-									</div>
-								</div>
-								<!-- /Schedule Content -->
-								
-							</div>
-							<!-- /Schedule Widget -->
-							<input type="hidden" id="doctor_id" value="{{ $doctor->id }}">
-							<input type="hidden" id="selected_slots">
-							<!-- Submit Section -->
-							{{-- <div class="submit-section proceed-btn text-right">
-								<a href="{{route('doctor.payment')}}" class="btn btn-primary submit-btn">Proceed to Pay</a>
-							</div> --}}
-							
-							<div class="submit-section proceed-btn text-right">
-
-								@auth
-									<a href="javascript:void(0)"
-									id="proceedPayment"
-									class="btn btn-primary submit-btn">
-										Proceed to Pay
-									</a>
-								@else
-									<a href="{{ route('login') }}"
-									class="btn btn-primary submit-btn">
-										Login to Continue
-									</a>
-								@endauth
-
-							</div>
-							<!-- /Submit Section -->
-							
-						</div>
-					</div>
-				</div>
-
-			</div>		
-			<!-- /Page Content -->
-
-			
-   
-			@include('layouts.footer')
-
-		   
-		</div>
-
-		{{-- <form id="paymentForm" action="{{ route('doctor.payment') }}" method="POST" style="display:none;">
-			@csrf
-
-			<input type="hidden" name="doctor_id" id="paymentDoctorId">
-			<input type="hidden" name="plan_id" id="paymentPlanId">
-			<input type="hidden" name="slots" id="paymentSlots">
-		</form> --}}
-
-		<div class="modal fade" id="planModal" tabindex="-1">
-			<div class="modal-dialog modal-xl modal-dialog-centered">
-				<div class="modal-content plan-modal-content">
-
-					<div class="modal-header plan-modal-header">
-						<h3 class="plan-modal-title">Choose Your Plan</h3>
-						<button type="button" class="plan-close-btn" data-dismiss="modal">
-							<span>&times;</span>
-						</button>
-					</div>
-
-					<div class="modal-body plan-modal-body">
-
-						<div class="plan-list">
-
-							@foreach($patientPlans as $plan)
-
-							@php
-								$perSession = $plan->total_appointments > 0
-									? $plan->price / $plan->total_appointments
-									: 0;
-							@endphp
-
-							<div class="plan-card"
-								data-id="{{ $plan->id }}"
-								data-total="{{ $plan->total_appointments }}">
-
-								<div class="plan-radio">
-									<span class="radio-circle"></span>
-								</div>
-
-								<div class="plan-content">
-
-									<div class="plan-top">
-										<div class="plan-name">
-											{{ $plan->name }}
-										</div>
-										<div class="plan-price">
-											₹{{ number_format($plan->price,2) }}
-										</div>
-									</div>
-
-									<div class="plan-bottom">
-
-										<div class="session-price">
-											₹{{ number_format($perSession,0) }} per session
-										</div>
-
-										<div class="discount-area">
-											@if($plan->discount_percentage > 0)
-												<span class="old-price">
-													₹{{ number_format($plan->original_price,2) }}
-												</span>
-												<span class="discount-badge">
-													{{ rtrim(rtrim($plan->discount_percentage,'0'),'.') }}% Off
-												</span>
-											@endif
-										</div>
-
-									</div>
-
-								</div>
-
-								<button type="button" class="choose-plan d-none"></button>
-
-							</div>
-
-							@endforeach
-
-						</div>
-
-					</div>
-
-					<div class="modal-footer plan-modal-footer">
-						<button type="button" class="continue-plan-btn" id="continuePlan" style="display:none;">
-							Continue
-							<i class="fa fa-arrow-right ml-2"></i>
-						</button>
-					</div>
-
-				</div>
-			</div>
-		</div>
-		
-		<script>
-
-			/*document.addEventListener("DOMContentLoaded", function () {
-
-				const visibleCount = 7;
-				let start = 0;
-
-				const items = document.querySelectorAll(".day-item");
-				const slotItems = document.querySelectorAll(".slot-item");
-
-				function showSlots(targetId) {
-
-					slotItems.forEach(function (slot) {
-
-						slot.style.display = "none";
-						slot.classList.remove("active");
-
-					});
-
-					const current = document.getElementById(targetId);
-
-					if (current) {
-						current.style.display = "block";
-						current.classList.add("active");
-					}
-
-				}
-
-				function render() {
-
-					items.forEach(function (item, index) {
-
-						if (index >= start && index < start + visibleCount) {
-							item.style.display = "block";
-						} else {
-							item.style.display = "none";
-						}
-
-					});
-
-					document.getElementById("prevDays").classList.toggle(
-						"disabled",
-						start == 0
-					);
-
-					document.getElementById("nextDays").classList.toggle(
-						"disabled",
-						start + visibleCount >= items.length
-					);
-
-				}
-
-				render();
-
-				// Show first day's slots
-				if (items.length) {
-					showSlots(items[0].dataset.target);
-				}
-
-				// Click on day
-				items.forEach(function (item) {
-
-					item.addEventListener("click", function () {
-
-						items.forEach(function (d) {
-							d.classList.remove("active");
-						});
-
-						this.classList.add("active");
-
-						showSlots(this.dataset.target);
-
-					});
-
-				});
-
-				// Next
-				document.getElementById("nextDays").onclick = function () {
-
-					if (start + visibleCount < items.length) {
-						start++;
-						render();
-					}
-
-				};
-
-				// Previous
-				document.getElementById("prevDays").onclick = function () {
-
-					if (start > 0) {
-						start--;
-						render();
-					}
-
-				};
-
-			});*/
-
-
-			let selectedSlots = [];
-
-			document.addEventListener("click", function(e){
-
-				let slot = e.target.closest(".timing");
-
-				if(!slot) return;
-
-				if(slot.classList.contains("disabled")) return;
-
-				let id = slot.dataset.slotId;
-
-				if(slot.classList.contains("selected")){
-
-					slot.classList.remove("selected");
-
-					selectedSlots = selectedSlots.filter(x => x != id);
-
-				}else{
-
-					slot.classList.add("selected");
-
-					selectedSlots.push(id);
-
-				}
-
-			});
-
-			document.getElementById("proceedPayment").addEventListener("click", function () {
-
-				// let slotId = document.getElementById("selected_slot_id").value;
-
-				// if (!slotId) {
-				// 	alert("Please select a time slot.");
-				// 	return;
-				// }
-
-				// let doctorId = document.getElementById("doctor_id").value;
-
-				// window.location.href =
-				// 	"{{ route('doctor.payment') }}" +
-				// 	"?doctor_id=" + doctorId +
-				// 	"&slot_id=" + slotId;
-
-				if(selectedSlots.length == 0){
-					Swal.fire({
-						icon:'warning',
-						title:'Select Slot',
-						text:'Please select at least one slot.'
-					});
-					return;
-				}
-				const modal = new bootstrap.Modal(document.getElementById('planModal'));
-				modal.show();
-
-			});
-
-
-			document.querySelectorAll(".plan-card").forEach(function(card){
-				card.addEventListener("click",function(){
-					document.querySelectorAll(".plan-card").forEach(function(c){
-						c.classList.remove("active");
-					});
-					card.classList.add("active");
-					selectedPlan = card;
-					document.getElementById("continuePlan").style.display="inline-block";
-				});
-			});
-
-			document.getElementById("continuePlan").addEventListener("click", function () {
-				if (!selectedPlan) {
-					Swal.fire({
-						icon: "warning",
-						title: "Select Plan",
-						text: "Please select a subscription plan."
-					});
-					return;
-				}
-
-				let total = parseInt(selectedPlan.dataset.total);
-
-				if (selectedSlots.length != total) {
-					Swal.fire({
-						icon: "info",
-						title: "Plan & Appointment Mismatch",
-						html: `
-							<p><strong>${selectedPlan.querySelector('.plan-name').innerText}</strong> includes <strong>${total}</strong> appointment(s).</p>
-							<p>You selected <strong>${selectedSlots.length}</strong> appointment(s).</p>
-							<p>Please select exactly <strong>${total}</strong> appointment(s).</p>
-						`
-					});
-					return;
-				}
-
-				// document.getElementById("paymentDoctorId").value =
-				// 	document.getElementById("doctor_id").value;
-
-				// document.getElementById("paymentPlanId").value =
-				// 	selectedPlan.dataset.id;
-
-				// document.getElementById("paymentSlots").value =
-				// 	selectedSlots.join(",");
-
-				// document.getElementById("paymentForm").submit();
-				const doctorId = document.getElementById("doctor_id").value;
-				const planId = selectedPlan.dataset.id;
-				const slots = selectedSlots.join(",");
-
-				window.location.href =
-					"{{ route('doctor.payment') }}" +
-					"?doctor_id=" + encodeURIComponent(doctorId) +
-					"&plan_id=" + encodeURIComponent(planId) +
-					"&slots=" + encodeURIComponent(slots);
-			});
-
-		</script>
-
-		<style>
-			.day-item.active {
-				background: #09e5ab;
-				color: #fff;
-				border-radius: 5px;
-			}
-
-			.day-item {
-				cursor: pointer;
-			}
-
-			.slot-item {
-				list-style: none;
-			}
-
-			.disabled {
-				opacity: .4;
-				pointer-events: none;
-			}
-
-			/* ===== Modal shell (kept minimal so Bootstrap's JS open/close still works) ===== */
-			.plan-modal-content{
-				border:none;
-				border-radius:20px;
-				overflow:hidden;
-				box-shadow:0 20px 50px rgba(0,0,0,.15);
-			}
-
-			.plan-modal-header{
-				display:flex;
-				align-items:center;
-				justify-content:space-between;
-				padding:20px 24px;
-				border-bottom:1px solid #f0f0f0;
-			}
-
-			.plan-modal-title{
-				font-size:clamp(18px,2.2vw,24px);
-				font-weight:700;
-				color:#1a1a1a;
-				margin:0;
-			}
-
-			.plan-close-btn{
-				background:none;
-				border:none;
-				font-size:22px;
-				line-height:1;
-				color:#999;
-				cursor:pointer;
-				padding:4px 8px;
-				border-radius:50%;
-				transition:.2s;
-			}
-			.plan-close-btn:hover{
-				background:#f5f5f5;
-				color:#333;
-			}
-
-			.plan-modal-body{
-				padding:24px;
-				background:linear-gradient(135deg,#fff 60%,#fff2e8 100%);
-				max-height:70vh;
-				overflow-y:auto;
-			}
-
-			.plan-modal-footer{
-				display:flex;
-				justify-content:flex-end;
-				padding:16px 24px;
-				border-top:1px solid #f0f0f0;
-			}
-
-			/* ===== Plan list / cards ===== */
-			.plan-list{
-				display:flex;
-				flex-direction:column;
-				gap:16px;
-			}
-
-			.plan-card{
-				display:flex;
-				align-items:flex-start;
-				gap:16px;
-				background:#fff;
-				border:2px solid #ededed;
-				border-radius:18px;
-				padding:18px 20px;
-				cursor:pointer;
-				transition:.25s ease;
-				position:relative;
-			}
-
-			.plan-card:hover{
-				border-color:#09e5ab;
-				box-shadow:0 10px 25px rgba(0,0,0,.08);
-			}
-
-			.plan-card.active{
-				border-color:#09e5ab;
-				box-shadow:0 12px 28px rgba(255,122,30,.18);
-				background:#fffaf6;
-			}
-
-			.plan-radio{
-				margin-top:4px;
-				flex-shrink:0;
-			}
-
-			.radio-circle{
-				width:22px;
-				height:22px;
-				border-radius:50%;
-				border:2px solid #d5d5d5;
-				display:block;
-				position:relative;
-				transition:.25s ease;
-			}
-
-			.plan-card.active .radio-circle{
-				border-color:#09e5ab;
-			}
-
-			.plan-card.active .radio-circle:after{
-				content:"";
-				position:absolute;
-				width:11px;
-				height:11px;
-				background:#09e5ab;
-				border-radius:50%;
-				left:50%;
-				top:50%;
-				transform:translate(-50%,-50%);
-			}
-
-			.plan-content{
-				flex:1;
-				min-width:0;
-			}
-
-			.plan-top{
-				display:flex;
-				justify-content:space-between;
-				align-items:center;
-				gap:10px;
-				margin-bottom:8px;
-				flex-wrap:wrap;
-			}
-
-			.plan-name{
-				font-size:clamp(16px,2.4vw,20px);
-				font-weight:700;
-				color:#1e1e1e;
-			}
-
-			.plan-price{
-				font-size:clamp(18px,2.8vw,26px);
-				font-weight:700;
-				color:#1e1e1e;
-				white-space:nowrap;
-			}
-
-			.plan-bottom{
-				display:flex;
-				justify-content:space-between;
-				align-items:center;
-				gap:10px;
-				flex-wrap:wrap;
-			}
-
-			.session-price{
-				color:#767676;
-				font-size:clamp(13px,1.8vw,15px);
-			}
-
-			.discount-area{
-				display:flex;
-				align-items:center;
-				gap:8px;
-				flex-wrap:wrap;
-			}
-
-			.old-price{
-				text-decoration:line-through;
-				color:#a3a3a3;
-				font-size:clamp(13px,1.8vw,15px);
-			}
-
-			.discount-badge{
-				background:#e6f8ef;
-				color:#2d9d59;
-				padding:4px 10px;
-				border-radius:8px;
-				font-size:12px;
-				font-weight:600;
-				white-space:nowrap;
-			}
-
-			/* ===== Continue button ===== */
-			.continue-plan-btn{
-				display:inline-flex;
-				align-items:center;
-				gap:8px;
-				background:#09e5ab;
-				color:#fff;
-				border:none;
-				font-weight:600;
-				font-size:15px;
-				padding:12px 28px;
-				border-radius:30px;
-				cursor:pointer;
-				transition:.2s;
-			}
-			.continue-plan-btn:hover{
-				background:#09e5ab;
-				box-shadow:0 8px 18px rgba(255,122,30,.3);
-			}
-
-			.d-none{
-				display:none !important;
-			}
-
-			/* ===== Responsive ===== */
-			@media (max-width:576px){
-				.plan-modal-header{ padding:16px 18px; }
-				.plan-modal-body{ padding:16px; }
-				.plan-modal-footer{ padding:12px 18px; }
-
-				.plan-card{
-					padding:14px 16px;
-					gap:12px;
-				}
-
-				.plan-top{
-					flex-direction:row;
-					justify-content:space-between;
-				}
-
-				.plan-bottom{
-					flex-direction:column;
-					align-items:flex-start;
-					gap:6px;
-				}
-
-				.continue-plan-btn{
-					width:100%;
-					justify-content:center;
-				}
-			}
-
-			@media (max-width:360px){
-				.radio-circle{ width:18px; height:18px; }
-				.plan-name{ font-size:15px; }
-				.plan-price{ font-size:18px; }
-			}
-		</style>
-@endsection		
-	
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
+
+/* Breadcrumb */
+.bk-breadcrumb {
+    background: linear-gradient(135deg, #0c4a6e, #0369a1);
+    padding: 20px 0; position: relative;
+}
+.bk-breadcrumb::after { content:''; position:absolute; inset:0; background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='20' cy='20' r='20'/%3E%3C/g%3E%3C/svg%3E") repeat; }
+.bk-bc-inner { max-width: 1280px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 1; }
+.bk-bc-trail { display: flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(255,255,255,.6); }
+.bk-bc-trail a { color: rgba(255,255,255,.7); font-weight: 600; }
+.bk-bc-title { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -.03em; }
+
+/* Body grid */
+.bk-body { max-width: 1280px; margin: 0 auto; padding: 32px 24px 56px; display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
+
+/* ── DOCTOR SIDEBAR ── */
+.bk-doc-card {
+    background: #fff; border-radius: 20px;
+    border: 1.5px solid #e2e8f0; overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,.06);
+    position: sticky; top: 88px;
+}
+.bk-doc-banner { height: 72px; background: linear-gradient(135deg,#0369a1,#0ea5e9); position: relative; }
+.bk-doc-av-wrap { position: absolute; bottom: -36px; left: 50%; transform: translateX(-50%); }
+.bk-doc-av { width: 72px; height: 72px; border-radius: 50%; border: 3px solid #fff; object-fit: cover; box-shadow: 0 4px 14px rgba(0,0,0,.15); }
+.bk-doc-av-placeholder { width: 72px; height: 72px; border-radius: 50%; border: 3px solid #fff; background: linear-gradient(135deg,#0ea5e9,#38bdf8); color: #fff; font-size: 22px; font-weight: 900; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,.15); }
+.bk-doc-body { padding: 48px 20px 24px; text-align: center; }
+.bk-doc-name { font-size: 16px; font-weight: 800; color: #0f172a; }
+.bk-doc-spec { font-size: 12.5px; color: #0ea5e9; font-weight: 600; margin-top: 4px; }
+.bk-doc-meta { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+.bk-doc-meta-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #475569; }
+.bk-doc-meta-item i { width: 28px; height: 28px; background: #e0f2fe; color: #0ea5e9; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+
+/* ── BOOKING MAIN ── */
+.bk-main { display: flex; flex-direction: column; gap: 20px; }
+
+.bk-card { background: #fff; border-radius: 20px; border: 1.5px solid #e2e8f0; box-shadow: 0 2px 16px rgba(0,0,0,.04); overflow: hidden; }
+.bk-card-header { padding: 20px 24px 0; }
+.bk-card-title { font-size: 17px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px; }
+.bk-card-title i { font-size: 16px; color: #0ea5e9; }
+.bk-card-sub { font-size: 13px; color: #64748b; margin-top: 4px; }
+.bk-card-body { padding: 20px 24px 24px; }
+
+/* Date group */
+.bk-date-group { margin-bottom: 28px; }
+.bk-date-label {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #f0f9ff; color: #0369a1;
+    border: 1px solid #bae6fd; border-radius: 10px;
+    padding: 7px 16px; font-size: 13px; font-weight: 800;
+    margin-bottom: 14px;
+}
+.bk-date-label i { font-size: 13px; }
+
+/* Slot grid */
+.bk-slot-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.bk-slot {
+    padding: 9px 16px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 13.5px; font-weight: 600; color: #334155;
+    cursor: pointer; transition: all .18s;
+    background: #f8fafc;
+    display: flex; align-items: center; gap: 6px;
+    user-select: none;
+}
+.bk-slot i { font-size: 12px; color: #94a3b8; }
+.bk-slot:hover { border-color: #7dd3fc; background: #e0f2fe; color: #0369a1; }
+.bk-slot.selected { background: linear-gradient(135deg,#0ea5e9,#38bdf8); border-color: transparent; color: #fff; box-shadow: 0 4px 12px rgba(14,165,233,.3); }
+.bk-slot.selected i { color: rgba(255,255,255,.8); }
+.bk-slot.booked { background: #f8fafc; border-color: #e2e8f0; color: #cbd5e1; cursor: not-allowed; opacity: .55; }
+.bk-slot.booked:hover { border-color: #e2e8f0; background: #f8fafc; color: #cbd5e1; }
+
+.bk-no-slots { color: #94a3b8; font-size: 14px; font-style: italic; padding: 8px 0; }
+
+/* Selected counter */
+.bk-selection-bar {
+    background: #f0f9ff; border: 1.5px solid #bae6fd;
+    border-radius: 14px; padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+}
+.bk-selection-count { font-size: 14px; font-weight: 700; color: #0369a1; }
+.bk-selection-count span { font-size: 20px; font-weight: 900; color: #0ea5e9; }
+
+/* Proceed btn */
+.bk-proceed-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; padding: 16px;
+    background: linear-gradient(135deg,#0ea5e9,#38bdf8);
+    color: #fff; border: none; border-radius: 14px;
+    font-size: 16px; font-weight: 800;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(14,165,233,.35);
+    transition: all .2s;
+}
+.bk-proceed-btn:hover { background: linear-gradient(135deg,#0284c7,#0ea5e9); box-shadow: 0 12px 32px rgba(14,165,233,.45); transform: translateY(-1px); }
+
+/* ── PLAN MODAL ── */
+.pm-modal-dialog { max-width: 700px; }
+.pm-modal-content { border: none; border-radius: 20px; overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,.18); }
+.pm-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 22px 28px; border-bottom: 1px solid #f1f5f9; }
+.pm-modal-title { font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -.03em; font-family: 'Plus Jakarta Sans', sans-serif; }
+.pm-close-btn { background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 18px; color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+.pm-close-btn:hover { background: #e2e8f0; color: #0f172a; }
+.pm-modal-body { padding: 24px 28px; background: #f8fafc; max-height: 65vh; overflow-y: auto; }
+.pm-modal-footer { padding: 18px 28px; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; }
+
+.pm-plan-list { display: flex; flex-direction: column; gap: 14px; }
+.pm-plan-card {
+    display: flex; align-items: flex-start; gap: 16px;
+    background: #fff; border: 2px solid #e2e8f0;
+    border-radius: 16px; padding: 20px; cursor: pointer;
+    transition: all .22s;
+}
+.pm-plan-card:hover { border-color: #7dd3fc; box-shadow: 0 8px 24px rgba(14,165,233,.1); }
+.pm-plan-card.active { border-color: #0ea5e9; background: #f0f9ff; box-shadow: 0 8px 24px rgba(14,165,233,.18); }
+
+.pm-radio { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #d1d5db; position: relative; flex-shrink: 0; margin-top: 2px; transition: all .18s; }
+.pm-plan-card.active .pm-radio { border-color: #0ea5e9; }
+.pm-plan-card.active .pm-radio::after { content:''; position:absolute; width:11px; height:11px; background:#0ea5e9; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); }
+
+.pm-plan-content { flex: 1; }
+.pm-plan-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+.pm-plan-name { font-size: 17px; font-weight: 800; color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif; }
+.pm-plan-price { font-size: 22px; font-weight: 900; color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif; }
+.pm-plan-bottom { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.pm-session-price { font-size: 13px; color: #64748b; }
+.pm-discount-badge { background: #d1fae5; color: #065f46; border-radius: 8px; padding: 3px 10px; font-size: 12px; font-weight: 700; }
+.pm-old-price { text-decoration: line-through; color: #94a3b8; font-size: 13px; }
+
+.pm-continue-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg,#0ea5e9,#38bdf8);
+    color: #fff; border: none; border-radius: 12px;
+    padding: 12px 28px; font-size: 15px; font-weight: 700;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer; transition: all .18s;
+    box-shadow: 0 6px 18px rgba(14,165,233,.3);
+}
+.pm-continue-btn:hover { background: linear-gradient(135deg,#0284c7,#0ea5e9); }
+
+@media (max-width: 1024px) { .bk-body { grid-template-columns: 1fr; } .bk-doc-card { position: static; } }
+@media (max-width: 560px) { .bk-body { padding: 16px 14px; } .bk-slot-grid { gap: 8px; } }
+</style>
+
+<div class="main-wrapper">
+@include('layouts.header')
+
+<div class="bk-breadcrumb">
+    <div class="bk-bc-inner">
+        <div class="bk-bc-trail">
+            <a href="/">Home</a>
+            <span style="color:rgba(255,255,255,.3)">/</span>
+            <a href="{{ route('doctor.profile', $doctor->id) }}">Dr. {{ $doctor->name }}</a>
+            <span style="color:rgba(255,255,255,.3)">/</span>
+            <span>Book Appointment</span>
+        </div>
+        <div class="bk-bc-title">Book Appointment</div>
+    </div>
+</div>
+
+<div class="bk-body">
+
+    {{-- SIDEBAR --}}
+    <aside>
+        <div class="bk-doc-card">
+            <div class="bk-doc-banner"></div>
+            <div class="bk-doc-av-wrap">
+                @if($doctor->profile_img)
+                    <img src="{{ asset($doctor->profile_img) }}" alt="{{ $doctor->name }}" class="bk-doc-av">
+                @else
+                    <div class="bk-doc-av-placeholder">{{ strtoupper(substr($doctor->name,0,1)) }}</div>
+                @endif
+            </div>
+            <div class="bk-doc-body">
+                <div class="bk-doc-name">Dr. {{ $doctor->name }}</div>
+                <div class="bk-doc-spec">{{ $doctor->profile->specializationdata->name ?? '' }}, {{ $doctor->profile->qualification ?? '' }}</div>
+                <div class="bk-doc-meta">
+                    <div class="bk-doc-meta-item">
+                        <i class="fa-solid fa-location-dot"></i>
+                        {{ $doctor->profile->clinic_address ?? '—' }}
+                    </div>
+                    <div class="bk-doc-meta-item">
+                        <i class="fa-regular fa-clock"></i>
+                        {{ $doctor->profile->experience_years ?? 0 }} Years Experience
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    {{-- MAIN --}}
+    <main class="bk-main">
+
+        {{-- Slot Selection --}}
+        <div class="bk-card">
+            <div class="bk-card-header">
+                <div class="bk-card-title"><i class="fa-solid fa-calendar-days"></i> Select Appointment Slots</div>
+                <div class="bk-card-sub">Choose one or more available time slots below. Click a slot to select or deselect it.</div>
+            </div>
+            <div class="bk-card-body">
+
+                @if($doctor->availabilityDates->isEmpty())
+                    <div style="text-align:center;padding:40px;color:#94a3b8">
+                        <i class="fa-regular fa-calendar-xmark" style="font-size:40px;margin-bottom:14px;display:block;color:#cbd5e1"></i>
+                        <p style="font-size:15px;font-weight:600;color:#64748b">No slots available at this time.</p>
+                        <p style="font-size:13px;margin-top:6px">Please check back later or contact the clinic.</p>
+                    </div>
+                @else
+                    @foreach($doctor->availabilityDates as $availability)
+                        <div class="bk-date-group">
+                            <div class="bk-date-label">
+                                <i class="fa-regular fa-calendar"></i>
+                                {{ \Carbon\Carbon::parse($availability->available_date)->format('l, d M Y') }}
+                            </div>
+                            <div class="bk-slot-grid">
+                                @forelse($availability->timeSlots as $slot)
+                                    <div class="bk-slot {{ $slot->is_booked ? 'booked' : '' }}"
+                                         data-slot-id="{{ $slot->id }}"
+                                         @if($slot->is_booked) title="Already booked" @endif>
+                                        <i class="fa-regular fa-clock"></i>
+                                        {{ \Carbon\Carbon::parse($slot->start_time)->format('h:i A') }}
+                                        @if($slot->is_booked)
+                                            <i class="fa-solid fa-ban" style="color:#f87171;margin-left:2px;font-size:11px"></i>
+                                        @endif
+                                    </div>
+                                @empty
+                                    <span class="bk-no-slots">No slots for this date.</span>
+                                @endforelse
+                            </div>
+                        </div>
+                    @endforeach
+                @endif
+
+            </div>
+        </div>
+
+        {{-- Selection summary + Proceed --}}
+        <div class="bk-card">
+            <div class="bk-card-body" style="padding-top:20px">
+                <div class="bk-selection-bar" style="margin-bottom:16px">
+                    <div class="bk-selection-count">
+                        <span id="slotCount">0</span> slot(s) selected
+                    </div>
+                    <div style="font-size:13px;color:#64748b">Select slots, then choose a plan to proceed</div>
+                </div>
+                <input type="hidden" id="doctor_id" value="{{ $doctor->id }}">
+                @auth
+                    <button id="proceedPayment" class="bk-proceed-btn">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i> Proceed to Choose Plan
+                    </button>
+                @else
+                    <a href="{{ route('login') }}" class="bk-proceed-btn" style="display:flex">
+                        <i class="fa-solid fa-right-to-bracket"></i> Login to Continue
+                    </a>
+                @endauth
+            </div>
+        </div>
+
+    </main>
+</div>
+
+{{-- PLAN MODAL --}}
+<div class="modal fade" id="planModal" tabindex="-1">
+    <div class="modal-dialog pm-modal-dialog modal-dialog-centered">
+        <div class="modal-content pm-modal-content">
+            <div class="pm-modal-header">
+                <div class="pm-modal-title">Choose Your Plan</div>
+                <button type="button" class="pm-close-btn" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="pm-modal-body">
+                <div class="pm-plan-list">
+                    @foreach($patientPlans as $plan)
+                        @php $perSession = $plan->total_appointments > 0 ? $plan->price / $plan->total_appointments : 0; @endphp
+                        <div class="pm-plan-card" data-id="{{ $plan->id }}" data-total="{{ $plan->total_appointments }}">
+                            <div class="pm-radio"></div>
+                            <div class="pm-plan-content">
+                                <div class="pm-plan-top">
+                                    <div class="pm-plan-name">{{ $plan->name }}</div>
+                                    <div class="pm-plan-price">₹{{ number_format($plan->price,2) }}</div>
+                                </div>
+                                <div class="pm-plan-bottom">
+                                    <span class="pm-session-price">₹{{ number_format($perSession,0) }} per session</span>
+                                    @if($plan->discount_percentage > 0)
+                                        <span class="pm-old-price">₹{{ number_format($plan->original_price,2) }}</span>
+                                        <span class="pm-discount-badge">{{ rtrim(rtrim($plan->discount_percentage,'0'),'.') }}% Off</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            <div class="pm-modal-footer">
+                <button type="button" class="pm-continue-btn" id="continuePlan" style="display:none">
+                    Continue <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+let selectedSlots = [];
+let selectedPlan = null;
+
+// Slot selection
+document.addEventListener('click', function(e) {
+    const slot = e.target.closest('.bk-slot');
+    if (!slot || slot.classList.contains('booked')) return;
+    const id = slot.dataset.slotId;
+    if (slot.classList.contains('selected')) {
+        slot.classList.remove('selected');
+        selectedSlots = selectedSlots.filter(x => x != id);
+    } else {
+        slot.classList.add('selected');
+        selectedSlots.push(id);
+    }
+    document.getElementById('slotCount').textContent = selectedSlots.length;
+});
+
+// Proceed
+const proceedBtn = document.getElementById('proceedPayment');
+if (proceedBtn) {
+    proceedBtn.addEventListener('click', function() {
+        if (selectedSlots.length === 0) {
+            Swal.fire({ icon:'warning', title:'No Slot Selected', text:'Please select at least one time slot to continue.', confirmButtonColor:'#0ea5e9', customClass:{popup:'sj-swal'} });
+            return;
+        }
+        const modal = new bootstrap.Modal(document.getElementById('planModal'));
+        modal.show();
+    });
+}
+
+// Plan select
+document.querySelectorAll('.pm-plan-card').forEach(function(card) {
+    card.addEventListener('click', function() {
+        document.querySelectorAll('.pm-plan-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        selectedPlan = card;
+        document.getElementById('continuePlan').style.display = 'flex';
+    });
+});
+
+// Continue
+document.getElementById('continuePlan').addEventListener('click', function() {
+    if (!selectedPlan) return;
+    const total = parseInt(selectedPlan.dataset.total);
+    if (selectedSlots.length !== total) {
+        Swal.fire({
+            icon:'info',
+            title:'Appointment Count Mismatch',
+            html:`<p><strong>${selectedPlan.querySelector('.pm-plan-name').innerText}</strong> includes <strong>${total}</strong> appointment(s).</p><p>You selected <strong>${selectedSlots.length}</strong>. Please select exactly <strong>${total}</strong> slot(s).</p>`,
+            confirmButtonColor:'#0ea5e9', customClass:{popup:'sj-swal'}
+        });
+        return;
+    }
+    const doctorId = document.getElementById('doctor_id').value;
+    window.location.href = "{{ route('doctor.payment') }}" +
+        "?doctor_id=" + encodeURIComponent(doctorId) +
+        "&plan_id=" + encodeURIComponent(selectedPlan.dataset.id) +
+        "&slots=" + encodeURIComponent(selectedSlots.join(","));
+});
+</script>
+<style>
+.sj-swal { font-family: 'Plus Jakarta Sans', sans-serif !important; border-radius: 16px !important; }
+</style>
+
+@endsection

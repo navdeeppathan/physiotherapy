@@ -134,23 +134,25 @@ section { overflow: hidden; }
     position: absolute;
     top: calc(100% + 8px);
     left: 0; right: 0;
-    background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 20px 60px rgba(0,0,0,.18);
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.22);
     overflow: hidden;
     z-index: 9999;
     display: none;
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
 }
 #hp-doctor-dropdown.open { display: block; }
 #hp-doctor-dropdown a {
-    display: flex; align-items: center; gap: 12px;
+    display: flex; align-items: center; justify-content: space-between;
     padding: 12px 18px;
-    font-size: 14px; font-weight: 600; color: var(--ink);
+    color: #0f172a !important;
+    text-decoration: none;
+    border-bottom: 1px solid #f1f5f9;
     transition: background .15s;
 }
-#hp-doctor-dropdown a:hover { background: var(--primary-l); color: var(--primary-d); }
-#hp-doctor-dropdown a span { font-size: 12px; color: var(--muted); font-weight: 400; }
+#hp-doctor-dropdown a:last-child { border-bottom: none; }
+#hp-doctor-dropdown a:hover { background: #f0f9ff; }
 
 .hp-hero-hints {
     display: flex; align-items: center; gap: 20px;
@@ -1046,12 +1048,22 @@ section { overflow: hidden; }
                 .then(r => r.json())
                 .then(data => {
                     if (!data.length) { dropdown.innerHTML = ''; dropdown.classList.remove('open'); return; }
-                    dropdown.innerHTML = data.slice(0,6).map(d =>
-                        `<a href="/doctor/${d.id}/profile">
-                            <strong>Dr. ${d.name}</strong>
-                            <span>&nbsp;· ${d.specialization || 'Physiotherapist'}</span>
-                        </a>`
-                    ).join('');
+                    dropdown.innerHTML = data.slice(0,6).map(d => {
+                        const spec = (d.profile && d.profile.specializationdata && d.profile.specializationdata.name)
+                            ? d.profile.specializationdata.name
+                            : 'Physiotherapist';
+                        const initial = d.name ? d.name.charAt(0).toUpperCase() : 'D';
+                        return `<a href="/doctor/${d.id}">
+                            <div style="display:flex;align-items:center;gap:12px">
+                                <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">${initial}</div>
+                                <div>
+                                    <div style="font-size:14px;font-weight:800;color:#0f172a">Dr. ${d.name}</div>
+                                    <div style="font-size:12px;color:#64748b;margin-top:1px">${spec}</div>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right" style="font-size:12px;color:#0ea5e9"></i>
+                        </a>`;
+                    }).join('');
                     dropdown.classList.add('open');
                 }).catch(() => {});
         }, 280);

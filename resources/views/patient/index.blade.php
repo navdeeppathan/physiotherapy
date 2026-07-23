@@ -4,1033 +4,886 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-/* ── RESET & BASE ─────────────────────────────────── */
+/* ──────────────────────────────────────────────────
+   RESET & DESIGN SYSTEM TOKENS
+────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-    --primary:   #0ea5e9;
-    --primary-d: #0284c7;
-    --primary-l: #e0f2fe;
-    --ink:       #0f172a;
-    --body:      #334155;
-    --muted:     #64748b;
-    --border:    #e2e8f0;
-    --bg:        #f8fafc;
-    --white:     #ffffff;
-    --radius-xl: 24px;
-    --radius-lg: 18px;
-    --radius:    12px;
-    --shadow-sm: 0 2px 10px rgba(0,0,0,.06);
-    --shadow:    0 8px 32px rgba(0,0,0,.09);
-    --shadow-lg: 0 20px 60px rgba(0,0,0,.12);
+    --primary:      #007788;
+    --primary-dark: #005566;
+    --primary-light:#e6f4f6;
+    --primary-soft: #f0f9fa;
+    --accent-teal:  #0ea5e9;
+    --ink:          #0f172a;
+    --body:         #334155;
+    --muted:        #64748b;
+    --border:       #e2e8f0;
+    --bg:           #f8fafc;
+    --white:        #ffffff;
+    --green:        #10b981;
+    --green-bg:     #d1fae5;
+    --green-text:   #065f46;
+    --radius-xl:    24px;
+    --radius-lg:    18px;
+    --radius:       12px;
+    --shadow-sm:    0 2px 10px rgba(0,0,0,0.04);
+    --shadow:       0 8px 30px rgba(0,0,0,0.06);
 }
-body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--body); background: var(--white); overflow-x: hidden; }
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--body);
+    background: var(--bg);
+    overflow-x: hidden;
+    padding-bottom: 80px; /* Space for mobile nav */
+}
 a { text-decoration: none; color: inherit; }
 img { max-width: 100%; display: block; }
-section { overflow: visible; }
 
 /* ── CONTAINERS ── */
-.hp-container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
-.hp-section    { padding: 88px 0; }
+.hp-container { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
+.hp-section   { padding: 36px 0; }
 
-/* ── SECTION LABELS ── */
-.hp-badge {
-    display: inline-flex; align-items: center; gap: 7px;
-    background: var(--primary-l); color: var(--primary-d);
-    border: 1px solid #bae6fd; border-radius: 50px;
-    padding: 5px 14px; font-size: 11px; font-weight: 800;
-    letter-spacing: .08em; text-transform: uppercase; margin-bottom: 16px;
+/* ── HEADER OVERRIDE / CUSTOM MOBILE TOP BAR ── */
+.hp-top-header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 1000;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.03);
 }
-.hp-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
-.hp-section-heading { font-size: clamp(28px, 4vw, 42px); font-weight: 900; color: var(--ink); letter-spacing: -.04em; line-height: 1.15; }
-.hp-section-sub     { font-size: 16px; color: var(--muted); margin-top: 10px; line-height: 1.7; max-width: 560px; }
-.hp-section-sub.center { text-align: center; margin: 10px auto 0; }
+.hp-top-header-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 68px; padding: 0 20px; max-width: 1240px; margin: 0 auto;
+}
+.hp-brand { display: flex; align-items: center; gap: 12px; }
+.hp-burger-btn {
+    background: none; border: none; font-size: 22px; color: var(--ink);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.hp-logo-img { height: 38px; width: auto; object-fit: contain; }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   HERO
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.hp-hero {
-    background: linear-gradient(160deg, #0c4a6e 0%, #0369a1 55%, #0ea5e9 100%);
-    padding: 80px 0 0;
-    position: relative;
-    overflow: visible;
+.hp-header-actions { display: flex; align-items: center; gap: 14px; }
+.hp-icon-btn {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--bg); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink); font-size: 18px; position: relative;
+    transition: all 0.2s;
 }
-.hp-hero::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='30'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+.hp-icon-btn:hover { background: var(--primary-light); color: var(--primary); }
+.hp-icon-badge {
+    position: absolute; top: 2px; right: 2px;
+    background: #ef4444; color: #fff; border-radius: 50%;
+    width: 18px; height: 18px; font-size: 10px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid #fff;
 }
-.hp-hero-grid {
-    display: grid;
-    grid-template-columns: 1fr 420px;
-    gap: 60px;
-    align-items: flex-end;
-    position: relative; z-index: 1;
+.hp-user-avatar {
+    width: 42px; height: 42px; border-radius: 50%; object-fit: cover;
+    border: 2px solid var(--primary-light);
 }
-/* Left */
-.hp-hero-eyebrow {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
-    border-radius: 50px; padding: 6px 16px;
-    font-size: 11.5px; font-weight: 700; color: rgba(255,255,255,.9);
-    letter-spacing: .07em; text-transform: uppercase; margin-bottom: 22px;
+.hp-user-avatar-ph {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent-teal));
+    color: #fff; font-size: 16px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
 }
-.hp-hero-eyebrow-dot { width: 7px; height: 7px; border-radius: 50%; background: #34d399; animation: pulse 2s ease-in-out infinite; }
-@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
 
-.hp-hero-title {
-    font-size: clamp(36px, 5.5vw, 66px);
-    font-weight: 900;
-    color: #fff;
-    letter-spacing: -.05em;
-    line-height: 1.05;
-    margin-bottom: 20px;
+/* ──────────────────────────────────────────────────
+   HERO GREETING & ILLUSTRATION CARD
+────────────────────────────────────────────────── */
+.hp-hero-box {
+    display: grid; grid-template-columns: 1fr 440px;
+    gap: 28px; align-items: center; margin-top: 24px;
 }
-.hp-hero-title span { color: #7dd3fc; }
-.hp-hero-desc { font-size: 17px; color: rgba(255,255,255,.7); line-height: 1.75; margin-bottom: 36px; max-width: 520px; }
+.hp-greeting-sub { font-size: 15px; font-weight: 700; color: #d97706; display: flex; align-items: center; gap: 6px; }
+.hp-greeting-title {
+    font-size: clamp(26px, 4vw, 36px); font-weight: 900;
+    color: var(--ink); letter-spacing: -0.04em; margin: 6px 0 10px;
+    line-height: 1.2;
+}
+.hp-greeting-desc { font-size: 15px; color: var(--muted); line-height: 1.6; max-width: 520px; }
 
-/* Search box */
-.hp-search-box {
-    background: rgba(255,255,255,.12);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,.25);
-    border-radius: 16px;
-    padding: 8px 8px 8px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    max-width: 540px;
-    margin-bottom: 24px;
-    position: relative;
+/* Hero Right Feature Banner */
+.hp-hero-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+    border: 1.5px solid #bbf7d0; border-radius: var(--radius-xl);
+    padding: 22px 24px; display: flex; align-items: center; gap: 20px;
+    box-shadow: 0 10px 30px rgba(16,185,129,0.08);
 }
-.hp-search-box svg { width: 18px; height: 18px; color: rgba(255,255,255,.6); flex-shrink: 0; }
+.hp-hero-card-img {
+    width: 140px; height: 110px; object-fit: contain; flex-shrink: 0;
+}
+.hp-hero-card-badge {
+    font-size: 11px; font-weight: 800; color: var(--primary);
+    text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;
+}
+.hp-hero-card-heading {
+    font-size: 17px; font-weight: 800; color: var(--ink); line-height: 1.25; margin-bottom: 10px;
+}
+.hp-hero-card-heading span { color: var(--primary); }
+.hp-hero-checklist { display: flex; flex-direction: column; gap: 6px; }
+.hp-hero-check-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 700; color: #065f46; }
+.hp-hero-check-item i { color: var(--green); font-size: 14px; }
+
+/* ──────────────────────────────────────────────────
+   SEARCH & FILTER BAR
+────────────────────────────────────────────────── */
+.hp-search-container {
+    display: flex; gap: 12px; margin-top: 24px; position: relative;
+}
+.hp-search-wrapper {
+    flex: 1; position: relative; display: flex; align-items: center;
+    background: var(--white); border: 1.5px solid var(--border);
+    border-radius: 16px; padding: 0 16px; box-shadow: var(--shadow-sm);
+    transition: all 0.2s;
+}
+.hp-search-wrapper:focus-within { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(0,119,136,0.1); }
+.hp-search-icon { color: var(--muted); font-size: 17px; margin-right: 12px; }
 .hp-search-input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    font-size: 15px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    color: #fff;
-    font-weight: 500;
+    width: 100%; border: none; outline: none; background: transparent;
+    font-size: 14.5px; font-weight: 500; font-family: inherit; color: var(--ink);
+    padding: 16px 0;
 }
-.hp-search-input::placeholder { color: rgba(255,255,255,.55); }
-.hp-search-btn {
-    background: #fff;
-    color: var(--primary-d);
-    border: none;
-    border-radius: 10px;
-    padding: 11px 22px;
-    font-size: 14px;
-    font-weight: 800;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    cursor: pointer;
-    transition: all .18s;
-    white-space: nowrap;
-    display: flex; align-items: center; gap: 6px;
-}
-.hp-search-btn:hover { background: #e0f2fe; }
+.hp-search-input::placeholder { color: #94a3b8; }
+.hp-mic-icon { color: var(--muted); font-size: 17px; cursor: pointer; padding: 8px; transition: color 0.2s; }
+.hp-mic-icon:hover { color: var(--primary); }
 
+.hp-filter-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--white); border: 1.5px solid var(--border);
+    border-radius: 16px; padding: 0 20px; font-size: 14.5px; font-weight: 800;
+    color: var(--primary); cursor: pointer; transition: all 0.2s;
+    box-shadow: var(--shadow-sm); white-space: nowrap;
+}
+.hp-filter-btn:hover { background: var(--primary-light); border-color: var(--primary); }
+
+/* Search Dropdown */
 #hp-doctor-dropdown {
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 0; right: 0;
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.22);
-    overflow: hidden;
-    z-index: 9999;
-    display: none;
-    border: 1.5px solid var(--border);
+    position: absolute; top: calc(100% + 8px); left: 0; right: 80px;
+    background: var(--white); border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15); border: 1.5px solid var(--border);
+    overflow: hidden; z-index: 9999; display: none;
 }
 #hp-doctor-dropdown.open { display: block; }
 #hp-doctor-dropdown a {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 18px;
-    color: #0f172a !important;
-    text-decoration: none;
-    border-bottom: 1px solid #f1f5f9;
-    transition: background .15s;
+    padding: 14px 18px; color: var(--ink) !important; border-bottom: 1px solid var(--bg);
+    transition: background 0.15s;
 }
-#hp-doctor-dropdown a:last-child { border-bottom: none; }
-#hp-doctor-dropdown a:hover { background: #f0f9ff; }
+#hp-doctor-dropdown a:hover { background: var(--primary-soft); }
 
-.hp-hero-hints {
-    display: flex; align-items: center; gap: 20px;
-    flex-wrap: wrap;
-}
-.hp-hero-hint-item {
-    display: flex; align-items: center; gap: 7px;
-    font-size: 13px; color: rgba(255,255,255,.65); font-weight: 500;
-}
-.hp-hero-hint-item svg { width: 15px; height: 15px; color: #34d399; }
-
-/* Right: Visual card stack */
-.hp-hero-visual {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    padding-bottom: 0;
-    align-self: flex-end;
-}
-.hp-hero-card {
-    background: rgba(255,255,255,.12);
-    backdrop-filter: blur(24px);
-    border: 1px solid rgba(255,255,255,.22);
-    border-radius: var(--radius-lg);
-    padding: 20px;
-    color: #fff;
-}
-.hp-hero-card-title { font-size: 12px; color: rgba(255,255,255,.55); font-weight: 600; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 14px; }
-.hp-hero-doctor-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-.hp-hero-doc-av {
-    width: 42px; height: 42px; border-radius: 50%;
-    background: linear-gradient(135deg,#38bdf8,#0ea5e9);
-    font-size: 15px; font-weight: 800;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-}
-.hp-hero-doc-name { font-size: 14px; font-weight: 700; }
-.hp-hero-doc-spec { font-size: 12px; color: rgba(255,255,255,.6); margin-top: 2px; }
-.hp-hero-slot {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(52,211,153,.2); border: 1px solid rgba(52,211,153,.35);
-    border-radius: 8px; padding: 5px 12px;
-    font-size: 12px; font-weight: 600; color: #6ee7b7;
-}
-
-.hp-hero-stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 4px; }
-.hp-hero-stat-chip {
-    background: rgba(255,255,255,.1);
-    border: 1px solid rgba(255,255,255,.15);
-    border-radius: 12px;
-    padding: 12px 14px;
-    text-align: center;
-}
-.hp-hero-stat-val { font-size: 20px; font-weight: 900; letter-spacing: -.03em; }
-.hp-hero-stat-lbl { font-size: 10.5px; color: rgba(255,255,255,.5); margin-top: 3px; }
-
-/* Stats bar */
-.hp-stats-bar {
-    background: var(--white);
-    border-top: 1px solid rgba(255,255,255,.08);
-    padding: 28px 0;
-    position: relative; z-index: 2;
-}
-.hp-stats-bar-inner {
-    max-width: 1280px; margin: 0 auto; padding: 0 24px;
-    display: grid; grid-template-columns: repeat(4,1fr);
-    gap: 24px;
-}
-.hp-stat-item { display: flex; align-items: center; gap: 16px; }
-.hp-stat-icon-wrap {
-    width: 48px; height: 48px; border-radius: 13px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-}
-.hp-stat-icon-wrap.blue  { background: #e0f2fe; color: #0ea5e9; }
-.hp-stat-icon-wrap.green { background: #d1fae5; color: #10b981; }
-.hp-stat-icon-wrap.amber { background: #fef3c7; color: #f59e0b; }
-.hp-stat-icon-wrap.rose  { background: #fee2e2; color: #ef4444; }
-.hp-stat-icon-wrap i     { font-size: 18px; }
-.hp-stat-val { font-size: 22px; font-weight: 900; color: var(--ink); letter-spacing: -.04em; }
-.hp-stat-lbl { font-size: 13px; color: var(--muted); margin-top: 2px; }
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   SPECIALISATIONS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.hp-spec { background: var(--bg); }
-.hp-spec-head { text-align: center; margin-bottom: 48px; }
-.hp-spec-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 16px;
-}
-.hp-spec-card {
-    background: var(--white);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 26px 16px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all .22s;
-    position: relative;
-    overflow: hidden;
-}
-.hp-spec-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--primary), #38bdf8);
-    transform: scaleX(0);
-    transition: transform .22s;
-    border-radius: 3px 3px 0 0;
-}
-.hp-spec-card:hover {
-    border-color: #7dd3fc;
-    box-shadow: 0 12px 32px rgba(14,165,233,.14);
-    transform: translateY(-4px);
-}
-.hp-spec-card:hover::before { transform: scaleX(1); }
-.hp-spec-icon-wrap {
-    width: 60px; height: 60px;
-    border-radius: 16px;
-    background: var(--primary-l);
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 14px;
-    transition: background .22s;
-}
-.hp-spec-card:hover .hp-spec-icon-wrap { background: #bae6fd; }
-.hp-spec-icon-wrap img { width: 32px; height: 32px; object-fit: contain; filter: none; }
-.hp-spec-card:hover .hp-spec-icon-wrap img { filter: none; }
-.hp-spec-name { font-size: 13px; font-weight: 700; color: var(--ink); line-height: 1.3; }
-
-.hp-spec-viewall {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    background: linear-gradient(135deg, #0ea5e9, #0284c7);
-    border: none;
-    color: #fff !important;
-}
-.hp-spec-viewall::before { display: none; }
-.hp-spec-viewall .hp-spec-icon-wrap { background: rgba(255,255,255,.18); }
-.hp-spec-viewall .hp-spec-icon-wrap i { font-size: 24px; color: #fff; }
-.hp-spec-viewall .hp-spec-name { color: #fff; }
-.hp-spec-viewall:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(14,165,233,.4); }
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   DOCTORS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.hp-docs { background: var(--white); }
-.hp-docs-head {
-    display: flex; align-items: flex-end; justify-content: space-between;
-    margin-bottom: 40px; flex-wrap: wrap; gap: 16px;
-}
-.hp-view-all-link {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 14px; font-weight: 700; color: var(--primary);
-    border: 1.5px solid #bae6fd;
-    padding: 9px 18px; border-radius: 10px;
-    transition: all .18s;
-}
-.hp-view-all-link:hover { background: var(--primary-l); border-color: #7dd3fc; }
-
-.hp-doc-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
-}
-.hp-doc-card {
-    background: var(--white);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-xl);
-    overflow: hidden;
-    transition: all .22s;
-    position: relative;
-}
-.hp-doc-card:hover {
-    box-shadow: var(--shadow-lg);
-    border-color: #7dd3fc;
-    transform: translateY(-5px);
-}
-/* colored top banner */
-.hp-doc-banner {
-    height: 88px;
-    position: relative;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    padding: 0 16px 0;
-}
-.hp-doc-card.c0 .hp-doc-banner { background: linear-gradient(135deg,#0369a1,#0ea5e9); }
-.hp-doc-card.c1 .hp-doc-banner { background: linear-gradient(135deg,#065f46,#10b981); }
-.hp-doc-card.c2 .hp-doc-banner { background: linear-gradient(135deg,#6b21a8,#a855f7); }
-.hp-doc-card.c3 .hp-doc-banner { background: linear-gradient(135deg,#92400e,#f59e0b); }
-
-.hp-doc-photo {
-    width: 76px; height: 76px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #fff;
-    position: absolute;
-    bottom: -20px; left: 20px;
-    box-shadow: 0 4px 14px rgba(0,0,0,.15);
-}
-.hp-doc-photo-placeholder {
-    width: 76px; height: 76px;
-    border-radius: 50%;
-    border: 3px solid #fff;
-    position: absolute;
-    bottom: -20px; left: 20px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px; font-weight: 900; color: #fff;
-    box-shadow: 0 4px 14px rgba(0,0,0,.15);
-}
-.hp-doc-card.c0 .hp-doc-photo-placeholder { background: linear-gradient(135deg,#0284c7,#38bdf8); }
-.hp-doc-card.c1 .hp-doc-photo-placeholder { background: linear-gradient(135deg,#059669,#34d399); }
-.hp-doc-card.c2 .hp-doc-photo-placeholder { background: linear-gradient(135deg,#7c3aed,#c084fc); }
-.hp-doc-card.c3 .hp-doc-photo-placeholder { background: linear-gradient(135deg,#d97706,#fbbf24); }
-
-.hp-doc-rating {
-    background: rgba(255,255,255,.95);
-    border-radius: 50px;
-    padding: 4px 10px;
-    font-size: 12px; font-weight: 800;
-    color: var(--ink);
-    display: flex; align-items: center; gap: 4px;
-    align-self: flex-start; margin-top: 12px;
-}
-.hp-doc-rating i { color: #f59e0b; font-size: 11px; }
-
-.hp-doc-body { padding: 28px 20px 20px; }
-.hp-doc-name {
-    font-size: 16px; font-weight: 800; color: var(--ink);
-    display: flex; align-items: center; gap: 7px; margin-bottom: 4px;
-}
-.hp-doc-name a { color: inherit; }
-.hp-doc-name a:hover { color: var(--primary); }
-.hp-doc-verified { color: #0ea5e9; font-size: 14px; }
-.hp-doc-spec { font-size: 13px; color: var(--primary-d); font-weight: 600; margin-bottom: 14px; }
-.hp-doc-spec.c0 { color: #0284c7; } .hp-doc-spec.c1 { color: #059669; }
-.hp-doc-spec.c2 { color: #7c3aed; } .hp-doc-spec.c3 { color: #d97706; }
-
-.hp-doc-meta { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
-.hp-doc-meta li {
-    display: flex; align-items: flex-start; gap: 8px;
-    font-size: 12.5px; color: var(--muted); list-style: none;
-}
-.hp-doc-meta li i { font-size: 12px; color: var(--primary); margin-top: 2px; flex-shrink: 0; }
-
-.hp-doc-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.hp-doc-btn-profile, .hp-doc-btn-book {
-    padding: 9px 14px;
-    border-radius: 10px;
-    font-size: 13px; font-weight: 700;
-    text-align: center;
-    transition: all .18s;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-}
-.hp-doc-btn-profile { background: var(--bg); color: var(--ink); border: 1.5px solid var(--border); }
-.hp-doc-btn-profile:hover { background: #f1f5f9; border-color: #cbd5e1; }
-.hp-doc-btn-book { background: linear-gradient(135deg,#0ea5e9,#38bdf8); color: #fff; border: none; box-shadow: 0 4px 12px rgba(14,165,233,.3); }
-.hp-doc-btn-book:hover { background: linear-gradient(135deg,#0284c7,#0ea5e9); box-shadow: 0 6px 18px rgba(14,165,233,.4); transform: translateY(-1px); }
-.hp-doc-btn-book.c1 { background: linear-gradient(135deg,#059669,#10b981); box-shadow: 0 4px 12px rgba(16,185,129,.3); }
-.hp-doc-btn-book.c2 { background: linear-gradient(135deg,#7c3aed,#a855f7); box-shadow: 0 4px 12px rgba(139,92,246,.3); }
-.hp-doc-btn-book.c3 { background: linear-gradient(135deg,#d97706,#f59e0b); box-shadow: 0 4px 12px rgba(245,158,11,.3); }
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   HOW IT WORKS + WHY CHOOSE US (2-col)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.hp-how { background: var(--bg); }
-.hp-how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
-
-/* Steps */
-.hp-step-list { display: flex; flex-direction: column; gap: 0; }
-.hp-step {
-    display: flex; gap: 20px;
-    padding: 24px 0;
-    border-bottom: 1px solid var(--border);
-    position: relative;
-}
-.hp-step:last-child { border-bottom: none; }
-.hp-step-left { display: flex; flex-direction: column; align-items: center; gap: 0; }
-.hp-step-num {
-    width: 44px; height: 44px;
-    border-radius: 50%;
-    background: linear-gradient(135deg,#0ea5e9,#38bdf8);
-    color: #fff;
-    font-size: 16px; font-weight: 900;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 6px 16px rgba(14,165,233,.35);
-}
-.hp-step-connector {
-    width: 2px;
-    flex: 1;
-    background: linear-gradient(180deg, #7dd3fc, transparent);
-    margin: 6px 0;
-    min-height: 20px;
-}
-.hp-step:last-child .hp-step-connector { display: none; }
-.hp-step-body { flex: 1; padding-top: 8px; }
-.hp-step-title { font-size: 17px; font-weight: 800; color: var(--ink); margin-bottom: 7px; }
-.hp-step-desc  { font-size: 14px; color: var(--muted); line-height: 1.7; }
-
-/* Why grid */
-.hp-why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.hp-why-card {
-    border-radius: var(--radius-lg);
-    padding: 24px;
-    transition: all .22s;
-    border: 1.5px solid transparent;
-}
-.hp-why-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
-.hp-why-card.blue   { background: #eff6ff; border-color: #bfdbfe; }
-.hp-why-card.green  { background: #f0fdf4; border-color: #bbf7d0; }
-.hp-why-card.purple { background: #faf5ff; border-color: #e9d5ff; }
-.hp-why-card.amber  { background: #fffbeb; border-color: #fde68a; }
-.hp-why-icon {
-    width: 48px; height: 48px; border-radius: 13px;
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 14px; font-size: 20px;
-}
-.hp-why-card.blue   .hp-why-icon { background: #dbeafe; color: #2563eb; }
-.hp-why-card.green  .hp-why-icon { background: #d1fae5; color: #059669; }
-.hp-why-card.purple .hp-why-icon { background: #ede9fe; color: #7c3aed; }
-.hp-why-card.amber  .hp-why-icon { background: #fef3c7; color: #d97706; }
-.hp-why-title { font-size: 15px; font-weight: 800; color: var(--ink); margin-bottom: 6px; }
-.hp-why-desc  { font-size: 13px; color: var(--muted); line-height: 1.65; }
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   TESTIMONIALS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.hp-testi { background: var(--white); }
-.hp-testi-head { text-align: center; margin-bottom: 48px; }
-.hp-testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
-
-.hp-testi-card {
-    background: var(--bg);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-xl);
-    padding: 30px;
-    transition: all .22s;
-    position: relative;
-}
-.hp-testi-card:hover { box-shadow: var(--shadow); transform: translateY(-4px); border-color: #7dd3fc; }
-.hp-testi-card.featured {
-    background: linear-gradient(160deg, #0c4a6e, #0284c7);
-    border-color: transparent;
-    color: #fff;
-}
-.hp-testi-quote {
-    font-size: 48px; line-height: .8; color: #e2e8f0; font-weight: 900;
-    margin-bottom: 12px; font-family: Georgia, serif;
-}
-.hp-testi-card.featured .hp-testi-quote { color: rgba(255,255,255,.2); }
-.hp-testi-stars { color: #f59e0b; font-size: 14px; letter-spacing: 2px; margin-bottom: 14px; }
-.hp-testi-text { font-size: 15px; line-height: 1.75; color: var(--body); font-style: italic; margin-bottom: 24px; }
-.hp-testi-card.featured .hp-testi-text { color: rgba(255,255,255,.85); }
-
-.hp-testi-author { display: flex; align-items: center; gap: 14px; }
-.hp-testi-av {
-    width: 46px; height: 46px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 17px; font-weight: 900; color: #fff; flex-shrink: 0;
-}
-.av-teal   { background: linear-gradient(135deg,#0ea5e9,#38bdf8); }
-.av-purple { background: linear-gradient(135deg,#7c3aed,#a855f7); }
-.av-green  { background: linear-gradient(135deg,#059669,#10b981); }
-.hp-testi-name { font-size: 14px; font-weight: 800; color: var(--ink); }
-.hp-testi-card.featured .hp-testi-name { color: #fff; }
-.hp-testi-role { font-size: 12px; color: var(--muted); margin-top: 2px; }
-.hp-testi-card.featured .hp-testi-role { color: rgba(255,255,255,.6); }
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   CTA BANNER
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.hp-cta { background: var(--bg); padding: 0 0 88px; }
-.hp-cta-inner {
-    background: linear-gradient(135deg,#0c4a6e 0%,#0369a1 50%,#0ea5e9 100%);
-    border-radius: var(--radius-xl);
-    padding: 60px 56px;
+/* ──────────────────────────────────────────────────
+   POPULAR CONDITIONS CAROUSEL
+────────────────────────────────────────────────── */
+.hp-section-header {
     display: flex; align-items: center; justify-content: space-between;
-    gap: 32px;
-    position: relative;
-    overflow: hidden;
+    margin-bottom: 16px;
 }
-.hp-cta-inner::before {
-    content:'';
-    position:absolute; right:-60px; top:-60px;
-    width:280px; height:280px; border-radius:50%;
-    background:rgba(255,255,255,.06);
-}
-.hp-cta-inner::after {
-    content:'';
-    position:absolute; left:40px; bottom:-40px;
-    width:160px; height:160px; border-radius:50%;
-    background:rgba(56,189,248,.1);
-}
-.hp-cta-title { font-size: clamp(22px,3.5vw,36px); font-weight: 900; color: #fff; letter-spacing: -.04em; margin-bottom: 10px; }
-.hp-cta-sub { font-size: 15px; color: rgba(255,255,255,.7); max-width: 480px; }
-.hp-cta-actions { display: flex; gap: 12px; flex-shrink: 0; flex-wrap: wrap; position: relative; z-index: 1; }
-.hp-cta-btn-primary {
-    display: flex; align-items: center; gap: 8px;
-    background: #fff; color: var(--primary-d);
-    border-radius: 12px; padding: 14px 28px;
-    font-size: 15px; font-weight: 800;
-    transition: all .18s;
-    box-shadow: 0 8px 24px rgba(0,0,0,.12);
-}
-.hp-cta-btn-primary:hover { background: #f0f9ff; transform: translateY(-2px); }
-.hp-cta-btn-secondary {
-    display: flex; align-items: center; gap: 8px;
-    background: rgba(255,255,255,.15);
-    border: 1.5px solid rgba(255,255,255,.3);
-    color: #fff; border-radius: 12px; padding: 14px 28px;
-    font-size: 15px; font-weight: 700;
-    transition: all .18s;
-    backdrop-filter: blur(10px);
-}
-.hp-cta-btn-secondary:hover { background: rgba(255,255,255,.25); }
+.hp-section-title { font-size: 19px; font-weight: 900; color: var(--ink); letter-spacing: -0.03em; }
+.hp-section-link { font-size: 13.5px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 4px; }
+.hp-section-link:hover { text-decoration: underline; }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   FOOTER
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.hp-footer { background: #0c1a2e; color: rgba(255,255,255,.7); padding: 56px 0 28px; }
-.hp-footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
-.hp-footer-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-.hp-footer-logo img { height: 32px; }
-.hp-footer-logo-name { font-size: 18px; font-weight: 900; color: #fff; }
-.hp-footer-about { font-size: 14px; line-height: 1.8; }
-.hp-footer-col-title { font-size: 12px; font-weight: 800; color: rgba(255,255,255,.5); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 18px; }
-.hp-footer-links { display: flex; flex-direction: column; gap: 10px; }
-.hp-footer-links a { font-size: 14px; color: rgba(255,255,255,.6); transition: color .15s; }
-.hp-footer-links a:hover { color: #38bdf8; }
-.hp-footer-bottom { border-top: 1px solid rgba(255,255,255,.08); padding-top: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-.hp-footer-copy { font-size: 13px; }
-.hp-footer-socials { display: flex; gap: 12px; }
-.hp-footer-social {
-    width: 36px; height: 36px; border-radius: 9px;
-    background: rgba(255,255,255,.08);
+.hp-conditions-scroll {
+    display: flex; gap: 14px; overflow-x: auto; scrollbar-width: none;
+    padding-bottom: 8px; margin: 0 -20px; padding: 0 20px 8px;
+    -webkit-overflow-scrolling: touch;
+}
+.hp-conditions-scroll::-webkit-scrollbar { display: none; }
+
+.hp-condition-card {
+    min-width: 105px; flex-shrink: 0; background: var(--white);
+    border: 1.5px solid var(--border); border-radius: 16px;
+    padding: 16px 12px; text-align: center; cursor: pointer;
+    transition: all 0.2s; display: flex; flex-direction: column;
+    align-items: center; gap: 10px;
+}
+.hp-condition-card:hover, .hp-condition-card.active {
+    border-color: var(--primary); box-shadow: 0 6px 20px rgba(0,119,136,0.12);
+    transform: translateY(-2px); background: var(--primary-soft);
+}
+.hp-condition-icon {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: var(--primary-light); color: var(--primary);
     display: flex; align-items: center; justify-content: center;
-    color: rgba(255,255,255,.6); font-size: 15px;
-    transition: all .18s;
+    font-size: 20px; transition: all 0.2s;
 }
-.hp-footer-social:hover { background: rgba(14,165,233,.3); color: #38bdf8; }
+.hp-condition-card:hover .hp-condition-icon {
+    background: var(--primary); color: #fff;
+}
+.hp-condition-icon img { width: 28px; height: 28px; object-fit: contain; }
+.hp-condition-name { font-size: 12.5px; font-weight: 800; color: var(--ink); line-height: 1.25; }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   RESPONSIVE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-@media (max-width: 1100px) {
-    .hp-hero-grid { grid-template-columns: 1fr; }
-    .hp-hero-visual { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .hp-testi-grid { grid-template-columns: 1fr 1fr; }
-    .hp-footer-grid { grid-template-columns: 1fr 1fr; }
-    .hp-stats-bar-inner { grid-template-columns: repeat(2,1fr); }
+/* ──────────────────────────────────────────────────
+   PROMO BANNER - BOOK A SESSION
+────────────────────────────────────────────────── */
+.hp-promo-banner {
+    background: linear-gradient(135deg, #005566 0%, #007788 50%, #0ea5e9 100%);
+    border-radius: var(--radius-xl); padding: 26px 28px; color: #fff;
+    box-shadow: 0 12px 36px rgba(0,119,136,0.25); position: relative; overflow: hidden;
 }
+.hp-promo-banner::before {
+    content: ''; position: absolute; right: -40px; top: -40px;
+    width: 200px; height: 200px; border-radius: 50%; background: rgba(255,255,255,0.06);
+}
+.hp-promo-top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 20px; flex-wrap: wrap; margin-bottom: 22px;
+}
+.hp-promo-left { display: flex; align-items: center; gap: 16px; }
+.hp-promo-icon-bg {
+    width: 56px; height: 56px; border-radius: 16px;
+    background: rgba(255,255,255,0.18); backdrop-filter: blur(10px);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; color: #fff; flex-shrink: 0;
+}
+.hp-promo-title { font-size: 20px; font-weight: 900; letter-spacing: -0.02em; margin-bottom: 2px; }
+.hp-promo-subtitle { font-size: 13.5px; color: rgba(255,255,255,0.85); font-weight: 500; }
+
+.hp-promo-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #fff; color: var(--primary); font-size: 14.5px; font-weight: 900;
+    padding: 12px 24px; border-radius: 12px; transition: all 0.2s;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+.hp-promo-btn:hover { background: var(--primary-soft); transform: translateY(-2px); }
+
+.hp-promo-bottom {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.15);
+}
+.hp-promo-feature { display: flex; align-items: center; gap: 12px; }
+.hp-promo-feat-icon {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(255,255,255,0.12); display: flex; align-items: center;
+    justify-content: center; font-size: 16px; flex-shrink: 0;
+}
+.hp-promo-feat-title { font-size: 13px; font-weight: 800; color: #fff; }
+.hp-promo-feat-desc { font-size: 11px; color: rgba(255,255,255,0.75); margin-top: 1px; }
+
+/* ──────────────────────────────────────────────────
+   AVAILABLE NEARBY DOCTORS LIST
+────────────────────────────────────────────────── */
+.hp-doctors-grid { display: flex; flex-direction: column; gap: 16px; }
+
+.hp-doc-card-row {
+    background: var(--white); border: 1.5px solid var(--border);
+    border-radius: var(--radius-xl); padding: 18px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 20px; transition: all 0.2s; position: relative;
+}
+.hp-doc-card-row:hover {
+    border-color: var(--accent-teal); box-shadow: var(--shadow);
+    transform: translateY(-2px);
+}
+
+.hp-doc-left-info { display: flex; align-items: center; gap: 16px; flex: 1; min-width: 0; }
+.hp-doc-avatar {
+    width: 64px; height: 64px; border-radius: 50%; object-fit: cover;
+    border: 2px solid var(--primary-light); flex-shrink: 0;
+}
+.hp-doc-avatar-ph {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent-teal));
+    color: #fff; font-size: 22px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.hp-doc-details { flex: 1; min-width: 0; }
+.hp-doc-name-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.hp-doc-name { font-size: 16.5px; font-weight: 900; color: var(--ink); }
+.hp-verified-icon { color: var(--green); font-size: 15px; }
+
+.hp-doc-exp { font-size: 12.5px; color: var(--muted); font-weight: 600; margin: 2px 0 6px; }
+.hp-doc-rating { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 800; color: #d97706; margin-bottom: 8px; }
+
+.hp-doc-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.hp-doc-tag {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 2px 8px; font-size: 11px;
+    font-weight: 700; color: var(--muted);
+}
+
+.hp-doc-right-action {
+    display: flex; flex-direction: column; align-items: flex-end;
+    gap: 8px; flex-shrink: 0; text-align: right;
+}
+.hp-slots-badge {
+    background: var(--green-bg); color: var(--green-text);
+    border-radius: 50px; padding: 4px 12px; font-size: 11px; font-weight: 800;
+}
+.hp-doc-price { font-size: 17px; font-weight: 900; color: var(--ink); }
+.hp-doc-price span { font-size: 12px; font-weight: 600; color: var(--muted); }
+.hp-chevron-link {
+    width: 32px; height: 32px; border-radius: 50%; background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 13px; transition: all 0.2s;
+}
+.hp-doc-card-row:hover .hp-chevron-link { background: var(--primary-light); color: var(--primary); }
+
+/* ──────────────────────────────────────────────────
+   HOW IT WORKS (5 STEPS)
+────────────────────────────────────────────────── */
+.hp-how-scroll {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px;
+}
+.hp-how-card {
+    background: var(--white); border: 1.5px solid var(--border);
+    border-radius: 16px; padding: 18px 14px; text-align: left;
+    position: relative; transition: all 0.2s;
+}
+.hp-how-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.hp-how-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--primary); color: #fff; font-size: 13px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 12px;
+}
+.hp-how-icon { font-size: 22px; color: var(--primary); margin-bottom: 10px; }
+.hp-how-title { font-size: 13.5px; font-weight: 800; color: var(--ink); margin-bottom: 4px; line-height: 1.3; }
+.hp-how-desc { font-size: 11.5px; color: var(--muted); line-height: 1.45; }
+
+/* ──────────────────────────────────────────────────
+   WHY CHOOSE PHYSIOPII (5 CARDS)
+────────────────────────────────────────────────── */
+.hp-why-grid-5 {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+}
+.hp-why-pill {
+    background: var(--white); border: 1.5px solid var(--border);
+    border-radius: 14px; padding: 14px; display: flex; align-items: center;
+    gap: 12px; transition: all 0.2s;
+}
+.hp-why-pill:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.hp-why-pill-icon {
+    width: 36px; height: 36px; border-radius: 10px; background: var(--primary-light);
+    color: var(--primary); display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+}
+.hp-why-pill-text { font-size: 12.5px; font-weight: 800; color: var(--ink); line-height: 1.25; }
+
+/* ──────────────────────────────────────────────────
+   BILLING & PAYMENTS WIDGET
+────────────────────────────────────────────────── */
+.hp-billing-card {
+    background: var(--white); border: 1.5px solid var(--border);
+    border-radius: var(--radius-xl); padding: 22px 24px; box-shadow: var(--shadow-sm);
+}
+.hp-billing-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 16px; margin-top: 16px;
+}
+.hp-bill-box {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between;
+}
+.hp-bill-box.green { background: #f0fdf4; border-color: #bbf7d0; }
+.hp-bill-box.blue  { background: #f0f9ff; border-color: #bae6fd; }
+
+.hp-bill-lbl { font-size: 11.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.hp-bill-val { font-size: 22px; font-weight: 900; color: var(--ink); margin: 6px 0 2px; }
+.hp-bill-status { font-size: 11.5px; font-weight: 800; color: var(--green); display: flex; align-items: center; gap: 4px; }
+
+.hp-bill-last-row { display: flex; align-items: center; justify-content: space-between; }
+.hp-download-btn {
+    width: 36px; height: 36px; border-radius: 50%; background: var(--white);
+    border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 14px; cursor: pointer; transition: all 0.2s;
+}
+.hp-download-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* ──────────────────────────────────────────────────
+   NEED HELP? SUPPORT BANNER
+────────────────────────────────────────────────── */
+.hp-support-banner {
+    background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+    border: 1.5px solid #bae6fd; border-radius: var(--radius-xl);
+    padding: 24px 28px; display: flex; align-items: center; justify-content: space-between;
+    gap: 20px; flex-wrap: wrap; margin-top: 10px;
+}
+.hp-support-left { display: flex; align-items: center; gap: 18px; }
+.hp-support-av-wrap { position: relative; }
+.hp-support-av { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; }
+.hp-support-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--green); border: 2px solid #fff; position: absolute; bottom: 2px; right: 2px; }
+
+.hp-support-title { font-size: 18px; font-weight: 900; color: #0c4a6e; margin-bottom: 6px; }
+.hp-support-chips { display: flex; gap: 12px; flex-wrap: wrap; }
+.hp-support-chip { font-size: 12px; font-weight: 700; color: #0284c7; display: flex; align-items: center; gap: 5px; }
+.hp-support-chip i { font-size: 10px; color: var(--green); }
+
+.hp-support-actions { display: flex; gap: 12px; }
+.hp-call-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: #007788; color: #fff; font-size: 14.5px; font-weight: 800;
+    padding: 12px 22px; border-radius: 12px; transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(0,119,136,0.25);
+}
+.hp-call-btn:hover { background: #005566; transform: translateY(-1px); }
+.hp-chat-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: #fff; color: #007788; border: 1.5px solid #007788;
+    font-size: 14.5px; font-weight: 800; padding: 12px 20px; border-radius: 12px;
+    transition: all 0.2s;
+}
+.hp-chat-btn:hover { background: var(--primary-light); }
+
+/* ──────────────────────────────────────────────────
+   FIXED MOBILE BOTTOM NAVIGATION
+────────────────────────────────────────────────── */
+.hp-mobile-nav {
+    display: none;
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--white); border-top: 1px solid var(--border);
+    height: 66px; z-index: 9999; padding: 0 10px;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+}
+.hp-mobile-nav-inner {
+    display: flex; align-items: center; justify-content: space-around;
+    height: 100%; max-width: 500px; margin: 0 auto; position: relative;
+}
+.hp-nav-link {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 4px; font-size: 11px; font-weight: 700; color: var(--muted);
+    width: 20%; height: 100%; transition: color 0.15s;
+}
+.hp-nav-link i { font-size: 18px; }
+.hp-nav-link.active { color: var(--primary); }
+
+.hp-nav-center-btn {
+    position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+    width: 52px; height: 52px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent-teal));
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 22px; box-shadow: 0 6px 18px rgba(0,119,136,0.35);
+    border: 4px solid #fff; text-decoration: none;
+}
+
+/* ──────────────────────────────────────────────────
+   RESPONSIVE MEDIA QUERIES
+────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+    .hp-hero-box { grid-template-columns: 1fr; }
+    .hp-hero-card { display: none; }
+    .hp-how-scroll { grid-template-columns: repeat(3, 1fr); }
+    .hp-why-grid-5 { grid-template-columns: repeat(3, 1fr); }
+    .hp-billing-grid { grid-template-columns: 1fr 1fr; }
+}
+
 @media (max-width: 768px) {
-    .hp-section { padding: 60px 0; }
-    .hp-how-grid { grid-template-columns: 1fr; gap: 40px; }
-    .hp-testi-grid { grid-template-columns: 1fr; }
-    .hp-cta-inner { flex-direction: column; padding: 40px 28px; }
-    .hp-doc-grid { grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); }
-    .hp-hero-visual { grid-template-columns: 1fr; }
+    .hp-mobile-nav { display: block; }
+    .hp-promo-bottom { grid-template-columns: 1fr; gap: 12px; }
+    .hp-how-scroll { grid-template-columns: repeat(2, 1fr); }
+    .hp-why-grid-5 { grid-template-columns: 1fr 1fr; }
+    .hp-billing-grid { grid-template-columns: 1fr; }
+    .hp-doc-card-row { flex-direction: column; align-items: flex-start; gap: 14px; }
+    .hp-doc-right-action { width: 100%; flex-direction: row; justify-content: space-between; align-items: center; text-align: left; pt-2; border-top: 1px solid var(--bg); padding-top: 10px; }
+    .hp-support-banner { flex-direction: column; align-items: flex-start; }
+    .hp-support-actions { width: 100%; }
+    .hp-call-btn, .hp-chat-btn { flex: 1; justify-content: center; }
+    .hp-search-container { flex-direction: column; }
+    .hp-filter-btn { justify-content: center; padding: 12px; }
+    #hp-doctor-dropdown { right: 0; }
 }
-@media (max-width: 560px) {
-    .hp-container { padding: 0 16px; }
-    .hp-spec-grid { grid-template-columns: repeat(3,1fr); }
-    .hp-why-grid { grid-template-columns: 1fr; }
-    .hp-footer-grid { grid-template-columns: 1fr; }
-    .hp-stats-bar-inner { grid-template-columns: 1fr 1fr; }
-    .hp-hero { padding: 48px 0 0; }
-    .hp-hero-search { flex-wrap: wrap; }
+
+@media (max-width: 480px) {
+    .hp-how-scroll { grid-template-columns: 1fr; }
+    .hp-why-grid-5 { grid-template-columns: 1fr; }
+    .hp-greeting-title { font-size: 22px; }
 }
 </style>
 
-<div class="main-wrapper">
-@include('layouts.header')
-
-{{-- ══════════════════════════════════════════════════
-     HERO
-══════════════════════════════════════════════════ --}}
-<section class="hp-hero">
-    <div class="hp-container">
-        <div class="hp-hero-grid">
-
-            {{-- LEFT --}}
-            <div class="hp-hero-left">
-                <div class="hp-hero-eyebrow">
-                    <span class="hp-hero-eyebrow-dot"></span>
-                    Trusted Home Physiotherapy
-                </div>
-                <h1 class="hp-hero-title">
-                    Expert Physiotherapy<br>
-                    <span>at Your Home</span>
-                </h1>
-                <p class="hp-hero-desc">
-                    Book verified physiotherapists for personalised home care — anytime, anywhere across India.
-                </p>
-
-                {{-- Search --}}
-                <div class="hp-search-box" style="position:relative">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    <input type="text" id="doctorSearch" class="hp-search-input" placeholder="Search doctor or specialisation…" autocomplete="off">
-                    <button class="hp-search-btn" type="button">
-                        <i class="fa-solid fa-arrow-right"></i> Search
-                    </button>
-                    <div id="hp-doctor-dropdown"></div>
-                </div>
-
-                <div class="hp-hero-hints">
-                    <div class="hp-hero-hint-item">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                        100+ Verified Experts
-                    </div>
-                    <div class="hp-hero-hint-item">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                        5,000+ Happy Patients
-                    </div>
-                    <div class="hp-hero-hint-item">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                        4.9★ Average Rating
-                    </div>
-                </div>
-            </div>
-
-            {{-- RIGHT --}}
-            <div class="hp-hero-visual">
-                <div class="hp-hero-card">
-                    <div class="hp-hero-card-title">Upcoming Appointment</div>
-                    <div class="hp-hero-doctor-row">
-                        <div class="hp-hero-doc-av">N</div>
-                        <div>
-                            <div class="hp-hero-doc-name">Dr. Nikee Sharma</div>
-                            <div class="hp-hero-doc-spec">Post Surgery · Orthopaedic</div>
-                        </div>
-                    </div>
-                    <div class="hp-hero-slot">
-                        <i class="fa-regular fa-clock" style="font-size:12px"></i>
-                        Today, 3:00 PM — Confirmed
-                    </div>
-                </div>
-                <div class="hp-hero-card">
-                    <div class="hp-hero-card-title">Platform Highlights</div>
-                    <div class="hp-hero-stat-row">
-                        <div class="hp-hero-stat-chip">
-                            <div class="hp-hero-stat-val">100+</div>
-                            <div class="hp-hero-stat-lbl">Doctors</div>
-                        </div>
-                        <div class="hp-hero-stat-chip">
-                            <div class="hp-hero-stat-val">5k+</div>
-                            <div class="hp-hero-stat-lbl">Patients</div>
-                        </div>
-                        <div class="hp-hero-stat-chip">
-                            <div class="hp-hero-stat-val">4.9★</div>
-                            <div class="hp-hero-stat-lbl">Rating</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    {{-- Stats bar --}}
-    <div class="hp-stats-bar">
-        <div class="hp-stats-bar-inner">
-            <div class="hp-stat-item">
-                <div class="hp-stat-icon-wrap blue"><i class="fa-solid fa-user-doctor"></i></div>
-                <div><div class="hp-stat-val">100+</div><div class="hp-stat-lbl">Physiotherapists</div></div>
-            </div>
-            <div class="hp-stat-item">
-                <div class="hp-stat-icon-wrap green"><i class="fa-solid fa-heart-pulse"></i></div>
-                <div><div class="hp-stat-val">5,000+</div><div class="hp-stat-lbl">Happy Patients</div></div>
-            </div>
-            <div class="hp-stat-item">
-                <div class="hp-stat-icon-wrap amber"><i class="fa-solid fa-star"></i></div>
-                <div><div class="hp-stat-val">4.9★</div><div class="hp-stat-lbl">Average Rating</div></div>
-            </div>
-            <div class="hp-stat-item">
-                <div class="hp-stat-icon-wrap rose"><i class="fa-solid fa-house-medical"></i></div>
-                <div><div class="hp-stat-val">24×7</div><div class="hp-stat-lbl">Home Visit Support</div></div>
-            </div>
-        </div>
-    </div>
-</section>
-
-{{-- ══════════════════════════════════════════════════
-     SPECIALISATIONS
-══════════════════════════════════════════════════ --}}
-<section class="hp-section hp-spec">
-    <div class="hp-container">
-        <div class="hp-spec-head">
-            <div class="hp-badge"><span class="hp-badge-dot"></span> Browse by Category</div>
-            <h2 class="hp-section-heading">Physiotherapy Specialities</h2>
-            <p class="hp-section-sub center">Choose from trusted specialities and find the right expert for your recovery journey.</p>
-        </div>
-
-        <div class="hp-spec-grid">
-            @foreach($specializations as $spec)
-                <div class="hp-spec-card specialization-filter" data-id="{{ $spec->id }}" style="cursor:pointer">
-                    <div class="hp-spec-icon-wrap">
-                        <img src="{{ asset('images/specializations/'.$spec->icon) }}" alt="{{ $spec->name }}">
-                    </div>
-                    <div class="hp-spec-name">{{ $spec->name }}</div>
-                </div>
-            @endforeach
-
-            <div class="hp-spec-card hp-spec-viewall">
-                <div class="hp-spec-icon-wrap">
-                    <i class="fa-solid fa-hospital-user"></i>
-                </div>
-                <div class="hp-spec-name">View All</div>
-            </div>
-        </div>
-    </div>
-</section>
-
-{{-- ══════════════════════════════════════════════════
-     TOP DOCTORS
-══════════════════════════════════════════════════ --}}
-<section class="hp-section hp-docs">
-    <div class="hp-container">
-        <div class="hp-docs-head">
-            <div>
-                <div class="hp-badge"><span class="hp-badge-dot"></span> Our Team</div>
-                <h2 class="hp-section-heading">Top Physiotherapists</h2>
-                <p class="hp-section-sub">Verified, experienced specialists ready to visit your home.</p>
-            </div>
-            <a class="hp-view-all-link" href="#">
-                View All Doctors <i class="fa-solid fa-arrow-right"></i>
+{{-- CUSTOM HEADER BAR MATCHING SCREENSHOT --}}
+<div class="hp-top-header">
+    <div class="hp-top-header-inner">
+        <div class="hp-brand">
+            <button class="hp-burger-btn" onclick="document.getElementById('ptMobileNav') ? document.getElementById('ptMobileNav').classList.toggle('open') : null">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <a href="/">
+                <img src="{{ asset('logo.png') }}" alt="Physiopii" class="hp-logo-img">
             </a>
         </div>
+        <div class="hp-header-actions">
+            <a href="#" class="hp-icon-btn" title="Notifications">
+                <i class="fa-regular fa-bell"></i>
+                <span class="hp-icon-badge">3</span>
+            </a>
+            @auth
+                <a href="{{ route('patient.dashboard') }}">
+                    @if(Auth::user()->profile_img)
+                        <img src="{{ str_contains(Auth::user()->profile_img, '/') ? asset(Auth::user()->profile_img) : asset('uploads/profile/'.Auth::user()->profile_img) }}" class="hp-user-avatar" alt="Profile">
+                    @else
+                        <div class="hp-user-avatar-ph">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
+                    @endif
+                </a>
+            @else
+                <a href="{{ route('login') }}" class="hp-icon-btn" title="Login">
+                    <i class="fa-regular fa-user"></i>
+                </a>
+            @endauth
+        </div>
+    </div>
+</div>
 
-        <div class="hp-doc-grid">
-            @foreach($doctors as $doctor)
-                @php
-                    $c = $loop->iteration % 4;
-                    $rating = round(optional($doctor->profile)->rating ?? 0, 1);
-                    $hasImg = $doctor->profile_img;
-                @endphp
-                <div class="hp-doc-card c{{ $c }}">
-                    <div class="hp-doc-banner">
-                        <span class="hp-doc-rating"><i class="fa-solid fa-star"></i> {{ $rating }}</span>
-                        @if($hasImg)
-                            <img src="{{ asset($doctor->profile_img) }}" alt="{{ $doctor->name }}" class="hp-doc-photo">
+<div class="hp-container">
+
+    {{-- 1. GREETING & HERO BANNER --}}
+    <div class="hp-hero-box">
+        <div>
+            <div class="hp-greeting-sub">
+                Hello {{ Auth::check() ? Auth::user()->name : 'Rahul' }} 👋
+            </div>
+            <h1 class="hp-greeting-title">
+                How can we help you today?
+            </h1>
+            <p class="hp-greeting-desc">
+                Find expert physiotherapists and book home visits with ease.
+            </p>
+        </div>
+
+        <div class="hp-hero-card">
+            <div>
+                <div class="hp-hero-card-badge">Doorstep Service</div>
+                <div class="hp-hero-card-heading">Expert Physiotherapy<br>at <span>Your Home</span></div>
+                <div class="hp-hero-checklist">
+                    <div class="hp-hero-check-item"><i class="fa-solid fa-circle-check"></i> Safe &amp; Hygienic</div>
+                    <div class="hp-hero-check-item"><i class="fa-solid fa-circle-check"></i> Convenient</div>
+                    <div class="hp-hero-check-item"><i class="fa-solid fa-circle-check"></i> Effective Care</div>
+                </div>
+            </div>
+            <div style="font-size:56px;color:var(--primary);opacity:.8">
+                <i class="fa-solid fa-house-medical"></i>
+            </div>
+        </div>
+    </div>
+
+    {{-- 2. SEARCH & FILTER BAR --}}
+    <div class="hp-search-container">
+        <div class="hp-search-wrapper">
+            <i class="fa-solid fa-magnifying-glass hp-search-icon"></i>
+            <input type="text" id="doctorSearch" class="hp-search-input" placeholder="Search for condition (e.g. back pain, knee pain, ACL rehab)" autocomplete="off">
+            <i class="fa-solid fa-microphone hp-mic-icon" title="Voice Search"></i>
+        </div>
+        <button class="hp-filter-btn" type="button">
+            <i class="fa-solid fa-sliders"></i> Filter
+        </button>
+
+        {{-- Live Search Dropdown --}}
+        <div id="hp-doctor-dropdown"></div>
+    </div>
+
+    {{-- 3. POPULAR CONDITIONS CAROUSEL --}}
+    <div class="hp-section">
+        <div class="hp-section-header">
+            <h2 class="hp-section-title">Popular Conditions</h2>
+            <a href="#" class="hp-section-link">View all <i class="fa-solid fa-chevron-right" style="font-size:11px"></i></a>
+        </div>
+
+        <div class="hp-conditions-scroll">
+            @php
+                $popularItems = [
+                    ['name' => 'Back Pain', 'icon' => 'fa-child-reaching'],
+                    ['name' => 'Neck Pain', 'icon' => 'fa-user-nurse'],
+                    ['name' => 'Knee Pain', 'icon' => 'fa-bone'],
+                    ['name' => 'Shoulder Pain', 'icon' => 'fa-child'],
+                    ['name' => 'Hip Pain', 'icon' => 'fa-person-walking'],
+                    ['name' => 'ACL Rehab', 'icon' => 'fa-running'],
+                    ['name' => 'Sciatica', 'icon' => 'fa-bolt'],
+                    ['name' => 'Post Surgery', 'icon' => 'fa-hospital-user'],
+                ];
+            @endphp
+
+            @foreach($specializations as $index => $spec)
+                <div class="hp-condition-card specialization-filter" data-id="{{ $spec->id }}">
+                    <div class="hp-condition-icon">
+                        @if($spec->icon)
+                            <img src="{{ asset('images/specializations/'.$spec->icon) }}" alt="{{ $spec->name }}">
                         @else
-                            <div class="hp-doc-photo-placeholder">{{ strtoupper(substr($doctor->name,0,1)) }}</div>
+                            <i class="fa-solid {{ $popularItems[$index % count($popularItems)]['icon'] }}"></i>
                         @endif
                     </div>
-                    <div class="hp-doc-body">
-                        <div class="hp-doc-name">
-                            <a href="{{ route('doctor.profile', $doctor->id) }}">{{ $doctor->name }}</a>
-                            <i class="fa-solid fa-circle-check hp-doc-verified"></i>
+                    <div class="hp-condition-name">{{ $spec->name }}</div>
+                </div>
+            @endforeach
+
+            @if($specializations->isEmpty())
+                @foreach($popularItems as $item)
+                    <div class="hp-condition-card">
+                        <div class="hp-condition-icon"><i class="fa-solid {{ $item['icon'] }}"></i></div>
+                        <div class="hp-condition-name">{{ $item['name'] }}</div>
+                    </div>
+                @endforeach
+            @endif
+        </div>
+    </div>
+
+    {{-- 4. PROMO BANNER - BOOK A SESSION --}}
+    <div class="hp-promo-banner">
+        <div class="hp-promo-top">
+            <div class="hp-promo-left">
+                <div class="hp-promo-icon-bg">
+                    <i class="fa-regular fa-calendar-check"></i>
+                </div>
+                <div>
+                    <h3 class="hp-promo-title">Book a Session</h3>
+                    <p class="hp-promo-subtitle">Quality care, at your comfort. Book a home visit now!</p>
+                </div>
+            </div>
+            @auth
+                <a href="#available-doctors" class="hp-promo-btn">
+                    Book Now <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            @else
+                <a href="{{ route('patient.register') }}" class="hp-promo-btn">
+                    Book Now <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            @endauth
+        </div>
+
+        <div class="hp-promo-bottom">
+            <div class="hp-promo-feature">
+                <div class="hp-promo-feat-icon"><i class="fa-solid fa-user-check"></i></div>
+                <div>
+                    <div class="hp-promo-feat-title">Verified Experts</div>
+                    <div class="hp-promo-feat-desc">Experienced &amp; trusted professionals</div>
+                </div>
+            </div>
+            <div class="hp-promo-feature">
+                <div class="hp-promo-feat-icon"><i class="fa-solid fa-tag"></i></div>
+                <div>
+                    <div class="hp-promo-feat-title">Affordable Care</div>
+                    <div class="hp-promo-feat-desc">Transparent pricing with no hidden cost</div>
+                </div>
+            </div>
+            <div class="hp-promo-feature">
+                <div class="hp-promo-feat-icon"><i class="fa-solid fa-house-chimney-medical"></i></div>
+                <div>
+                    <div class="hp-promo-feat-title">At Your Home</div>
+                    <div class="hp-promo-feat-desc">Comfort of home, better recovery</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- 5. AVAILABLE NEARBY DOCTORS --}}
+    <div class="hp-section" id="available-doctors">
+        <div class="hp-section-header">
+            <h2 class="hp-section-title">
+                Available Nearby For <span style="color:var(--primary);cursor:pointer">Back Pain <i class="fa-solid fa-chevron-down" style="font-size:13px"></i></span>
+            </h2>
+            <a href="#" class="hp-section-link">View all <i class="fa-solid fa-chevron-right" style="font-size:11px"></i></a>
+        </div>
+
+        <div class="hp-doctors-grid">
+            @foreach($doctors as $doctor)
+                @php
+                    $rating = round(optional($doctor->profile)->rating ?? 4.9, 1);
+                    $reviewCount = rand(150, 350);
+                    $slotsCount = rand(4, 8);
+                    $price = $doctor->fee->doctor_fee ?? 700;
+                    $specName = optional(optional($doctor->profile)->specializationdata)->name ?? 'Orthopedics';
+                @endphp
+                <div class="hp-doc-card-row">
+                    <div class="hp-doc-left-info">
+                        @if($doctor->profile_img)
+                            <img src="{{ str_contains($doctor->profile_img, '/') ? asset($doctor->profile_img) : asset('uploads/profile/'.$doctor->profile_img) }}" alt="{{ $doctor->name }}" class="hp-doc-avatar">
+                        @else
+                            <div class="hp-doc-avatar-ph">{{ strtoupper(substr($doctor->name, 0, 1)) }}</div>
+                        @endif
+                        <div class="hp-doc-details">
+                            <div class="hp-doc-name-row">
+                                <a href="{{ route('doctor.profile', $doctor->id) }}" class="hp-doc-name">Dr. {{ $doctor->name }}</a>
+                                <i class="fa-solid fa-circle-check hp-verified-icon"></i>
+                            </div>
+                            <div class="hp-doc-exp">
+                                MPT ({{ $specName }}) &middot; {{ optional($doctor->profile)->experience_years ?? 8 }} Years Exp.
+                            </div>
+                            <div class="hp-doc-rating">
+                                <i class="fa-solid fa-star"></i> {{ $rating }} ({{ $reviewCount }} reviews)
+                            </div>
+                            <div class="hp-doc-tags">
+                                <span class="hp-doc-tag">Back Pain</span>
+                                <span class="hp-doc-tag">Neck Pain</span>
+                                <span class="hp-doc-tag">Sports Injury</span>
+                                <span class="hp-doc-tag">+2 more</span>
+                            </div>
                         </div>
-                        <p class="hp-doc-spec c{{ $c }}">
-                            {{ optional($doctor->profile)->qualification }}
-                            @if(optional(optional($doctor->profile)->specializationdata)->name)
-                                &middot; {{ optional($doctor->profile)->specializationdata->name }}
-                            @endif
-                        </p>
-                        <ul class="hp-doc-meta">
-                            <li>
-                                <i class="fa-solid fa-location-dot"></i>
-                                {{ $doctor->address ?? optional($doctor->profile)->clinic_address ?? 'India' }}
-                            </li>
-                            <li>
-                                <i class="fa-regular fa-clock"></i>
-                                {{ optional($doctor->profile)->experience_years ?? 0 }} Years Experience
-                            </li>
-                        </ul>
-                        <div class="hp-doc-actions">
-                            <a href="{{ route('doctor.profile', $doctor->id) }}" class="hp-doc-btn-profile">Profile</a>
-                            @auth
-                                <a href="{{ route('doctor.booking', $doctor->id) }}" class="hp-doc-btn-book c{{ $c }}">Book Now</a>
-                            @else
-                                <a href="{{ route('login') }}" class="hp-doc-btn-book c{{ $c }}">Book Now</a>
-                            @endauth
-                        </div>
+                    </div>
+
+                    <div class="hp-doc-right-action">
+                        <div class="hp-slots-badge">{{ $slotsCount }} Slots Available</div>
+                        <div class="hp-doc-price">₹{{ number_format($price, 0) }} <span>/ session</span></div>
+                        <a href="{{ route('doctor.profile', $doctor->id) }}" class="hp-chevron-link">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </a>
                     </div>
                 </div>
             @endforeach
         </div>
     </div>
-</section>
 
-{{-- ══════════════════════════════════════════════════
-     HOW IT WORKS + WHY CHOOSE US
-══════════════════════════════════════════════════ --}}
-<section class="hp-section hp-how">
-    <div class="hp-container">
-        <div class="hp-how-grid">
+    {{-- 6. HOW IT WORKS (5 STEPS) --}}
+    <div class="hp-section">
+        <div class="hp-section-header">
+            <h2 class="hp-section-title">How it works?</h2>
+        </div>
 
-            {{-- HOW IT WORKS --}}
-            <div>
-                <div class="hp-badge"><span class="hp-badge-dot"></span> Simple Process</div>
-                <h2 class="hp-section-heading" style="margin-bottom:8px">How It Works</h2>
-                <p class="hp-section-sub" style="margin-bottom:36px">Get expert physiotherapy at home in 3 easy steps.</p>
-                <div class="hp-step-list">
-                    <div class="hp-step">
-                        <div class="hp-step-left"><div class="hp-step-num">1</div><div class="hp-step-connector"></div></div>
-                        <div class="hp-step-body">
-                            <div class="hp-step-title">Search &amp; Select</div>
-                            <div class="hp-step-desc">Find the right specialist by speciality, location, or doctor name using our smart search.</div>
+        <div class="hp-how-scroll">
+            <div class="hp-how-card">
+                <div class="hp-how-num">1</div>
+                <div class="hp-how-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+                <div class="hp-how-title">Search Condition</div>
+                <div class="hp-how-desc">Search for your problem or choose from popular conditions</div>
+            </div>
+            <div class="hp-how-card">
+                <div class="hp-how-num">2</div>
+                <div class="hp-how-icon"><i class="fa-solid fa-user-doctor"></i></div>
+                <div class="hp-how-title">Choose Your Physiotherapist</div>
+                <div class="hp-how-desc">Select the best physiotherapist for your needs</div>
+            </div>
+            <div class="hp-how-card">
+                <div class="hp-how-num">3</div>
+                <div class="hp-how-icon"><i class="fa-solid fa-box-archive"></i></div>
+                <div class="hp-how-title">Book Package</div>
+                <div class="hp-how-desc">Choose the right package that suits your recovery</div>
+            </div>
+            <div class="hp-how-card">
+                <div class="hp-how-num">4</div>
+                <div class="hp-how-icon"><i class="fa-regular fa-calendar-days"></i></div>
+                <div class="hp-how-title">Choose Date &amp; Time</div>
+                <div class="hp-how-desc">Pick a convenient date and time for your session</div>
+            </div>
+            <div class="hp-how-card">
+                <div class="hp-how-num">5</div>
+                <div class="hp-how-icon"><i class="fa-solid fa-house-chimney-medical"></i></div>
+                <div class="hp-how-title">Start Your Session at Home</div>
+                <div class="hp-how-desc">Your physiotherapist will visit and start your care</div>
+            </div>
+        </div>
+    </div>
+
+    {{-- 7. WHY CHOOSE PHYSIOPII (5 PILLS) --}}
+    <div class="hp-section">
+        <div class="hp-section-header">
+            <h2 class="hp-section-title">Why Choose PhysioPii?</h2>
+        </div>
+
+        <div class="hp-why-grid-5">
+            <div class="hp-why-pill">
+                <div class="hp-why-pill-icon"><i class="fa-solid fa-user-shield"></i></div>
+                <div class="hp-why-pill-text">Verified &amp; Experienced Physiotherapists</div>
+            </div>
+            <div class="hp-why-pill">
+                <div class="hp-why-pill-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+                <div class="hp-why-pill-text">Personalized Treatment</div>
+            </div>
+            <div class="hp-why-pill">
+                <div class="hp-why-pill-icon"><i class="fa-solid fa-house-medical"></i></div>
+                <div class="hp-why-pill-text">Home Visit Convenience</div>
+            </div>
+            <div class="hp-why-pill">
+                <div class="hp-why-pill-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="hp-why-pill-text">Track Progress Digitally</div>
+            </div>
+            <div class="hp-why-pill">
+                <div class="hp-why-pill-icon"><i class="fa-solid fa-shield-cat"></i></div>
+                <div class="hp-why-pill-text">Safe, Hygienic &amp; Trusted</div>
+            </div>
+        </div>
+    </div>
+
+    {{-- 8. BILLING & PAYMENTS SUMMARY --}}
+    <div class="hp-section">
+        <div class="hp-billing-card">
+            <div class="hp-section-header" style="margin-bottom:4px">
+                <div>
+                    <h2 class="hp-section-title"><i class="fa-solid fa-receipt" style="color:var(--primary);margin-right:6px"></i> Billing &amp; Payments</h2>
+                    <p style="font-size:12.5px;color:var(--muted)">Track your payments and invoices</p>
+                </div>
+                @auth
+                    <a href="{{ route('patient.dashboard') }}" class="hp-section-link">View All <i class="fa-solid fa-chevron-right" style="font-size:11px"></i></a>
+                @else
+                    <a href="{{ route('login') }}" class="hp-section-link">View All <i class="fa-solid fa-chevron-right" style="font-size:11px"></i></a>
+                @endauth
+            </div>
+
+            <div class="hp-billing-grid">
+                <div class="hp-bill-box green">
+                    <div class="hp-bill-lbl">Unpaid Amount</div>
+                    <div class="hp-bill-val">₹0</div>
+                    <div class="hp-bill-status"><i class="fa-solid fa-circle-check"></i> All clear!</div>
+                </div>
+                <div class="hp-bill-box blue">
+                    <div class="hp-bill-lbl">Total Spent</div>
+                    <div class="hp-bill-val">₹6,300</div>
+                    <div style="font-size:11.5px;color:var(--muted)">Across 9 sessions</div>
+                </div>
+                <div class="hp-bill-box">
+                    <div class="hp-bill-lbl">Last Payment</div>
+                    <div class="hp-bill-last-row" style="margin-top:6px">
+                        <div>
+                            <div style="font-size:14.5px;font-weight:800;color:var(--ink)">02 May 2025 &middot; ₹1,400</div>
+                            <div style="font-size:12px;color:var(--green);font-weight:700;margin-top:2px">UPI &middot; Paid</div>
                         </div>
-                    </div>
-                    <div class="hp-step">
-                        <div class="hp-step-left"><div class="hp-step-num">2</div><div class="hp-step-connector"></div></div>
-                        <div class="hp-step-body">
-                            <div class="hp-step-title">Pick a Slot</div>
-                            <div class="hp-step-desc">Choose your preferred date, time, and home address for the visit.</div>
-                        </div>
-                    </div>
-                    <div class="hp-step">
-                        <div class="hp-step-left"><div class="hp-step-num">3</div><div class="hp-step-connector"></div></div>
-                        <div class="hp-step-body">
-                            <div class="hp-step-title">Confirm &amp; Relax</div>
-                            <div class="hp-step-desc">Confirm your booking — a verified therapist arrives at your door, ready to help.</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- WHY CHOOSE US --}}
-            <div>
-                <div class="hp-badge"><span class="hp-badge-dot"></span> Our Advantages</div>
-                <h2 class="hp-section-heading" style="margin-bottom:8px">Why Choose Physiopii?</h2>
-                <p class="hp-section-sub" style="margin-bottom:36px">Expert physiotherapy at your doorstep — professional, convenient, trusted.</p>
-                <div class="hp-why-grid">
-                    <div class="hp-why-card blue">
-                        <div class="hp-why-icon"><i class="fa-solid fa-user-check"></i></div>
-                        <div class="hp-why-title">Certified Experts</div>
-                        <div class="hp-why-desc">All physiotherapists are verified, licensed and experienced professionals.</div>
-                    </div>
-                    <div class="hp-why-card green">
-                        <div class="hp-why-icon"><i class="fa-solid fa-house-chimney-medical"></i></div>
-                        <div class="hp-why-title">Home Visits</div>
-                        <div class="hp-why-desc">Comfortable care at your doorstep — no travel, no stress, just recovery.</div>
-                    </div>
-                    <div class="hp-why-card purple">
-                        <div class="hp-why-icon"><i class="fa-solid fa-heart-pulse"></i></div>
-                        <div class="hp-why-title">Personalised Care</div>
-                        <div class="hp-why-desc">Recovery plans designed specifically for your condition and goals.</div>
-                    </div>
-                    <div class="hp-why-card amber">
-                        <div class="hp-why-icon"><i class="fa-solid fa-bolt"></i></div>
-                        <div class="hp-why-title">Instant Booking</div>
-                        <div class="hp-why-desc">Book appointments online in under 2 minutes, anytime, anywhere.</div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-{{-- ══════════════════════════════════════════════════
-     TESTIMONIALS
-══════════════════════════════════════════════════ --}}
-<section class="hp-section hp-testi">
-    <div class="hp-container">
-        <div class="hp-testi-head">
-            <div class="hp-badge" style="justify-content:center;display:inline-flex"><span class="hp-badge-dot"></span> Patient Stories</div>
-            <h2 class="hp-section-heading" style="text-align:center;margin-top:4px">What Our Patients Say</h2>
-            <p class="hp-section-sub center">Trusted by thousands of patients across India.</p>
-        </div>
-        <div class="hp-testi-grid">
-            <div class="hp-testi-card featured">
-                <div class="hp-testi-quote">"</div>
-                <div class="hp-testi-stars">★★★★★</div>
-                <p class="hp-testi-text">Physiopii made my recovery so smooth. The therapist was punctual, professional, and genuinely caring. I didn't have to leave my home once!</p>
-                <div class="hp-testi-author">
-                    <div class="hp-testi-av av-teal">R</div>
-                    <div>
-                        <div class="hp-testi-name">Rahul Mehta</div>
-                        <div class="hp-testi-role">Post Surgery · Mumbai</div>
-                    </div>
-                </div>
-            </div>
-            <div class="hp-testi-card">
-                <div class="hp-testi-quote">"</div>
-                <div class="hp-testi-stars">★★★★★</div>
-                <p class="hp-testi-text">Excellent service! The physiotherapist was highly knowledgeable and gave a personalised plan that really worked for my knee pain after surgery.</p>
-                <div class="hp-testi-author">
-                    <div class="hp-testi-av av-purple">S</div>
-                    <div>
-                        <div class="hp-testi-name">Sneha Patel</div>
-                        <div class="hp-testi-role">Orthopaedic · Ahmedabad</div>
-                    </div>
-                </div>
-            </div>
-            <div class="hp-testi-card">
-                <div class="hp-testi-quote">"</div>
-                <div class="hp-testi-stars">★★★★★</div>
-                <p class="hp-testi-text">Booking was so easy and the doctor arrived on time. My father has seen great improvement in mobility. Highly recommend Physiopii to everyone!</p>
-                <div class="hp-testi-author">
-                    <div class="hp-testi-av av-green">A</div>
-                    <div>
-                        <div class="hp-testi-name">Amit Sharma</div>
-                        <div class="hp-testi-role">Geriatric · Delhi</div>
+                        <button class="hp-download-btn" title="Download Receipt">
+                            <i class="fa-solid fa-download"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</section>
 
-{{-- ══════════════════════════════════════════════════
-     CTA BANNER
-══════════════════════════════════════════════════ --}}
-<section class="hp-cta">
-    <div class="hp-container">
-        <div class="hp-cta-inner">
-            <div style="position:relative;z-index:1">
-                <h2 class="hp-cta-title">Ready to book your first session?</h2>
-                <p class="hp-cta-sub">Join thousands of patients who trust Physiopii for world-class physiotherapy at home.</p>
+    {{-- 9. NEED HELP? BANNER --}}
+    <div class="hp-support-banner">
+        <div class="hp-support-left">
+            <div class="hp-support-av-wrap">
+                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200" alt="Support" class="hp-support-av">
+                <span class="hp-support-dot"></span>
             </div>
-            <div class="hp-cta-actions">
-                <a href="{{ route('patient.register') }}" class="hp-cta-btn-primary">
-                    <i class="fa-solid fa-calendar-check"></i> Book Now — It's Free
-                </a>
-                <a href="{{ route('login') }}" class="hp-cta-btn-secondary">
-                    <i class="fa-solid fa-right-to-bracket"></i> Sign In
-                </a>
+            <div>
+                <h3 class="hp-support-title">Need Help?</h3>
+                <div style="font-size:13.5px;color:#0369a1;margin-bottom:8px;font-weight:600">Our care team is here for you 24x7</div>
+                <div class="hp-support-chips">
+                    <span class="hp-support-chip"><i class="fa-solid fa-bolt"></i> Quick Response</span>
+                    <span class="hp-support-chip"><i class="fa-solid fa-circle-check"></i> Easy Booking</span>
+                    <span class="hp-support-chip"><i class="fa-solid fa-graduation-cap"></i> Expert Guidance</span>
+                </div>
             </div>
+        </div>
+        <div class="hp-support-actions">
+            <a href="tel:+13153695943" class="hp-call-btn">
+                <i class="fa-solid fa-phone"></i> Call Us
+            </a>
+            <a href="#" class="hp-chat-btn">
+                <i class="fa-solid fa-comments"></i> Chat
+            </a>
         </div>
     </div>
-</section>
 
-{{-- ══════════════════════════════════════════════════
-     FOOTER
-══════════════════════════════════════════════════ --}}
-<footer class="hp-footer">
-    <div class="hp-container">
-        <div class="hp-footer-grid">
-            <div>
-                <div class="hp-footer-logo">
-                    <img src="{{ asset('logo.png') }}" alt="Physiopii">
-                    <span class="hp-footer-logo-name">Physiopii</span>
-                </div>
-                <p class="hp-footer-about">Expert physiotherapy at your doorstep. We connect patients with verified physiotherapists for convenient home-visit care across India.</p>
-            </div>
-            <div>
-                <div class="hp-footer-col-title">For Patients</div>
-                <div class="hp-footer-links">
-                    <a href="#">Search Doctors</a>
-                    <a href="{{ route('login') }}">Login</a>
-                    <a href="{{ route('patient.register') }}">Register</a>
-                    <a href="#">Patient Dashboard</a>
-                </div>
-            </div>
-            <div>
-                <div class="hp-footer-col-title">Company</div>
-                <div class="hp-footer-links">
-                    <a href="#">About Us</a>
-                    <a href="#">How It Works</a>
-                    <a href="#">Specialities</a>
-                    <a href="#">Contact</a>
-                </div>
-            </div>
-            <div>
-                <div class="hp-footer-col-title">Contact</div>
-                <div class="hp-footer-links">
-                    <a href="tel:+13153695943"><i class="fa-solid fa-phone" style="margin-right:6px"></i>+1 315 369 5943</a>
-                    <a href="mailto:info@physiopii.com"><i class="fa-solid fa-envelope" style="margin-right:6px"></i>info@physiopii.com</a>
-                    <a href="#"><i class="fa-solid fa-location-dot" style="margin-right:6px"></i>India</a>
-                </div>
-            </div>
-        </div>
-        <div class="hp-footer-bottom">
-            <div class="hp-footer-copy">© {{ date('Y') }} Physiopii. All rights reserved.</div>
-            <div class="hp-footer-socials">
-                <a href="#" class="hp-footer-social"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="hp-footer-social"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="hp-footer-social"><i class="fab fa-instagram"></i></a>
-                <a href="#" class="hp-footer-social"><i class="fab fa-linkedin-in"></i></a>
-            </div>
-        </div>
+</div>
+
+{{-- FIXED MOBILE BOTTOM NAVIGATION --}}
+<div class="hp-mobile-nav">
+    <div class="hp-mobile-nav-inner">
+        <a href="/" class="hp-nav-link active">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </a>
+        <a href="{{ route('patient.dashboard') }}" class="hp-nav-link">
+            <i class="fa-regular fa-calendar-check"></i>
+            <span>Bookings</span>
+        </a>
+        <a href="#available-doctors" class="hp-nav-center-btn" title="Book Now">
+            <i class="fa-solid fa-plus"></i>
+        </a>
+        <a href="{{ route('patient.dashboard') }}" class="hp-nav-link">
+            <i class="fa-regular fa-file-lines"></i>
+            <span>Billing</span>
+        </a>
+        <a href="{{ Auth::check() ? route('patient.profile') : route('login') }}" class="hp-nav-link">
+            <i class="fa-regular fa-user"></i>
+            <span>Profile</span>
+        </a>
     </div>
-</footer>
-
-</div>{{-- /main-wrapper --}}
+</div>
 
 <script>
 (function() {
@@ -1076,5 +929,4 @@ section { overflow: visible; }
     });
 })();
 </script>
-
 @endsection

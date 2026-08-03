@@ -14,7 +14,7 @@ class SpecializationControllerApi extends BaseApiController
     public function index()
     {
         try {
-        $specializations = Specializations::latest()->get();
+        $specializations = Specializations::orderBy('id')->get();
 
         return $this->sendResponse($specializations, 'Specializations fetched successfully');
 

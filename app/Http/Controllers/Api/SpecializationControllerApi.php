@@ -11,12 +11,13 @@ use Illuminate\Support\Facades\DB;
 
 class SpecializationControllerApi extends BaseApiController
 {
-    public function index()
+   public function index()
     {
         try {
-        $specializations = Specializations::orderBy('id')->get();
 
-        return $this->sendResponse($specializations, 'Specializations fetched successfully');
+            $specializations = Specializations::orderBy('id', 'asc')->get();
+
+            return $this->sendResponse($specializations, 'Specializations fetched successfully');
 
         } catch (Exception $e) {
 
@@ -29,7 +30,6 @@ class SpecializationControllerApi extends BaseApiController
             ], 500);
         }
     }
-
     public function findDoctors(Request $request)
     {
         try {

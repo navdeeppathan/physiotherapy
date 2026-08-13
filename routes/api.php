@@ -15,15 +15,21 @@ use App\Http\Controllers\Api\PatientPlanController;
 use App\Http\Controllers\Api\UserAddressController;
 use App\Http\Controllers\Api\PaymentGatewayController;
 
+use App\Http\Controllers\Api\EnquiryController;
+
 // Authentication
 Route::post('/login', [UserController::class, 'login']);
 Route::post('/login-patient', [UserController::class, 'loginPatient']);
 Route::post('/verify-otp', [UserController::class, 'verifyOtp']);
 Route::post('/register-patient', [UserController::class, 'registerPatient']);
 
+// Patient Enquiry API
+Route::post('/enquiry', [EnquiryController::class, 'store']);
+Route::post('/enquiries', [EnquiryController::class, 'store']);
+Route::get('/enquiry-symptoms', [EnquiryController::class, 'symptoms']);
 
 Route::post('users', [UserController::class, 'store']);
-   Route::get('/all-specializations', [SpecializationControllerApi::class, 'index']);
+Route::get('/all-specializations', [SpecializationControllerApi::class, 'index']);
 
 Route::middleware('auth:api')->group(function () {
 

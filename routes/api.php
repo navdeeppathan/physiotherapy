@@ -70,6 +70,8 @@ Route::middleware('auth:api')->group(function () {
     // Expire subscriptions
     Route::get('/expire-subscriptions', [UserSubscriptionController::class, 'expireSubscriptions']);
     Route::post('/appointment/{id}/cancel', [AppointmentController::class, 'cancel']);
+    Route::get('/appointment/{id}/cancellation-preview', [AppointmentController::class, 'cancellationPreview']);
+    Route::post('/appointment/{id}/cancellation-preview', [AppointmentController::class, 'cancellationPreview']);
 
     Route::get('/cancellation-reasons',[AppointmentController::class, 'getCancellationReasons']);
 });

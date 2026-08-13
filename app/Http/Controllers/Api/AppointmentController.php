@@ -19,6 +19,8 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use App\Models\AppointmentFee;
 use App\Models\User;
+use App\Models\PatientPlan;
+use App\Models\PatientPlanSubscription;
 
 class AppointmentController extends BaseApiController
 {
@@ -185,10 +187,12 @@ class AppointmentController extends BaseApiController
 
             $appointments = Appointment::with(['doctor', 'timeSlot'])
                 ->where('patient_id', $patient->id)
-                ->orderBy('appointment_date', 'desc')
+                ->orderBy('appointment_date', 'asc')
                 ->get();
 
-            return $this->sendResponse($appointments, 'Appointments fetched successfully');
+            $formatted = $this->formatAppointments($appointments);
+
+            return $this->sendResponse($formatted, 'Appointments fetched successfully');
 
         } catch (Exception $e) {
 
@@ -213,10 +217,12 @@ class AppointmentController extends BaseApiController
 
             $appointments = Appointment::with(['patient',  'patient.address','timeSlot'])
                 ->where('doctor_id', $doctor->id)
-                ->orderBy('appointment_date', 'desc')
+                ->orderBy('appointment_date', 'asc')
                 ->get();
 
-            return $this->sendResponse($appointments, 'Appointments fetched successfully');
+            $formatted = $this->formatAppointments($appointments);
+
+            return $this->sendResponse($formatted, 'Appointments fetched successfully');
 
         } catch (Exception $e) {
 
@@ -262,10 +268,50 @@ class AppointmentController extends BaseApiController
     }
     
 
+    /**
+     * Preview cancellation refund details before cancelling
+     */
+    public function cancellationPreview(Request $request, $id)
+    {
+        try {
+            $user = Auth::user();
+
+            $appointment = Appointment::with(['doctor.fee', 'timeSlot'])
+                ->where('id', $id)
+                ->where(function ($query) use ($user) {
+                    $query->where('patient_id', $user->id)
+                        ->orWhere('doctor_id', $user->id);
+                })
+                ->first();
+
+            if (!$appointment) {
+                return $this->sendError('Appointment not found', [], 404);
+            }
+
+            $refundDetails = $this->calculateRefundDetails($appointment, $user);
+
+            return $this->sendResponse(
+                $refundDetails,
+                'Cancellation refund preview calculated successfully'
+            );
+
+        } catch (Exception $e) {
+            $this->logException($e, 'Cancellation Preview Error');
+
+            return response()->json([
+                'status'  => false,
+                'message' => 'Something went wrong',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Cancel Appointment with Refund Calculation
+     */
     public function cancel(Request $request, $id)
     {
         try {
-
             $request->validate([
                 'reason_id'     => 'nullable|exists:cancellation_reasons,id',
                 'custom_reason' => 'nullable|string|max:500'
@@ -279,7 +325,7 @@ class AppointmentController extends BaseApiController
 
             DB::beginTransaction();
 
-            $appointment = Appointment::with('timeSlot')
+            $appointment = Appointment::with(['doctor.fee', 'timeSlot'])
                 ->where('id', $id)
                 ->where(function ($query) use ($user) {
                     $query->where('patient_id', $user->id)
@@ -297,6 +343,9 @@ class AppointmentController extends BaseApiController
                 DB::rollBack();
                 return $this->sendError('Appointment already cancelled');
             }
+
+            // Calculate refund details
+            $refundDetails = $this->calculateRefundDetails($appointment, $user);
 
             // Update appointment status
             $appointment->update([
@@ -324,10 +373,12 @@ class AppointmentController extends BaseApiController
 
             DB::commit();
 
-            return $this->sendResponse([], 'Appointment cancelled successfully');
+            return $this->sendResponse(
+                $refundDetails,
+                'Appointment cancelled successfully'
+            );
 
         } catch (Exception $e) {
-
             DB::rollBack();
 
             $this->logException($e, 'Appointment Cancel Error');
@@ -338,6 +389,100 @@ class AppointmentController extends BaseApiController
                 'error'   => $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Calculate Refund Details based on 48h / 24h / 12h policy rules
+     */
+    private function calculateRefundDetails($appointment, $user)
+    {
+        $appointmentDateStr = $appointment->appointment_date ? $appointment->appointment_date->format('Y-m-d') : date('Y-m-d');
+        $startTimeStr = '09:00:00';
+
+        if ($appointment->start_time) {
+            $startTimeStr = $appointment->start_time instanceof Carbon 
+                ? $appointment->start_time->format('H:i:s')
+                : Carbon::parse($appointment->start_time)->format('H:i:s');
+        } elseif ($appointment->timeSlot && $appointment->timeSlot->start_time) {
+            $startTimeStr = Carbon::parse($appointment->timeSlot->start_time)->format('H:i:s');
+        }
+
+        $appointmentDateTime = Carbon::parse("{$appointmentDateStr} {$startTimeStr}");
+        $now = Carbon::now();
+
+        // Calculate hours remaining until appointment
+        $hoursRemaining = round($now->diffInMinutes($appointmentDateTime, false) / 60, 2);
+
+        // Get total amount paid for this appointment
+        $payment = Payment::where('appointment_id', $appointment->id)
+            ->orWhereJsonContains('appointment_ids', (int)$appointment->id)
+            ->first();
+
+        $totalAmount = 0;
+        if ($payment && $payment->amount > 0) {
+            if (is_array($payment->appointment_ids) && count($payment->appointment_ids) > 1) {
+                $totalAmount = round($payment->amount / count($payment->appointment_ids), 2);
+            } else {
+                $totalAmount = (float)$payment->amount;
+            }
+        } elseif ($appointment->doctor && $appointment->doctor->fee) {
+            $totalAmount = (float)($appointment->doctor->fee->doctor_fee ?? 700);
+        } else {
+            $totalAmount = 700.00;
+        }
+
+        $cancelledBy = $user ? $user->role : 'patient';
+        $refundPercentage = 0;
+        $policyMessage = '';
+
+        // If Doctor cancels, patient gets 100% refund always
+        if ($cancelledBy === 'doctor') {
+            $refundPercentage = 100;
+            $policyMessage = 'Full 100% refund applicable (Cancelled by Doctor).';
+        } else {
+            // Patient Cancellation Rules:
+            // > 48 hours => 100% refund
+            // 24 to 48 hours => 50% refund
+            // < 24 hours => 0% refund
+            if ($hoursRemaining >= 48) {
+                $refundPercentage = 100;
+                $policyMessage = 'Full 100% refund applicable (Cancelled more than 48 hours before appointment).';
+            } elseif ($hoursRemaining >= 24) {
+                $refundPercentage = 50;
+                $policyMessage = '50% refund applicable (Cancelled between 24 and 48 hours before appointment).';
+            } elseif ($hoursRemaining >= 12) {
+                $refundPercentage = 0;
+                $policyMessage = '0% refund applicable (Cancelled between 12 and 24 hours before appointment).';
+            } else {
+                $refundPercentage = 0;
+                $policyMessage = '0% refund applicable (Cancelled less than 12 hours before appointment).';
+            }
+        }
+
+        $refundAmount = round(($totalAmount * $refundPercentage) / 100, 2);
+        $deductionAmount = round($totalAmount - $refundAmount, 2);
+        $deductionPercentage = 100 - $refundPercentage;
+
+        return [
+            'appointment_id'           => $appointment->id,
+            'appointment_date'         => $appointmentDateStr,
+            'start_time'               => $startTimeStr,
+            'appointment_datetime'     => $appointmentDateTime->format('Y-m-d H:i:s'),
+            'current_time'             => $now->format('Y-m-d H:i:s'),
+            'hours_before_appointment' => max(0, $hoursRemaining),
+            'cancelled_by'             => $cancelledBy,
+            'total_amount'             => $totalAmount,
+            'refund_percentage'        => $refundPercentage,
+            'refund_amount'            => $refundAmount,
+            'deduction_percentage'     => $deductionPercentage,
+            'deduction_amount'         => $deductionAmount,
+            'cancellation_policy'      => $policyMessage,
+            'policy_rules'             => [
+                'before_48_hours' => '100% refund',
+                '24_to_48_hours'  => '50% refund',
+                'under_24_hours'  => '0% refund'
+            ]
+        ];
     }
 
     public function handleAction(Request $request, $id)
@@ -738,11 +883,14 @@ class AppointmentController extends BaseApiController
             ->where('doctor_id', $doctor->id)
             ->whereIn('status', ['pending', 'confirmed'])
             ->whereDate('appointment_date', '>=', Carbon::today())
-            ->orderBy('appointment_date')
+            ->orderBy('appointment_date', 'asc')
+            ->orderBy('start_time', 'asc')
             ->get();
 
+        $formatted = $this->formatAppointments($appointments);
+
         return $this->sendResponse(
-            $appointments,
+            $formatted,
             'Upcoming appointments fetched successfully'
         );
     }
@@ -757,8 +905,10 @@ class AppointmentController extends BaseApiController
             ->latest()
             ->get();
 
+        $formatted = $this->formatAppointments($appointments);
+
         return $this->sendResponse(
-            $appointments,
+            $formatted,
             'Completed appointments fetched successfully'
         );
     }
@@ -774,8 +924,10 @@ class AppointmentController extends BaseApiController
             ->latest()
             ->get();
 
+        $formatted = $this->formatAppointments($appointments);
+
         return $this->sendResponse(
-            $appointments,
+            $formatted,
             'Shifted appointments fetched successfully'
         );
     }
@@ -788,12 +940,14 @@ class AppointmentController extends BaseApiController
                         ->where('patient_id', $patient->id)
                         ->whereIn('status', ['pending', 'confirmed'])
                         ->whereDate('appointment_date', '>=', Carbon::today())
-                        ->orderBy('appointment_date')
+                        ->orderBy('appointment_date', 'asc')
+                        ->orderBy('start_time', 'asc')
                         ->get();
 
+        $formatted = $this->formatAppointments($appointments);
 
         return $this->sendResponse(
-            $appointments,
+            $formatted,
             'Upcoming appointments fetched successfully'
         );
     }
@@ -808,8 +962,10 @@ class AppointmentController extends BaseApiController
             ->latest()
             ->get();
 
+        $formatted = $this->formatAppointments($appointments);
+
         return $this->sendResponse(
-            $appointments,
+            $formatted,
             'Completed appointments fetched successfully'
         );
     }
@@ -825,8 +981,10 @@ class AppointmentController extends BaseApiController
             ->latest()
             ->get();
 
+        $formatted = $this->formatAppointments($appointments);
+
         return $this->sendResponse(
-            $appointments,
+            $formatted,
             'Shifted appointments fetched successfully'
         );
     }
@@ -835,16 +993,16 @@ class AppointmentController extends BaseApiController
     {
         $doctor = Auth::user();
 
-
         $appointments = Appointment::with(['patient', 'timeSlot' , 'cancellation.reason'])
                         ->where('doctor_id', $doctor->id)
                         ->where('status', 'cancelled')
                         ->latest()
                         ->get();
-                        
+
+        $formatted = $this->formatAppointments($appointments);
 
         return $this->sendResponse(
-            $appointments,
+            $formatted,
             'Cancelled appointments fetched successfully'
         );
     }
@@ -859,10 +1017,66 @@ class AppointmentController extends BaseApiController
             ->latest()
             ->get();
 
+        $formatted = $this->formatAppointments($appointments);
+
         return $this->sendResponse(
-            $appointments,
+            $formatted,
             'Cancelled appointments fetched successfully'
         );
+    }
+
+    /**
+     * Helper to format appointments with package_name, plan_name, appointment_number (1, 2, 3...), number, session_number
+     */
+    private function formatAppointments($appointments)
+    {
+        if (!$appointments || $appointments->isEmpty()) {
+            return $appointments;
+        }
+
+        $patientIds = $appointments->pluck('patient_id')->unique()->filter()->values();
+
+        $subscriptions = PatientPlanSubscription::with('plan')
+            ->whereIn('patient_id', $patientIds)
+            ->latest()
+            ->get()
+            ->groupBy('patient_id');
+
+        $transactionGroups = $appointments->groupBy('transaction_id');
+
+        return $appointments->values()->map(function ($appointment, $index) use ($subscriptions, $transactionGroups) {
+            $patientSub = isset($subscriptions[$appointment->patient_id])
+                ? $subscriptions[$appointment->patient_id]->first()
+                : null;
+
+            $packageName = ($patientSub && $patientSub->plan)
+                ? $patientSub->plan->name
+                : 'Standard Package';
+
+            $sessionNumber = 1;
+            if ($appointment->transaction_id && isset($transactionGroups[$appointment->transaction_id])) {
+                $group = $transactionGroups[$appointment->transaction_id]->values();
+                foreach ($group as $gIdx => $gAppt) {
+                    if ($gAppt->id == $appointment->id) {
+                        $sessionNumber = $gIdx + 1;
+                        break;
+                    }
+                }
+            } else {
+                $sessionNumber = $index + 1;
+            }
+
+            $appointmentNumber = $index + 1;
+
+            $arr = $appointment->toArray();
+            $arr['package_name']       = $packageName;
+            $arr['plan_name']          = $packageName;
+            $arr['appointment_number'] = $appointmentNumber;
+            $arr['number']             = $appointmentNumber;
+            $arr['session_number']     = $sessionNumber;
+
+            return $arr;
+        });
     }
 
 

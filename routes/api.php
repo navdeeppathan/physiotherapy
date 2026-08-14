@@ -132,6 +132,8 @@ Route::middleware(['auth:api', 'role:patient'])->group(function () {
     Route::get('/patient/appointments', [AppointmentController::class, 'patientAppointments']);
 
     Route::post('/update-patient/{id}', [UserController::class, 'updatePatient']);
+    Route::get('/patient/payments', [UserController::class, 'patientPaymentHistory']);
+    Route::get('/patient/payment-history', [UserController::class, 'patientPaymentHistory']);
     Route::get('/patient/{id}/payments', [UserController::class, 'patientPaymentHistory']);
 
     Route::get('/patient/appointments/upcoming', [AppointmentController::class, 'patientUpcomingAppointments']);

@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\UserSubscription;
 use App\Models\Appointment;
 use App\Models\AppointmentFee;
+use App\Models\PatientPlanSubscription;
+use App\Models\PatientPlan;
 
 class UserController extends BaseApiController
 {
@@ -1050,28 +1052,212 @@ class UserController extends BaseApiController
 
     
 
-    public function patientPaymentHistory($patientId)
+    public function patientPaymentHistory($patientId = null)
     {
         try {
-            
+            $user = Auth::user();
 
-            $payments = Payment::with(['doctor', 'appointment'])
+            // If patientId is null or 'my' or non-numeric, use authenticated user ID
+            if (!$patientId || !is_numeric($patientId)) {
+                $patientId = $user ? $user->id : null;
+            }
+
+            if (!$patientId) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Patient ID is required'
+                ], 400);
+            }
+
+            // Get all payments for this patient with relationships
+            $payments = Payment::with([
+                'doctor.profile.specializationdata',
+                'doctor.fee',
+                'appointment',
+                'patient'
+            ])
+            ->where('patient_id', $patientId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+            // Fetch patient plan subscriptions
+            $subscriptions = PatientPlanSubscription::with('plan')
                 ->where('patient_id', $patientId)
-                ->orderBy('created_at', 'desc')
+                ->latest()
                 ->get();
 
+            // Fetch all appointments for patient to calculate session counts & match appointment details
+            $allAppointments = Appointment::with(['doctor.profile.specializationdata', 'timeSlot'])
+                ->where('patient_id', $patientId)
+                ->orderBy('appointment_date', 'asc')
+                ->get();
+
+            // Calculate Overview Summary
+            $successfulPayments = $payments->filter(function ($p) {
+                $st = strtolower($p->status ?? '');
+                return in_array($st, ['success', 'paid', 'completed']);
+            });
+
+            $totalSpent = round($successfulPayments->sum('amount'), 2);
+            $totalSessions = $allAppointments->count();
+
+            $unpaidAmount = round($payments->filter(function ($p) {
+                $st = strtolower($p->status ?? '');
+                return in_array($st, ['pending', 'unpaid']);
+            })->sum('amount'), 2);
+
+            $lastPaymentObj = $successfulPayments->sortByDesc('created_at')->first();
+            $lastPayment = [
+                'amount'         => $lastPaymentObj ? (float)$lastPaymentObj->amount : 0.00,
+                'date'           => $lastPaymentObj ? ($lastPaymentObj->paid_at ? Carbon::parse($lastPaymentObj->paid_at)->format('d M Y') : Carbon::parse($lastPaymentObj->created_at)->format('d M Y')) : 'N/A',
+                'payment_method' => $lastPaymentObj ? strtoupper($lastPaymentObj->payment_method ?? 'UPI') : 'N/A'
+            ];
+
+            // Format Payment History Items
+            $formattedHistory = $payments->map(function ($payment) use ($allAppointments, $subscriptions) {
+
+                // Find associated appointments
+                $apptIds = [];
+                if (is_array($payment->appointment_ids)) {
+                    $apptIds = $payment->appointment_ids;
+                } elseif (!empty($payment->appointment_ids) && is_string($payment->appointment_ids)) {
+                    $apptIds = json_decode($payment->appointment_ids, true) ?: [];
+                }
+                if (empty($apptIds) && $payment->appointment_id) {
+                    $apptIds = [$payment->appointment_id];
+                }
+
+                // Filter matching appointments
+                $matchingAppts = $allAppointments->filter(function ($appt) use ($apptIds, $payment) {
+                    if (!empty($apptIds) && in_array($appt->id, $apptIds)) {
+                        return true;
+                    }
+                    if ($payment->transaction_id && $appt->transaction_id == $payment->transaction_id) {
+                        return true;
+                    }
+                    return false;
+                })->values();
+
+                if ($matchingAppts->isEmpty() && $payment->appointment) {
+                    $matchingAppts = collect([$payment->appointment]);
+                }
+
+                // Determine Title & Type (e.g. "10 Session Package" or "Physiotherapy Session")
+                $matchingSub = $subscriptions->first(function ($sub) use ($payment) {
+                    return $sub->transaction_id && $sub->transaction_id == $payment->transaction_id;
+                }) ?: $subscriptions->first();
+
+                $isPackage = false;
+                $title = 'Physiotherapy Session';
+
+                if ($matchingSub && $matchingSub->plan) {
+                    $isPackage = true;
+                    $title = $matchingSub->plan->name;
+                } elseif ($matchingAppts->count() > 1) {
+                    $isPackage = true;
+                    $title = $matchingAppts->count() . ' Session Package';
+                }
+
+                // Doctor Information
+                $doctorObj = $payment->doctor;
+                $doctorData = null;
+                if ($doctorObj) {
+                    $spec = optional(optional($doctorObj->profile)->specializationdata)->name ?? 'Physiotherapist';
+                    $img = $doctorObj->profile_img ? (str_contains($doctorObj->profile_img, '/') ? asset($doctorObj->profile_img) : asset('uploads/profile/'.$doctorObj->profile_img)) : null;
+
+                    $doctorData = [
+                        'id'             => $doctorObj->id,
+                        'name'           => 'Dr. ' . ltrim($doctorObj->name, 'Dr. '),
+                        'email'          => $doctorObj->email,
+                        'phone'          => $doctorObj->phone,
+                        'profile_img'    => $img,
+                        'specialization' => $spec,
+                    ];
+                }
+
+                // Primary Appointment details
+                $primaryAppt = $matchingAppts->first();
+                $apptData = null;
+                if ($primaryAppt) {
+                    $dateStr = $primaryAppt->appointment_date ? Carbon::parse($primaryAppt->appointment_date)->format('d M Y') : 'N/A';
+                    $timeStr = $primaryAppt->start_time ? Carbon::parse($primaryAppt->start_time)->format('h:i A') : ($primaryAppt->timeSlot ? Carbon::parse($primaryAppt->timeSlot->start_time)->format('h:i A') : 'N/A');
+
+                    $apptData = [
+                        'id'                  => $primaryAppt->id,
+                        'appointment_date'    => $primaryAppt->appointment_date ? Carbon::parse($primaryAppt->appointment_date)->format('Y-m-d') : null,
+                        'start_time'          => $primaryAppt->start_time ? Carbon::parse($primaryAppt->start_time)->format('H:i:s') : null,
+                        'end_time'            => $primaryAppt->end_time ? Carbon::parse($primaryAppt->end_time)->format('H:i:s') : null,
+                        'formatted_date'      => $dateStr,
+                        'formatted_time'      => $timeStr,
+                        'booking_for'         => $primaryAppt->booking_for ?? 'self',
+                        'patient_name'        => $primaryAppt->patient_name ?? optional($payment->patient)->name,
+                        'patient_age'         => $primaryAppt->patient_age,
+                        'patient_gender'      => $primaryAppt->patient_gender,
+                        'problem_description' => $primaryAppt->problem_description ?? 'Physiotherapy Session',
+                        'patient_address'     => $primaryAppt->patient_address ?? 'Home Visit',
+                        'status'              => $primaryAppt->status ?? 'confirmed',
+                    ];
+                }
+
+                // All associated appointments array
+                $allApptsFormatted = $matchingAppts->map(function ($a, $idx) {
+                    $dateStr = $a->appointment_date ? Carbon::parse($a->appointment_date)->format('d M Y') : 'N/A';
+                    $timeStr = $a->start_time ? Carbon::parse($a->start_time)->format('h:i A') : ($a->timeSlot ? Carbon::parse($a->timeSlot->start_time)->format('h:i A') : 'N/A');
+                    return [
+                        'id'                  => $a->id,
+                        'session_number'      => $idx + 1,
+                        'appointment_date'    => $a->appointment_date ? Carbon::parse($a->appointment_date)->format('Y-m-d') : null,
+                        'formatted_date'      => $dateStr,
+                        'formatted_time'      => $timeStr,
+                        'status'              => $a->status ?? 'confirmed',
+                        'problem_description' => $a->problem_description,
+                    ];
+                })->values();
+
+                // Formatted payment date & time
+                $paidAtCarbon = $payment->paid_at ? Carbon::parse($payment->paid_at) : Carbon::parse($payment->created_at);
+
+                // Clean Status Text (Paid, Pending, Failed, Refunded)
+                $rawStatus = strtolower($payment->status ?? 'paid');
+                $cleanStatus = in_array($rawStatus, ['success', 'paid', 'completed']) ? 'Paid' : (in_array($rawStatus, ['pending', 'unpaid']) ? 'Pending' : ucfirst($rawStatus));
+
+                return [
+                    'payment_id'      => $payment->id,
+                    'transaction_id'  => $payment->transaction_id ?? ('TXN-' . $payment->id),
+                    'title'           => $title,
+                    'type'            => $isPackage ? 'package' : 'session',
+                    'amount'          => (float)$payment->amount,
+                    'currency'        => $payment->currency ?? 'INR',
+                    'status'          => $cleanStatus,
+                    'payment_method'  => strtoupper($payment->payment_method ?? 'UPI'),
+                    'paid_at'         => $paidAtCarbon->format('Y-m-d H:i:s'),
+                    'formatted_date'  => $paidAtCarbon->format('d M Y'),
+                    'formatted_time'  => $paidAtCarbon->format('h:i A'),
+                    'date_time_text'  => $paidAtCarbon->format('d M Y') . ' • ' . $paidAtCarbon->format('h:i A'),
+                    'doctor'          => $doctorData,
+                    'appointment'     => $apptData,
+                    'appointment_ids' => $matchingAppts->pluck('id')->toArray(),
+                    'appointments'    => $allApptsFormatted
+                ];
+            });
+
             return response()->json([
-                'status' => true,
+                'status'  => true,
                 'message' => 'Patient payment history fetched successfully',
-                'data' => $payments
+                'summary' => [
+                    'total_spent'     => $totalSpent,
+                    'total_sessions'  => $totalSessions,
+                    'unpaid_amount'   => $unpaidAmount,
+                    'last_payment'    => $lastPayment
+                ],
+                'data'    => $formattedHistory
             ], 200);
 
         } catch (Exception $e) {
-
             $this->logException($e, 'Patient Payment History Error');
 
             return response()->json([
-                'status' => false,
+                'status'  => false,
                 'message' => $e->getMessage()
             ], 500);
         }

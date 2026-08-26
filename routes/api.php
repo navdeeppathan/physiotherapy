@@ -16,6 +16,9 @@ use App\Http\Controllers\Api\UserAddressController;
 use App\Http\Controllers\Api\PaymentGatewayController;
 
 use App\Http\Controllers\Api\EnquiryController;
+use App\Http\Controllers\Api\DoctorDashboardController;
+use App\Http\Controllers\Api\AssessmentController;
+use App\Http\Controllers\Api\ExerciseController;
 
 // Authentication
 Route::post('/login', [UserController::class, 'login']);
@@ -120,6 +123,36 @@ Route::middleware(['auth:api', 'role:doctor'])->group(function () {
     Route::get('/doctor/my-transfer-requests',[AppointmentController::class, 'myTransferRequests']);
     Route::get('/doctor/transfer-request/{id}',[AppointmentController::class, 'transferRequestDetail']);
     Route::delete('/transfer-request/{id}',[AppointmentController::class, 'cancelTransferRequest']);
+
+    // ── Doctor Dashboard ─────────────────────────────────────────
+    Route::get('/doctor/dashboard', [DoctorDashboardController::class, 'index']);
+
+    // ── Patient Detail & Records (Doctor view) ───────────────────
+    Route::get('/doctor/patient/{patient_id}', [DoctorDashboardController::class, 'patientDetail']);
+    Route::get('/doctor/patient/{patient_id}/assessments', [DoctorDashboardController::class, 'patientAssessments']);
+
+    // ── Assessment CRUD ──────────────────────────────────────────
+    Route::post('/assessment/create', [AssessmentController::class, 'create']);
+    Route::get('/assessment/{id}', [AssessmentController::class, 'show']);
+    Route::put('/assessment/{id}', [AssessmentController::class, 'update']);
+
+    // ── Patient Plan Overview Tabs ───────────────────────────────
+    Route::get('/assessment/{id}/overview', [AssessmentController::class, 'overview']);
+    Route::get('/assessment/{id}/progress', [AssessmentController::class, 'progress']);
+    Route::get('/assessment/{id}/history', [AssessmentController::class, 'history']);
+
+    // ── Session Actions ──────────────────────────────────────────
+    Route::get('/doctor/sessions/today', [AssessmentController::class, 'todaySessions']);
+    Route::post('/session/start', [AssessmentController::class, 'startSession']);
+    Route::put('/session/{id}/complete', [AssessmentController::class, 'completeSession']);
+
+    // ── Exercise Library ─────────────────────────────────────────
+    Route::get('/exercises', [ExerciseController::class, 'index']);
+    Route::get('/exercises/{id}', [ExerciseController::class, 'show']);
+
+    // ── Conditions (Step 1 from specializations) ─────────────────
+    Route::get('/assessment/conditions', [AssessmentController::class, 'conditions']);
+    Route::get('/assessment/parameters', [AssessmentController::class, 'parameters']);
 });
 Route::middleware('auth:api')->get(
     '/payment-gateway-settings',

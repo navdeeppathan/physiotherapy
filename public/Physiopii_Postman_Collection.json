@@ -1,0 +1,495 @@
+{
+	"info": {
+		"_postman_id": "physiopii-api-collection-2026",
+		"name": "Physiopii Healthcare API Collection",
+		"description": "Complete Postman collection for Physiopii Patient & Doctor mobile applications and APIs.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000/api",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "YOUR_BEARER_TOKEN_HERE",
+			"type": "string"
+		},
+		{
+			"key": "doctor_id",
+			"value": "5",
+			"type": "string"
+		},
+		{
+			"key": "appointment_id",
+			"value": "201",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Authentication",
+			"item": [
+				{
+					"name": "Login Patient / Doctor",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"patient@gmail.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": ["{{base_url}}"],
+							"path": ["login"]
+						}
+					}
+				},
+				{
+					"name": "Login Patient (Phone)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone\": \"9876543210\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/login-patient",
+							"host": ["{{base_url}}"],
+							"path": ["login-patient"]
+						}
+					}
+				},
+				{
+					"name": "Verify OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone\": \"9876543210\",\n  \"otp\": \"1234\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/verify-otp",
+							"host": ["{{base_url}}"],
+							"path": ["verify-otp"]
+						}
+					}
+				},
+				{
+					"name": "Register Patient",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Rahul Mehta\",\n  \"phone\": \"9876543210\",\n  \"email\": \"rahul@gmail.com\",\n  \"password\": \"password123\",\n  \"gender\": \"male\",\n  \"dob\": \"1995-06-15\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/register-patient",
+							"host": ["{{base_url}}"],
+							"path": ["register-patient"]
+						}
+					}
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": 12,\n  \"current_password\": \"password123\",\n  \"new_password\": \"newpassword123\",\n  \"new_password_confirmation\": \"newpassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/change-password",
+							"host": ["{{base_url}}"],
+							"path": ["change-password"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Patient Enquiry (Book Session Modal)",
+			"item": [
+				{
+					"name": "Submit Patient Enquiry",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"patient_name\": \"Rahul Mehta\",\n  \"symptoms\": \"Back Pain\",\n  \"location\": \"New Delhi\",\n  \"contact_number\": \"9876543210\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/enquiry",
+							"host": ["{{base_url}}"],
+							"path": ["enquiry"]
+						}
+					}
+				},
+				{
+					"name": "Get Symptoms List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/enquiry-symptoms",
+							"host": ["{{base_url}}"],
+							"path": ["enquiry-symptoms"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Patient Appointments",
+			"item": [
+				{
+					"name": "Book Appointment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"doctor_id\": 5,\n  \"time_slot_id\": [101],\n  \"booking_for\": \"self\",\n  \"patient_name\": \"Rahul Mehta\",\n  \"patient_age\": 30,\n  \"patient_gender\": \"male\",\n  \"problem_description\": \"Lower back pain\",\n  \"doctor_fee\": 1400.00,\n  \"address\": \"Flat 402, Sunshine Apartments, Delhi\",\n  \"payment_gateway_responce\": {\n    \"razorpay_payment_id\": \"pay_O1x9AB12345\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/appointment/book",
+							"host": ["{{base_url}}"],
+							"path": ["appointment", "book"]
+						}
+					}
+				},
+				{
+					"name": "Get Upcoming Appointments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/patient/appointments/upcoming",
+							"host": ["{{base_url}}"],
+							"path": ["patient", "appointments", "upcoming"]
+						}
+					}
+				},
+				{
+					"name": "Get All Patient Appointments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/patient/appointments",
+							"host": ["{{base_url}}"],
+							"path": ["patient", "appointments"]
+						}
+					}
+				},
+				{
+					"name": "Preview Cancellation Refund",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/appointment/{{appointment_id}}/cancellation-preview",
+							"host": ["{{base_url}}"],
+							"path": ["appointment", "{{appointment_id}}", "cancellation-preview"]
+						}
+					}
+				},
+				{
+					"name": "Cancel Appointment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reason_id\": 1,\n  \"custom_reason\": \"Work schedule conflict\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/appointment/{{appointment_id}}/cancel",
+							"host": ["{{base_url}}"],
+							"path": ["appointment", "{{appointment_id}}", "cancel"]
+						}
+					}
+				},
+				{
+					"name": "Get Cancellation Reasons",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/cancellation-reasons",
+							"host": ["{{base_url}}"],
+							"path": ["cancellation-reasons"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Patient Billing & Payments",
+			"item": [
+				{
+					"name": "Get Patient Payment History & Summary",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/patient/payments",
+							"host": ["{{base_url}}"],
+							"path": ["patient", "payments"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Patient Saved Addresses",
+			"item": [
+				{
+					"name": "Get Saved Addresses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/patient/addresses",
+							"host": ["{{base_url}}"],
+							"path": ["patient", "addresses"]
+						}
+					}
+				},
+				{
+					"name": "Add Saved Address",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address_line1\": \"Flat 402, Sunshine Apartments\",\n  \"city\": \"New Delhi\",\n  \"state\": \"Delhi\",\n  \"pincode\": \"110001\",\n  \"is_default\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/patient/addresses",
+							"host": ["{{base_url}}"],
+							"path": ["patient", "addresses"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "6. Doctor Discovery & Slots",
+			"item": [
+				{
+					"name": "Get Active Doctors",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/doctors",
+							"host": ["{{base_url}}"],
+							"path": ["doctors"]
+						}
+					}
+				},
+				{
+					"name": "Get Doctor Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/doctor/profile/{{doctor_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["doctor", "profile", "{{doctor_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Doctor Available Slots",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/doctor/slots/{{doctor_id}}?date=2026-08-16",
+							"host": ["{{base_url}}"],
+							"path": ["doctor", "slots", "{{doctor_id}}"],
+							"query": [
+								{ "key": "date", "value": "2026-08-16" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Get All Specializations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/all-specializations",
+							"host": ["{{base_url}}"],
+							"path": ["all-specializations"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "7. Patient Packages & Plans",
+			"item": [
+				{
+					"name": "Get Patient Packages",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/patient-plans",
+							"host": ["{{base_url}}"],
+							"path": ["patient-plans"]
+						}
+					}
+				},
+				{
+					"name": "Subscribe to Package",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"patient_id\": 12,\n  \"patient_plan_id\": 1,\n  \"payment_method\": \"Razorpay\",\n  \"transaction_id\": \"pay_P9x8ZZ999\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/patient-plans/subscribe",
+							"host": ["{{base_url}}"],
+							"path": ["patient-plans", "subscribe"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "8. Doctor Portal API",
+			"item": [
+				{
+					"name": "Doctor Upcoming Appointments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/doctor/appointments/upcoming",
+							"host": ["{{base_url}}"],
+							"path": ["doctor", "appointments", "upcoming"]
+						}
+					}
+				},
+				{
+					"name": "Doctor Action on Appointment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"complete\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/doctor/appointments/{{appointment_id}}/action",
+							"host": ["{{base_url}}"],
+							"path": ["doctor", "appointments", "{{appointment_id}}", "action"]
+						}
+					}
+				},
+				{
+					"name": "Doctor Set Availability Slots",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"available_date\": \"2026-08-18\",\n  \"slots\": [\n    { \"start_time\": \"09:00 AM\", \"end_time\": \"10:00 AM\" },\n    { \"start_time\": \"10:00 AM\", \"end_time\": \"11:00 AM\" }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/doctor/availability",
+							"host": ["{{base_url}}"],
+							"path": ["doctor", "availability"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "9. Config & Settings",
+			"item": [
+				{
+					"name": "Payment Gateway Settings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/payment-gateway-settings",
+							"host": ["{{base_url}}"],
+							"path": ["payment-gateway-settings"]
+						}
+					}
+				}
+			]
+		}
+	]
+}

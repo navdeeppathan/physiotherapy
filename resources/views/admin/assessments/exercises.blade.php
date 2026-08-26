@@ -12,7 +12,7 @@
                 </h1>
                 <p class="text-muted small mb-0">Manage exercises used in patient treatment plans.</p>
             </div>
-            <button class="btn btn-primary btn-sm rounded-3" data-bs-toggle="modal" data-bs-target="#addExerciseModal">
+            <button class="btn btn-primary btn-sm rounded-3 px-3" data-bs-toggle="modal" data-bs-target="#addExerciseModal">
                 <i class="fas fa-plus me-1"></i> Add Exercise
             </button>
         </div>
@@ -92,7 +92,7 @@
                         <button type="submit" class="btn btn-primary btn-sm rounded-3 w-100">
                             <i class="fas fa-search me-1"></i> Filter
                         </button>
-                        <a href="{{ route('admin.exercises.index') }}" class="btn btn-outline-secondary btn-sm rounded-3">
+                        <a href="{{ route('admin.exercises.index') }}" class="btn btn-outline-secondary btn-sm rounded-3 px-3">
                             <i class="fas fa-times"></i>
                         </a>
                     </div>
@@ -107,7 +107,7 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th class="ps-4">#</th>
+                                <th class="ps-4" style="width:60px;">Image</th>
                                 <th>Exercise Name</th>
                                 <th>Condition</th>
                                 <th>Category</th>
@@ -120,7 +120,19 @@
                         <tbody>
                             @forelse($exercises as $ex)
                             <tr>
-                                <td class="ps-4 text-muted small">{{ $ex->id }}</td>
+                                <td class="ps-4">
+                                    @if($ex->image)
+                                        <img src="{{ asset($ex->image) }}"
+                                             alt="{{ $ex->name }}"
+                                             class="rounded-3 object-fit-cover"
+                                             style="width:46px;height:46px;object-fit:cover;">
+                                    @else
+                                        <div class="rounded-3 d-flex align-items-center justify-content-center bg-light"
+                                             style="width:46px;height:46px;">
+                                            <i class="fas fa-dumbbell text-muted" style="font-size:1.1rem;"></i>
+                                        </div>
+                                    @endif
+                                </td>
                                 <td>
                                     <div class="fw-semibold">{{ $ex->name }}</div>
                                     @if($ex->description)
@@ -129,25 +141,30 @@
                                 </td>
                                 <td>
                                     @if($ex->specialization)
-                                    <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-2 py-1 small">
-                                        {{ $ex->specialization->name }}
-                                    </span>
+                                        <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-2 py-1 small">
+                                            {{ $ex->specialization->name }}
+                                        </span>
                                     @else
-                                    <span class="text-muted small">General</span>
+                                        <span class="text-muted small">General</span>
                                     @endif
                                 </td>
                                 <td class="text-muted small">{{ ucfirst($ex->category ?? '—') }}</td>
-                                <td class="text-center"><span class="badge bg-secondary bg-opacity-10 text-secondary">{{ $ex->sets_default }}</span></td>
-                                <td class="text-center"><span class="badge bg-info bg-opacity-10 text-info">{{ $ex->reps_default }}</span></td>
                                 <td class="text-center">
-                                    <span class="badge {{ $ex->status === 'active' ? 'bg-success' : 'bg-danger' }} rounded-pill px-2">
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary fw-semibold px-2">{{ $ex->sets_default }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-info bg-opacity-10 text-info fw-semibold px-2">{{ $ex->reps_default }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge {{ $ex->status === 'active' ? 'bg-success' : 'bg-danger' }} rounded-pill px-2 py-1">
                                         {{ ucfirst($ex->status) }}
                                     </span>
                                 </td>
                                 <td class="text-end pe-4">
                                     <form action="{{ route('admin.exercises.toggle', $ex->id) }}" method="POST" class="d-inline">
                                         @csrf
-                                        <button type="submit" class="btn btn-outline-{{ $ex->status === 'active' ? 'warning' : 'success' }} btn-sm rounded-3 me-1"
+                                        <button type="submit"
+                                                class="btn btn-outline-{{ $ex->status === 'active' ? 'warning' : 'success' }} btn-sm rounded-3 me-1"
                                                 title="{{ $ex->status === 'active' ? 'Deactivate' : 'Activate' }}">
                                             <i class="fas fa-{{ $ex->status === 'active' ? 'toggle-off' : 'toggle-on' }}"></i>
                                         </button>
@@ -173,9 +190,16 @@
                     </table>
                 </div>
 
+                {{-- Pagination --}}
                 @if($exercises->hasPages())
-                <div class="d-flex justify-content-end p-3">
-                    {{ $exercises->links() }}
+                <div class="d-flex align-items-center justify-content-between px-4 py-3 border-top">
+                    <div class="text-muted small">
+                        Showing <strong>{{ $exercises->firstItem() }}</strong> to <strong>{{ $exercises->lastItem() }}</strong>
+                        of <strong>{{ $exercises->total() }}</strong> exercises
+                    </div>
+                    <div>
+                        {{ $exercises->links() }}
+                    </div>
                 </div>
                 @endif
             </div>
@@ -188,21 +212,47 @@
 <div class="modal fade" id="addExerciseModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content rounded-4 border-0 shadow">
-            <div class="modal-header border-0">
-                <h5 class="modal-title fw-semibold"><i class="fas fa-plus-circle text-primary me-2"></i>Add New Exercise</h5>
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-semibold">
+                    <i class="fas fa-plus-circle text-primary me-2"></i>Add New Exercise
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="{{ route('admin.exercises.store') }}" method="POST">
+            <form action="{{ route('admin.exercises.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div class="row g-3">
+
+                        {{-- Image Upload --}}
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">Exercise Image</label>
+                            <div class="d-flex align-items-center gap-3">
+                                <div id="imagePreviewBox"
+                                     class="rounded-3 border d-flex align-items-center justify-content-center overflow-hidden"
+                                     style="width:80px;height:80px;background:#f8f9fa;">
+                                    <i class="fas fa-image text-muted fa-2x" id="imagePlaceholderIcon"></i>
+                                    <img id="imagePreview" src="#" alt="Preview"
+                                         class="d-none rounded-3"
+                                         style="width:80px;height:80px;object-fit:cover;">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <input type="file" name="image" id="exerciseImageInput"
+                                           class="form-control form-control-sm rounded-3"
+                                           accept="image/jpeg,image/png,image/jpg,image/webp">
+                                    <div class="text-muted" style="font-size:0.72rem;">JPG, PNG, WebP. Max 2MB.</div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-md-8">
                             <label class="form-label small fw-semibold">Exercise Name <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control rounded-3" placeholder="e.g. Pelvic Tilt" required>
+                            <input type="text" name="name" class="form-control rounded-3"
+                                   placeholder="e.g. Pelvic Tilt" required>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small fw-semibold">Category</label>
-                            <input type="text" name="category" class="form-control rounded-3" placeholder="e.g. back, knee">
+                            <input type="text" name="category" class="form-control rounded-3"
+                                   placeholder="e.g. back, knee, shoulder">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-semibold">Condition (Specialization)</label>
@@ -215,20 +265,24 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label small fw-semibold">Default Sets <span class="text-danger">*</span></label>
-                            <input type="number" name="sets_default" class="form-control rounded-3" value="3" min="1" required>
+                            <input type="number" name="sets_default" class="form-control rounded-3"
+                                   value="3" min="1" required>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label small fw-semibold">Default Reps <span class="text-danger">*</span></label>
-                            <input type="number" name="reps_default" class="form-control rounded-3" value="10" min="1" required>
+                            <input type="number" name="reps_default" class="form-control rounded-3"
+                                   value="10" min="1" required>
                         </div>
                         <div class="col-12">
                             <label class="form-label small fw-semibold">Description</label>
-                            <textarea name="description" class="form-control rounded-3" rows="2" placeholder="Brief description of the exercise..."></textarea>
+                            <textarea name="description" class="form-control rounded-3" rows="2"
+                                      placeholder="Brief description of the exercise..."></textarea>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-3" data-bs-dismiss="modal">Cancel</button>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-3 px-3"
+                            data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary btn-sm rounded-3 px-4">
                         <i class="fas fa-save me-1"></i> Save Exercise
                     </button>
@@ -237,4 +291,21 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Image preview before upload
+    document.getElementById('exerciseImageInput').addEventListener('change', function () {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('imagePlaceholderIcon').classList.add('d-none');
+                const preview = document.getElementById('imagePreview');
+                preview.src = e.target.result;
+                preview.classList.remove('d-none');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
 @endsection

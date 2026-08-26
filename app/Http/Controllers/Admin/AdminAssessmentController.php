@@ -118,17 +118,27 @@ class AdminAssessmentController extends Controller
     public function storeExercise(Request $request)
     {
         $request->validate([
-            'name'             => 'required|string|max:255',
-            'category'         => 'nullable|string|max:100',
-            'specialization_id'=> 'nullable|exists:specializations,id',
-            'sets_default'     => 'required|integer|min:1',
-            'reps_default'     => 'required|integer|min:1',
-            'description'      => 'nullable|string',
+            'name'              => 'required|string|max:255',
+            'category'          => 'nullable|string|max:100',
+            'specialization_id' => 'nullable|exists:specializations,id',
+            'sets_default'      => 'required|integer|min:1',
+            'reps_default'      => 'required|integer|min:1',
+            'description'       => 'nullable|string',
+            'image'             => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $file      = $request->file('image');
+            $filename  = time() . '_' . \Illuminate\Support\Str::slug($request->name) . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/exercises'), $filename);
+            $imagePath = 'uploads/exercises/' . $filename;
+        }
 
         Exercise::create([
             'name'              => $request->name,
             'description'       => $request->description,
+            'image'             => $imagePath,
             'category'          => $request->category,
             'specialization_id' => $request->specialization_id,
             'sets_default'      => $request->sets_default,

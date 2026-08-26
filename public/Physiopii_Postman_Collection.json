@@ -490,6 +490,135 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "10. Patient Progress Reports",
+			"item": [
+				{
+					"name": "Get Progress Report (15 Days / Default)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/patient/progress-report?period=15_days",
+							"host": ["{{base_url}}"],
+							"path": ["patient", "progress-report"],
+							"query": [
+								{ "key": "period", "value": "15_days" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Progress Report (7 Days)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/patient/progress-report?period=7_days",
+							"host": ["{{base_url}}"],
+							"path": ["patient", "progress-report"],
+							"query": [
+								{ "key": "period", "value": "7_days" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Progress Report (30 Days)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/patient/progress-report?period=30_days",
+							"host": ["{{base_url}}"],
+							"path": ["patient", "progress-report"],
+							"query": [
+								{ "key": "period", "value": "30_days" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Progress Report (Custom Date Range)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/patient/progress-report?period=custom&start_date=2025-05-01&end_date=2025-05-15",
+							"host": ["{{base_url}}"],
+							"path": ["patient", "progress-report"],
+							"query": [
+								{ "key": "period", "value": "custom" },
+								{ "key": "start_date", "value": "2025-05-01" },
+								{ "key": "end_date", "value": "2025-05-15" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Patient Report History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/patient/report-history",
+							"host": ["{{base_url}}"],
+							"path": ["patient", "report-history"]
+						}
+					}
+				},
+				{
+					"name": "Share Report Link",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"period\": \"15_days\",\n  \"start_date\": \"2025-05-01\",\n  \"end_date\": \"2025-05-15\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/patient/report/share",
+							"host": ["{{base_url}}"],
+							"path": ["patient", "report", "share"]
+						}
+					}
+				},
+				{
+					"name": "Get Public Shared Report by Token",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/report/shared/SAMPLE_SHARE_TOKEN",
+							"host": ["{{base_url}}"],
+							"path": ["report", "shared", "SAMPLE_SHARE_TOKEN"]
+						}
+					}
+				}
+			]
 		}
 	]
 }
+

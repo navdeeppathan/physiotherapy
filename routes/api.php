@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\EnquiryController;
 use App\Http\Controllers\Api\DoctorDashboardController;
 use App\Http\Controllers\Api\AssessmentController;
 use App\Http\Controllers\Api\ExerciseController;
+use App\Http\Controllers\Api\PatientReportController;
 
 // Authentication
 Route::post('/login', [UserController::class, 'login']);
@@ -181,4 +182,12 @@ Route::middleware(['auth:api', 'role:patient'])->group(function () {
     Route::put('/patient/addresses/{id}', [UserAddressController::class, 'update']);
     Route::delete('/patient/addresses/{id}', [UserAddressController::class, 'destroy']);
 
+    // ── Patient Progress Report & Share ─────────────────────────
+    Route::get('/patient/progress-report', [PatientReportController::class, 'getProgressReport']);
+    Route::get('/patient/report-history', [PatientReportController::class, 'getReportHistory']);
+    Route::post('/patient/report/share', [PatientReportController::class, 'shareReport']);
+
 });
+
+// Public shared report link
+Route::get('/report/shared/{token}', [PatientReportController::class, 'getSharedReport']);

@@ -165,16 +165,17 @@
                                     <td>
                                         <form action="{{ route('admin.enquiries.updateStatus', $enquiry->id) }}" method="POST" class="d-inline">
                                             @csrf
-                                            <select name="status" onchange="this.form.submit()" class="form-select form-select-sm border-0 font-weight-bold rounded-pill
-                                                @if($enquiry->status == 'pending') bg-warning bg-opacity-15 text-warning
-                                                @elseif($enquiry->status == 'contacted') bg-info bg-opacity-15 text-info
-                                                @elseif($enquiry->status == 'resolved') bg-success bg-opacity-15 text-success
-                                                @else bg-danger bg-opacity-15 text-danger @endif"
-                                                style="width: 130px; cursor: pointer;">
-                                                <option value="pending" {{ $enquiry->status == 'pending' ? 'selected' : '' }}>⏳ Pending</option>
-                                                <option value="contacted" {{ $enquiry->status == 'contacted' ? 'selected' : '' }}>📞 Contacted</option>
-                                                <option value="resolved" {{ $enquiry->status == 'resolved' ? 'selected' : '' }}>✅ Resolved</option>
-                                                <option value="cancelled" {{ $enquiry->status == 'cancelled' ? 'selected' : '' }}>❌ Cancelled</option>
+                                            <select name="status" onchange="this.form.submit()"
+                                                class="form-select form-select-sm border-0 fw-semibold rounded-3
+                                                    @if($enquiry->status == 'pending')   bg-warning text-dark
+                                                    @elseif($enquiry->status == 'contacted') bg-info text-white
+                                                    @elseif($enquiry->status == 'resolved')  bg-success text-white
+                                                    @else bg-danger text-white @endif"
+                                                style="min-width: 130px; cursor: pointer;">
+                                                <option value="pending"   {{ $enquiry->status == 'pending'   ? 'selected' : '' }}>Pending</option>
+                                                <option value="contacted" {{ $enquiry->status == 'contacted' ? 'selected' : '' }}>Contacted</option>
+                                                <option value="resolved"  {{ $enquiry->status == 'resolved'  ? 'selected' : '' }}>Resolved</option>
+                                                <option value="cancelled" {{ $enquiry->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                                             </select>
                                         </form>
                                     </td>

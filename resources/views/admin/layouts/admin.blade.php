@@ -872,6 +872,34 @@
             </div>
 
             <div class="nav-item">
+                <a href="{{ route('admin.assessments.index') }}"
+                   data-tooltip="Assessments"
+                   class="nav-link {{ Request::is('admin/assessments*') ? 'active' : '' }}">
+                    <span class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </span>
+                    <span class="nav-text">Assessments</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="{{ route('admin.exercises.index') }}"
+                   data-tooltip="Exercise Library"
+                   class="nav-link {{ Request::is('admin/exercises*') ? 'active' : '' }}">
+                    <span class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                        </svg>
+                    </span>
+                    <span class="nav-text">Exercise Library</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
                 <a href="{{ route('admin.patient-plans.index') }}"
                    data-tooltip="Patient Plans"
                    class="nav-link {{ Request::is('admin/patient-plans*') ? 'active' : '' }}">

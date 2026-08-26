@@ -18,6 +18,7 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientAppointmentController;
 use App\Http\Controllers\UserAddressController;
 use App\Http\Controllers\Admin\AdminEnquiryController;
+use App\Http\Controllers\Admin\AdminAssessmentController;
 
 Route::get('/doctor/{id}', [DoctorController::class, 'show'])->name('doctor.profile');
 
@@ -90,6 +91,16 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
     Route::get('/enquiries', [AdminEnquiryController::class, 'index'])->name('enquiries.index');
     Route::post('/enquiries/{id}/status', [AdminEnquiryController::class, 'updateStatus'])->name('enquiries.updateStatus');
     Route::delete('/enquiries/{id}', [AdminEnquiryController::class, 'destroy'])->name('enquiries.destroy');
+
+    // ── Assessments (Treatment Plans) ──────────────────────────
+    Route::get('/assessments', [AdminAssessmentController::class, 'index'])->name('assessments.index');
+    Route::get('/assessments/{id}', [AdminAssessmentController::class, 'show'])->name('assessments.show');
+
+    // ── Exercise Library ────────────────────────────────────────
+    Route::get('/exercises', [AdminAssessmentController::class, 'exercises'])->name('exercises.index');
+    Route::post('/exercises', [AdminAssessmentController::class, 'storeExercise'])->name('exercises.store');
+    Route::post('/exercises/{id}/toggle', [AdminAssessmentController::class, 'toggleExercise'])->name('exercises.toggle');
+    Route::delete('/exercises/{id}', [AdminAssessmentController::class, 'destroyExercise'])->name('exercises.destroy');
 
     Route::prefix('appointment-transfer-requests')->group(function () {
         Route::get('/', [AppointmentTransferRequestController::class, 'index'])->name('appointment-transfer-requests.index');

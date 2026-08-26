@@ -618,7 +618,261 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "11. Doctor App - Assessment & Treatment Plans",
+			"item": [
+				{
+					"name": "1. Doctor Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/doctor/dashboard",
+							"host": ["{{base_url}}"],
+							"path": ["doctor", "dashboard"]
+						}
+					}
+				},
+				{
+					"name": "2. Doctor Patient Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/doctor/patient/15",
+							"host": ["{{base_url}}"],
+							"path": ["doctor", "patient", "15"]
+						}
+					}
+				},
+				{
+					"name": "3. Doctor Patient Previous Assessments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/doctor/patient/15/assessments",
+							"host": ["{{base_url}}"],
+							"path": ["doctor", "patient", "15", "assessments"]
+						}
+					}
+				},
+				{
+					"name": "4. Step 1 - Select Condition (Specializations)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/assessment/conditions",
+							"host": ["{{base_url}}"],
+							"path": ["assessment", "conditions"]
+						}
+					}
+				},
+				{
+					"name": "5. Step 2 - Select Parameters Master",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/assessment/parameters",
+							"host": ["{{base_url}}"],
+							"path": ["assessment", "parameters"]
+						}
+					}
+				},
+				{
+					"name": "6. Steps 3-5 - Create Treatment Plan Assessment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"patient_id\": 15,\n  \"specialization_id\": 1,\n  \"baseline_score\": 7,\n  \"assessment_date\": \"2025-05-20\",\n  \"parameters\": [\n    { \"key\": \"pain_score\", \"label\": \"Pain Score (0–10)\", \"baseline_value\": 7, \"target_value\": 2, \"unit\": \"score\" },\n    { \"key\": \"lumbar_flexion\", \"label\": \"Lumbar Flexion (°)\", \"baseline_value\": 40, \"target_value\": 70, \"unit\": \"°\" },\n    { \"key\": \"lumbar_extension\", \"label\": \"Lumbar Extension (°)\", \"baseline_value\": 10, \"target_value\": 20, \"unit\": \"°\" },\n    { \"key\": \"walking_tolerance\", \"label\": \"Walking Tolerance (min)\", \"baseline_value\": 10, \"target_value\": 30, \"unit\": \"min\" }\n  ],\n  \"exercises\": [\n    { \"exercise_id\": 1, \"sets\": 3, \"reps\": 10, \"sort_order\": 1 },\n    { \"exercise_id\": 2, \"sets\": 3, \"reps\": 10, \"sort_order\": 2 },\n    { \"exercise_id\": 3, \"sets\": 3, \"reps\": 10, \"sort_order\": 3 }\n  ],\n  \"goal_text\": \"Reduce pain, improve mobility, core strength and functional ability to return to normal daily activities without discomfort.\",\n  \"goal_duration_weeks\": 8,\n  \"total_sessions\": 12,\n  \"expected_outcomes\": [\n    \"Pain score less than or equal to 2\",\n    \"Full pain free trunk movements\",\n    \"Improved core strength to good\",\n    \"Walk 30+ minutes without pain\",\n    \"Return to normal daily activities\"\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/assessment/create",
+							"host": ["{{base_url}}"],
+							"path": ["assessment", "create"]
+						}
+					}
+				},
+				{
+					"name": "7. Get Assessment Summary / Detail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/assessment/1",
+							"host": ["{{base_url}}"],
+							"path": ["assessment", "1"]
+						}
+					}
+				},
+				{
+					"name": "8. Edit / Update Assessment",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"baseline_score\": 6,\n  \"goal_duration_weeks\": 10,\n  \"total_sessions\": 15,\n  \"goal_text\": \"Updated treatment goal description.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/assessment/1",
+							"host": ["{{base_url}}"],
+							"path": ["assessment", "1"]
+						}
+					}
+				},
+				{
+					"name": "9. Plan Overview Tab",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/assessment/1/overview",
+							"host": ["{{base_url}}"],
+							"path": ["assessment", "1", "overview"]
+						}
+					}
+				},
+				{
+					"name": "10. Plan Progress Tab",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/assessment/1/progress",
+							"host": ["{{base_url}}"],
+							"path": ["assessment", "1", "progress"]
+						}
+					}
+				},
+				{
+					"name": "11. Plan Session History Tab",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/assessment/1/history",
+							"host": ["{{base_url}}"],
+							"path": ["assessment", "1", "history"]
+						}
+					}
+				},
+				{
+					"name": "12. Get Exercise Library (Filter by Condition)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/exercises?condition_id=1",
+							"host": ["{{base_url}}"],
+							"path": ["exercises"],
+							"query": [
+								{ "key": "condition_id", "value": "1" }
+							]
+						}
+					}
+				},
+				{
+					"name": "13. Doctor Today's Sessions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/doctor/sessions/today",
+							"host": ["{{base_url}}"],
+							"path": ["doctor", "sessions", "today"]
+						}
+					}
+				},
+				{
+					"name": "14. Start / Complete Next Session",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"assessment_id\": 1,\n  \"session_date\": \"2025-05-22\",\n  \"session_time\": \"10:30:00\",\n  \"notes\": \"Patient performed all 5 exercises with good form. Pain reduced from 7 to 5.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/session/start",
+							"host": ["{{base_url}}"],
+							"path": ["session", "start"]
+						}
+					}
+				},
+				{
+					"name": "15. Complete Specific Session with Notes",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"notes\": \"Completed session successfully.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/session/1/complete",
+							"host": ["{{base_url}}"],
+							"path": ["session", "1", "complete"]
+						}
+					}
+				}
+			]
 		}
 	]
 }
+
 

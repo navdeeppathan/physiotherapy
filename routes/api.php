@@ -132,28 +132,28 @@ Route::middleware(['auth:api', 'role:doctor'])->group(function () {
     Route::get('/doctor/patient/{patient_id}', [DoctorDashboardController::class, 'patientDetail']);
     Route::get('/doctor/patient/{patient_id}/assessments', [DoctorDashboardController::class, 'patientAssessments']);
 
+    // ── Conditions & Parameters Master (Step 1 & 2) ─────────────
+    Route::get('/assessment/conditions', [AssessmentController::class, 'conditions']);
+    Route::get('/assessment/parameters', [AssessmentController::class, 'parameters']);
+
     // ── Assessment CRUD ──────────────────────────────────────────
     Route::post('/assessment/create', [AssessmentController::class, 'create']);
-    Route::get('/assessment/{id}', [AssessmentController::class, 'show']);
-    Route::put('/assessment/{id}', [AssessmentController::class, 'update']);
+    Route::get('/assessment/{id}', [AssessmentController::class, 'show'])->where('id', '[0-9]+');
+    Route::put('/assessment/{id}', [AssessmentController::class, 'update'])->where('id', '[0-9]+');
 
     // ── Patient Plan Overview Tabs ───────────────────────────────
-    Route::get('/assessment/{id}/overview', [AssessmentController::class, 'overview']);
-    Route::get('/assessment/{id}/progress', [AssessmentController::class, 'progress']);
-    Route::get('/assessment/{id}/history', [AssessmentController::class, 'history']);
+    Route::get('/assessment/{id}/overview', [AssessmentController::class, 'overview'])->where('id', '[0-9]+');
+    Route::get('/assessment/{id}/progress', [AssessmentController::class, 'progress'])->where('id', '[0-9]+');
+    Route::get('/assessment/{id}/history', [AssessmentController::class, 'history'])->where('id', '[0-9]+');
 
     // ── Session Actions ──────────────────────────────────────────
     Route::get('/doctor/sessions/today', [AssessmentController::class, 'todaySessions']);
     Route::post('/session/start', [AssessmentController::class, 'startSession']);
-    Route::put('/session/{id}/complete', [AssessmentController::class, 'completeSession']);
+    Route::put('/session/{id}/complete', [AssessmentController::class, 'completeSession'])->where('id', '[0-9]+');
 
     // ── Exercise Library ─────────────────────────────────────────
     Route::get('/exercises', [ExerciseController::class, 'index']);
-    Route::get('/exercises/{id}', [ExerciseController::class, 'show']);
-
-    // ── Conditions (Step 1 from specializations) ─────────────────
-    Route::get('/assessment/conditions', [AssessmentController::class, 'conditions']);
-    Route::get('/assessment/parameters', [AssessmentController::class, 'parameters']);
+    Route::get('/exercises/{id}', [ExerciseController::class, 'show'])->where('id', '[0-9]+');
 });
 Route::middleware('auth:api')->get(
     '/payment-gateway-settings',

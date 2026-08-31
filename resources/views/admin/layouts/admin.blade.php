@@ -872,7 +872,7 @@
             </div>
 
             <div class="nav-item">
-                <a href="{{ route('admin.assessments.index') }}"
+                <a href="{{ Route::has('admin.assessments.index') ? route('admin.assessments.index') : url('admin/assessments') }}"
                    data-tooltip="Assessments"
                    class="nav-link {{ Request::is('admin/assessments*') ? 'active' : '' }}">
                     <span class="nav-icon">
@@ -886,7 +886,7 @@
             </div>
 
             <div class="nav-item">
-                <a href="{{ route('admin.exercises.index') }}"
+                <a href="{{ Route::has('admin.exercises.index') ? route('admin.exercises.index') : url('admin/exercises') }}"
                    data-tooltip="Exercise Library"
                    class="nav-link {{ Request::is('admin/exercises*') ? 'active' : '' }}">
                     <span class="nav-icon">
@@ -900,7 +900,7 @@
             </div>
 
             <div class="nav-item">
-                <a href="{{ route('admin.parameters.index') }}"
+                <a href="{{ Route::has('admin.parameters.index') ? route('admin.parameters.index') : url('admin/parameters') }}"
                    data-tooltip="Parameters"
                    class="nav-link {{ Request::is('admin/parameters*') ? 'active' : '' }}">
                     <span class="nav-icon">

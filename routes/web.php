@@ -19,6 +19,7 @@ use App\Http\Controllers\PatientAppointmentController;
 use App\Http\Controllers\UserAddressController;
 use App\Http\Controllers\Admin\AdminEnquiryController;
 use App\Http\Controllers\Admin\AdminAssessmentController;
+use App\Http\Controllers\Admin\AdminParameterController;
 
 Route::get('/doctor/{id}', [DoctorController::class, 'show'])->name('doctor.profile');
 
@@ -101,6 +102,13 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
     Route::post('/exercises', [AdminAssessmentController::class, 'storeExercise'])->name('exercises.store');
     Route::post('/exercises/{id}/toggle', [AdminAssessmentController::class, 'toggleExercise'])->name('exercises.toggle');
     Route::delete('/exercises/{id}', [AdminAssessmentController::class, 'destroyExercise'])->name('exercises.destroy');
+
+    // ── Assessment Parameters Management ────────────────────────
+    Route::get('/parameters', [AdminParameterController::class, 'index'])->name('parameters.index');
+    Route::post('/parameters', [AdminParameterController::class, 'store'])->name('parameters.store');
+    Route::post('/parameters/{id}/update', [AdminParameterController::class, 'update'])->name('parameters.update');
+    Route::post('/parameters/{id}/toggle', [AdminParameterController::class, 'toggleStatus'])->name('parameters.toggle');
+    Route::delete('/parameters/{id}', [AdminParameterController::class, 'destroy'])->name('parameters.destroy');
 
     Route::prefix('appointment-transfer-requests')->group(function () {
         Route::get('/', [AppointmentTransferRequestController::class, 'index'])->name('appointment-transfer-requests.index');

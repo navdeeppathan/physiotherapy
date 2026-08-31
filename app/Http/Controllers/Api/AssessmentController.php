@@ -9,6 +9,7 @@ use App\Models\AssessmentParameter;
 use App\Models\PatientAssessment;
 use App\Models\PatientSession;
 use App\Models\Specializations;
+use App\Models\MasterParameter;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -55,6 +56,30 @@ class AssessmentController extends BaseApiController
      */
     public function parameters()
     {
+        try {
+            $dbParams = MasterParameter::where('status', 'active')
+                ->orderBy('sort_order', 'asc')
+                ->get();
+
+            if ($dbParams->isNotEmpty()) {
+                $parameters = $dbParams->map(function ($p) {
+                    return [
+                        'id'       => $p->id,
+                        'key'      => $p->key,
+                        'label'    => $p->label,
+                        'unit'     => $p->unit,
+                        'icon_key' => $p->icon_key ?? $p->key,
+                        'icon_url' => $p->icon_url,
+                        'icon'     => $p->icon_url,
+                    ];
+                });
+
+                return $this->sendResponse($parameters, 'Parameters fetched successfully');
+            }
+        } catch (Exception $e) {
+            // Fallback if table not migrated yet
+        }
+
         $parameters = [
             [
                 'key'      => 'pain_score',

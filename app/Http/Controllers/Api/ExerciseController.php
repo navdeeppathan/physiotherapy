@@ -40,15 +40,15 @@ class ExerciseController extends BaseApiController
 
             $exercises = $query->orderBy('name')->get()->map(function ($ex) {
                 return [
-                    'id'            => $ex->id,
-                    'name'          => $ex->name,
-                    'description'   => $ex->description,
-                    'image'         => $ex->image ? asset($ex->image) : null,
-                    'video_url'     => $ex->video_url,
-                    'category'      => $ex->category,
-                    'sets_default'  => $ex->sets_default,
-                    'reps_default'  => $ex->reps_default,
-                    'duration_default' => $ex->duration_default,
+                    'id'                => $ex->id,
+                    'name'              => $ex->name,
+                    'description'       => $ex->description ?? "Perform {$ex->name} for {$ex->sets_default} sets of {$ex->reps_default} repetitions.",
+                    'image'             => $ex->image_url,
+                    'video_url'         => $ex->video_url ?? null,
+                    'category'          => $ex->category ?? 'general',
+                    'sets_default'      => $ex->sets_default ?? 3,
+                    'reps_default'      => $ex->reps_default ?? 10,
+                    'duration_default'  => $ex->duration_default ?? '30 sec',
                     'specialization_id' => $ex->specialization_id,
                 ];
             });
@@ -71,16 +71,17 @@ class ExerciseController extends BaseApiController
             $exercise = Exercise::with('specialization')->findOrFail($id);
 
             return $this->sendResponse([
-                'id'             => $exercise->id,
-                'name'           => $exercise->name,
-                'description'    => $exercise->description,
-                'image'          => $exercise->image ? asset($exercise->image) : null,
-                'video_url'      => $exercise->video_url,
-                'category'       => $exercise->category,
-                'sets_default'   => $exercise->sets_default,
-                'reps_default'   => $exercise->reps_default,
-                'duration_default' => $exercise->duration_default,
-                'specialization' => optional($exercise->specialization)->name,
+                'id'                => $exercise->id,
+                'name'              => $exercise->name,
+                'description'       => $exercise->description ?? "Perform {$exercise->name} for {$exercise->sets_default} sets of {$exercise->reps_default} repetitions.",
+                'image'             => $exercise->image_url,
+                'video_url'         => $exercise->video_url ?? null,
+                'category'          => $exercise->category ?? 'general',
+                'sets_default'      => $exercise->sets_default ?? 3,
+                'reps_default'      => $exercise->reps_default ?? 10,
+                'duration_default'  => $exercise->duration_default ?? '30 sec',
+                'specialization'    => optional($exercise->specialization)->name,
+                'specialization_id' => $exercise->specialization_id,
             ], 'Exercise detail fetched successfully');
 
         } catch (Exception $e) {

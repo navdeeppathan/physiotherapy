@@ -35,11 +35,20 @@ class Exercise extends Model
     }
 
     /**
-     * Get full image URL
+     * Get full image URL with category fallback
      */
-    public function getImageUrlAttribute(): ?string
+    public function getImageUrlAttribute(): string
     {
-        if (!$this->image) return null;
-        return str_starts_with($this->image, 'http') ? $this->image : asset($this->image);
+        if ($this->image) {
+            return str_starts_with($this->image, 'http') ? $this->image : asset($this->image);
+        }
+
+        $category = strtolower($this->category ?? 'general');
+        $fallback = "assets/img/exercises/{$category}.svg";
+        if (file_exists(public_path($fallback))) {
+            return url($fallback);
+        }
+
+        return url('assets/img/exercises/general.svg');
     }
 }

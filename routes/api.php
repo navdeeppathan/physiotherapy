@@ -84,9 +84,13 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/appointment/{id}/cancellation-preview', [AppointmentController::class, 'cancellationPreview']);
 
     Route::get('/cancellation-reasons',[AppointmentController::class, 'getCancellationReasons']);
+
+    // ── Exercise Library & Assessment Masters (Accessible to all authenticated users) ──
+    Route::get('/exercises', [ExerciseController::class, 'index']);
+    Route::get('/exercises/{id}', [ExerciseController::class, 'show'])->where('id', '[0-9]+');
+    Route::get('/assessment/conditions', [AssessmentController::class, 'conditions']);
+    Route::get('/assessment/parameters', [AssessmentController::class, 'parameters']);
 });
-
-
 
 Route::middleware(['auth:api', 'role:doctor'])->group(function () {
 
@@ -132,10 +136,6 @@ Route::middleware(['auth:api', 'role:doctor'])->group(function () {
     Route::get('/doctor/patient/{patient_id}', [DoctorDashboardController::class, 'patientDetail']);
     Route::get('/doctor/patient/{patient_id}/assessments', [DoctorDashboardController::class, 'patientAssessments']);
 
-    // ── Conditions & Parameters Master (Step 1 & 2) ─────────────
-    Route::get('/assessment/conditions', [AssessmentController::class, 'conditions']);
-    Route::get('/assessment/parameters', [AssessmentController::class, 'parameters']);
-
     // ── Assessment CRUD ──────────────────────────────────────────
     Route::post('/assessment/create', [AssessmentController::class, 'create']);
     Route::get('/assessment/{id}', [AssessmentController::class, 'show'])->where('id', '[0-9]+');
@@ -150,11 +150,8 @@ Route::middleware(['auth:api', 'role:doctor'])->group(function () {
     Route::get('/doctor/sessions/today', [AssessmentController::class, 'todaySessions']);
     Route::post('/session/start', [AssessmentController::class, 'startSession']);
     Route::put('/session/{id}/complete', [AssessmentController::class, 'completeSession'])->where('id', '[0-9]+');
-
-    // ── Exercise Library ─────────────────────────────────────────
-    Route::get('/exercises', [ExerciseController::class, 'index']);
-    Route::get('/exercises/{id}', [ExerciseController::class, 'show'])->where('id', '[0-9]+');
 });
+
 Route::middleware('auth:api')->get(
     '/payment-gateway-settings',
     [PaymentGatewayController::class, 'settings']

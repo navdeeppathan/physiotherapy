@@ -412,6 +412,26 @@
 							"path": ["patient-plans", "subscribe"]
 						}
 					}
+				},
+				{
+					"name": "Check Plan Appointment Completed",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"patient_id\": 12\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/patient/check-plan-appointment-completed",
+							"host": ["{{base_url}}"],
+							"path": ["patient", "check-plan-appointment-completed"]
+						}
+					}
 				}
 			]
 		},

@@ -76,6 +76,7 @@ Route::middleware('auth:api')->group(function () {
     // Patient Plans
     Route::get('/patient-plans', [PatientPlanController::class, 'index']);
     Route::post('/patient-plans/subscribe', [PatientPlanController::class, 'subscribe']);
+    Route::match(['get', 'post'], '/patient/check-plan-appointment-completed', [PatientPlanController::class, 'checkPlanAppointmentCompleted']);
 
     // Expire subscriptions
     Route::get('/expire-subscriptions', [UserSubscriptionController::class, 'expireSubscriptions']);

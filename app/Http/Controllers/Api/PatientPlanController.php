@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Models\PatientPlan;
 use App\Models\PatientPlanSubscription;
+use App\Models\Appointment;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class PatientPlanController extends BaseApiController
 {
@@ -141,6 +144,87 @@ class PatientPlanController extends BaseApiController
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Check Plan Appointment Completed
+    |--------------------------------------------------------------------------
+    | POST/GET /api/patient/check-plan-appointment-completed
+    */
+    public function checkPlanAppointmentCompleted(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'patient_id' => 'required|integer|exists:users,id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $validator->errors()->first(),
+                    'errors'  => $validator->errors(),
+                ], 422);
+            }
+
+            $patientId = (int) $request->patient_id;
+            $today = Carbon::today()->format('Y-m-d');
+
+            // 1. Find patient's active / currently taken plan subscription
+            $subscription = PatientPlanSubscription::where('patient_id', $patientId)
+                ->where('status', 'active')
+                ->latest('id')
+                ->first();
+
+            // Fallback: Check latest subscription if no status='active'
+            if (!$subscription) {
+                $subscription = PatientPlanSubscription::where('patient_id', $patientId)
+                    ->latest('id')
+                    ->first();
+            }
+
+            // 2. If no plan taken
+            if (!$subscription) {
+                return response()->json([
+                    'success'               => true,
+                    'patient_id'            => $patientId,
+                    'appointment_completed' => false,
+                    'message'               => 'Patient has no active plan',
+                ], 200);
+            }
+
+            // 3. Check for at least one completed appointment under that plan up to current date
+            $query = Appointment::where('patient_id', $patientId)
+                ->where('status', 'completed')
+                ->where('appointment_date', '<=', $today);
+
+            if ($subscription->start_date) {
+                $startDate = Carbon::parse($subscription->start_date)->format('Y-m-d');
+                $query->where('appointment_date', '>=', $startDate);
+            }
+
+            if ($subscription->end_date) {
+                $endDate = Carbon::parse($subscription->end_date)->format('Y-m-d');
+                $query->where('appointment_date', '<=', min($today, $endDate));
+            }
+
+            // High performance exists() check
+            $hasCompletedAppointment = $query->exists();
+
+            // 4. Return formatted response
+            return response()->json([
+                'success'               => true,
+                'patient_id'            => $patientId,
+                'appointment_completed' => $hasCompletedAppointment,
+            ], 200);
+
+        } catch (\Exception $e) {
+            $this->logException($e, 'Check Plan Appointment Completed Error');
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
             ], 500);
         }
     }

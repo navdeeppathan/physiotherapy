@@ -85,126 +85,229 @@ class DoctorAvailabilityController extends BaseApiController
     public function store(Request $request)
     {
         try {
-
-            $request->validate([
-                'start_date' => 'required|date',
-                'end_date'   => 'required|date|after_or_equal:start_date',
-                'start_time' => 'required|date_format:H:i',
-                'end_time'   => 'required|date_format:H:i|after:start_time'
-            ]);
-
             $user = Auth::user();
 
-            if ($user->role !== 'doctor') {
-                return $this->sendError(
-                    'Unauthorized access',
-                    [],
-                    403
-                );
+            if (!$user || $user->role !== 'doctor') {
+                return $this->sendError('Unauthorized access', [], 403);
             }
 
+            // Determine Date Range: single date (available_date/date) or range (start_date, end_date)
+            $startDate = $request->input('start_date') ?? $request->input('available_date') ?? $request->input('date');
+            $endDate   = $request->input('end_date') ?? $startDate;
+
+            if (!$startDate) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Please provide start_date or available_date'
+                ], 422);
+            }
+
+            $startDateObj = Carbon::parse($startDate);
+            $endDateObj   = Carbon::parse($endDate);
+
+            if ($startDateObj > $endDateObj) {
+                $endDateObj = $startDateObj->copy();
+            }
+
+            $period = CarbonPeriod::create($startDateObj->format('Y-m-d'), $endDateObj->format('Y-m-d'));
+
+            // Check if explicit slots array provided
+            $explicitSlots = $request->input('slots'); // e.g. [{"start_time": "09:00 AM", "end_time": "10:00 AM"}]
+            $startTime     = $request->input('start_time');
+            $endTime       = $request->input('end_time');
+            $slotDuration  = (int) ($request->input('slot_duration') ?? 60);
+            if ($slotDuration <= 0) {
+                $slotDuration = 60;
+            }
+
+            // If neither slots nor start_time provided, default to common clinic slots (09:00 to 17:00)
+            if (empty($explicitSlots) && empty($startTime)) {
+                $startTime = '09:00';
+                $endTime   = '17:00';
+            }
 
             $createdAvailability = [];
 
-            // Date Range
-            $period = CarbonPeriod::create(
-                $request->start_date,
-                $request->end_date
-            );
-
-
             foreach ($period as $date) {
+                $dateStr = $date->format('Y-m-d');
 
-
-                // Avoid duplicate date
+                // 1. Avoid duplicate availability date record
                 $availability = DoctorAvailabilityDate::firstOrCreate(
                     [
-                        'user_id' => $user->id,
-                        'available_date' => $date->format('Y-m-d')
+                        'user_id'        => $user->id,
+                        'available_date' => $dateStr
                     ],
                     [
-                        'is_available' => true
+                        'is_available'   => true
                     ]
                 );
 
-
-                $start = Carbon::createFromFormat(
-                    'H:i',
-                    $request->start_time
-                );
-
-                $end = Carbon::createFromFormat(
-                    'H:i',
-                    $request->end_time
-                );
-
+                // Ensure it's marked available
+                if (!$availability->is_available) {
+                    $availability->update(['is_available' => true]);
+                }
 
                 $slots = [];
 
+                // 2. Process explicit slots array if present
+                if (!empty($explicitSlots) && is_array($explicitSlots)) {
+                    foreach ($explicitSlots as $slotItem) {
+                        $rawStart = $slotItem['start_time'] ?? null;
+                        $rawEnd   = $slotItem['end_time'] ?? null;
 
-                while ($start < $end) {
+                        if ($rawStart) {
+                            $slotStart = Carbon::parse($rawStart)->format('H:i:s');
+                            $slotEnd   = $rawEnd 
+                                ? Carbon::parse($rawEnd)->format('H:i:s')
+                                : Carbon::parse($rawStart)->addMinutes($slotDuration)->format('H:i:s');
 
+                            $slot = DoctorTimeSlot::firstOrCreate(
+                                [
+                                    'user_id'              => $user->id,
+                                    'availability_date_id' => $availability->id,
+                                    'start_time'           => $slotStart,
+                                    'end_time'             => $slotEnd,
+                                ],
+                                [
+                                    'is_booked' => false,
+                                ]
+                            );
+                            $slots[] = $slot;
+                        }
+                    }
+                }
+                // 3. Process time range (start_time to end_time)
+                elseif (!empty($startTime) && !empty($endTime)) {
+                    $start = Carbon::parse($startTime);
+                    $end   = Carbon::parse($endTime);
 
-                    $slotStart = $start->format('H:i:s');
-
-                    $start->addMinutes(60);
-
-                    $slotEnd = $start->format('H:i:s');
-
-
-                    if ($start <= $end) {
-
-
-                        // Avoid duplicate slots
-                        $slot = DoctorTimeSlot::firstOrCreate(
-                            [
-                                'user_id' => $user->id,
-                                'availability_date_id' => $availability->id,
-                                'start_time' => $slotStart,
-                                'end_time' => $slotEnd
-                            ],
-                            [
-                                'is_booked' => false
-                            ]
-                        );
-
-
-                        $slots[] = $slot;
-
+                    // If end is before or equal to start, adjust end
+                    if ($end <= $start) {
+                        $end = $start->copy()->addHours(1);
                     }
 
-                }
+                    // If total range is less than duration, create 1 slot for that range
+                    if ($start->diffInMinutes($end) < $slotDuration) {
+                        $slotStart = $start->format('H:i:s');
+                        $slotEnd   = $end->format('H:i:s');
 
+                        $slot = DoctorTimeSlot::firstOrCreate(
+                            [
+                                'user_id'              => $user->id,
+                                'availability_date_id' => $availability->id,
+                                'start_time'           => $slotStart,
+                                'end_time'             => $slotEnd,
+                            ],
+                            [
+                                'is_booked' => false,
+                            ]
+                        );
+                        $slots[] = $slot;
+                    } else {
+                        while ($start < $end) {
+                            $slotStart = $start->format('H:i:s');
+                            $start->addMinutes($slotDuration);
+                            $slotEnd   = ($start <= $end) ? $start->format('H:i:s') : $end->format('H:i:s');
+
+                            $slot = DoctorTimeSlot::firstOrCreate(
+                                [
+                                    'user_id'              => $user->id,
+                                    'availability_date_id' => $availability->id,
+                                    'start_time'           => $slotStart,
+                                    'end_time'             => $slotEnd,
+                                ],
+                                [
+                                    'is_booked' => false,
+                                ]
+                            );
+                            $slots[] = $slot;
+                        }
+                    }
+                }
 
                 $createdAvailability[] = [
                     'availability' => $availability,
-                    'slots' => $slots
+                    'slots'        => $slots,
                 ];
-
             }
-
 
             return $this->sendResponse(
                 $createdAvailability,
-                'Availability created successfully'
+                'Availability and slots created successfully'
             );
-
 
         } catch (Exception $e) {
-
-
-            $this->logException(
-                $e,
-                'Doctor Availability Create Error'
-            );
-
-
+            $this->logException($e, 'Doctor Availability Create Error');
             return response()->json([
-                'status' => false,
+                'status'  => false,
                 'message' => 'Something went wrong',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage(),
             ], 500);
+        }
+    }
 
+    /**
+     * Auto-generate slots for dates that have 0 slots
+     * POST /api/doctor/availability/generate-missing-slots
+     */
+    public function generateMissingSlots(Request $request)
+    {
+        try {
+            $user = Auth::user();
+
+            if (!$user || $user->role !== 'doctor') {
+                return $this->sendError('Unauthorized access', [], 403);
+            }
+
+            $doctorId     = $user->id;
+            $slotDuration = (int) ($request->input('slot_duration') ?? 60);
+            $startTime    = $request->input('start_time') ?? '09:00';
+            $endTime      = $request->input('end_time') ?? '17:00';
+
+            // Find all availability dates for this doctor that have 0 time slots
+            $emptyDates = DoctorAvailabilityDate::where('user_id', $doctorId)
+                ->whereDoesntHave('timeSlots')
+                ->orderBy('available_date', 'asc')
+                ->get();
+
+            $totalCreated = 0;
+
+            foreach ($emptyDates as $avail) {
+                $start = Carbon::parse($startTime);
+                $end   = Carbon::parse($endTime);
+
+                while ($start < $end) {
+                    $slotStart = $start->format('H:i:s');
+                    $start->addMinutes($slotDuration);
+                    $slotEnd   = ($start <= $end) ? $start->format('H:i:s') : $end->format('H:i:s');
+
+                    DoctorTimeSlot::firstOrCreate(
+                        [
+                            'user_id'              => $doctorId,
+                            'availability_date_id' => $avail->id,
+                            'start_time'           => $slotStart,
+                            'end_time'             => $slotEnd,
+                        ],
+                        [
+                            'is_booked' => false,
+                        ]
+                    );
+                    $totalCreated++;
+                }
+            }
+
+            return $this->sendResponse([
+                'dates_processed' => $emptyDates->count(),
+                'slots_created'   => $totalCreated,
+            ], "Generated slots for {$emptyDates->count()} dates successfully");
+
+        } catch (Exception $e) {
+            $this->logException($e, 'Generate Missing Slots Error');
+            return response()->json([
+                'status'  => false,
+                'message' => 'Something went wrong',
+                'error'   => $e->getMessage(),
+            ], 500);
         }
     }
 

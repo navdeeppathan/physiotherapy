@@ -17,12 +17,14 @@ class AssessmentParameter extends Model
         'parameter_label',
         'unit',
         'baseline_value',
+        'current_value',
         'target_value',
         'sort_order',
     ];
 
     protected $casts = [
         'baseline_value' => 'float',
+        'current_value'  => 'float',
         'target_value'   => 'float',
     ];
 

@@ -707,6 +707,21 @@
 					}
 				},
 				{
+					"name": "3.1. Doctor Patient Active Assessment (2nd Appointment View)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/doctor/patient/15/active-assessment",
+							"host": ["{{base_url}}"],
+							"path": ["doctor", "patient", "15", "active-assessment"]
+						}
+					}
+				},
+				{
 					"name": "4. Step 1 - Select Condition (Specializations)",
 					"request": {
 						"method": "GET",
@@ -737,7 +752,7 @@
 					}
 				},
 				{
-					"name": "6. Steps 3-5 - Create Treatment Plan Assessment",
+					"name": "6. Steps 3-5 - Create Treatment Plan Assessment (1st Appointment)",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -791,6 +806,42 @@
 						}
 					}
 				},
+				{
+					"name": "8.1. Record Follow-up Session Progress (2nd Appointment)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"session_notes\": \"Patient reports 40% less lower back stiffness. Lumbar flexion improved to 55 degrees.\",\n  \"mark_session_completed\": true,\n  \"parameters\": [\n    { \"key\": \"pain_score\", \"current_value\": 5, \"target_value\": 2 },\n    { \"key\": \"lumbar_flexion\", \"current_value\": 55, \"target_value\": 70 },\n    { \"key\": \"walking_tolerance\", \"current_value\": 20, \"target_value\": 30 }\n  ],\n  \"exercises\": [\n    { \"exercise_id\": 1, \"sets\": 3, \"reps\": 12, \"duration\": \"5 sec hold\" },\n    { \"exercise_id\": 2, \"sets\": 3, \"reps\": 12, \"duration\": \"20 sec hold\" },\n    { \"exercise_id\": 4, \"sets\": 3, \"reps\": 10, \"duration\": \"5 sec hold\" }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/assessment/1/progress-update",
+							"host": ["{{base_url}}"],
+							"path": ["assessment", "1", "progress-update"]
+						}
+					}
+				},
+				{
+					"name": "8.2. Get Clinical Progress Report",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/assessment/1/progress-report",
+							"host": ["{{base_url}}"],
+							"path": ["assessment", "1", "progress-report"]
+						}
+					}
+				},
+
 				{
 					"name": "9. Plan Overview Tab",
 					"request": {

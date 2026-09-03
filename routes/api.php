@@ -137,11 +137,15 @@ Route::middleware(['auth:api', 'role:doctor'])->group(function () {
     // ── Patient Detail & Records (Doctor view) ───────────────────
     Route::get('/doctor/patient/{patient_id}', [DoctorDashboardController::class, 'patientDetail']);
     Route::get('/doctor/patient/{patient_id}/assessments', [DoctorDashboardController::class, 'patientAssessments']);
+    Route::get('/doctor/patient/{patient_id}/active-assessment', [AssessmentController::class, 'patientActiveAssessment'])->where('patient_id', '[0-9]+');
 
-    // ── Assessment CRUD ──────────────────────────────────────────
+    // ── Assessment CRUD & Follow-up Progress ─────────────────────
     Route::post('/assessment/create', [AssessmentController::class, 'create']);
     Route::get('/assessment/{id}', [AssessmentController::class, 'show'])->where('id', '[0-9]+');
     Route::put('/assessment/{id}', [AssessmentController::class, 'update'])->where('id', '[0-9]+');
+    Route::post('/assessment/{id}/progress-update', [AssessmentController::class, 'recordProgress'])->where('id', '[0-9]+');
+    Route::put('/assessment/{id}/progress-update', [AssessmentController::class, 'recordProgress'])->where('id', '[0-9]+');
+    Route::get('/assessment/{id}/progress-report', [AssessmentController::class, 'progressReport'])->where('id', '[0-9]+');
 
     // ── Patient Plan Overview Tabs ───────────────────────────────
     Route::get('/assessment/{id}/overview', [AssessmentController::class, 'overview'])->where('id', '[0-9]+');

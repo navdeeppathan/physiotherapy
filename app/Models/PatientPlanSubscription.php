@@ -12,6 +12,7 @@ class PatientPlanSubscription extends Model
     protected $table = 'patient_plan_subscriptions';
 
     protected $fillable = [
+        'unique_plan_id',
         'patient_id',
         'patient_plan_id',
         'start_date',
@@ -31,6 +32,18 @@ class PatientPlanSubscription extends Model
         'remaining_appointments' => 'integer',
     ];
 
+    /**
+     * Generate unique plan ID
+     * e.g., PLN-20260907-P11-9A8B
+     */
+    public static function generateUniquePlanId($patientId = null): string
+    {
+        $dateStr = date('Ymd');
+        $patStr  = $patientId ? "P{$patientId}" : 'PAT';
+        $randStr = strtoupper(substr(bin2hex(random_bytes(3)), 0, 5));
+        return "PLN-{$dateStr}-{$patStr}-{$randStr}";
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Relationships
@@ -47,6 +60,12 @@ class PatientPlanSubscription extends Model
     public function plan()
     {
         return $this->belongsTo(PatientPlan::class, 'patient_plan_id');
+    }
+
+    // Appointments booked under this unique plan purchase
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'patient_plan_subscription_id');
     }
 
     /*

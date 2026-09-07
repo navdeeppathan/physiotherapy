@@ -11,6 +11,9 @@ class Appointment extends Model
     protected $fillable = [
         'doctor_id',
         'patient_id',
+        'patient_plan_id',
+        'patient_plan_subscription_id',
+        'unique_plan_id',
         'patient_name',
         'patient_age',
 
@@ -56,6 +59,22 @@ class Appointment extends Model
     public function patient()
     {
         return $this->belongsTo(User::class, 'patient_id');
+    }
+
+    /**
+     * Template Plan
+     */
+    public function plan()
+    {
+        return $this->belongsTo(PatientPlan::class, 'patient_plan_id');
+    }
+
+    /**
+     * Unique Plan Purchase Subscription
+     */
+    public function subscription()
+    {
+        return $this->belongsTo(PatientPlanSubscription::class, 'patient_plan_subscription_id');
     }
     
     

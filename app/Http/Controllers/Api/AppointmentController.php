@@ -94,80 +94,15 @@ class AppointmentController extends BaseApiController
                 );
             }
 
-            $appointments = [];
-            $appointmentIds = [];
-
-            foreach ($slots as $slot) {
-
-                if ($slot->is_booked) {
-                    DB::rollBack();
-                    return $this->sendError(
-                        "Slot {$slot->id} already booked.",
-                        [],
-                        400
-                    );
-                }
-
-                $appointment = Appointment::create([
-
-                    'doctor_id' => $request->doctor_id,
-                    'patient_id' => $patient->id,
-                    'time_slot_id' => $slot->id,
-                    'transaction_id' => $request->payment_gateway_responce['razorpay_payment_id']
-                        ?? 'TX-' . time() . '-' . rand(1000,9999),
-                    'appointment_date' => $slot->availabilityDate->available_date,
-                    'start_time' => $slot->start_time,
-                    'end_time' => $slot->end_time,
-                    'payment_gateway_responce' =>
-                        json_encode($request->payment_gateway_responce),
-                    'status' => 'confirmed',
-                    'booking_for' => $request->booking_for,
-                    'patient_name' => $request->patient_name,
-                    'patient_age' => $request->patient_age,
-                    'patient_gender' => $request->patient_gender,
-                    'problem_description' => $request->problem_description,
-                    'patient_address' => $request->address,
-
-                ]);
-
-
-                
-                
-
-                $slot->update([
-                    'is_booked' => true
-                ]);
-
-                $appointments[] = $appointment;
-                $appointmentIds[] = $appointment->id;
-            }
-
-            Payment::create([
-                // First appointment (optional)
-                'appointment_id' => $appointmentIds[0],
-
-                // All appointment ids
-                'appointment_ids' => $appointmentIds,
-
-                'transaction_id' => $request->payment_gateway_responce['razorpay_payment_id']
-                    ?? 'TX-' . time() . '-' . rand(1000,9999),
-
-                'patient_id' => $patient->id,
-                'doctor_id' => $request->doctor_id,
-                'amount' => $request->doctor_fee,
-                'currency' => 'INR',
-                'status' => 'success',
-            ]);
-
             // Auto-create Patient Plan Subscription if plan_id is passed OR multiple slots booked together
             $subscription = null;
             $planId = $request->input('patient_plan_id') ?? $request->input('plan_id');
 
             if ($planId) {
                 $plan = PatientPlan::find($planId);
-            } else if (count($appointments) > 1) {
+            } else if (count($slots) > 1) {
                 // Find matching plan by appointment count or default active plan
-                $plan = PatientPlan::where('total_appointments', count($appointments))->first()
+                $plan = PatientPlan::where('total_appointments', count($slots))->first()
                     ?? PatientPlan::where('status', 'active')->first();
             } else {
                 $plan = null;
@@ -196,9 +131,11 @@ class AppointmentController extends BaseApiController
                         break;
                 }
 
-                $totalAppts = (int) ($plan->total_appointments ?? count($appointments));
+                $totalAppts   = (int) ($plan->total_appointments ?? count($slots));
+                $uniquePlanId = PatientPlanSubscription::generateUniquePlanId($patient->id);
 
                 $subscription = PatientPlanSubscription::create([
+                    'unique_plan_id'         => $uniquePlanId,
                     'patient_id'             => $patient->id,
                     'patient_plan_id'        => $plan->id,
                     'start_date'             => $start->toDateString(),
@@ -211,6 +148,70 @@ class AppointmentController extends BaseApiController
                     'status'                 => 'active',
                 ]);
             }
+
+            $appointments = [];
+            $appointmentIds = [];
+
+            foreach ($slots as $slot) {
+
+                if ($slot->is_booked) {
+                    DB::rollBack();
+                    return $this->sendError(
+                        "Slot {$slot->id} already booked.",
+                        [],
+                        400
+                    );
+                }
+
+                $appointment = Appointment::create([
+
+                    'doctor_id'                    => $request->doctor_id,
+                    'patient_id'                   => $patient->id,
+                    'patient_plan_id'              => $plan ? $plan->id : null,
+                    'patient_plan_subscription_id' => $subscription ? $subscription->id : null,
+                    'unique_plan_id'               => $subscription ? $subscription->unique_plan_id : null,
+                    'time_slot_id'                 => $slot->id,
+                    'transaction_id'               => $request->payment_gateway_responce['razorpay_payment_id']
+                        ?? 'TX-' . time() . '-' . rand(1000,9999),
+                    'appointment_date'             => $slot->availabilityDate->available_date,
+                    'start_time'                   => $slot->start_time,
+                    'end_time'                     => $slot->end_time,
+                    'payment_gateway_responce'     =>
+                        json_encode($request->payment_gateway_responce),
+                    'status'                       => 'confirmed',
+                    'booking_for'                  => $request->booking_for,
+                    'patient_name'                 => $request->patient_name,
+                    'patient_age'                  => $request->patient_age,
+                    'patient_gender'               => $request->patient_gender,
+                    'problem_description'          => $request->problem_description,
+                    'patient_address'              => $request->address,
+
+                ]);
+
+                $slot->update([
+                    'is_booked' => true
+                ]);
+
+                $appointments[] = $appointment;
+                $appointmentIds[] = $appointment->id;
+            }
+
+            Payment::create([
+                // First appointment (optional)
+                'appointment_id' => $appointmentIds[0],
+
+                // All appointment ids
+                'appointment_ids' => $appointmentIds,
+
+                'transaction_id' => $request->payment_gateway_responce['razorpay_payment_id']
+                    ?? 'TX-' . time() . '-' . rand(1000,9999),
+
+                'patient_id' => $patient->id,
+                'doctor_id' => $request->doctor_id,
+                'amount' => $request->doctor_fee,
+                'currency' => 'INR',
+                'status' => 'success',
+            ]);
 
             DB::commit();
 
@@ -651,11 +652,18 @@ class AppointmentController extends BaseApiController
                 'status' => 'completed',
             ]);
 
-            // 2. Update patient plan subscription if active
-            $subscription = PatientPlanSubscription::where('patient_id', $appointment->patient_id)
-                ->where('status', 'active')
-                ->latest('id')
-                ->first();
+            // 2. Update patient plan subscription if linked directly or active
+            $subscription = null;
+            if ($appointment->patient_plan_subscription_id) {
+                $subscription = PatientPlanSubscription::find($appointment->patient_plan_subscription_id);
+            } elseif (!empty($appointment->unique_plan_id)) {
+                $subscription = PatientPlanSubscription::where('unique_plan_id', $appointment->unique_plan_id)->first();
+            } else {
+                $subscription = PatientPlanSubscription::where('patient_id', $appointment->patient_id)
+                    ->where('status', 'active')
+                    ->latest('id')
+                    ->first();
+            }
 
             if ($subscription) {
                 $subscription->increment('used_appointments');

@@ -114,10 +114,12 @@ class PatientPlanController extends BaseApiController
                 default:
                     $endDate = $startDate->copy()->addMonth();
                     break;
-            }
+            }            // Generate Unique Plan Code (e.g. PLN-20260907-P11-9A8B)
+            $uniquePlanId = PatientPlanSubscription::generateUniquePlanId($patientId);
 
             // Create Subscription
             $subscription = PatientPlanSubscription::create([
+                'unique_plan_id'         => $uniquePlanId,
                 'patient_id'             => (int) $patientId,
                 'patient_plan_id'        => $plan->id,
                 'start_date'             => $startDate->toDateString(),
@@ -132,6 +134,7 @@ class PatientPlanController extends BaseApiController
 
             return $this->sendResponse([
                 'subscription_id'        => $subscription->id,
+                'unique_plan_id'         => $subscription->unique_plan_id,
                 'patient_id'             => $subscription->patient_id,
                 'patient_plan_id'        => $subscription->patient_plan_id,
                 'plan_name'              => $plan->name,
@@ -163,34 +166,73 @@ class PatientPlanController extends BaseApiController
     |--------------------------------------------------------------------------
     | Check Plan Appointment Completed
     |--------------------------------------------------------------------------
-    | POST/GET /api/patient/check-plan-appointment-completed
+    | Supports: appointment_id, unique_plan_id, patient_id
     */
     public function checkPlanAppointmentCompleted(Request $request)
     {
         try {
-            $patientId = $request->patient_id ?? Auth::id() ?? auth('api')->id();
+            $appointmentId = $request->input('appointment_id');
+            $uniquePlanId  = $request->input('unique_plan_id') ?? $request->input('subscription_id');
+            $patientId     = $request->input('patient_id') ?? Auth::id() ?? auth('api')->id();
 
-            if (!$patientId) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'The patient_id field is required.',
-                ], 422);
+            $appointment   = null;
+            $subscription  = null;
+
+            // Scenario 1: Check by specific appointment_id
+            if (!empty($appointmentId) && is_numeric($appointmentId)) {
+                $appointment = Appointment::with(['plan', 'subscription.plan'])->find($appointmentId);
+
+                if (!$appointment) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Appointment with ID {$appointmentId} not found.",
+                    ], 404);
+                }
+
+                $patientId = $appointment->patient_id;
+
+                if ($appointment->subscription) {
+                    $subscription = $appointment->subscription;
+                } elseif ($appointment->patient_plan_subscription_id) {
+                    $subscription = PatientPlanSubscription::with('plan')->find($appointment->patient_plan_subscription_id);
+                } elseif (!empty($appointment->unique_plan_id)) {
+                    $subscription = PatientPlanSubscription::with('plan')->where('unique_plan_id', $appointment->unique_plan_id)->first();
+                }
             }
 
-            $patientId = (int) $patientId;
-            $today     = Carbon::today()->format('Y-m-d');
+            // Scenario 2: Check by unique_plan_id or subscription_id
+            if (!$subscription && !empty($uniquePlanId)) {
+                $subscription = PatientPlanSubscription::with('plan')
+                    ->where('unique_plan_id', $uniquePlanId)
+                    ->orWhere('id', is_numeric($uniquePlanId) ? (int)$uniquePlanId : 0)
+                    ->first();
 
-            // 1. Find patient's latest plan subscription (with plan relationship)
-            $subscription = PatientPlanSubscription::with('plan')
-                ->where('patient_id', $patientId)
-                ->latest('id')
-                ->first();
+                if ($subscription) {
+                    $patientId = $subscription->patient_id;
+                }
+            }
 
-            // 2. If no plan taken
+            // Scenario 3: Fallback to latest subscription for patient_id
+            if (!$subscription) {
+                if (!$patientId) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Either appointment_id, unique_plan_id, or patient_id is required.',
+                    ], 422);
+                }
+
+                $subscription = PatientPlanSubscription::with('plan')
+                    ->where('patient_id', (int) $patientId)
+                    ->latest('id')
+                    ->first();
+            }
+
+            // If still no subscription found for patient
             if (!$subscription) {
                 return response()->json([
                     'success'               => true,
-                    'patient_id'            => $patientId,
+                    'patient_id'            => (int) $patientId,
+                    'appointment_id'        => $appointment ? $appointment->id : null,
                     'has_plan'              => false,
                     'appointment_completed' => false,
                     'latest_plan'           => null,
@@ -198,31 +240,45 @@ class PatientPlanController extends BaseApiController
                 ], 200);
             }
 
-            // 3. Check for at least one completed appointment under that plan up to current date
-            $query = Appointment::where('patient_id', $patientId)
-                ->where('status', 'completed')
-                ->where('appointment_date', '<=', $today);
+            // Check completion status for this unique subscription batch
+            $today = Carbon::today()->format('Y-m-d');
 
-            if ($subscription->start_date) {
-                $startDate = Carbon::parse($subscription->start_date)->format('Y-m-d');
-                $query->where('appointment_date', '>=', $startDate);
+            // 1. Specific appointment completion (if appointment was provided)
+            $thisApptCompleted = $appointment ? ($appointment->status === 'completed') : false;
+
+            // 2. Any appointment under this unique plan purchase completed
+            $subApptsQuery = Appointment::where('patient_plan_subscription_id', $subscription->id)
+                ->where('status', 'completed');
+
+            $hasCompletedAppointment = $thisApptCompleted 
+                || ($subscription->used_appointments > 0)
+                || $subApptsQuery->exists();
+
+            // 3. Fallback date range check if appointments weren't tagged with subscription_id previously
+            if (!$hasCompletedAppointment && $subscription->start_date) {
+                $dateQuery = Appointment::where('patient_id', $subscription->patient_id)
+                    ->where('status', 'completed')
+                    ->where('appointment_date', '>=', Carbon::parse($subscription->start_date)->format('Y-m-d'))
+                    ->where('appointment_date', '<=', $today);
+
+                if ($subscription->end_date) {
+                    $dateQuery->where('appointment_date', '<=', Carbon::parse($subscription->end_date)->format('Y-m-d'));
+                }
+
+                $hasCompletedAppointment = $dateQuery->exists();
             }
 
-            if ($subscription->end_date) {
-                $endDate = Carbon::parse($subscription->end_date)->format('Y-m-d');
-                $query->where('appointment_date', '<=', min($today, $endDate));
-            }
-
-            // High performance exists() check or subscription usage check
-            $hasCompletedAppointment = ($subscription->used_appointments > 0) || $query->exists();
-
-            // 4. Return formatted response according to latest plan
             return response()->json([
-                'success'               => true,
-                'patient_id'            => $patientId,
-                'has_plan'              => true,
-                'appointment_completed' => $hasCompletedAppointment,
-                'latest_plan'           => [
+                'success'                        => true,
+                'patient_id'                     => (int) $subscription->patient_id,
+                'appointment_id'                 => $appointment ? $appointment->id : null,
+                'has_plan'                       => true,
+                'unique_plan_id'                 => $subscription->unique_plan_id ?? ("PLN-" . $subscription->id),
+                'subscription_id'                => $subscription->id,
+                'this_appointment_completed'     => $thisApptCompleted,
+                'appointment_completed'          => $hasCompletedAppointment,
+                'latest_plan'                    => [
+                    'unique_plan_id'         => $subscription->unique_plan_id ?? ("PLN-" . $subscription->id),
                     'subscription_id'        => $subscription->id,
                     'plan_id'                => $subscription->patient_plan_id,
                     'plan_name'              => optional($subscription->plan)->name,

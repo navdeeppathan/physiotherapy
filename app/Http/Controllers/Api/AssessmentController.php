@@ -368,10 +368,17 @@ class AssessmentController extends BaseApiController
                 ];
 
                 // Update patient plan subscription counts if exists
-                $subscription = PatientPlanSubscription::where('patient_id', $request->patient_id)
-                    ->where('status', 'active')
-                    ->latest('id')
-                    ->first();
+                $subscription = null;
+                if ($appointment->patient_plan_subscription_id) {
+                    $subscription = PatientPlanSubscription::find($appointment->patient_plan_subscription_id);
+                } elseif (!empty($appointment->unique_plan_id)) {
+                    $subscription = PatientPlanSubscription::where('unique_plan_id', $appointment->unique_plan_id)->first();
+                } else {
+                    $subscription = PatientPlanSubscription::where('patient_id', $request->patient_id)
+                        ->where('status', 'active')
+                        ->latest('id')
+                        ->first();
+                }
 
                 if ($subscription) {
                     $subscription->increment('used_appointments');

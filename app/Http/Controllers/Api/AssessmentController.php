@@ -325,29 +325,32 @@ class AssessmentController extends BaseApiController
                 $assessment->update(['next_session_date' => $nextSession->session_date]);
             }
 
-            // 7. Update Appointment status to 'completed' (for same assessment_date)
+            // 7. Update Appointment status to 'completed' (from appointment_id or matching assessment_date)
             $appointmentData = null;
-            $appointment = null;
-            $targetDate  = $request->assessment_date ? Carbon::parse($request->assessment_date)->toDateString() : now()->toDateString();
+            $appointment     = null;
+            $targetDate      = $request->assessment_date ? Carbon::parse($request->assessment_date)->toDateString() : now()->toDateString();
+            $appointmentId   = $request->input('appointment_id');
 
-            if ($request->filled('appointment_id')) {
-                $appointment = Appointment::where('id', $request->appointment_id)
+            if (!empty($appointmentId) && is_numeric($appointmentId) && $appointmentId > 0) {
+                $appointment = Appointment::where('id', $appointmentId)
                     ->where('doctor_id', $doctor->id)
                     ->first();
-            } else {
-                // Priority 1: Find appointment on the EXACT assessment_date
+            }
+
+            // If appointment_id is null / not provided, find appointment on EXACT assessment_date
+            if (!$appointment) {
                 $appointment = Appointment::where('doctor_id', $doctor->id)
                     ->where('patient_id', $request->patient_id)
                     ->whereDate('appointment_date', $targetDate)
-                    ->whereIn('status', ['confirmed', 'pending', 'scheduled'])
+                    ->where('status', '!=', 'cancelled')
                     ->first();
 
-                // Priority 2: If no exact match, find appointment on or before assessment_date (never future date)
+                // If not found on exact date, find most recent appointment on or before assessment_date (<= targetDate)
                 if (!$appointment) {
                     $appointment = Appointment::where('doctor_id', $doctor->id)
                         ->where('patient_id', $request->patient_id)
                         ->whereDate('appointment_date', '<=', $targetDate)
-                        ->whereIn('status', ['confirmed', 'pending', 'scheduled'])
+                        ->where('status', '!=', 'cancelled')
                         ->orderBy('appointment_date', 'desc')
                         ->first();
                 }
@@ -822,28 +825,31 @@ class AssessmentController extends BaseApiController
                     }
                 }
 
-                // B. Appointment completion (for same session date)
+                // B. Appointment completion (from appointment_id or matching session_date)
                 $appointment = null;
                 $targetDate  = $request->session_date ? Carbon::parse($request->session_date)->toDateString() : now()->toDateString();
+                $appointmentId = $request->input('appointment_id');
 
-                if ($request->filled('appointment_id')) {
-                    $appointment = Appointment::where('id', $request->appointment_id)
+                if (!empty($appointmentId) && is_numeric($appointmentId) && $appointmentId > 0) {
+                    $appointment = Appointment::where('id', $appointmentId)
                         ->where('doctor_id', $doctor->id)
                         ->first();
-                } else {
-                    // Priority 1: Find appointment on the EXACT session date
+                }
+
+                // If appointment_id is null / not provided, find appointment on EXACT session date
+                if (!$appointment) {
                     $appointment = Appointment::where('doctor_id', $doctor->id)
                         ->where('patient_id', $assessment->patient_id)
                         ->whereDate('appointment_date', $targetDate)
-                        ->whereIn('status', ['confirmed', 'pending', 'scheduled'])
+                        ->where('status', '!=', 'cancelled')
                         ->first();
 
-                    // Priority 2: If no exact match, find appointment on or before session date (never future date)
+                    // If no exact match, find appointment on or before session date (<= targetDate)
                     if (!$appointment) {
                         $appointment = Appointment::where('doctor_id', $doctor->id)
                             ->where('patient_id', $assessment->patient_id)
                             ->whereDate('appointment_date', '<=', $targetDate)
-                            ->whereIn('status', ['confirmed', 'pending', 'scheduled'])
+                            ->where('status', '!=', 'cancelled')
                             ->orderBy('appointment_date', 'desc')
                             ->first();
                     }

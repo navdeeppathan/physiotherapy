@@ -142,7 +142,7 @@ class AppointmentController extends BaseApiController
                 $appointmentIds[] = $appointment->id;
             }
 
-           Payment::create([
+            Payment::create([
                 // First appointment (optional)
                 'appointment_id' => $appointmentIds[0],
 
@@ -158,10 +158,73 @@ class AppointmentController extends BaseApiController
                 'currency' => 'INR',
                 'status' => 'success',
             ]);
+
+            // Auto-create Patient Plan Subscription if plan_id is passed OR multiple slots booked together
+            $subscription = null;
+            $planId = $request->input('patient_plan_id') ?? $request->input('plan_id');
+
+            if ($planId) {
+                $plan = PatientPlan::find($planId);
+            } else if (count($appointments) > 1) {
+                // Find matching plan by appointment count or default active plan
+                $plan = PatientPlan::where('total_appointments', count($appointments))->first()
+                    ?? PatientPlan::where('status', 'active')->first();
+            } else {
+                $plan = null;
+            }
+
+            if ($plan) {
+                $start = now();
+                switch (strtolower((string) $plan->duration)) {
+                    case 'weekly':
+                        $end = $start->copy()->addWeek();
+                        break;
+                    case 'monthly':
+                        $end = $start->copy()->addMonth();
+                        break;
+                    case 'quarterly':
+                        $end = $start->copy()->addMonths(3);
+                        break;
+                    case 'half_yearly':
+                        $end = $start->copy()->addMonths(6);
+                        break;
+                    case 'yearly':
+                        $end = $start->copy()->addYear();
+                        break;
+                    default:
+                        $end = $start->copy()->addMonth();
+                        break;
+                }
+
+                $totalAppts = (int) ($plan->total_appointments ?? count($appointments));
+
+                $subscription = PatientPlanSubscription::create([
+                    'patient_id'             => $patient->id,
+                    'patient_plan_id'        => $plan->id,
+                    'start_date'             => $start->toDateString(),
+                    'end_date'               => $end->toDateString(),
+                    'used_appointments'      => 0,
+                    'remaining_appointments' => $totalAppts,
+                    'payment_status'         => 'paid',
+                    'payment_method'         => 'Online',
+                    'transaction_id'         => $request->payment_gateway_responce['razorpay_payment_id'] ?? ('TXN_' . time()),
+                    'status'                 => 'active',
+                ]);
+
+                Log::info('[Appointment Booking] Patient plan subscription created', [
+                    'subscription_id' => $subscription->id,
+                    'patient_id'      => $patient->id,
+                    'plan_id'         => $plan->id,
+                    'plan_name'       => $plan->name,
+                    'appointments'    => count($appointments),
+                ]);
+            }
+
             DB::commit();
 
             return $this->sendResponse([
-                'appointments' => $appointments
+                'appointments' => $appointments,
+                'subscription' => $subscription,
             ], 'Appointments booked successfully.');
 
         } catch (\Exception $e) {

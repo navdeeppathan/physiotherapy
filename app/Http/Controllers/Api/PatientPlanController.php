@@ -65,86 +65,91 @@ class PatientPlanController extends BaseApiController
     public function subscribe(Request $request)
     {
         try {
+            $patientId = $request->input('patient_id') ?? $request->input('user_id') ?? Auth::id() ?? auth('api')->id();
+            $planId    = $request->input('patient_plan_id') ?? $request->input('plan_id') ?? $request->input('id');
 
-            $request->validate([
-                'patient_id' => 'required|exists:users,id',
-                'patient_plan_id' => 'required|exists:patient_plans,id',
-                'payment_method' => 'nullable|string',
-                'transaction_id' => 'nullable|string',
-            ]);
+            if (!$patientId) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Patient ID is required',
+                ], 422);
+            }
 
-            $plan = PatientPlan::findOrFail($request->patient_plan_id);
+            if (!$planId) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Plan ID (patient_plan_id or plan_id) is required',
+                ], 422);
+            }
 
-            // ✅ Calculate End Date
-            $startDate = Carbon::now();
+            $plan = PatientPlan::find($planId);
+            if (!$plan) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Selected plan not found',
+                ], 404);
+            }
 
-            switch ($plan->duration) {
+            // Calculate dates
+            $startDate = $request->filled('start_date') ? Carbon::parse($request->start_date) : Carbon::now();
 
+            switch (strtolower((string) $plan->duration)) {
                 case 'weekly':
                     $endDate = $startDate->copy()->addWeek();
                     break;
-
                 case 'monthly':
                     $endDate = $startDate->copy()->addMonth();
                     break;
-
                 case 'quarterly':
                     $endDate = $startDate->copy()->addMonths(3);
                     break;
-
                 case 'half_yearly':
                     $endDate = $startDate->copy()->addMonths(6);
                     break;
-
                 case 'yearly':
                     $endDate = $startDate->copy()->addYear();
                     break;
-
                 default:
                     $endDate = $startDate->copy()->addMonth();
                     break;
             }
 
-            // ✅ Create Subscription
+            // Create Subscription
             $subscription = PatientPlanSubscription::create([
-
-                'patient_id' => $request->patient_id,
-                'patient_plan_id' => $plan->id,
-
-                'start_date' => $startDate,
-                'end_date' => $endDate,
-
-                'used_appointments' => 0,
-                'remaining_appointments' => $plan->total_appointments,
-
-                'payment_status' => 'paid',
-                'payment_method' => $request->payment_method,
-                'transaction_id' => $request->transaction_id,
-
-                'status' => 'active',
+                'patient_id'             => (int) $patientId,
+                'patient_plan_id'        => $plan->id,
+                'start_date'             => $startDate->toDateString(),
+                'end_date'               => $endDate->toDateString(),
+                'used_appointments'      => 0,
+                'remaining_appointments' => (int) ($plan->total_appointments ?? 1),
+                'payment_status'         => $request->payment_status ?? 'paid',
+                'payment_method'         => $request->payment_method ?? 'Razorpay',
+                'transaction_id'         => $request->transaction_id ?? ('TXN_' . strtoupper(uniqid())),
+                'status'                 => 'active',
             ]);
 
-            
             return $this->sendResponse([
-                'status' => true,
-                'data' => $subscription
+                'subscription_id'        => $subscription->id,
+                'patient_id'             => $subscription->patient_id,
+                'patient_plan_id'        => $subscription->patient_plan_id,
+                'plan_name'              => $plan->name,
+                'start_date'             => $startDate->format('d M Y'),
+                'end_date'               => $endDate->format('d M Y'),
+                'total_appointments'     => (int) ($plan->total_appointments ?? 1),
+                'used_appointments'      => 0,
+                'remaining_appointments' => (int) ($plan->total_appointments ?? 1),
+                'status'                 => $subscription->status,
+                'payment_status'         => $subscription->payment_status,
+                'data'                   => $subscription,
             ], 'Plan subscribed successfully');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-
             return response()->json([
                 'status' => false,
                 'errors' => $e->errors()
             ], 422);
-
         } catch (\Exception $e) {
-
             $this->logException($e, 'Subscribe Plan Error');
-
-            return response()->json([
-                'status' => false,
-                'message' => $e->getMessage()
-            ], 500);
         }
     }
 

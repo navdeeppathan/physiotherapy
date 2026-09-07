@@ -73,9 +73,13 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/subscribe', [UserSubscriptionController::class, 'store']);
     Route::post('/cancel-subscription', [UserSubscriptionController::class, 'cancel']);
 
-    // Patient Plans
+    // Patient Plans & Subscriptions
     Route::get('/patient-plans', [PatientPlanController::class, 'index']);
+    Route::get('/patient/plans', [PatientPlanController::class, 'index']);
     Route::post('/patient-plans/subscribe', [PatientPlanController::class, 'subscribe']);
+    Route::post('/patient/plan/subscribe', [PatientPlanController::class, 'subscribe']);
+    Route::post('/patient/plans/subscribe', [PatientPlanController::class, 'subscribe']);
+    Route::post('/plan/subscribe', [PatientPlanController::class, 'subscribe']);
     Route::match(['get', 'post'], '/patient/check-plan-appointment-completed', [PatientPlanController::class, 'checkPlanAppointmentCompleted']);
 
     // Expire subscriptions

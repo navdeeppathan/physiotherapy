@@ -10,6 +10,8 @@ use App\Models\PatientAssessment;
 use App\Models\PatientSession;
 use App\Models\Specializations;
 use App\Models\MasterParameter;
+use App\Models\Appointment;
+use App\Models\PatientPlanSubscription;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -204,6 +206,8 @@ class AssessmentController extends BaseApiController
                 'patient_id'            => 'required|exists:users,id',
                 'specialization_id'     => 'required|exists:specializations,id',
                 'assessment_date'       => 'required|date',
+                'appointment_id'        => 'nullable|exists:appointments,id',
+                'session_notes'         => 'nullable|string',
                 'parameters'            => 'required|array|min:1',
                 'parameters.*.key'      => 'required|string',
                 'parameters.*.label'    => 'required|string',
@@ -246,6 +250,7 @@ class AssessmentController extends BaseApiController
                     'parameter_label' => $param['label'],
                     'unit'            => $param['unit'] ?? null,
                     'baseline_value'  => $param['baseline_value'] ?? null,
+                    'current_value'   => $param['current_value'] ?? ($param['baseline_value'] ?? null),
                     'target_value'    => $param['target_value'] ?? null,
                     'sort_order'      => $idx,
                 ]);
@@ -276,7 +281,7 @@ class AssessmentController extends BaseApiController
 
             // 5. Auto-generate sessions
             $sessionCount = $request->total_sessions ?? 12;
-            $startDate    = Carbon::parse($request->assessment_date)->addDays(2);
+            $startDate    = Carbon::parse($request->assessment_date);
             for ($i = 1; $i <= $sessionCount; $i++) {
                 PatientSession::create([
                     'assessment_id'  => $assessment->id,
@@ -288,7 +293,21 @@ class AssessmentController extends BaseApiController
                 ]);
             }
 
-            // Update next_session_date
+            // 6. Mark Session #1 as completed (since assessment is conducted on appointment 1)
+            $firstSession = PatientSession::where('assessment_id', $assessment->id)
+                ->where('session_number', 1)
+                ->first();
+
+            if ($firstSession) {
+                $firstSession->update([
+                    'status'       => 'completed',
+                    'session_date' => $request->assessment_date,
+                    'notes'        => $request->session_notes ?? 'Initial assessment completed & treatment plan created.',
+                ]);
+                $assessment->update(['completed_sessions' => 1]);
+            }
+
+            // Update next_session_date to session #2
             $nextSession = PatientSession::where('assessment_id', $assessment->id)
                 ->where('status', 'scheduled')
                 ->orderBy('session_date')
@@ -298,20 +317,65 @@ class AssessmentController extends BaseApiController
                 $assessment->update(['next_session_date' => $nextSession->session_date]);
             }
 
+            // 7. Update Appointment status to 'completed'
+            $appointmentData = null;
+            $appointment = null;
+
+            if ($request->filled('appointment_id')) {
+                $appointment = Appointment::where('id', $request->appointment_id)
+                    ->where('doctor_id', $doctor->id)
+                    ->first();
+            } else {
+                // Auto-detect appointment for this doctor & patient
+                $appointment = Appointment::where('doctor_id', $doctor->id)
+                    ->where('patient_id', $request->patient_id)
+                    ->whereIn('status', ['confirmed', 'pending', 'scheduled'])
+                    ->orderBy('appointment_date', 'desc')
+                    ->first();
+            }
+
+            if ($appointment) {
+                $appointment->update([
+                    'status' => 'completed',
+                ]);
+
+                $appointmentData = [
+                    'id'               => $appointment->id,
+                    'status'           => 'completed',
+                    'appointment_date' => Carbon::parse($appointment->appointment_date)->format('d M Y'),
+                ];
+
+                // Update patient plan subscription counts if exists
+                $subscription = PatientPlanSubscription::where('patient_id', $request->patient_id)
+                    ->where('status', 'active')
+                    ->latest('id')
+                    ->first();
+
+                if ($subscription) {
+                    $subscription->increment('used_appointments');
+                    if ($subscription->remaining_appointments > 0) {
+                        $subscription->decrement('remaining_appointments');
+                    }
+                }
+            }
+
             DB::commit();
 
             $condition = Specializations::find($request->specialization_id);
 
             return $this->sendResponse([
-                'assessment_id'       => $assessment->id,
-                'patient_id'          => $assessment->patient_id,
-                'condition'           => optional($condition)->name,
-                'total_sessions'      => $assessment->total_sessions,
-                'goal_duration_weeks' => $assessment->goal_duration_weeks,
-                'next_session'        => $nextSession
+                'assessment_id'          => $assessment->id,
+                'patient_id'             => $assessment->patient_id,
+                'condition'              => optional($condition)->name,
+                'total_sessions'         => $assessment->total_sessions,
+                'completed_sessions'     => 1,
+                'goal_duration_weeks'    => $assessment->goal_duration_weeks,
+                'appointment_completed'  => $appointmentData !== null,
+                'completed_appointment'  => $appointmentData,
+                'next_session'           => $nextSession
                     ? Carbon::parse($nextSession->session_date)->format('d M Y')
                     : null,
-            ], 'Treatment plan created successfully!');
+            ], 'Treatment plan created & appointment marked as completed successfully!');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['status' => false, 'message' => 'Validation error', 'errors' => $e->errors()], 422);
@@ -675,11 +739,13 @@ class AssessmentController extends BaseApiController
                 ]);
             }
 
-            // 5. Mark Session Completed (if requested or session_id given)
-            $completedSessionData = null;
-            $markCompleted        = $request->boolean('mark_session_completed', true);
+            // 5. Mark Session & Appointment Completed (if requested or session_id given)
+            $completedSessionData     = null;
+            $completedAppointmentData = null;
+            $markCompleted            = $request->boolean('mark_session_completed', true);
 
             if ($markCompleted) {
+                // A. Session completion
                 if ($request->filled('session_id')) {
                     $session = PatientSession::where('assessment_id', $id)->find($request->session_id);
                 } else {
@@ -714,6 +780,45 @@ class AssessmentController extends BaseApiController
 
                     if ($nextScheduled) {
                         $assessment->update(['next_session_date' => $nextScheduled->session_date]);
+                    }
+                }
+
+                // B. Appointment completion
+                $appointment = null;
+                if ($request->filled('appointment_id')) {
+                    $appointment = Appointment::where('id', $request->appointment_id)
+                        ->where('doctor_id', $doctor->id)
+                        ->first();
+                } else {
+                    $appointment = Appointment::where('doctor_id', $doctor->id)
+                        ->where('patient_id', $assessment->patient_id)
+                        ->whereIn('status', ['confirmed', 'pending', 'scheduled'])
+                        ->orderBy('appointment_date', 'desc')
+                        ->first();
+                }
+
+                if ($appointment) {
+                    $appointment->update([
+                        'status' => 'completed',
+                    ]);
+
+                    $completedAppointmentData = [
+                        'id'               => $appointment->id,
+                        'status'           => 'completed',
+                        'appointment_date' => Carbon::parse($appointment->appointment_date)->format('d M Y'),
+                    ];
+
+                    // Update patient plan subscription counts if exists
+                    $subscription = PatientPlanSubscription::where('patient_id', $assessment->patient_id)
+                        ->where('status', 'active')
+                        ->latest('id')
+                        ->first();
+
+                    if ($subscription) {
+                        $subscription->increment('used_appointments');
+                        if ($subscription->remaining_appointments > 0) {
+                            $subscription->decrement('remaining_appointments');
+                        }
                     }
                 }
             }
@@ -752,8 +857,10 @@ class AssessmentController extends BaseApiController
                 'completed_sessions'     => $completedCount,
                 'total_sessions'         => $assessment->total_sessions,
                 'overall_progress_pct'   => $overallImprovement,
+                'appointment_completed'  => $completedAppointmentData !== null,
+                'completed_appointment'  => $completedAppointmentData,
                 'parameters'             => $paramsFormatted,
-            ], 'Assessment progress updated successfully!');
+            ], 'Assessment progress updated & appointment marked as completed successfully!');
 
         } catch (Exception $e) {
             DB::rollBack();

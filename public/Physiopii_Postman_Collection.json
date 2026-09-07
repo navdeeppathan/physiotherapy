@@ -762,7 +762,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"patient_id\": 15,\n  \"specialization_id\": 1,\n  \"baseline_score\": 7,\n  \"assessment_date\": \"2025-05-20\",\n  \"parameters\": [\n    { \"key\": \"pain_score\", \"label\": \"Pain Score (0–10)\", \"baseline_value\": 7, \"target_value\": 2, \"unit\": \"score\" },\n    { \"key\": \"lumbar_flexion\", \"label\": \"Lumbar Flexion (°)\", \"baseline_value\": 40, \"target_value\": 70, \"unit\": \"°\" },\n    { \"key\": \"lumbar_extension\", \"label\": \"Lumbar Extension (°)\", \"baseline_value\": 10, \"target_value\": 20, \"unit\": \"°\" },\n    { \"key\": \"walking_tolerance\", \"label\": \"Walking Tolerance (min)\", \"baseline_value\": 10, \"target_value\": 30, \"unit\": \"min\" }\n  ],\n  \"exercises\": [\n    { \"exercise_id\": 1, \"sets\": 3, \"reps\": 10, \"sort_order\": 1 },\n    { \"exercise_id\": 2, \"sets\": 3, \"reps\": 10, \"sort_order\": 2 },\n    { \"exercise_id\": 3, \"sets\": 3, \"reps\": 10, \"sort_order\": 3 }\n  ],\n  \"goal_text\": \"Reduce pain, improve mobility, core strength and functional ability to return to normal daily activities without discomfort.\",\n  \"goal_duration_weeks\": 8,\n  \"total_sessions\": 12,\n  \"expected_outcomes\": [\n    \"Pain score less than or equal to 2\",\n    \"Full pain free trunk movements\",\n    \"Improved core strength to good\",\n    \"Walk 30+ minutes without pain\",\n    \"Return to normal daily activities\"\n  ]\n}"
+							"raw": "{\n  \"patient_id\": 15,\n  \"specialization_id\": 1,\n  \"appointment_id\": 12,\n  \"baseline_score\": 7,\n  \"assessment_date\": \"2025-05-20\",\n  \"session_notes\": \"Initial assessment conducted, posture analyzed and first therapy plan created.\",\n  \"parameters\": [\n    { \"key\": \"pain_score\", \"label\": \"Pain Score (0–10)\", \"baseline_value\": 7, \"target_value\": 2, \"unit\": \"score\" },\n    { \"key\": \"lumbar_flexion\", \"label\": \"Lumbar Flexion (°)\", \"baseline_value\": 40, \"target_value\": 70, \"unit\": \"°\" },\n    { \"key\": \"lumbar_extension\", \"label\": \"Lumbar Extension (°)\", \"baseline_value\": 10, \"target_value\": 20, \"unit\": \"°\" },\n    { \"key\": \"walking_tolerance\", \"label\": \"Walking Tolerance (min)\", \"baseline_value\": 10, \"target_value\": 30, \"unit\": \"min\" }\n  ],\n  \"exercises\": [\n    { \"exercise_id\": 1, \"sets\": 3, \"reps\": 10, \"sort_order\": 1 },\n    { \"exercise_id\": 2, \"sets\": 3, \"reps\": 10, \"sort_order\": 2 },\n    { \"exercise_id\": 3, \"sets\": 3, \"reps\": 10, \"sort_order\": 3 }\n  ],\n  \"goal_text\": \"Reduce pain, improve mobility, core strength and functional ability to return to normal daily activities without discomfort.\",\n  \"goal_duration_weeks\": 8,\n  \"total_sessions\": 12,\n  \"expected_outcomes\": [\n    \"Pain score less than or equal to 2\",\n    \"Full pain free trunk movements\",\n    \"Improved core strength to good\",\n    \"Walk 30+ minutes without pain\",\n    \"Return to normal daily activities\"\n  ]\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/assessment/create",
@@ -817,7 +817,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"session_notes\": \"Patient reports 40% less lower back stiffness. Lumbar flexion improved to 55 degrees.\",\n  \"mark_session_completed\": true,\n  \"parameters\": [\n    { \"key\": \"pain_score\", \"current_value\": 5, \"target_value\": 2 },\n    { \"key\": \"lumbar_flexion\", \"current_value\": 55, \"target_value\": 70 },\n    { \"key\": \"walking_tolerance\", \"current_value\": 20, \"target_value\": 30 }\n  ],\n  \"exercises\": [\n    { \"exercise_id\": 1, \"sets\": 3, \"reps\": 12, \"duration\": \"5 sec hold\" },\n    { \"exercise_id\": 2, \"sets\": 3, \"reps\": 12, \"duration\": \"20 sec hold\" },\n    { \"exercise_id\": 4, \"sets\": 3, \"reps\": 10, \"duration\": \"5 sec hold\" }\n  ]\n}"
+							"raw": "{\n  \"appointment_id\": 13,\n  \"session_notes\": \"Patient reports 40% less lower back stiffness. Lumbar flexion improved to 55 degrees.\",\n  \"mark_session_completed\": true,\n  \"parameters\": [\n    { \"key\": \"pain_score\", \"current_value\": 5, \"target_value\": 2 },\n    { \"key\": \"lumbar_flexion\", \"current_value\": 55, \"target_value\": 70 },\n    { \"key\": \"walking_tolerance\", \"current_value\": 20, \"target_value\": 30 }\n  ],\n  \"exercises\": [\n    { \"exercise_id\": 1, \"sets\": 3, \"reps\": 12, \"duration\": \"5 sec hold\" },\n    { \"exercise_id\": 2, \"sets\": 3, \"reps\": 12, \"duration\": \"20 sec hold\" },\n    { \"exercise_id\": 4, \"sets\": 3, \"reps\": 10, \"duration\": \"5 sec hold\" }\n  ]\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/assessment/1/progress-update",
@@ -826,6 +826,7 @@
 						}
 					}
 				},
+
 				{
 					"name": "8.2. Get Clinical Progress Report",
 					"request": {

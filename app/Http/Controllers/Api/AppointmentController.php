@@ -21,6 +21,8 @@ use App\Models\AppointmentFee;
 use App\Models\User;
 use App\Models\PatientPlan;
 use App\Models\PatientPlanSubscription;
+use App\Models\PatientAssessment;
+use App\Models\PatientSession;
 
 class AppointmentController extends BaseApiController
 {
@@ -540,6 +542,130 @@ class AppointmentController extends BaseApiController
                 'status'  => false,
                 'message' => 'Something went wrong',
                 'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Dedicated API: Complete Appointment by Doctor
+     * POST/PUT /api/doctor/appointments/{id}/complete
+     * POST/PUT /api/appointment/{id}/complete
+     * POST     /api/doctor/appointment/complete (body: { "appointment_id": 12 })
+     */
+    public function completeAppointment(Request $request, $id = null)
+    {
+        try {
+            $doctor = Auth::user();
+
+            if (!$doctor || $doctor->role !== 'doctor') {
+                return $this->sendError('Only doctors can perform this action', [], 403);
+            }
+
+            $appointmentId = $id ?? $request->input('appointment_id') ?? $request->input('id');
+
+            if (!$appointmentId) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Appointment ID is required',
+                ], 422);
+            }
+
+            $appointment = Appointment::with(['patient', 'doctor', 'timeSlot'])
+                ->where('id', $appointmentId)
+                ->where('doctor_id', $doctor->id)
+                ->first();
+
+            if (!$appointment) {
+                return $this->sendError('Appointment not found or unauthorized', [], 404);
+            }
+
+            if ($appointment->status === 'completed') {
+                return $this->sendResponse([
+                    'id'               => $appointment->id,
+                    'status'           => 'completed',
+                    'patient_id'       => $appointment->patient_id,
+                    'patient_name'     => optional($appointment->patient)->name ?? $appointment->patient_name,
+                    'appointment_date' => Carbon::parse($appointment->appointment_date)->format('d M Y'),
+                ], 'Appointment is already marked as completed');
+            }
+
+            DB::beginTransaction();
+
+            // 1. Update appointment status
+            $appointment->update([
+                'status' => 'completed',
+            ]);
+
+            // 2. Update patient plan subscription if active
+            $subscription = PatientPlanSubscription::where('patient_id', $appointment->patient_id)
+                ->where('status', 'active')
+                ->latest('id')
+                ->first();
+
+            if ($subscription) {
+                $subscription->increment('used_appointments');
+                if ($subscription->remaining_appointments > 0) {
+                    $subscription->decrement('remaining_appointments');
+                }
+            }
+
+            // 3. Mark corresponding session in assessment as completed if active assessment exists
+            $assessment = PatientAssessment::where('patient_id', $appointment->patient_id)
+                ->where('doctor_id', $doctor->id)
+                ->where('status', 'active')
+                ->latest('id')
+                ->first();
+
+            $completedSessionData = null;
+            if ($assessment) {
+                $session = PatientSession::where('assessment_id', $assessment->id)
+                    ->where('status', 'scheduled')
+                    ->orderBy('session_number')
+                    ->first();
+
+                if ($session) {
+                    $session->update([
+                        'status'       => 'completed',
+                        'session_date' => $appointment->appointment_date ?? now()->toDateString(),
+                        'notes'        => $request->notes ?? $request->session_notes ?? 'Appointment marked as completed by doctor.',
+                    ]);
+                    $assessment->increment('completed_sessions');
+
+                    $completedSessionData = [
+                        'session_id'     => $session->id,
+                        'session_number' => $session->session_number,
+                    ];
+
+                    $nextScheduled = PatientSession::where('assessment_id', $assessment->id)
+                        ->where('status', 'scheduled')
+                        ->orderBy('session_number')
+                        ->first();
+                    if ($nextScheduled) {
+                        $assessment->update(['next_session_date' => $nextScheduled->session_date]);
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return $this->sendResponse([
+                'id'                 => $appointment->id,
+                'status'             => 'completed',
+                'doctor_id'          => $appointment->doctor_id,
+                'patient_id'         => $appointment->patient_id,
+                'patient_name'       => optional($appointment->patient)->name ?? $appointment->patient_name,
+                'appointment_date'   => Carbon::parse($appointment->appointment_date)->format('d M Y'),
+                'assessment_id'      => $assessment ? $assessment->id : null,
+                'completed_session'  => $completedSessionData,
+            ], 'Appointment marked as completed successfully!');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            $this->logException($e, 'Complete Appointment Error');
+            return response()->json([
+                'status'  => false,
+                'message' => 'Something went wrong',
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }

@@ -472,6 +472,26 @@
 					}
 				},
 				{
+					"name": "Doctor Complete Appointment (Dedicated API)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"notes\": \"Appointment successfully completed. Therapy session conducted.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/doctor/appointments/12/complete",
+							"host": ["{{base_url}}"],
+							"path": ["doctor", "appointments", "12", "complete"]
+						}
+					}
+				},
+				{
 					"name": "Doctor Set Availability Slots",
 					"request": {
 						"method": "POST",
@@ -958,6 +978,26 @@
 							"raw": "{{base_url}}/session/1/complete",
 							"host": ["{{base_url}}"],
 							"path": ["session", "1", "complete"]
+						}
+					}
+				},
+				{
+					"name": "16. Doctor Complete Appointment (Dedicated API)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"notes\": \"Appointment successfully completed. Therapy session conducted.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/doctor/appointments/12/complete",
+							"host": ["{{base_url}}"],
+							"path": ["doctor", "appointments", "12", "complete"]
 						}
 					}
 				}

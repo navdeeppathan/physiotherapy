@@ -172,10 +172,6 @@ class SpecializationControllerApi extends BaseApiController
                 return $doctor;
             });
 
-
-            
-            \Log::info($doctors);
-
             return $this->sendResponse([
                 'status' => true,
                 'data' => $doctors

@@ -317,16 +317,12 @@ class DoctorAvailabilityController extends BaseApiController
     public function myAvailability()
     {
         try {
-
-        \Log::info('myAvailability');
             $user = Auth::user();
 
-            \Log::info($user);
             $data = DoctorAvailabilityDate::with('timeSlots')
                         ->where('user_id', $user->id)
                         ->orderBy('available_date', 'desc')
                         ->get();
-        \Log::info($data);
 
             return $this->sendResponse($data, 'Availability fetched successfully');
 

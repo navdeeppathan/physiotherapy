@@ -51,9 +51,6 @@ class UserController extends BaseApiController
     public function registerPatient(Request $request)
     {
         try {
-
-            \Log::info($request->all());
-
             $validator = Validator::make($request->all(), [
 
                 'name' => 'required|max:150',
@@ -219,7 +216,6 @@ class UserController extends BaseApiController
 
     public function login(Request $request)
     {
-          \Log::info($request->all());
         try {
 
             $request->validate([
@@ -227,9 +223,7 @@ class UserController extends BaseApiController
             ]);
 
             $user = User::where('email', $request->email)->first();
-            \Log::info($user);
             if (!$user) {
-                \Log::info('dsdsds');
                 return response()->json([
                     'status' => false,
                     'message' => 'User not found'
@@ -1291,8 +1285,6 @@ class UserController extends BaseApiController
 
     public function doctorPaymentHistory($doctorId)
     {
-        \Log::info("Doctor ID: " . $doctorId);
-
         try {
 
             $doctor = User::findOrFail($doctorId);

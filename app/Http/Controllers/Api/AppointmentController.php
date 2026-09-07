@@ -210,14 +210,6 @@ class AppointmentController extends BaseApiController
                     'transaction_id'         => $request->payment_gateway_responce['razorpay_payment_id'] ?? ('TXN_' . time()),
                     'status'                 => 'active',
                 ]);
-
-                Log::info('[Appointment Booking] Patient plan subscription created', [
-                    'subscription_id' => $subscription->id,
-                    'patient_id'      => $patient->id,
-                    'plan_id'         => $plan->id,
-                    'plan_name'       => $plan->name,
-                    'appointments'    => count($appointments),
-                ]);
             }
 
             DB::commit();

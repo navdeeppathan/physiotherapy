@@ -208,11 +208,13 @@ class AssessmentController extends BaseApiController
                 'assessment_date'       => 'required|date',
                 'appointment_id'        => 'nullable|exists:appointments,id',
                 'session_notes'         => 'nullable|string',
+                'baseline_score'        => 'nullable',
                 'parameters'            => 'required|array|min:1',
                 'parameters.*.key'      => 'required|string',
-                'parameters.*.label'    => 'required|string',
-                'parameters.*.baseline_value' => 'nullable|numeric',
-                'parameters.*.target_value'   => 'nullable|numeric',
+                'parameters.*.label'    => 'nullable|string',
+                'parameters.*.baseline_value' => 'nullable',
+                'parameters.*.target_value'   => 'nullable',
+                'parameters.*.current_value'  => 'nullable',
                 'parameters.*.unit'           => 'nullable|string',
                 'exercises'             => 'required|array|min:1',
                 'exercises.*.exercise_id'     => 'required|exists:exercises,id',
@@ -233,7 +235,7 @@ class AssessmentController extends BaseApiController
                 'doctor_id'          => $doctor->id,
                 'patient_id'         => $request->patient_id,
                 'specialization_id'  => $request->specialization_id,
-                'baseline_score'     => $request->baseline_score,
+                'baseline_score'     => $this->sanitizeNumericValue($request->baseline_score),
                 'goal_text'          => $request->goal_text,
                 'goal_duration_weeks'=> $request->goal_duration_weeks ?? 8,
                 'total_sessions'     => $request->total_sessions ?? 12,
@@ -244,14 +246,20 @@ class AssessmentController extends BaseApiController
 
             // 2. Save parameters (Steps 2 + 3 + 5 — selected params, baseline, targets)
             foreach ($request->parameters as $idx => $param) {
+                $bVal = $this->sanitizeNumericValue($param['baseline_value'] ?? null);
+                $tVal = $this->sanitizeNumericValue($param['target_value'] ?? null);
+                $cVal = array_key_exists('current_value', $param)
+                    ? $this->sanitizeNumericValue($param['current_value'])
+                    : $bVal;
+
                 AssessmentParameter::create([
                     'assessment_id'   => $assessment->id,
                     'parameter_key'   => $param['key'],
-                    'parameter_label' => $param['label'],
+                    'parameter_label' => $param['label'] ?? ucwords(str_replace('_', ' ', $param['key'])),
                     'unit'            => $param['unit'] ?? null,
-                    'baseline_value'  => $param['baseline_value'] ?? null,
-                    'current_value'   => $param['current_value'] ?? ($param['baseline_value'] ?? null),
-                    'target_value'    => $param['target_value'] ?? null,
+                    'baseline_value'  => $bVal,
+                    'current_value'   => $cVal,
+                    'target_value'    => $tVal,
                     'sort_order'      => $idx,
                 ]);
             }
@@ -608,14 +616,20 @@ class AssessmentController extends BaseApiController
             if ($request->has('parameters')) {
                 AssessmentParameter::where('assessment_id', $id)->delete();
                 foreach ($request->parameters as $idx => $param) {
+                    $bVal = $this->sanitizeNumericValue($param['baseline_value'] ?? null);
+                    $tVal = $this->sanitizeNumericValue($param['target_value'] ?? null);
+                    $cVal = array_key_exists('current_value', $param)
+                        ? $this->sanitizeNumericValue($param['current_value'])
+                        : $bVal;
+
                     AssessmentParameter::create([
                         'assessment_id'   => $id,
                         'parameter_key'   => $param['key'],
-                        'parameter_label' => $param['label'],
+                        'parameter_label' => $param['label'] ?? ucwords(str_replace('_', ' ', $param['key'])),
                         'unit'            => $param['unit'] ?? null,
-                        'baseline_value'  => $param['baseline_value'] ?? null,
-                        'current_value'   => $param['current_value'] ?? ($param['baseline_value'] ?? null),
-                        'target_value'    => $param['target_value'] ?? null,
+                        'baseline_value'  => $bVal,
+                        'current_value'   => $cVal,
+                        'target_value'    => $tVal,
                         'sort_order'      => $idx,
                     ]);
                 }
@@ -682,11 +696,25 @@ class AssessmentController extends BaseApiController
                         ->where('parameter_key', $paramKey)
                         ->first();
 
+                    $cVal = array_key_exists('current_value', $paramData)
+                        ? $this->sanitizeNumericValue($paramData['current_value'])
+                        : null;
+                    $tVal = array_key_exists('target_value', $paramData)
+                        ? $this->sanitizeNumericValue($paramData['target_value'])
+                        : null;
+                    $bVal = array_key_exists('baseline_value', $paramData)
+                        ? $this->sanitizeNumericValue($paramData['baseline_value'])
+                        : null;
+
                     if ($param) {
-                        $param->update([
-                            'current_value' => $paramData['current_value'] ?? $param->current_value,
-                            'target_value'  => $paramData['target_value'] ?? $param->target_value,
-                        ]);
+                        $updateData = [];
+                        if ($cVal !== null) $updateData['current_value'] = $cVal;
+                        if ($tVal !== null) $updateData['target_value'] = $tVal;
+                        if ($bVal !== null) $updateData['baseline_value'] = $bVal;
+
+                        if (!empty($updateData)) {
+                            $param->update($updateData);
+                        }
                     } else {
                         // Create if parameter was newly added in follow-up
                         AssessmentParameter::create([
@@ -694,9 +722,9 @@ class AssessmentController extends BaseApiController
                             'parameter_key'   => $paramKey,
                             'parameter_label' => $paramData['label'] ?? ucwords(str_replace('_', ' ', $paramKey)),
                             'unit'            => $paramData['unit'] ?? null,
-                            'baseline_value'  => $paramData['baseline_value'] ?? null,
-                            'current_value'   => $paramData['current_value'] ?? null,
-                            'target_value'    => $paramData['target_value'] ?? null,
+                            'baseline_value'  => $bVal,
+                            'current_value'   => $cVal ?? $bVal,
+                            'target_value'    => $tVal,
                             'sort_order'      => 99,
                         ]);
                     }
@@ -967,27 +995,46 @@ class AssessmentController extends BaseApiController
     }
 
     // ─────────────────────────────────────────────────────────
+    // Helper: Sanitize numeric or string parameter values
+    // ─────────────────────────────────────────────────────────
+    private function sanitizeNumericValue($value): ?float
+    {
+        if ($value === null || $value === '' || $value === 'null') {
+            return null;
+        }
+        if (is_numeric($value)) {
+            return (float) $value;
+        }
+        if (is_string($value) && preg_match('/[-+]?[0-9]*\.?[0-9]+/', $value, $matches)) {
+            return (float) $matches[0];
+        }
+        return null;
+    }
+
+    // ─────────────────────────────────────────────────────────
     // Helper: Calculate Progress Percentage
     // ─────────────────────────────────────────────────────────
     private function calculateProgressPct($baseline, $current, $target): float
     {
-        if ($baseline === null || $target === null) {
+        $base = $this->sanitizeNumericValue($baseline);
+        $tgt  = $this->sanitizeNumericValue($target);
+        $curr = $this->sanitizeNumericValue($current) ?? $base;
+
+        if ($base === null || $tgt === null) {
             return 0.0;
         }
 
-        $currentVal = ($current !== null) ? $current : $baseline;
-        $totalDelta = abs($target - $baseline);
-
+        $totalDelta = abs($tgt - $base);
         if ($totalDelta == 0) {
             return 100.0;
         }
 
-        if ($target >= $baseline) {
+        if ($tgt >= $base) {
             // Increasing metric (e.g. range of motion: 35 -> 75, current 55)
-            $achieved = $currentVal - $baseline;
+            $achieved = $curr - $base;
         } else {
             // Decreasing metric (e.g. pain score: 8 -> 2, current 5)
-            $achieved = $baseline - $currentVal;
+            $achieved = $base - $curr;
         }
 
         $pct = ($achieved / $totalDelta) * 100;

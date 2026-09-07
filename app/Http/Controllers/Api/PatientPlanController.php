@@ -157,20 +157,17 @@ class PatientPlanController extends BaseApiController
     public function checkPlanAppointmentCompleted(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'patient_id' => 'required|integer|exists:users,id',
-            ]);
+            $patientId = $request->patient_id ?? Auth::id() ?? auth('api')->id();
 
-            if ($validator->fails()) {
+            if (!$patientId) {
                 return response()->json([
                     'success' => false,
-                    'message' => $validator->errors()->first(),
-                    'errors'  => $validator->errors(),
+                    'message' => 'The patient_id field is required.',
                 ], 422);
             }
 
-            $patientId = (int) $request->patient_id;
-            $today = Carbon::today()->format('Y-m-d');
+            $patientId = (int) $patientId;
+            $today     = Carbon::today()->format('Y-m-d');
 
             // 1. Find patient's latest plan subscription (with plan relationship)
             $subscription = PatientPlanSubscription::with('plan')

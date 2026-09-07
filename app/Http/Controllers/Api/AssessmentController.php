@@ -325,21 +325,32 @@ class AssessmentController extends BaseApiController
                 $assessment->update(['next_session_date' => $nextSession->session_date]);
             }
 
-            // 7. Update Appointment status to 'completed'
+            // 7. Update Appointment status to 'completed' (for same assessment_date)
             $appointmentData = null;
             $appointment = null;
+            $targetDate  = $request->assessment_date ? Carbon::parse($request->assessment_date)->toDateString() : now()->toDateString();
 
             if ($request->filled('appointment_id')) {
                 $appointment = Appointment::where('id', $request->appointment_id)
                     ->where('doctor_id', $doctor->id)
                     ->first();
             } else {
-                // Auto-detect appointment for this doctor & patient
+                // Priority 1: Find appointment on the EXACT assessment_date
                 $appointment = Appointment::where('doctor_id', $doctor->id)
                     ->where('patient_id', $request->patient_id)
+                    ->whereDate('appointment_date', $targetDate)
                     ->whereIn('status', ['confirmed', 'pending', 'scheduled'])
-                    ->orderBy('appointment_date', 'desc')
                     ->first();
+
+                // Priority 2: If no exact match, find appointment on or before assessment_date (never future date)
+                if (!$appointment) {
+                    $appointment = Appointment::where('doctor_id', $doctor->id)
+                        ->where('patient_id', $request->patient_id)
+                        ->whereDate('appointment_date', '<=', $targetDate)
+                        ->whereIn('status', ['confirmed', 'pending', 'scheduled'])
+                        ->orderBy('appointment_date', 'desc')
+                        ->first();
+                }
             }
 
             if ($appointment) {
@@ -811,18 +822,31 @@ class AssessmentController extends BaseApiController
                     }
                 }
 
-                // B. Appointment completion
+                // B. Appointment completion (for same session date)
                 $appointment = null;
+                $targetDate  = $request->session_date ? Carbon::parse($request->session_date)->toDateString() : now()->toDateString();
+
                 if ($request->filled('appointment_id')) {
                     $appointment = Appointment::where('id', $request->appointment_id)
                         ->where('doctor_id', $doctor->id)
                         ->first();
                 } else {
+                    // Priority 1: Find appointment on the EXACT session date
                     $appointment = Appointment::where('doctor_id', $doctor->id)
                         ->where('patient_id', $assessment->patient_id)
+                        ->whereDate('appointment_date', $targetDate)
                         ->whereIn('status', ['confirmed', 'pending', 'scheduled'])
-                        ->orderBy('appointment_date', 'desc')
                         ->first();
+
+                    // Priority 2: If no exact match, find appointment on or before session date (never future date)
+                    if (!$appointment) {
+                        $appointment = Appointment::where('doctor_id', $doctor->id)
+                            ->where('patient_id', $assessment->patient_id)
+                            ->whereDate('appointment_date', '<=', $targetDate)
+                            ->whereIn('status', ['confirmed', 'pending', 'scheduled'])
+                            ->orderBy('appointment_date', 'desc')
+                            ->first();
+                    }
                 }
 
                 if ($appointment) {

@@ -172,26 +172,21 @@ class PatientPlanController extends BaseApiController
             $patientId = (int) $request->patient_id;
             $today = Carbon::today()->format('Y-m-d');
 
-            // 1. Find patient's active / currently taken plan subscription
-            $subscription = PatientPlanSubscription::where('patient_id', $patientId)
-                ->where('status', 'active')
+            // 1. Find patient's latest plan subscription (with plan relationship)
+            $subscription = PatientPlanSubscription::with('plan')
+                ->where('patient_id', $patientId)
                 ->latest('id')
                 ->first();
-
-            // Fallback: Check latest subscription if no status='active'
-            if (!$subscription) {
-                $subscription = PatientPlanSubscription::where('patient_id', $patientId)
-                    ->latest('id')
-                    ->first();
-            }
 
             // 2. If no plan taken
             if (!$subscription) {
                 return response()->json([
                     'success'               => true,
                     'patient_id'            => $patientId,
+                    'has_plan'              => false,
                     'appointment_completed' => false,
-                    'message'               => 'Patient has no active plan',
+                    'latest_plan'           => null,
+                    'message'               => 'Patient has not purchased any plan',
                 ], 200);
             }
 
@@ -210,14 +205,27 @@ class PatientPlanController extends BaseApiController
                 $query->where('appointment_date', '<=', min($today, $endDate));
             }
 
-            // High performance exists() check
-            $hasCompletedAppointment = $query->exists();
+            // High performance exists() check or subscription usage check
+            $hasCompletedAppointment = ($subscription->used_appointments > 0) || $query->exists();
 
-            // 4. Return formatted response
+            // 4. Return formatted response according to latest plan
             return response()->json([
                 'success'               => true,
                 'patient_id'            => $patientId,
+                'has_plan'              => true,
                 'appointment_completed' => $hasCompletedAppointment,
+                'latest_plan'           => [
+                    'subscription_id'        => $subscription->id,
+                    'plan_id'                => $subscription->patient_plan_id,
+                    'plan_name'              => optional($subscription->plan)->name,
+                    'status'                 => $subscription->status,
+                    'payment_status'         => $subscription->payment_status,
+                    'start_date'             => $subscription->start_date ? Carbon::parse($subscription->start_date)->format('d M Y') : null,
+                    'end_date'               => $subscription->end_date ? Carbon::parse($subscription->end_date)->format('d M Y') : null,
+                    'total_appointments'     => optional($subscription->plan)->total_appointments ?? ($subscription->used_appointments + $subscription->remaining_appointments),
+                    'used_appointments'      => (int) $subscription->used_appointments,
+                    'remaining_appointments' => (int) $subscription->remaining_appointments,
+                ],
             ], 200);
 
         } catch (\Exception $e) {

@@ -8,6 +8,8 @@ use App\Models\PatientPlanSubscription;
 use App\Models\Appointment;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class PatientPlanController extends BaseApiController
@@ -64,11 +66,18 @@ class PatientPlanController extends BaseApiController
 
     public function subscribe(Request $request)
     {
+        Log::info('[Plan Subscribe] Request incoming', [
+            'payload'   => $request->all(),
+            'headers'   => $request->headers->all(),
+            'auth_user' => Auth::id() ?? auth('api')->id(),
+        ]);
+
         try {
             $patientId = $request->input('patient_id') ?? $request->input('user_id') ?? Auth::id() ?? auth('api')->id();
             $planId    = $request->input('patient_plan_id') ?? $request->input('plan_id') ?? $request->input('id');
 
             if (!$patientId) {
+                Log::warning('[Plan Subscribe] Rejected: Missing patient ID', ['payload' => $request->all()]);
                 return response()->json([
                     'status'  => false,
                     'message' => 'Patient ID is required',
@@ -76,6 +85,7 @@ class PatientPlanController extends BaseApiController
             }
 
             if (!$planId) {
+                Log::warning('[Plan Subscribe] Rejected: Missing plan ID', ['payload' => $request->all()]);
                 return response()->json([
                     'status'  => false,
                     'message' => 'Plan ID (patient_plan_id or plan_id) is required',
@@ -84,9 +94,10 @@ class PatientPlanController extends BaseApiController
 
             $plan = PatientPlan::find($planId);
             if (!$plan) {
+                Log::warning('[Plan Subscribe] Plan not found', ['plan_id' => $planId]);
                 return response()->json([
                     'status'  => false,
-                    'message' => 'Selected plan not found',
+                    'message' => "Selected plan with ID {$planId} not found",
                 ], 404);
             }
 
@@ -128,6 +139,15 @@ class PatientPlanController extends BaseApiController
                 'status'                 => 'active',
             ]);
 
+            Log::info('[Plan Subscribe] SUCCESS: Subscription saved in database', [
+                'subscription_id' => $subscription->id,
+                'patient_id'      => $subscription->patient_id,
+                'plan_id'         => $subscription->patient_plan_id,
+                'total_sessions'  => $plan->total_appointments,
+                'start_date'      => $subscription->start_date,
+                'end_date'        => $subscription->end_date,
+            ]);
+
             return $this->sendResponse([
                 'subscription_id'        => $subscription->id,
                 'patient_id'             => $subscription->patient_id,
@@ -144,12 +164,18 @@ class PatientPlanController extends BaseApiController
             ], 'Plan subscribed successfully');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('[Plan Subscribe] Validation error', ['errors' => $e->errors()]);
             return response()->json([
                 'status' => false,
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
+            Log::error('[Plan Subscribe] Exception occurred', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             $this->logException($e, 'Subscribe Plan Error');
+            return response()->json([
+                'status'  => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -161,10 +187,16 @@ class PatientPlanController extends BaseApiController
     */
     public function checkPlanAppointmentCompleted(Request $request)
     {
+        Log::info('[Check Plan Appointment] Request incoming', [
+            'payload'   => $request->all(),
+            'auth_user' => Auth::id() ?? auth('api')->id(),
+        ]);
+
         try {
             $patientId = $request->patient_id ?? Auth::id() ?? auth('api')->id();
 
             if (!$patientId) {
+                Log::warning('[Check Plan Appointment] Rejected: Missing patient ID');
                 return response()->json([
                     'success' => false,
                     'message' => 'The patient_id field is required.',
@@ -182,6 +214,7 @@ class PatientPlanController extends BaseApiController
 
             // 2. If no plan taken
             if (!$subscription) {
+                Log::info('[Check Plan Appointment] No subscription found in database for patient', ['patient_id' => $patientId]);
                 return response()->json([
                     'success'               => true,
                     'patient_id'            => $patientId,
@@ -210,6 +243,14 @@ class PatientPlanController extends BaseApiController
             // High performance exists() check or subscription usage check
             $hasCompletedAppointment = ($subscription->used_appointments > 0) || $query->exists();
 
+            Log::info('[Check Plan Appointment] Evaluation result', [
+                'patient_id'             => $patientId,
+                'subscription_id'        => $subscription->id,
+                'plan_name'              => optional($subscription->plan)->name,
+                'used_appointments'      => $subscription->used_appointments,
+                'has_completed'          => $hasCompletedAppointment,
+            ]);
+
             // 4. Return formatted response according to latest plan
             return response()->json([
                 'success'               => true,
@@ -231,6 +272,7 @@ class PatientPlanController extends BaseApiController
             ], 200);
 
         } catch (\Exception $e) {
+            Log::error('[Check Plan Appointment] Exception occurred', ['error' => $e->getMessage()]);
             $this->logException($e, 'Check Plan Appointment Completed Error');
             return response()->json([
                 'success' => false,

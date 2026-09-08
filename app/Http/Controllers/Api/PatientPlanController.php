@@ -255,8 +255,9 @@ class PatientPlanController extends BaseApiController
                 }
             });
 
-            // Check if any appointment under this unique plan purchase is completed
-            $anyLinkedCompleted = (clone $linkedApptsQuery)->where('status', 'completed')->exists();
+            // Check if any appointment under this unique plan purchase exists or is completed
+            $hasLinkedAppointments = (clone $linkedApptsQuery)->exists();
+            $anyLinkedCompleted    = (clone $linkedApptsQuery)->where('status', 'completed')->exists();
 
             if ($hasLinkedAppointments) {
                 // If any appointment in this plan is completed, or this specific appointment is completed, or session usage recorded

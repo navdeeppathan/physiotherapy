@@ -149,9 +149,10 @@ class AppointmentController extends BaseApiController
                 }
             }
 
-            // 4. If multiple slots booked together and still no subscription, create new subscription
-            if (!$subscription && count($slots) > 1) {
-                $plan = PatientPlan::where('total_appointments', count($slots))->first()
+            // 4. If slots booked and still no subscription, match with appropriate plan or default active plan
+            if (!$subscription && count($slots) >= 1) {
+                $plan = PatientPlan::where('total_appointments', count($slots))->where('status', 'active')->first()
+                    ?? PatientPlan::where('total_appointments', count($slots))->first()
                     ?? PatientPlan::where('status', 'active')->first();
             }
 

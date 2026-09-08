@@ -139,16 +139,19 @@ Class PatientAppointmentController extends Controller
                     $end = $start->copy()->addMonth();
             }
 
+            $uniquePlanId = PatientPlanSubscription::generateUniquePlanId($patient->id);
+
             $subscription = PatientPlanSubscription::create([
-                'patient_id' => $patient->id,
-                'patient_plan_id' => $plan->id,
-                'start_date' => $start,
-                'end_date' => $end,
-                'used_appointments' => 0,
+                'unique_plan_id'         => $uniquePlanId,
+                'patient_id'             => $patient->id,
+                'patient_plan_id'        => $plan->id,
+                'start_date'             => $start,
+                'end_date'               => $end,
+                'used_appointments'      => 0,
                 'remaining_appointments' => $plan->total_appointments,
-                'payment_status' => 'paid',
-                'payment_method' => 'Manual',
-                'status' => 'active',
+                'payment_status'         => 'paid',
+                'payment_method'         => 'Manual',
+                'status'                 => 'active',
             ]);
 
             Payment::create([
@@ -190,31 +193,22 @@ Class PatientAppointmentController extends Controller
 
                 Appointment::create([
 
-                    'doctor_id'=>$request->doctor_id,
-
-                    'patient_id'=>$patient->id,
-
-                    'time_slot_id'=>$slot->id,
-
-                    'appointment_date'=>$slot->availabilityDate->available_date,
-
-                    'start_time'=>$slot->start_time,
-
-                    'end_time'=>$slot->end_time,
-
-                    'booking_for'=>$request->booking_for,
-
-                    'patient_name'=>$patient->name,
-
-                    'patient_age'=>$patient_age,
-
-                    'patient_gender'=>$patient->gender,
-
-                    'problem_description'=>$request->problem_description,
-
-                    'status'=>'confirmed',
-
-                    'patient_address'=>$request->address
+                    'doctor_id'                    => $request->doctor_id,
+                    'patient_id'                   => $patient->id,
+                    'patient_plan_id'              => $plan->id,
+                    'patient_plan_subscription_id' => $subscription->id,
+                    'unique_plan_id'               => $uniquePlanId,
+                    'time_slot_id'                 => $slot->id,
+                    'appointment_date'             => $slot->availabilityDate->available_date,
+                    'start_time'                   => $slot->start_time,
+                    'end_time'                     => $slot->end_time,
+                    'booking_for'                  => $request->booking_for,
+                    'patient_name'                 => $patient->name,
+                    'patient_age'                  => $patient_age,
+                    'patient_gender'               => $patient->gender,
+                    'problem_description'          => $request->problem_description,
+                    'status'                       => 'confirmed',
+                    'patient_address'              => $request->address
 
                 ]);
 

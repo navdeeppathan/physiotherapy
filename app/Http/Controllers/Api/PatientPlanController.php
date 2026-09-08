@@ -219,6 +219,11 @@ class PatientPlanController extends BaseApiController
 
                 $subscription = PatientPlanSubscription::with('plan')
                     ->where('patient_id', (int) $patientId)
+                    ->where('status', 'active')
+                    ->latest('id')
+                    ->first()
+                    ?? PatientPlanSubscription::with('plan')
+                    ->where('patient_id', (int) $patientId)
                     ->latest('id')
                     ->first();
             }
@@ -242,26 +247,42 @@ class PatientPlanController extends BaseApiController
             // 1. Specific appointment completion (if appointment was provided)
             $thisApptCompleted = $appointment ? ($appointment->status === 'completed') : false;
 
-            // 2. Any appointment under this unique plan purchase completed
-            $subApptsQuery = Appointment::where('patient_plan_subscription_id', $subscription->id)
-                ->where('status', 'completed');
-
-            $hasCompletedAppointment = $thisApptCompleted 
-                || ($subscription->used_appointments > 0)
-                || $subApptsQuery->exists();
-
-            // 3. Fallback date range check if appointments weren't tagged with subscription_id previously
-            if (!$hasCompletedAppointment && $subscription->start_date) {
-                $dateQuery = Appointment::where('patient_id', $subscription->patient_id)
-                    ->where('status', 'completed')
-                    ->where('appointment_date', '>=', Carbon::parse($subscription->start_date)->format('Y-m-d'))
-                    ->where('appointment_date', '<=', $today);
-
-                if ($subscription->end_date) {
-                    $dateQuery->where('appointment_date', '<=', Carbon::parse($subscription->end_date)->format('Y-m-d'));
+            // 2. Query all appointments linked to this subscription
+            $linkedApptsQuery = Appointment::where(function ($q) use ($subscription) {
+                $q->where('patient_plan_subscription_id', $subscription->id);
+                if (!empty($subscription->unique_plan_id)) {
+                    $q->orWhere('unique_plan_id', $subscription->unique_plan_id);
                 }
+            });
 
-                $hasCompletedAppointment = $dateQuery->exists();
+            $hasLinkedAppointments = (clone $linkedApptsQuery)->exists();
+
+            if ($appointment) {
+                // If a specific appointment was requested, completion strictly reflects THAT appointment
+                $appointmentCompleted = ($appointment->status === 'completed');
+            } elseif ($hasLinkedAppointments) {
+                // If appointments are linked to this subscription, check if any of them is actually marked completed
+                $appointmentCompleted = (clone $linkedApptsQuery)->where('status', 'completed')->exists();
+            } else {
+                // No appointments linked yet to this subscription
+                if ($subscription->used_appointments > 0) {
+                    $appointmentCompleted = true;
+                } elseif ($subscription->created_at && $subscription->start_date) {
+                    // Fallback only for legacy untagged data, strictly created on or after this subscription was bought
+                    $dateQuery = Appointment::where('patient_id', $subscription->patient_id)
+                        ->where('status', 'completed')
+                        ->where('created_at', '>=', $subscription->created_at)
+                        ->where('appointment_date', '>=', Carbon::parse($subscription->start_date)->format('Y-m-d'))
+                        ->where('appointment_date', '<=', $today);
+
+                    if ($subscription->end_date) {
+                        $dateQuery->where('appointment_date', '<=', Carbon::parse($subscription->end_date)->format('Y-m-d'));
+                    }
+
+                    $appointmentCompleted = $dateQuery->exists();
+                } else {
+                    $appointmentCompleted = false;
+                }
             }
 
             return response()->json([
@@ -272,7 +293,7 @@ class PatientPlanController extends BaseApiController
                 'unique_plan_id'                 => $subscription->unique_plan_id ?? ("PLN-" . $subscription->id),
                 'subscription_id'                => $subscription->id,
                 'this_appointment_completed'     => $thisApptCompleted,
-                'appointment_completed'          => $hasCompletedAppointment,
+                'appointment_completed'          => $appointmentCompleted,
                 'latest_plan'                    => [
                     'unique_plan_id'         => $subscription->unique_plan_id ?? ("PLN-" . $subscription->id),
                     'subscription_id'        => $subscription->id,

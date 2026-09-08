@@ -332,23 +332,25 @@ class AssessmentController extends BaseApiController
             $appointmentId   = $request->input('appointment_id');
 
             if (!empty($appointmentId) && is_numeric($appointmentId) && $appointmentId > 0) {
-                $appointment = Appointment::where('id', $appointmentId)
-                    ->where('doctor_id', $doctor->id)
-                    ->first();
+                $appointment = Appointment::find($appointmentId);
             }
 
-            // If appointment_id is null / not provided, find appointment on EXACT assessment_date
+            // If appointment_id is null / not provided, find uncompleted appointment on or around assessment_date
             if (!$appointment) {
-                $appointment = Appointment::where('doctor_id', $doctor->id)
-                    ->where('patient_id', $request->patient_id)
+                $appointment = Appointment::where('patient_id', $request->patient_id)
+                    ->whereIn('status', ['confirmed', 'pending'])
                     ->whereDate('appointment_date', $targetDate)
-                    ->where('status', '!=', 'cancelled')
                     ->first();
 
-                // If not found on exact date, find most recent appointment on or before assessment_date (<= targetDate)
                 if (!$appointment) {
-                    $appointment = Appointment::where('doctor_id', $doctor->id)
-                        ->where('patient_id', $request->patient_id)
+                    $appointment = Appointment::where('patient_id', $request->patient_id)
+                        ->whereIn('status', ['confirmed', 'pending'])
+                        ->orderBy('appointment_date', 'asc')
+                        ->first();
+                }
+
+                if (!$appointment) {
+                    $appointment = Appointment::where('patient_id', $request->patient_id)
                         ->whereDate('appointment_date', '<=', $targetDate)
                         ->where('status', '!=', 'cancelled')
                         ->orderBy('appointment_date', 'desc')
@@ -357,6 +359,7 @@ class AssessmentController extends BaseApiController
             }
 
             if ($appointment) {
+                $prevStatus = $appointment->status;
                 $appointment->update([
                     'status' => 'completed',
                 ]);
@@ -366,6 +369,13 @@ class AssessmentController extends BaseApiController
                     'status'           => 'completed',
                     'appointment_date' => Carbon::parse($appointment->appointment_date)->format('d M Y'),
                 ];
+
+                Log::info('[Assessment Create] Appointment marked as COMPLETED', [
+                    'appointment_id'  => $appointment->id,
+                    'patient_id'       => $appointment->patient_id,
+                    'previous_status' => $prevStatus,
+                    'new_status'      => 'completed',
+                ]);
 
                 // Update patient plan subscription counts if exists
                 $subscription = null;
@@ -703,6 +713,12 @@ class AssessmentController extends BaseApiController
      */
     public function recordProgress(Request $request, $id = null)
     {
+        Log::info('[Progress Update] API invoked', [
+            'url_id'     => $id,
+            'body'       => $request->all(),
+            'auth_user'  => Auth::id() ?? auth('api')->id(),
+        ]);
+
         try {
             $doctor       = Auth::user();
             $assessmentId = $id ?? $request->input('assessment_id') ?? $request->input('id');
@@ -732,11 +748,22 @@ class AssessmentController extends BaseApiController
             }
 
             if (!$assessment) {
+                Log::warning('[Progress Update] Assessment NOT FOUND', [
+                    'assessment_id' => $assessmentId,
+                    'appointment_id'=> $request->input('appointment_id'),
+                    'patient_id'    => $request->input('patient_id'),
+                ]);
+
                 return response()->json([
                     'status'  => false,
                     'message' => 'Assessment not found. Please provide a valid assessment_id, appointment_id, or patient_id.'
                 ], 404);
             }
+
+            Log::info('[Progress Update] Assessment resolved', [
+                'assessment_id' => $assessment->id,
+                'patient_id'    => $assessment->patient_id,
+            ]);
 
             DB::beginTransaction();
 
@@ -865,35 +892,74 @@ class AssessmentController extends BaseApiController
                     if ($nextScheduled) {
                         $assessment->update(['next_session_date' => $nextScheduled->session_date]);
                     }
+
+                    Log::info('[Progress Update] Session marked completed', [
+                        'session_id'         => $session->id,
+                        'session_number'     => $session->session_number,
+                        'completed_sessions' => $assessment->completed_sessions,
+                    ]);
                 }
 
-                // B. Appointment completion (from appointment_id or matching session_date)
-                $appointment = null;
-                $targetDate  = $request->session_date ? Carbon::parse($request->session_date)->toDateString() : now()->toDateString();
+                // B. Appointment completion (look for uncompleted upcoming appointment)
+                $appointment   = null;
+                $targetDate    = $request->session_date ? Carbon::parse($request->session_date)->toDateString() : now()->toDateString();
                 $appointmentId = $request->input('appointment_id');
 
+                // 1. Direct lookup if appointment_id passed
                 if (!empty($appointmentId) && is_numeric($appointmentId) && $appointmentId > 0) {
                     $appointment = Appointment::find($appointmentId);
+                    Log::info('[Progress Update] Searched by appointment_id', [
+                        'appointment_id' => $appointmentId,
+                        'found'          => (bool) $appointment,
+                        'current_status' => optional($appointment)->status,
+                    ]);
                 }
 
-                // If appointment_id is null / not found, find appointment on EXACT session date
+                // 2. If appointment_id is null or not found, find patient's uncompleted upcoming appointment:
                 if (!$appointment) {
+                    // Priority 2a: Uncompleted appointment on exact session_date
                     $appointment = Appointment::where('patient_id', $assessment->patient_id)
+                        ->whereIn('status', ['confirmed', 'pending'])
                         ->whereDate('appointment_date', $targetDate)
-                        ->where('status', '!=', 'cancelled')
+                        ->orderBy('start_time')
                         ->first();
 
-                    // If no exact match, find appointment on or before session date (<= targetDate)
+                    // Priority 2b: Nearest upcoming uncompleted appointment (earliest date first)
                     if (!$appointment) {
                         $appointment = Appointment::where('patient_id', $assessment->patient_id)
-                            ->whereDate('appointment_date', '<=', $targetDate)
-                            ->where('status', '!=', 'cancelled')
-                            ->orderBy('appointment_date', 'desc')
+                            ->whereIn('status', ['confirmed', 'pending'])
+                            ->orderBy('appointment_date', 'asc')
+                            ->orderBy('start_time', 'asc')
                             ->first();
                     }
+
+                    // Priority 2c: Fallback to any uncompleted appointment for patient
+                    if (!$appointment) {
+                        $appointment = Appointment::where('patient_id', $assessment->patient_id)
+                            ->where('status', '!=', 'completed')
+                            ->where('status', '!=', 'cancelled')
+                            ->orderBy('appointment_date', 'asc')
+                            ->first();
+                    }
+
+                    // Priority 2d: Appointment on exact session_date even if already marked
+                    if (!$appointment) {
+                        $appointment = Appointment::where('patient_id', $assessment->patient_id)
+                            ->whereDate('appointment_date', $targetDate)
+                            ->where('status', '!=', 'cancelled')
+                            ->first();
+                    }
+
+                    Log::info('[Progress Update] Auto-resolved appointment', [
+                        'resolved_appointment_id' => optional($appointment)->id,
+                        'patient_id'              => $assessment->patient_id,
+                        'target_date'             => $targetDate,
+                        'status_before'           => optional($appointment)->status,
+                    ]);
                 }
 
                 if ($appointment) {
+                    $previousStatus = $appointment->status;
                     $appointment->update([
                         'status' => 'completed',
                     ]);
@@ -901,8 +967,17 @@ class AssessmentController extends BaseApiController
                     $completedAppointmentData = [
                         'id'               => $appointment->id,
                         'status'           => 'completed',
+                        'previous_status'  => $previousStatus,
                         'appointment_date' => Carbon::parse($appointment->appointment_date)->format('d M Y'),
                     ];
+
+                    Log::info('[Progress Update] SUCCESS: Appointment marked as COMPLETED', [
+                        'appointment_id'   => $appointment->id,
+                        'patient_id'        => $appointment->patient_id,
+                        'previous_status'  => $previousStatus,
+                        'new_status'       => 'completed',
+                        'appointment_date' => $appointment->appointment_date,
+                    ]);
 
                     // Update patient plan subscription counts if exists (using linked subscription first)
                     $subscription = null;
@@ -922,14 +997,26 @@ class AssessmentController extends BaseApiController
                         if ($subscription->remaining_appointments > 0) {
                             $subscription->decrement('remaining_appointments');
                         }
+
+                        Log::info('[Progress Update] Subscription updated', [
+                            'subscription_id'        => $subscription->id,
+                            'unique_plan_id'         => $subscription->unique_plan_id,
+                            'used_appointments'      => $subscription->used_appointments,
+                            'remaining_appointments' => $subscription->remaining_appointments,
+                        ]);
                     }
+                } else {
+                    Log::warning('[Progress Update] WARNING: No appointment found to complete for patient', [
+                        'patient_id' => $assessment->patient_id,
+                        'target_date'=> $targetDate,
+                    ]);
                 }
             }
 
             DB::commit();
 
             // Refresh parameters for response
-            $updatedParams = AssessmentParameter::where('assessment_id', $id)->orderBy('sort_order')->get();
+            $updatedParams = AssessmentParameter::where('assessment_id', $assessmentId)->orderBy('sort_order')->get();
             $totalProgressSum = 0;
             $progressCount    = 0;
 
@@ -952,10 +1039,17 @@ class AssessmentController extends BaseApiController
             });
 
             $overallImprovement = $progressCount > 0 ? round($totalProgressSum / $progressCount, 1) : 0;
-            $completedCount     = PatientSession::where('assessment_id', $id)->where('status', 'completed')->count();
+            $completedCount     = PatientSession::where('assessment_id', $assessmentId)->where('status', 'completed')->count();
+
+            Log::info('[Progress Update] Returning SUCCESS response', [
+                'assessment_id'          => $assessmentId,
+                'completed_sessions'     => $completedCount,
+                'appointment_completed'  => $completedAppointmentData !== null,
+                'completed_appointment'  => $completedAppointmentData,
+            ]);
 
             return $this->sendResponse([
-                'assessment_id'          => $id,
+                'assessment_id'          => $assessmentId,
                 'completed_session'      => $completedSessionData,
                 'completed_sessions'     => $completedCount,
                 'total_sessions'         => $assessment->total_sessions,
@@ -967,6 +1061,10 @@ class AssessmentController extends BaseApiController
 
         } catch (Exception $e) {
             DB::rollBack();
+            Log::error('[Progress Update] Exception occurred', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             $this->logException($e, 'Assessment Progress Update Error');
             return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
         }

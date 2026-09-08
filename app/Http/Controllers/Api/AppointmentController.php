@@ -94,21 +94,69 @@ class AppointmentController extends BaseApiController
                 );
             }
 
-            // Auto-create Patient Plan Subscription if plan_id is passed OR multiple slots booked together
+            // Auto-create or Auto-link Patient Plan Subscription
             $subscription = null;
-            $planId = $request->input('patient_plan_id') ?? $request->input('plan_id');
+            $plan         = null;
+            $planId       = $request->input('patient_plan_id') 
+                         ?? $request->input('plan_id') 
+                         ?? $request->input('id');
+            $subParam     = $request->input('subscription_id') 
+                         ?? $request->input('patient_plan_subscription_id') 
+                         ?? $request->input('unique_plan_id');
 
-            if ($planId) {
-                $plan = PatientPlan::find($planId);
-            } else if (count($slots) > 1) {
-                // Find matching plan by appointment count or default active plan
-                $plan = PatientPlan::where('total_appointments', count($slots))->first()
-                    ?? PatientPlan::where('status', 'active')->first();
-            } else {
-                $plan = null;
+            // 1. Explicit subscription ID passed in request
+            if (!empty($subParam)) {
+                $subscription = PatientPlanSubscription::with('plan')
+                    ->where('id', is_numeric($subParam) ? (int)$subParam : 0)
+                    ->orWhere('unique_plan_id', $subParam)
+                    ->first();
+
+                if ($subscription) {
+                    $plan = $subscription->plan;
+                }
             }
 
-            if ($plan) {
+            // 2. Plan ID passed in request
+            if (!$subscription && $planId) {
+                $plan = PatientPlan::find($planId);
+
+                // Check if patient already has an active subscription for this plan with remaining appointments
+                $existingActiveSub = PatientPlanSubscription::with('plan')
+                    ->where('patient_id', $patient->id)
+                    ->where('patient_plan_id', $planId)
+                    ->where('status', 'active')
+                    ->where('remaining_appointments', '>', 0)
+                    ->latest('id')
+                    ->first();
+
+                if ($existingActiveSub) {
+                    $subscription = $existingActiveSub;
+                }
+            }
+
+            // 3. If single slot booked and no plan specified, check if patient has an active plan subscription with remaining slots
+            if (!$subscription && count($slots) === 1) {
+                $patientActiveSub = PatientPlanSubscription::with('plan')
+                    ->where('patient_id', $patient->id)
+                    ->where('status', 'active')
+                    ->where('remaining_appointments', '>', 0)
+                    ->latest('id')
+                    ->first();
+
+                if ($patientActiveSub) {
+                    $subscription = $patientActiveSub;
+                    $plan         = $patientActiveSub->plan;
+                }
+            }
+
+            // 4. If multiple slots booked together and still no subscription, create new subscription
+            if (!$subscription && count($slots) > 1) {
+                $plan = PatientPlan::where('total_appointments', count($slots))->first()
+                    ?? PatientPlan::where('status', 'active')->first();
+            }
+
+            // 5. Create new subscription if plan identified but subscription not created yet
+            if (!$subscription && $plan) {
                 $start = now();
                 switch (strtolower((string) $plan->duration)) {
                     case 'weekly':

@@ -255,16 +255,16 @@ class PatientPlanController extends BaseApiController
                 }
             });
 
-            $hasLinkedAppointments = (clone $linkedApptsQuery)->exists();
+            // Check if any appointment under this unique plan purchase is completed
+            $anyLinkedCompleted = (clone $linkedApptsQuery)->where('status', 'completed')->exists();
 
-            if ($appointment) {
-                // If a specific appointment was requested, completion strictly reflects THAT appointment
-                $appointmentCompleted = ($appointment->status === 'completed');
-            } elseif ($hasLinkedAppointments) {
-                // If appointments are linked to this subscription, check if any of them is actually marked completed
-                $appointmentCompleted = (clone $linkedApptsQuery)->where('status', 'completed')->exists();
+            if ($hasLinkedAppointments) {
+                // If any appointment in this plan is completed, or this specific appointment is completed, or session usage recorded
+                $appointmentCompleted = $anyLinkedCompleted 
+                    || ($subscription->used_appointments > 0) 
+                    || $thisApptCompleted;
             } else {
-                // No appointments linked yet to this subscription
+                // No appointments linked directly yet to this subscription
                 if ($subscription->used_appointments > 0) {
                     $appointmentCompleted = true;
                 } elseif ($subscription->created_at && $subscription->start_date) {

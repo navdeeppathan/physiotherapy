@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\BaseApiController;
+use App\Models\Appointment;
 use App\Models\DoctorProfile;
 use App\Models\PatientAssessment;
+use App\Models\PatientPlanSubscription;
 use App\Models\PatientReport;
 use App\Models\PatientSession;
 use App\Models\User;
@@ -24,6 +26,42 @@ class PatientReportController extends BaseApiController
     {
         try {
             $patient = Auth::user();
+            if (!$patient) {
+                return $this->sendError('Unauthorized', [], 401);
+            }
+
+            // 1. Verify if patient has taken any plan, subscription, plan appointment, or assessment
+            $hasPlanSubscription = PatientPlanSubscription::where('patient_id', $patient->id)
+                ->where(function ($q) {
+                    $q->whereIn('payment_status', ['paid', 'completed'])
+                      ->orWhereIn('status', ['active', 'completed', 'expired']);
+                })
+                ->exists();
+
+            if (!$hasPlanSubscription) {
+                $hasPlanSubscription = PatientPlanSubscription::where('patient_id', $patient->id)->exists();
+            }
+
+            $hasPlanAppointment = Appointment::where('patient_id', $patient->id)
+                ->where(function ($q) {
+                    $q->whereNotNull('patient_plan_subscription_id')
+                      ->orWhereNotNull('patient_plan_id')
+                      ->orWhereNotNull('unique_plan_id');
+                })
+                ->exists();
+
+            $hasAssessment = PatientAssessment::where('patient_id', $patient->id)->exists();
+
+            // If patient has NOT taken any plan, return "No reports yet"
+            if (!$hasPlanSubscription && !$hasPlanAppointment && !$hasAssessment) {
+                return $this->sendResponse([
+                    'has_report' => false,
+                    'has_plan'   => false,
+                    'message'    => 'No reports yet',
+                    'report'     => null,
+                ], 'No reports yet');
+            }
+
             $periodType = $request->input('period', '15_days'); // 7_days, 15_days, 30_days, custom
 
             // Determine Date Range
@@ -67,8 +105,23 @@ class PatientReportController extends BaseApiController
 
             $assessment = $assessmentQuery->latest()->first();
 
+            // Check if patient has plan subscription details
+            $subscription = PatientPlanSubscription::with('plan')
+                ->where('patient_id', $patient->id)
+                ->latest()
+                ->first();
+
             // Doctor details fallback / real
             $doctor = $assessment?->doctor;
+            if (!$doctor) {
+                $latestAppt = Appointment::with('doctor.doctorProfile.specializationdata')
+                    ->where('patient_id', $patient->id)
+                    ->whereNotNull('doctor_id')
+                    ->latest('id')
+                    ->first();
+                $doctor = $latestAppt?->doctor;
+            }
+
             $doctorProfile = $doctor ? DoctorProfile::where('user_id', $doctor->id)->first() : null;
 
             $doctorName = $doctor ? ($doctor->name ?? 'Dr. Amit Verma') : 'Dr. Amit Verma';
@@ -81,12 +134,12 @@ class PatientReportController extends BaseApiController
 
             // Session Stats in this Period
             $completedSessionsInPeriod = 0;
-            $totalSessionsPlanned = 8;
+            $totalSessionsPlanned = $subscription?->plan?->total_sessions ?? 8;
             $totalGoalsCount = 4;
             $goalsAchievedCount = 2;
 
             if ($assessment) {
-                $totalSessionsPlanned = $assessment->total_sessions > 0 ? $assessment->total_sessions : 8;
+                $totalSessionsPlanned = $assessment->total_sessions > 0 ? $assessment->total_sessions : ($subscription?->plan?->total_sessions ?? 8);
                 $completedSessionsInPeriod = $assessment->sessions()
                     ->where('status', 'completed')
                     ->whereBetween('session_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
@@ -95,12 +148,15 @@ class PatientReportController extends BaseApiController
                 if ($completedSessionsInPeriod === 0) {
                     $completedSessionsInPeriod = min($assessment->completed_sessions, $totalSessionsPlanned);
                     if ($completedSessionsInPeriod === 0) {
-                        $completedSessionsInPeriod = 6; // visual mockup fallback
+                        $completedSessionsInPeriod = $subscription?->used_appointments ?? 6; // visual mockup fallback
                     }
                 }
 
                 $totalGoalsCount = $assessment->goals->count() > 0 ? $assessment->goals->count() : 4;
                 $goalsAchievedCount = min(2, $totalGoalsCount);
+            } elseif ($subscription) {
+                $completedSessionsInPeriod = $subscription->used_appointments ?? 6;
+                $totalSessionsPlanned = $subscription->plan?->total_sessions ?? 8;
             } else {
                 $completedSessionsInPeriod = 6;
             }
@@ -143,6 +199,8 @@ class PatientReportController extends BaseApiController
             $shareToken = Str::random(32);
 
             $responsePayload = [
+                'has_report' => true,
+                'has_plan'   => true,
                 'doctor' => [
                     'id'            => $doctor?->id ?? 1,
                     'name'          => $doctorName,
@@ -159,6 +217,7 @@ class PatientReportController extends BaseApiController
                     'formatted_end_date'     => $endDate->format('d M Y'),
                     'formatted_period_label' => $formattedPeriodLabel,
                     'days_count'             => $daysCount,
+                    'available_periods'      => ['7_days', '15_days', '30_days', 'custom'],
                 ],
                 'overview_cards' => [
                     'overall_improvement' => [
@@ -168,10 +227,11 @@ class PatientReportController extends BaseApiController
                         'is_positive'     => true,
                     ],
                     'sessions_completed' => [
-                        'completed'    => $completedSessionsInPeriod,
-                        'total'        => $totalSessionsPlanned,
-                        'display_text' => "{$completedSessionsInPeriod} / {$totalSessionsPlanned}",
-                        'progress_pct' => round(($completedSessionsInPeriod / max(1, $totalSessionsPlanned)) * 100, 1),
+                        'completed'       => $completedSessionsInPeriod,
+                        'total'           => $totalSessionsPlanned,
+                        'display_text'    => "{$completedSessionsInPeriod} / {$totalSessionsPlanned}",
+                        'progress_pct'    => round(($completedSessionsInPeriod / max(1, $totalSessionsPlanned)) * 100, 1),
+                        'percentage_text' => round(($completedSessionsInPeriod / max(1, $totalSessionsPlanned)) * 100) . '% Completed',
                     ],
                     'goals_achieved' => [
                         'achieved'     => $goalsAchievedCount,
@@ -185,13 +245,20 @@ class PatientReportController extends BaseApiController
                     ],
                 ],
                 'overall_progress_chart' => [
+                    'title'             => 'Overall Progress',
+                    'legend'            => 'Current Period',
                     'start_improvement' => $startImprovementPct . '%',
                     'end_improvement'   => $endImprovementPct . '%',
                     'change'            => '+' . $overallImprovementPct . '%',
+                    'change_direction'  => 'up',
+                    'direction_arrow'   => '↑',
+                    'is_positive'       => true,
                     'trend_points'      => $trendPoints,
                 ],
-                'parameters_summary' => $parametersData,
+                'parameters_summary'          => $parametersData,
+                'available_parameter_filters' => ['All Parameters', 'Pain Scale', 'Range of Motion', 'Functional Mobility', 'Endurance', 'Strength', 'Quality of Life'],
                 'report_summary' => [
+                    'title'       => 'Report Summary',
                     'description' => "This report includes your progress overview and parameter changes from {$startDate->format('d M Y')} to {$endDate->format('d M Y')}.",
                     'highlights'  => [
                         'Overall progress comparison',
@@ -201,10 +268,16 @@ class PatientReportController extends BaseApiController
                     ],
                 ],
                 'export_share' => [
+                    'title'            => 'Export / Share Report',
+                    'description'      => 'Download or share your progress report.',
                     'share_token'      => $shareToken,
                     'share_url'        => url("/api/report/shared/{$shareToken}"),
                     'web_view_url'     => url("/report/view/{$shareToken}"),
                     'download_pdf_url' => url("/api/patient/report/pdf?period={$periodType}&start_date={$startDate->format('Y-m-d')}&end_date={$endDate->format('Y-m-d')}"),
+                ],
+                'call_us' => [
+                    'label' => 'Call Us',
+                    'phone' => '+91 98765 43210',
                 ],
                 'disclaimer' => 'Note: Reports are generated only for the selected period.',
             ];
@@ -345,6 +418,7 @@ class PatientReportController extends BaseApiController
                 'current_value'    => '3',
                 'display_change'   => '6 → 3',
                 'change_pct'       => 50,
+                'change_display'   => '↓ 50%',
                 'change_direction' => 'down',
                 'is_improved'      => true,
                 'sparkline'        => [6, 5.8, 5.0, 4.5, 4.0, 3.2, 3.0],
@@ -358,6 +432,7 @@ class PatientReportController extends BaseApiController
                 'current_value'    => '110°',
                 'display_change'   => '90° → 110°',
                 'change_pct'       => 22,
+                'change_display'   => '↑ 22%',
                 'change_direction' => 'up',
                 'is_improved'      => true,
                 'sparkline'        => [90, 92, 98, 102, 105, 108, 110],
@@ -371,6 +446,7 @@ class PatientReportController extends BaseApiController
                 'current_value'    => '4/5',
                 'display_change'   => '3/5 → 4/5',
                 'change_pct'       => 33,
+                'change_display'   => '↑ 33%',
                 'change_direction' => 'up',
                 'is_improved'      => true,
                 'sparkline'        => [3, 3, 3.5, 3.5, 4, 4, 4],
@@ -384,6 +460,7 @@ class PatientReportController extends BaseApiController
                 'current_value'    => '25s',
                 'display_change'   => '15s → 25s',
                 'change_pct'       => 67,
+                'change_display'   => '↑ 67%',
                 'change_direction' => 'up',
                 'is_improved'      => true,
                 'sparkline'        => [15, 16, 18, 20, 22, 24, 25],
@@ -397,6 +474,7 @@ class PatientReportController extends BaseApiController
                 'current_value'    => '16s',
                 'display_change'   => '20s → 16s',
                 'change_pct'       => 20,
+                'change_display'   => '↓ 20%',
                 'change_direction' => 'down',
                 'is_improved'      => true,
                 'sparkline'        => [20, 19.5, 18.5, 17.8, 17.0, 16.2, 16.0],
@@ -410,6 +488,7 @@ class PatientReportController extends BaseApiController
                 'current_value'    => '12',
                 'display_change'   => '8 → 12',
                 'change_pct'       => 50,
+                'change_display'   => '↑ 50%',
                 'change_direction' => 'up',
                 'is_improved'      => true,
                 'sparkline'        => [8, 8, 9, 10, 11, 11, 12],
@@ -423,6 +502,7 @@ class PatientReportController extends BaseApiController
                 'current_value'    => '18kg',
                 'display_change'   => '16kg → 18kg',
                 'change_pct'       => 12,
+                'change_display'   => '↑ 12%',
                 'change_direction' => 'up',
                 'is_improved'      => true,
                 'sparkline'        => [16, 16.2, 16.8, 17.1, 17.5, 17.8, 18.0],
@@ -436,6 +516,7 @@ class PatientReportController extends BaseApiController
                 'current_value'    => '7',
                 'display_change'   => '5 → 7',
                 'change_pct'       => 40,
+                'change_display'   => '↑ 40%',
                 'change_direction' => 'up',
                 'is_improved'      => true,
                 'sparkline'        => [5, 5, 5.5, 6, 6.2, 6.8, 7.0],
@@ -452,6 +533,7 @@ class PatientReportController extends BaseApiController
                 $current = round($base + (($target - $base) * 0.6), 1);
                 $diff = $base > 0 ? round(abs(($current - $base) / $base) * 100, 1) : 0;
                 $dir = $target >= $base ? 'up' : 'down';
+                $arrow = $dir === 'up' ? '↑' : '↓';
 
                 $customCards[] = [
                     'id'               => $p->id,
@@ -462,6 +544,7 @@ class PatientReportController extends BaseApiController
                     'current_value'    => "{$current}{$unit}",
                     'display_change'   => "{$base}{$unit} → {$current}{$unit}",
                     'change_pct'       => $diff,
+                    'change_display'   => "{$arrow} {$diff}%",
                     'change_direction' => $dir,
                     'is_improved'      => true,
                     'sparkline'        => [$base, round($base + ($current - $base) * 0.3, 1), round($base + ($current - $base) * 0.7, 1), $current],

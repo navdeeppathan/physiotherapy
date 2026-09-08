@@ -208,6 +208,8 @@ Route::middleware(['auth:api', 'role:patient'])->group(function () {
 
     // ── Patient Progress Report & Share ─────────────────────────
     Route::get('/patient/progress-report', [PatientReportController::class, 'getProgressReport']);
+    Route::get('/patient/assessment-progress-report', [PatientReportController::class, 'getProgressReport']);
+    Route::get('/patient/reports', [PatientReportController::class, 'getProgressReport']);
     Route::get('/patient/report-history', [PatientReportController::class, 'getReportHistory']);
     Route::post('/patient/report/share', [PatientReportController::class, 'shareReport']);
 

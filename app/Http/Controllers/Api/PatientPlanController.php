@@ -301,10 +301,9 @@ class PatientPlanController extends BaseApiController
             $anyLinkedCompleted      = $completedAppts->isNotEmpty();
 
             if ($hasLinkedAppointments) {
-                // If any appointment in this plan is completed, or this specific appointment is completed, or session usage recorded
-                $appointmentCompleted = $anyLinkedCompleted 
-                    || ($subscription->used_appointments > 0) 
-                    || $thisApptCompleted;
+                // When appointments are linked, they are the absolute ground truth.
+                // If any linked appointment has status = 'completed', the plan appointment is completed.
+                $appointmentCompleted = $anyLinkedCompleted;
 
                 Log::info('[Check Plan Appointment] Evaluated via linked appointments', [
                     'subscription_id'             => $subscription->id,

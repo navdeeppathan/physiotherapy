@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\DoctorDashboardController;
 use App\Http\Controllers\Api\AssessmentController;
 use App\Http\Controllers\Api\ExerciseController;
 use App\Http\Controllers\Api\PatientReportController;
+use App\Http\Controllers\Api\DoctorReportController;
 
 // Authentication
 Route::post('/login', [UserController::class, 'login']);
@@ -171,6 +172,11 @@ Route::middleware(['auth:api', 'role:doctor'])->group(function () {
     Route::get('/doctor/sessions/today', [AssessmentController::class, 'todaySessions']);
     Route::post('/session/start', [AssessmentController::class, 'startSession']);
     Route::put('/session/{id}/complete', [AssessmentController::class, 'completeSession'])->where('id', '[0-9]+');
+
+    // ── Doctor Reports & Progress Parameter Track ─────────────────
+    Route::get('/doctor/reports/patients', [DoctorReportController::class, 'patientsList']);
+    Route::get('/doctor/reports/patient/{patient_id}', [DoctorReportController::class, 'patientReport'])->where('patient_id', '[0-9]+');
+    Route::get('/doctor/reports/assessment/{assessment_id}', [DoctorReportController::class, 'assessmentReport'])->where('assessment_id', '[0-9]+');
 });
 
 Route::middleware('auth:api')->get(

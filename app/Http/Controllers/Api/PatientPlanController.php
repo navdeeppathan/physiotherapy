@@ -166,8 +166,13 @@ class PatientPlanController extends BaseApiController
     */
     public function checkPlanAppointmentCompleted(Request $request)
     {
+        Log::info('[Check Plan Appointment] Incoming Request', [
+            'method'    => $request->method(),
+            'url'       => $request->fullUrl(),
+            'payload'   => $request->all(),
+            'auth_user' => Auth::id() ?? auth('api')->id(),
+        ]);
 
-        \Log::info('Check Plan Appointment Completed Request: ', $request->all());
         try {
             $appointmentId = $request->input('appointment_id');
             $uniquePlanId  = $request->input('unique_plan_id') ?? $request->input('subscription_id');
@@ -181,10 +186,13 @@ class PatientPlanController extends BaseApiController
                 $appointment = Appointment::with(['plan', 'subscription.plan'])->find($appointmentId);
 
                 if (!$appointment) {
-                    return response()->json([
+                    Log::warning('[Check Plan Appointment] Appointment not found', ['appointment_id' => $appointmentId]);
+                    $res = [
                         'success' => false,
                         'message' => "Appointment with ID {$appointmentId} not found.",
-                    ], 404);
+                    ];
+                    Log::info('[Check Plan Appointment] Outgoing Response (404)', $res);
+                    return response()->json($res, 404);
                 }
 
                 $patientId = $appointment->patient_id;
@@ -196,6 +204,15 @@ class PatientPlanController extends BaseApiController
                 } elseif (!empty($appointment->unique_plan_id)) {
                     $subscription = PatientPlanSubscription::with('plan')->where('unique_plan_id', $appointment->unique_plan_id)->first();
                 }
+
+                Log::info('[Check Plan Appointment] Resolved from appointment_id', [
+                    'appointment_id'               => $appointment->id,
+                    'appointment_status'           => $appointment->status,
+                    'patient_id'                   => $appointment->patient_id,
+                    'patient_plan_subscription_id' => $appointment->patient_plan_subscription_id,
+                    'unique_plan_id'               => $appointment->unique_plan_id,
+                    'subscription_found'           => $subscription ? $subscription->id : null,
+                ]);
             }
 
             // Scenario 2: Check by unique_plan_id or subscription_id
@@ -207,16 +224,24 @@ class PatientPlanController extends BaseApiController
 
                 if ($subscription) {
                     $patientId = $subscription->patient_id;
+                    Log::info('[Check Plan Appointment] Resolved from unique_plan_id/subscription_id', [
+                        'unique_plan_id'  => $uniquePlanId,
+                        'subscription_id' => $subscription->id,
+                        'patient_id'      => $patientId,
+                    ]);
                 }
             }
 
             // Scenario 3: Fallback to latest subscription for patient_id
             if (!$subscription) {
                 if (!$patientId) {
-                    return response()->json([
+                    Log::warning('[Check Plan Appointment] Rejected: Missing identifier', ['payload' => $request->all()]);
+                    $res = [
                         'success' => false,
                         'message' => 'Either appointment_id, unique_plan_id, or patient_id is required.',
-                    ], 422);
+                    ];
+                    Log::info('[Check Plan Appointment] Outgoing Response (422)', $res);
+                    return response()->json($res, 422);
                 }
 
                 $subscription = PatientPlanSubscription::with('plan')
@@ -228,11 +253,21 @@ class PatientPlanController extends BaseApiController
                     ->where('patient_id', (int) $patientId)
                     ->latest('id')
                     ->first();
+
+                if ($subscription) {
+                    Log::info('[Check Plan Appointment] Resolved from patient_id latest subscription', [
+                        'patient_id'      => $patientId,
+                        'subscription_id' => $subscription->id,
+                        'status'          => $subscription->status,
+                        'unique_plan_id'  => $subscription->unique_plan_id,
+                    ]);
+                }
             }
 
             // If still no subscription found for patient
             if (!$subscription) {
-                return response()->json([
+                Log::info('[Check Plan Appointment] Patient has no subscription in database', ['patient_id' => $patientId]);
+                $res = [
                     'success'               => true,
                     'patient_id'            => (int) $patientId,
                     'appointment_id'        => $appointment ? $appointment->id : null,
@@ -240,7 +275,9 @@ class PatientPlanController extends BaseApiController
                     'appointment_completed' => false,
                     'latest_plan'           => null,
                     'message'               => 'Patient has not purchased any plan',
-                ], 200);
+                ];
+                Log::info('[Check Plan Appointment] Outgoing Response (No Plan)', $res);
+                return response()->json($res, 200);
             }
 
             // Check completion status for this unique subscription batch
@@ -258,18 +295,35 @@ class PatientPlanController extends BaseApiController
             });
 
             // Check if any appointment under this unique plan purchase exists or is completed
-            $hasLinkedAppointments = (clone $linkedApptsQuery)->exists();
-            $anyLinkedCompleted    = (clone $linkedApptsQuery)->where('status', 'completed')->exists();
+            $hasLinkedAppointments   = (clone $linkedApptsQuery)->exists();
+            $linkedAppointmentsCount = (clone $linkedApptsQuery)->count();
+            $completedAppts          = (clone $linkedApptsQuery)->where('status', 'completed')->get(['id', 'time_slot_id', 'appointment_date', 'status']);
+            $anyLinkedCompleted      = $completedAppts->isNotEmpty();
 
             if ($hasLinkedAppointments) {
                 // If any appointment in this plan is completed, or this specific appointment is completed, or session usage recorded
                 $appointmentCompleted = $anyLinkedCompleted 
                     || ($subscription->used_appointments > 0) 
                     || $thisApptCompleted;
+
+                Log::info('[Check Plan Appointment] Evaluated via linked appointments', [
+                    'subscription_id'             => $subscription->id,
+                    'unique_plan_id'              => $subscription->unique_plan_id,
+                    'total_linked_appointments'   => $linkedAppointmentsCount,
+                    'completed_appointments'      => $completedAppts->toArray(),
+                    'any_linked_completed'        => $anyLinkedCompleted,
+                    'used_appointments'           => $subscription->used_appointments,
+                    'this_appt_completed'         => $thisApptCompleted,
+                    'final_appointment_completed' => $appointmentCompleted,
+                ]);
             } else {
                 // No appointments linked directly yet to this subscription
                 if ($subscription->used_appointments > 0) {
                     $appointmentCompleted = true;
+                    Log::info('[Check Plan Appointment] Evaluated via used_appointments counter', [
+                        'subscription_id'   => $subscription->id,
+                        'used_appointments' => $subscription->used_appointments,
+                    ]);
                 } elseif ($subscription->created_at && $subscription->start_date) {
                     // Fallback only for legacy untagged data, strictly created on or after this subscription was bought
                     $dateQuery = Appointment::where('patient_id', $subscription->patient_id)
@@ -283,12 +337,16 @@ class PatientPlanController extends BaseApiController
                     }
 
                     $appointmentCompleted = $dateQuery->exists();
+                    Log::info('[Check Plan Appointment] Evaluated via legacy date fallback', [
+                        'subscription_id' => $subscription->id,
+                        'matches_found'   => $appointmentCompleted,
+                    ]);
                 } else {
                     $appointmentCompleted = false;
                 }
             }
 
-            return response()->json([
+            $responseData = [
                 'success'                        => true,
                 'patient_id'                     => (int) $subscription->patient_id,
                 'appointment_id'                 => $appointment ? $appointment->id : null,
@@ -310,9 +368,25 @@ class PatientPlanController extends BaseApiController
                     'used_appointments'      => (int) $subscription->used_appointments,
                     'remaining_appointments' => (int) $subscription->remaining_appointments,
                 ],
-            ], 200);
+            ];
+
+            Log::info('[Check Plan Appointment] Outgoing Response (Success)', [
+                'appointment_completed'      => $appointmentCompleted,
+                'this_appointment_completed' => $thisApptCompleted,
+                'subscription_id'            => $subscription->id,
+                'unique_plan_id'             => $subscription->unique_plan_id,
+                'used_appointments'          => $subscription->used_appointments,
+                'remaining_appointments'     => $subscription->remaining_appointments,
+            ]);
+
+            return response()->json($responseData, 200);
 
         } catch (\Exception $e) {
+            Log::error('[Check Plan Appointment] Exception occurred', [
+                'error' => $e->getMessage(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+            ]);
             $this->logException($e, 'Check Plan Appointment Completed Error');
             return response()->json([
                 'success' => false,

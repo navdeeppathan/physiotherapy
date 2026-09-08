@@ -697,15 +697,50 @@ class AssessmentController extends BaseApiController
 
     /**
      * POST /api/assessment/{id}/progress-update
-     * Doctor updates assessment progress during 2nd / follow-up appointments
+     * POST /api/assessment/progress-update
+     * POST /api/progress-update
+     * Doctor updates assessment progress during 2nd / follow-up appointments & completes appointment
      */
-    public function recordProgress(Request $request, $id)
+    public function recordProgress(Request $request, $id = null)
     {
         try {
-            $doctor     = Auth::user();
-            $assessment = PatientAssessment::with(['parameters', 'sessions'])->findOrFail($id);
+            $doctor       = Auth::user();
+            $assessmentId = $id ?? $request->input('assessment_id') ?? $request->input('id');
+            $assessment   = null;
+
+            if (!empty($assessmentId)) {
+                $assessment = PatientAssessment::with(['parameters', 'sessions'])->find($assessmentId);
+            }
+
+            if (!$assessment && $request->filled('appointment_id')) {
+                $appt = Appointment::find($request->appointment_id);
+                if ($appt) {
+                    $assessment = PatientAssessment::with(['parameters', 'sessions'])
+                        ->where('patient_id', $appt->patient_id)
+                        ->where('status', 'active')
+                        ->latest('id')
+                        ->first();
+                }
+            }
+
+            if (!$assessment && $request->filled('patient_id')) {
+                $assessment = PatientAssessment::with(['parameters', 'sessions'])
+                    ->where('patient_id', $request->patient_id)
+                    ->where('status', 'active')
+                    ->latest('id')
+                    ->first();
+            }
+
+            if (!$assessment) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Assessment not found. Please provide a valid assessment_id, appointment_id, or patient_id.'
+                ], 404);
+            }
 
             DB::beginTransaction();
+
+            $assessmentId = $assessment->id;
 
             // 1. Update Parameter Current / Target values
             if ($request->has('parameters') && is_array($request->parameters)) {
@@ -713,7 +748,7 @@ class AssessmentController extends BaseApiController
                     $paramKey = $paramData['key'] ?? null;
                     if (!$paramKey) continue;
 
-                    $param = AssessmentParameter::where('assessment_id', $id)
+                    $param = AssessmentParameter::where('assessment_id', $assessmentId)
                         ->where('parameter_key', $paramKey)
                         ->first();
 
@@ -739,7 +774,7 @@ class AssessmentController extends BaseApiController
                     } else {
                         // Create if parameter was newly added in follow-up
                         AssessmentParameter::create([
-                            'assessment_id'   => $id,
+                            'assessment_id'   => $assessmentId,
                             'parameter_key'   => $paramKey,
                             'parameter_label' => $paramData['label'] ?? ucwords(str_replace('_', ' ', $paramKey)),
                             'unit'            => $paramData['unit'] ?? null,
@@ -754,10 +789,10 @@ class AssessmentController extends BaseApiController
 
             // 2. Update Exercises if doctor modified prescription
             if ($request->has('exercises') && is_array($request->exercises)) {
-                AssessmentExercise::where('assessment_id', $id)->delete();
+                AssessmentExercise::where('assessment_id', $assessmentId)->delete();
                 foreach ($request->exercises as $idx => $ex) {
                     AssessmentExercise::create([
-                        'assessment_id' => $id,
+                        'assessment_id' => $assessmentId,
                         'exercise_id'   => $ex['exercise_id'],
                         'sets'          => $ex['sets'],
                         'reps'          => $ex['reps'],
@@ -769,10 +804,10 @@ class AssessmentController extends BaseApiController
 
             // 3. Update Goals / Outcomes if provided
             if ($request->has('expected_outcomes') && is_array($request->expected_outcomes)) {
-                AssessmentGoal::where('assessment_id', $id)->delete();
+                AssessmentGoal::where('assessment_id', $assessmentId)->delete();
                 foreach ($request->expected_outcomes as $idx => $goalText) {
                     AssessmentGoal::create([
-                        'assessment_id' => $id,
+                        'assessment_id' => $assessmentId,
                         'goal_text'     => $goalText,
                         'sort_order'    => $idx,
                     ]);
@@ -788,7 +823,7 @@ class AssessmentController extends BaseApiController
                 ]);
             }
 
-            // 5. Mark Session & Appointment Completed (if requested or session_id given)
+            // 5. Mark Session & Appointment Completed (Same as assessment creation)
             $completedSessionData     = null;
             $completedAppointmentData = null;
             $markCompleted            = $request->boolean('mark_session_completed', true);
@@ -796,9 +831,9 @@ class AssessmentController extends BaseApiController
             if ($markCompleted) {
                 // A. Session completion
                 if ($request->filled('session_id')) {
-                    $session = PatientSession::where('assessment_id', $id)->find($request->session_id);
+                    $session = PatientSession::where('assessment_id', $assessmentId)->find($request->session_id);
                 } else {
-                    $session = PatientSession::where('assessment_id', $id)
+                    $session = PatientSession::where('assessment_id', $assessmentId)
                         ->where('status', 'scheduled')
                         ->orderBy('session_number')
                         ->first();
@@ -809,7 +844,7 @@ class AssessmentController extends BaseApiController
                         'status'       => 'completed',
                         'session_date' => $request->session_date ?? now()->toDateString(),
                         'session_time' => $request->session_time ?? now()->format('H:i:s'),
-                        'notes'        => $request->session_notes ?? $request->notes ?? $session->notes,
+                        'notes'        => $request->session_notes ?? $request->notes ?? $session->notes ?? 'Session progress updated.',
                     ]);
 
                     $completedSessionData = [
@@ -822,7 +857,7 @@ class AssessmentController extends BaseApiController
                     $assessment->increment('completed_sessions');
 
                     // Set next scheduled session date
-                    $nextScheduled = PatientSession::where('assessment_id', $id)
+                    $nextScheduled = PatientSession::where('assessment_id', $assessmentId)
                         ->where('status', 'scheduled')
                         ->orderBy('session_number')
                         ->first();
@@ -838,23 +873,19 @@ class AssessmentController extends BaseApiController
                 $appointmentId = $request->input('appointment_id');
 
                 if (!empty($appointmentId) && is_numeric($appointmentId) && $appointmentId > 0) {
-                    $appointment = Appointment::where('id', $appointmentId)
-                        ->where('doctor_id', $doctor->id)
-                        ->first();
+                    $appointment = Appointment::find($appointmentId);
                 }
 
-                // If appointment_id is null / not provided, find appointment on EXACT session date
+                // If appointment_id is null / not found, find appointment on EXACT session date
                 if (!$appointment) {
-                    $appointment = Appointment::where('doctor_id', $doctor->id)
-                        ->where('patient_id', $assessment->patient_id)
+                    $appointment = Appointment::where('patient_id', $assessment->patient_id)
                         ->whereDate('appointment_date', $targetDate)
                         ->where('status', '!=', 'cancelled')
                         ->first();
 
                     // If no exact match, find appointment on or before session date (<= targetDate)
                     if (!$appointment) {
-                        $appointment = Appointment::where('doctor_id', $doctor->id)
-                            ->where('patient_id', $assessment->patient_id)
+                        $appointment = Appointment::where('patient_id', $assessment->patient_id)
                             ->whereDate('appointment_date', '<=', $targetDate)
                             ->where('status', '!=', 'cancelled')
                             ->orderBy('appointment_date', 'desc')
@@ -873,11 +904,18 @@ class AssessmentController extends BaseApiController
                         'appointment_date' => Carbon::parse($appointment->appointment_date)->format('d M Y'),
                     ];
 
-                    // Update patient plan subscription counts if exists
-                    $subscription = PatientPlanSubscription::where('patient_id', $assessment->patient_id)
-                        ->where('status', 'active')
-                        ->latest('id')
-                        ->first();
+                    // Update patient plan subscription counts if exists (using linked subscription first)
+                    $subscription = null;
+                    if ($appointment->patient_plan_subscription_id) {
+                        $subscription = PatientPlanSubscription::find($appointment->patient_plan_subscription_id);
+                    } elseif (!empty($appointment->unique_plan_id)) {
+                        $subscription = PatientPlanSubscription::where('unique_plan_id', $appointment->unique_plan_id)->first();
+                    } else {
+                        $subscription = PatientPlanSubscription::where('patient_id', $assessment->patient_id)
+                            ->where('status', 'active')
+                            ->latest('id')
+                            ->first();
+                    }
 
                     if ($subscription) {
                         $subscription->increment('used_appointments');

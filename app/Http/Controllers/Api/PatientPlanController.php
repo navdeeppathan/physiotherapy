@@ -14,11 +14,7 @@ use Illuminate\Support\Facades\Validator;
 
 class PatientPlanController extends BaseApiController
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Get All Patient Plans
-    |--------------------------------------------------------------------------
-    */
+    
 
     public function index(Request $request)
     {

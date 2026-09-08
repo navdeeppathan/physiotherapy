@@ -723,7 +723,9 @@ class AssessmentController extends BaseApiController
 
         try {
             $doctor        = Auth::user();
-            $appointmentId = $request->input('appointment_id') ?? $request->query('appointment_id');
+            $appointmentId = $request->input('appointment_id') 
+                          ?? $request->input('id') 
+                          ?? $request->query('appointment_id');
             $assessmentId  = $request->input('assessment_id');
             $assessment    = null;
             $appointment   = null;
@@ -733,17 +735,11 @@ class AssessmentController extends BaseApiController
                 if ($request->is('*appointment/*/progress-update*')) {
                     // Explicitly from /appointment/{id}/progress-update route
                     $appointmentId = (int) $id;
+                } elseif ($request->is('*assessment/*/progress-update*')) {
+                    // Explicitly from /assessment/{id}/progress-update route
+                    $assessmentId = (int) $id;
                 } else {
-                    // From /assessment/{id}/progress-update:
-                    // If an appointment with this ID exists, resolve it as the appointment to complete
-                    $apptCandidate = Appointment::find($id);
-                    if ($apptCandidate && empty($appointmentId)) {
-                        $appointmentId = $apptCandidate->id;
-                    }
-
-                    if (empty($assessmentId)) {
-                        $assessmentId = (int) $id;
-                    }
+                    $assessmentId = (int) $id;
                 }
             }
 
@@ -935,61 +931,85 @@ class AssessmentController extends BaseApiController
                     ]);
                 }
 
-                // B. Appointment completion (use resolved appointment or look for uncompleted upcoming appointment)
-                $targetDate = $request->session_date ? Carbon::parse($request->session_date)->toDateString() : now()->toDateString();
+                // B. Appointment completion (resolve target appointment to complete)
+                $explicitDate = $request->input('appointment_date') 
+                             ?? $request->input('date') 
+                             ?? $request->input('session_date');
+                $targetDate   = $explicitDate ? Carbon::parse($explicitDate)->toDateString() : null;
 
-                // 1. Direct lookup if appointment not yet resolved but appointmentId exists
+                // Priority 1: Direct lookup by appointment_id (if passed in body, query, or route)
                 if (!$appointment && !empty($appointmentId) && is_numeric($appointmentId) && $appointmentId > 0) {
                     $appointment = Appointment::find($appointmentId);
-                    Log::info('[Progress Update] Searched by appointment_id', [
+                    Log::info('[Progress Update] Matched directly by appointment_id', [
                         'appointment_id' => $appointmentId,
                         'found'          => (bool) $appointment,
                         'current_status' => optional($appointment)->status,
                     ]);
                 }
 
-                // 2. If appointment_id is null or not found, find patient's uncompleted upcoming appointment:
-                if (!$appointment) {
-                    // Priority 2a: Uncompleted appointment on exact session_date
+                // Priority 2: Uncompleted appointment on explicit target date (if date provided in request)
+                if (!$appointment && !empty($targetDate)) {
                     $appointment = Appointment::where('patient_id', $assessment->patient_id)
                         ->whereIn('status', ['confirmed', 'pending'])
                         ->whereDate('appointment_date', $targetDate)
                         ->orderBy('start_time')
                         ->first();
+                }
 
-                    // Priority 2b: Nearest upcoming uncompleted appointment (earliest date first)
-                    if (!$appointment) {
-                        $appointment = Appointment::where('patient_id', $assessment->patient_id)
+                // Priority 3: Next uncompleted appointment strictly under the patient's active plan subscription
+                if (!$appointment) {
+                    $activeSub = PatientPlanSubscription::where('patient_id', $assessment->patient_id)
+                        ->where('status', 'active')
+                        ->latest('id')
+                        ->first();
+
+                    if ($activeSub) {
+                        $appointment = Appointment::where(function ($q) use ($activeSub) {
+                                $q->where('patient_plan_subscription_id', $activeSub->id);
+                                if (!empty($activeSub->unique_plan_id)) {
+                                    $q->orWhere('unique_plan_id', $activeSub->unique_plan_id);
+                                }
+                            })
                             ->whereIn('status', ['confirmed', 'pending'])
                             ->orderBy('appointment_date', 'asc')
                             ->orderBy('start_time', 'asc')
                             ->first();
-                    }
 
-                    // Priority 2c: Fallback to any uncompleted appointment for patient
-                    if (!$appointment) {
-                        $appointment = Appointment::where('patient_id', $assessment->patient_id)
-                            ->where('status', '!=', 'completed')
-                            ->where('status', '!=', 'cancelled')
-                            ->orderBy('appointment_date', 'asc')
-                            ->first();
+                        if ($appointment) {
+                            Log::info('[Progress Update] Resolved from active subscription', [
+                                'subscription_id'  => $activeSub->id,
+                                'unique_plan_id'   => $activeSub->unique_plan_id,
+                                'appointment_id'   => $appointment->id,
+                                'appointment_date' => $appointment->appointment_date,
+                            ]);
+                        }
                     }
-
-                    // Priority 2d: Appointment on exact session_date even if already marked
-                    if (!$appointment) {
-                        $appointment = Appointment::where('patient_id', $assessment->patient_id)
-                            ->whereDate('appointment_date', $targetDate)
-                            ->where('status', '!=', 'cancelled')
-                            ->first();
-                    }
-
-                    Log::info('[Progress Update] Auto-resolved appointment', [
-                        'resolved_appointment_id' => optional($appointment)->id,
-                        'patient_id'              => $assessment->patient_id,
-                        'target_date'             => $targetDate,
-                        'status_before'           => optional($appointment)->status,
-                    ]);
                 }
+
+                // Priority 4: Today's uncompleted appointment
+                if (!$appointment) {
+                    $appointment = Appointment::where('patient_id', $assessment->patient_id)
+                        ->whereIn('status', ['confirmed', 'pending'])
+                        ->whereDate('appointment_date', now()->toDateString())
+                        ->orderBy('start_time')
+                        ->first();
+                }
+
+                // Priority 5: Nearest upcoming uncompleted appointment
+                if (!$appointment) {
+                    $appointment = Appointment::where('patient_id', $assessment->patient_id)
+                        ->whereIn('status', ['confirmed', 'pending'])
+                        ->orderBy('appointment_date', 'asc')
+                        ->orderBy('start_time', 'asc')
+                        ->first();
+                }
+
+                Log::info('[Progress Update] Auto-resolved appointment', [
+                    'resolved_appointment_id' => optional($appointment)->id,
+                    'patient_id'              => $assessment->patient_id,
+                    'target_date'             => $targetDate ?? now()->toDateString(),
+                    'status_before'           => optional($appointment)->status,
+                ]);
 
                 if ($appointment) {
                     $previousStatus = $appointment->status;

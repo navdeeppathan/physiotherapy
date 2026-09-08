@@ -166,6 +166,8 @@ class PatientPlanController extends BaseApiController
     */
     public function checkPlanAppointmentCompleted(Request $request)
     {
+
+        \Log::info('Check Plan Appointment Completed Request: ', $request->all());
         try {
             $appointmentId = $request->input('appointment_id');
             $uniquePlanId  = $request->input('unique_plan_id') ?? $request->input('subscription_id');

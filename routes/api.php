@@ -154,6 +154,8 @@ Route::middleware(['auth:api', 'role:doctor'])->group(function () {
     Route::put('/assessment/{id}', [AssessmentController::class, 'update'])->where('id', '[0-9]+');
     Route::post('/assessment/{id}/progress-update', [AssessmentController::class, 'recordProgress'])->where('id', '[0-9]+');
     Route::put('/assessment/{id}/progress-update', [AssessmentController::class, 'recordProgress'])->where('id', '[0-9]+');
+    Route::post('/appointment/{id}/progress-update', [AssessmentController::class, 'recordProgress'])->where('id', '[0-9]+');
+    Route::put('/appointment/{id}/progress-update', [AssessmentController::class, 'recordProgress'])->where('id', '[0-9]+');
     Route::post('/assessment/progress-update', [AssessmentController::class, 'recordProgress']);
     Route::put('/assessment/progress-update', [AssessmentController::class, 'recordProgress']);
     Route::post('/progress-update', [AssessmentController::class, 'recordProgress']);

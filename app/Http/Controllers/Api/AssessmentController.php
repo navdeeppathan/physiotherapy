@@ -717,29 +717,61 @@ class AssessmentController extends BaseApiController
         Log::info('[Progress Update] API invoked', [
             'url_id'     => $id,
             'body'       => $request->all(),
+            'query'      => $request->query(),
             'auth_user'  => Auth::id() ?? auth('api')->id(),
         ]);
 
         try {
-            $doctor       = Auth::user();
-            $assessmentId = $id ?? $request->input('assessment_id') ?? $request->input('id');
-            $assessment   = null;
+            $doctor        = Auth::user();
+            $appointmentId = $request->input('appointment_id') ?? $request->query('appointment_id');
+            $assessmentId  = $request->input('assessment_id');
+            $assessment    = null;
+            $appointment   = null;
 
-            if (!empty($assessmentId)) {
-                $assessment = PatientAssessment::with(['parameters', 'sessions'])->find($assessmentId);
+            // Check if $id passed in URL is an Appointment ID or Assessment ID
+            if (!empty($id) && is_numeric($id)) {
+                if ($request->is('*appointment/*/progress-update*')) {
+                    // Explicitly from /appointment/{id}/progress-update route
+                    $appointmentId = (int) $id;
+                } else {
+                    // From /assessment/{id}/progress-update:
+                    // If an appointment with this ID exists, resolve it as the appointment to complete
+                    $apptCandidate = Appointment::find($id);
+                    if ($apptCandidate && empty($appointmentId)) {
+                        $appointmentId = $apptCandidate->id;
+                    }
+
+                    if (empty($assessmentId)) {
+                        $assessmentId = (int) $id;
+                    }
+                }
             }
 
-            if (!$assessment && $request->filled('appointment_id')) {
-                $appt = Appointment::find($request->appointment_id);
-                if ($appt) {
+            // 1. Resolve appointment if $appointmentId is present
+            if (!empty($appointmentId)) {
+                $appointment = Appointment::find($appointmentId);
+                if ($appointment) {
+                    Log::info('[Progress Update] Direct appointment matched by ID', [
+                        'appointment_id' => $appointment->id,
+                        'patient_id'     => $appointment->patient_id,
+                        'status'         => $appointment->status,
+                    ]);
+
+                    // Resolve assessment from this appointment
                     $assessment = PatientAssessment::with(['parameters', 'sessions'])
-                        ->where('patient_id', $appt->patient_id)
+                        ->where('patient_id', $appointment->patient_id)
                         ->where('status', 'active')
                         ->latest('id')
                         ->first();
                 }
             }
 
+            // 2. If assessment not found yet, try by $assessmentId
+            if (!$assessment && !empty($assessmentId)) {
+                $assessment = PatientAssessment::with(['parameters', 'sessions'])->find($assessmentId);
+            }
+
+            // 3. If still not found, try by patient_id
             if (!$assessment && $request->filled('patient_id')) {
                 $assessment = PatientAssessment::with(['parameters', 'sessions'])
                     ->where('patient_id', $request->patient_id)
@@ -750,9 +782,10 @@ class AssessmentController extends BaseApiController
 
             if (!$assessment) {
                 Log::warning('[Progress Update] Assessment NOT FOUND', [
-                    'assessment_id' => $assessmentId,
-                    'appointment_id'=> $request->input('appointment_id'),
-                    'patient_id'    => $request->input('patient_id'),
+                    'url_id'         => $id,
+                    'assessment_id'  => $assessmentId,
+                    'appointment_id' => $appointmentId,
+                    'patient_id'     => $request->input('patient_id'),
                 ]);
 
                 return response()->json([
@@ -764,6 +797,7 @@ class AssessmentController extends BaseApiController
             Log::info('[Progress Update] Assessment resolved', [
                 'assessment_id' => $assessment->id,
                 'patient_id'    => $assessment->patient_id,
+                'target_appointment_id' => optional($appointment)->id,
             ]);
 
             DB::beginTransaction();
@@ -901,13 +935,11 @@ class AssessmentController extends BaseApiController
                     ]);
                 }
 
-                // B. Appointment completion (look for uncompleted upcoming appointment)
-                $appointment   = null;
-                $targetDate    = $request->session_date ? Carbon::parse($request->session_date)->toDateString() : now()->toDateString();
-                $appointmentId = $request->input('appointment_id');
+                // B. Appointment completion (use resolved appointment or look for uncompleted upcoming appointment)
+                $targetDate = $request->session_date ? Carbon::parse($request->session_date)->toDateString() : now()->toDateString();
 
-                // 1. Direct lookup if appointment_id passed
-                if (!empty($appointmentId) && is_numeric($appointmentId) && $appointmentId > 0) {
+                // 1. Direct lookup if appointment not yet resolved but appointmentId exists
+                if (!$appointment && !empty($appointmentId) && is_numeric($appointmentId) && $appointmentId > 0) {
                     $appointment = Appointment::find($appointmentId);
                     Log::info('[Progress Update] Searched by appointment_id', [
                         'appointment_id' => $appointmentId,

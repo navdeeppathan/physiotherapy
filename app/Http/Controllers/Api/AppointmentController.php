@@ -243,6 +243,29 @@ class AppointmentController extends BaseApiController
 
                 $appointments[] = $appointment;
                 $appointmentIds[] = $appointment->id;
+
+                // If active assessment exists for this patient & doctor, register scheduled session
+                $activeAssessment = PatientAssessment::where('patient_id', $patient->id)
+                    ->where('doctor_id', $request->doctor_id)
+                    ->where('status', 'active')
+                    ->latest('id')
+                    ->first();
+
+                if ($activeAssessment) {
+                    $nextNum = (int) PatientSession::where('assessment_id', $activeAssessment->id)->max('session_number') + 1;
+                    PatientSession::create([
+                        'assessment_id'  => $activeAssessment->id,
+                        'doctor_id'      => $request->doctor_id,
+                        'patient_id'     => $patient->id,
+                        'session_date'   => $appointment->appointment_date,
+                        'session_time'   => $appointment->start_time,
+                        'session_number' => $nextNum,
+                        'status'         => 'scheduled',
+                    ]);
+                    $activeAssessment->update([
+                        'total_sessions' => PatientSession::where('assessment_id', $activeAssessment->id)->count(),
+                    ]);
+                }
             }
 
             Payment::create([
@@ -730,18 +753,26 @@ class AppointmentController extends BaseApiController
 
             $completedSessionData = null;
             if ($assessment) {
+                // First try to match session by appointment date
                 $session = PatientSession::where('assessment_id', $assessment->id)
+                    ->where('session_date', $appointment->appointment_date)
                     ->where('status', 'scheduled')
-                    ->orderBy('session_number')
                     ->first();
+
+                if (!$session) {
+                    $session = PatientSession::where('assessment_id', $assessment->id)
+                        ->where('status', 'scheduled')
+                        ->orderBy('session_number')
+                        ->first();
+                }
 
                 if ($session) {
                     $session->update([
                         'status'       => 'completed',
                         'session_date' => $appointment->appointment_date ?? now()->toDateString(),
+                        'session_time' => $appointment->start_time ?? $session->session_time,
                         'notes'        => $request->notes ?? $request->session_notes ?? 'Appointment marked as completed by doctor.',
                     ]);
-                    $assessment->increment('completed_sessions');
                 } else {
                     $nextNum = (int) PatientSession::where('assessment_id', $assessment->id)->max('session_number') + 1;
                     $session = PatientSession::create([
@@ -749,15 +780,20 @@ class AppointmentController extends BaseApiController
                         'doctor_id'      => $doctor->id,
                         'patient_id'     => $appointment->patient_id,
                         'session_date'   => $appointment->appointment_date ?? now()->toDateString(),
+                        'session_time'   => $appointment->start_time ?? now()->format('H:i:s'),
                         'session_number' => $nextNum,
                         'status'         => 'completed',
                         'notes'          => $request->notes ?? $request->session_notes ?? 'Appointment marked as completed by doctor.',
                     ]);
-                    $assessment->increment('completed_sessions');
-                    if ($assessment->total_sessions < $nextNum) {
-                        $assessment->update(['total_sessions' => $nextNum]);
-                    }
                 }
+
+                $completedSessionsCount = PatientSession::where('assessment_id', $assessment->id)->where('status', 'completed')->count();
+                $totalSessionsCount     = PatientSession::where('assessment_id', $assessment->id)->count();
+
+                $assessment->update([
+                    'completed_sessions' => $completedSessionsCount,
+                    'total_sessions'     => $totalSessionsCount,
+                ]);
 
                 $completedSessionData = [
                     'session_id'     => $session->id,

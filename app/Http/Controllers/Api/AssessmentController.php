@@ -288,18 +288,7 @@ class AssessmentController extends BaseApiController
                 }
             }
 
-            // 5. Create initial assessment session (keep only 1 session: Session #1, completed)
-            PatientSession::create([
-                'assessment_id'  => $assessment->id,
-                'doctor_id'      => $doctor->id,
-                'patient_id'     => $request->patient_id,
-                'session_date'   => $request->assessment_date ?? now()->toDateString(),
-                'session_number' => 1,
-                'status'         => 'completed',
-                'notes'          => $request->session_notes ?? 'Initial assessment completed & treatment plan created.',
-            ]);
-
-            // 7. Update Appointment status to 'completed' (from appointment_id or matching assessment_date)
+            // 5. Update Target Appointment status to 'completed'
             $appointmentData = null;
             $appointment     = null;
             $targetDate      = $request->assessment_date ? Carbon::parse($request->assessment_date)->toDateString() : now()->toDateString();
@@ -371,6 +360,70 @@ class AssessmentController extends BaseApiController
                     }
                 }
             }
+
+            // 6. Create Sessions directly from Patient's Real Appointments
+            $planSubId = $appointment?->patient_plan_subscription_id ?? $request->input('patient_plan_subscription_id');
+            if ($planSubId) {
+                $patientAppointments = Appointment::where('patient_plan_subscription_id', $planSubId)
+                    ->where('patient_id', $request->patient_id)
+                    ->where('status', '!=', 'cancelled')
+                    ->orderBy('appointment_date')
+                    ->orderBy('start_time')
+                    ->get();
+            } else {
+                $patientAppointments = Appointment::where('patient_id', $request->patient_id)
+                    ->where('doctor_id', $doctor->id)
+                    ->where('status', '!=', 'cancelled')
+                    ->orderBy('appointment_date')
+                    ->orderBy('start_time')
+                    ->get();
+            }
+
+            if ($patientAppointments->isNotEmpty()) {
+                foreach ($patientAppointments as $idx => $appt) {
+                    $isTargetAssessment = ($appointment && $appt->id === $appointment->id);
+                    $sessStatus = ($appt->status === 'completed' || $isTargetAssessment) ? 'completed' : 'scheduled';
+                    $sessNotes  = $isTargetAssessment
+                        ? ($request->session_notes ?? 'Initial assessment completed & treatment plan created.')
+                        : ($sessStatus === 'completed' ? 'Appointment completed.' : null);
+
+                    PatientSession::create([
+                        'assessment_id'  => $assessment->id,
+                        'doctor_id'      => $doctor->id,
+                        'patient_id'     => $request->patient_id,
+                        'session_date'   => $appt->appointment_date,
+                        'session_time'   => $appt->start_time,
+                        'session_number' => $idx + 1,
+                        'status'         => $sessStatus,
+                        'notes'          => $sessNotes,
+                    ]);
+                }
+            } else {
+                // Fallback if no appointment records found
+                PatientSession::create([
+                    'assessment_id'  => $assessment->id,
+                    'doctor_id'      => $doctor->id,
+                    'patient_id'     => $request->patient_id,
+                    'session_date'   => $request->assessment_date ?? now()->toDateString(),
+                    'session_time'   => now()->format('H:i:s'),
+                    'session_number' => 1,
+                    'status'         => 'completed',
+                    'notes'          => $request->session_notes ?? 'Initial assessment completed & treatment plan created.',
+                ]);
+            }
+
+            $completedSessionsCount = PatientSession::where('assessment_id', $assessment->id)->where('status', 'completed')->count();
+            $totalSessionsCount     = PatientSession::where('assessment_id', $assessment->id)->count();
+            $nextSession            = PatientSession::where('assessment_id', $assessment->id)
+                ->where('status', 'scheduled')
+                ->orderBy('session_date')
+                ->first();
+
+            $assessment->update([
+                'completed_sessions' => $completedSessionsCount,
+                'total_sessions'     => $totalSessionsCount,
+                'next_session_date'  => $nextSession?->session_date,
+            ]);
 
             DB::commit();
 

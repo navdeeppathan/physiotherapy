@@ -100,8 +100,13 @@ Route::middleware('auth:api')->group(function () {
 
 Route::middleware(['auth:api', 'role:doctor'])->group(function () {
 
-    Route::get('/doctor/{doctorId}/patients', [UserController::class, 'doctorPatients']);
-    Route::put('/doctor/profile/update/{id}', [UserController::class, 'updateDoctorProfile']);
+    // ── Doctor Reports & Progress Parameter Track ─────────────────
+    Route::get('/doctor/reports/patients', [DoctorReportController::class, 'patientsList']);
+    Route::get('/doctor/reports/patient/{patient_id}', [DoctorReportController::class, 'patientReport'])->where('patient_id', '[0-9]+');
+    Route::get('/doctor/reports/assessment/{assessment_id}', [DoctorReportController::class, 'assessmentReport'])->where('assessment_id', '[0-9]+');
+
+    Route::get('/doctor/{doctorId}/patients', [UserController::class, 'doctorPatients'])->where('doctorId', '[0-9]+');
+    Route::put('/doctor/profile/update/{id}', [UserController::class, 'updateDoctorProfile'])->where('id', '[0-9]+');
 
 
     Route::post('/doctor/profile', [DoctorProfileController::class, 'store']);
@@ -126,8 +131,8 @@ Route::middleware(['auth:api', 'role:doctor'])->group(function () {
     Route::post('/appointment/{id}/complete', [AppointmentController::class, 'completeAppointment'])->where('id', '[0-9]+');
     Route::put('/appointment/{id}/complete', [AppointmentController::class, 'completeAppointment'])->where('id', '[0-9]+');
 
-    Route::get('/doctor/{doctor_id}/wallet', [AppointmentController::class, 'getDoctorWallet']);
-    Route::get('/doctor/payment-history/{doctorId}', [UserController::class, 'doctorPaymentHistory']);
+    Route::get('/doctor/{doctor_id}/wallet', [AppointmentController::class, 'getDoctorWallet'])->where('doctor_id', '[0-9]+');
+    Route::get('/doctor/payment-history/{doctorId}', [UserController::class, 'doctorPaymentHistory'])->where('doctorId', '[0-9]+');
 
     Route::post('/doctor/appointments/{id}/reschedule', [AppointmentController::class, 'reschedule']);
 
@@ -172,11 +177,6 @@ Route::middleware(['auth:api', 'role:doctor'])->group(function () {
     Route::get('/doctor/sessions/today', [AssessmentController::class, 'todaySessions']);
     Route::post('/session/start', [AssessmentController::class, 'startSession']);
     Route::put('/session/{id}/complete', [AssessmentController::class, 'completeSession'])->where('id', '[0-9]+');
-
-    // ── Doctor Reports & Progress Parameter Track ─────────────────
-    Route::get('/doctor/reports/patients', [DoctorReportController::class, 'patientsList']);
-    Route::get('/doctor/reports/patient/{patient_id}', [DoctorReportController::class, 'patientReport'])->where('patient_id', '[0-9]+');
-    Route::get('/doctor/reports/assessment/{assessment_id}', [DoctorReportController::class, 'assessmentReport'])->where('assessment_id', '[0-9]+');
 });
 
 Route::middleware('auth:api')->get(

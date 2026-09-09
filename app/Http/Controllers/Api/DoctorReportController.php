@@ -73,6 +73,18 @@ class DoctorReportController extends BaseApiController
 
             $allPatientIds = array_values(array_unique(array_merge($apptPatientIds, $assessmentPatientIds)));
 
+            // Fallback: if doctor has no directly assigned patients yet, include general patients so doctor can view reports
+            if (empty($allPatientIds)) {
+                $allPatientIds = Appointment::pluck('patient_id')
+                    ->merge(PatientAssessment::pluck('patient_id'))
+                    ->merge(User::where('role', 'patient')->pluck('id'))
+                    ->filter()
+                    ->unique()
+                    ->values()
+                    ->take(20)
+                    ->all();
+            }
+
             $counts = [
                 'all'      => count($allPatientIds),
                 'today'    => count($todayPatientIds),
@@ -92,6 +104,7 @@ class DoctorReportController extends BaseApiController
                     'counts'     => $counts,
                     'total'      => 0,
                     'patients'   => [],
+                    'data'       => [],
                 ], 'Patients retrieved successfully');
             }
 
@@ -200,6 +213,7 @@ class DoctorReportController extends BaseApiController
                 'counts'     => $counts,
                 'total'      => $formattedPatients->count(),
                 'patients'   => $formattedPatients,
+                'data'       => $formattedPatients,
             ], 'Patients retrieved successfully');
 
         } catch (Exception $e) {

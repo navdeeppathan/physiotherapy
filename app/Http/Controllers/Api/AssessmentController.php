@@ -938,7 +938,13 @@ class AssessmentController extends BaseApiController
                         'notes'          => $session->notes,
                     ];
 
-                    $assessment->increment('completed_sessions');
+                    $completedSessionsCount = PatientSession::where('assessment_id', $assessmentId)->where('status', 'completed')->count();
+                    $totalSessionsCount     = PatientSession::where('assessment_id', $assessmentId)->count();
+
+                    $assessment->update([
+                        'completed_sessions' => $completedSessionsCount,
+                        'total_sessions'     => $totalSessionsCount,
+                    ]);
 
                     // Set next scheduled session date
                     $nextScheduled = PatientSession::where('assessment_id', $assessmentId)
@@ -953,7 +959,7 @@ class AssessmentController extends BaseApiController
                     Log::info('[Progress Update] Session marked completed', [
                         'session_id'         => $session->id,
                         'session_number'     => $session->session_number,
-                        'completed_sessions' => $assessment->completed_sessions,
+                        'completed_sessions' => $completedSessionsCount,
                     ]);
                 }
 
@@ -1458,8 +1464,11 @@ class AssessmentController extends BaseApiController
                 'notes'        => $request->notes,
             ]);
 
-            // Increment completed sessions on assessment
-            $assessment->increment('completed_sessions');
+            // Update completed sessions on assessment with exact count
+            $assessment->update([
+                'completed_sessions' => PatientSession::where('assessment_id', $assessment->id)->where('status', 'completed')->count(),
+                'total_sessions'     => PatientSession::where('assessment_id', $assessment->id)->count(),
+            ]);
 
             return $this->sendResponse([
                 'session_id'     => $session->id,
@@ -1483,7 +1492,12 @@ class AssessmentController extends BaseApiController
                 'status' => 'completed',
                 'notes'  => $request->notes,
             ]);
-            $session->assessment->increment('completed_sessions');
+            if ($session->assessment) {
+                $session->assessment->update([
+                    'completed_sessions' => PatientSession::where('assessment_id', $session->assessment_id)->where('status', 'completed')->count(),
+                    'total_sessions'     => PatientSession::where('assessment_id', $session->assessment_id)->count(),
+                ]);
+            }
 
             return $this->sendResponse(['session_id' => $session->id], 'Session marked as completed');
 

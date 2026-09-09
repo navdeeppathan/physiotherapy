@@ -591,7 +591,7 @@ class DoctorReportController extends BaseApiController
     }
 
     /**
-     * Calculate patient session stats based on real appointments & assessment
+     * Calculate patient session stats based strictly on real appointments
      */
     protected function calculatePatientSessions($doctor, $patient, $assessment = null)
     {
@@ -602,48 +602,54 @@ class DoctorReportController extends BaseApiController
             ->orderBy('start_time')
             ->get();
 
-        $completedApptsCount = $allAppts->where('status', 'completed')->count();
         $totalApptsCount     = $allAppts->count();
+        $completedApptsCount = $allAppts->where('status', 'completed')->count();
 
-        if ($assessment && $allAppts->isNotEmpty()) {
-            foreach ($allAppts as $idx => $appt) {
-                $sess = PatientSession::where('assessment_id', $assessment->id)
-                    ->where('session_date', $appt->appointment_date)
-                    ->first();
+        $totalSessions     = $totalApptsCount > 0 ? $totalApptsCount : (int) ($assessment?->total_sessions ?? 1);
+        $completedSessions = $totalApptsCount > 0 ? $completedApptsCount : (int) ($assessment?->completed_sessions ?? 1);
+        $completedSessions = min($completedSessions, $totalSessions);
 
-                if (!$sess) {
-                    PatientSession::create([
-                        'assessment_id'  => $assessment->id,
-                        'doctor_id'      => $doctor->id,
-                        'patient_id'     => $patient->id,
-                        'session_date'   => $appt->appointment_date,
-                        'session_time'   => $appt->start_time,
-                        'session_number' => $idx + 1,
-                        'status'         => $appt->status === 'completed' ? 'completed' : 'scheduled',
-                    ]);
-                } elseif ($appt->status === 'completed' && $sess->status !== 'completed') {
-                    $sess->update(['status' => 'completed']);
+        if ($assessment) {
+            if ($totalApptsCount > 0) {
+                // Remove any excess orphan sessions beyond total appointments
+                PatientSession::where('assessment_id', $assessment->id)
+                    ->where('session_number', '>', $totalApptsCount)
+                    ->delete();
+
+                foreach ($allAppts as $idx => $appt) {
+                    $sessionNumber = $idx + 1;
+                    $sessStatus    = ($appt->status === 'completed') ? 'completed' : 'scheduled';
+                    $sessDate      = Carbon::parse($appt->appointment_date)->toDateString();
+
+                    $sess = PatientSession::where('assessment_id', $assessment->id)
+                        ->where('session_number', $sessionNumber)
+                        ->first();
+
+                    if (!$sess) {
+                        PatientSession::create([
+                            'assessment_id'  => $assessment->id,
+                            'doctor_id'      => $doctor->id,
+                            'patient_id'     => $patient->id,
+                            'session_date'   => $sessDate,
+                            'session_time'   => $appt->start_time,
+                            'session_number' => $sessionNumber,
+                            'status'         => $sessStatus,
+                        ]);
+                    } else {
+                        $sess->update([
+                            'session_date' => $sessDate,
+                            'session_time' => $appt->start_time ?? $sess->session_time,
+                            'status'       => $sessStatus,
+                        ]);
+                    }
                 }
             }
 
-            $assessmentCompleted = PatientSession::where('assessment_id', $assessment->id)->where('status', 'completed')->count();
-            $assessmentTotal     = PatientSession::where('assessment_id', $assessment->id)->count();
-
-            if ($assessment->completed_sessions !== $assessmentCompleted || $assessment->total_sessions !== $assessmentTotal) {
-                $assessment->update([
-                    'completed_sessions' => $assessmentCompleted,
-                    'total_sessions'     => $assessmentTotal,
-                ]);
-            }
+            $assessment->update([
+                'completed_sessions' => $completedSessions,
+                'total_sessions'     => $totalSessions,
+            ]);
         }
-
-        $totalSessions = max($totalApptsCount, (int) ($assessment?->total_sessions ?? 0));
-        $completedSessions = max($completedApptsCount, (int) ($assessment?->completed_sessions ?? 0));
-
-        if ($totalSessions === 0) {
-            $totalSessions = 1;
-        }
-        $completedSessions = min($completedSessions, $totalSessions);
 
         return [
             'total'     => $totalSessions,

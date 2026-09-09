@@ -25,12 +25,55 @@ class PatientReportController extends BaseApiController
     public function getProgressReport(Request $request)
     {
         try {
-            $patient = Auth::user();
+            $authUser = Auth::user();
+            $patient = null;
+            $assessment = null;
+
+            // 1. If explicit assessment_id is provided, find assessment directly
+            if ($request->filled('assessment_id')) {
+                $assessment = PatientAssessment::with([
+                    'doctor',
+                    'doctor.doctorProfile.specializationdata',
+                    'condition',
+                    'parameters',
+                    'goals',
+                    'sessions',
+                ])->find($request->assessment_id);
+
+                if ($assessment) {
+                    $patient = User::find($assessment->patient_id);
+                }
+            }
+
+            // 2. If explicit patient_id is provided, resolve patient
+            if (!$patient && $request->filled('patient_id')) {
+                $patient = User::find($request->patient_id);
+            }
+
+            // 3. Fallback to authenticated user
+            if (!$patient) {
+                $patient = $authUser;
+            }
+
             if (!$patient) {
                 return $this->sendError('Unauthorized', [], 401);
             }
 
-            // 1. Verify if patient has taken any plan, subscription, plan appointment, or assessment
+            // 4. Find assessment for this patient if not already resolved
+            if (!$assessment) {
+                $assessment = PatientAssessment::with([
+                    'doctor',
+                    'doctor.doctorProfile.specializationdata',
+                    'condition',
+                    'parameters',
+                    'goals',
+                    'sessions',
+                ])->where('patient_id', $patient->id)->latest('id')->first();
+            }
+
+            $hasAssessment = ($assessment !== null) || PatientAssessment::where('patient_id', $patient->id)->exists();
+
+            // 5. Check if patient has any plan subscription or plan appointment
             $hasPlanSubscription = PatientPlanSubscription::where('patient_id', $patient->id)
                 ->where(function ($q) {
                     $q->whereIn('payment_status', ['paid', 'completed'])
@@ -50,15 +93,18 @@ class PatientReportController extends BaseApiController
                 })
                 ->exists();
 
-            $hasAssessment = PatientAssessment::where('patient_id', $patient->id)->exists();
+            $hasPlan = (bool) ($hasPlanSubscription || $hasPlanAppointment);
 
-            // If patient has NOT taken any plan, return "No reports yet"
-            if (!$hasPlanSubscription && !$hasPlanAppointment && !$hasAssessment) {
+            // CRITICAL CHECK:
+            // "either he take plan or not if assement exites then give in response"
+            // If patient has NEITHER an assessment NOR a plan, only then show "No reports yet"
+            if (!$hasAssessment && !$hasPlan) {
                 return $this->sendResponse([
-                    'has_report' => false,
-                    'has_plan'   => false,
-                    'message'    => 'No reports yet',
-                    'report'     => null,
+                    'has_report'     => false,
+                    'has_assessment' => false,
+                    'has_plan'       => false,
+                    'message'        => 'No reports yet',
+                    'report'         => null,
                 ], 'No reports yet');
             }
 
@@ -89,26 +135,10 @@ class PatientReportController extends BaseApiController
                 $daysCount = 15;
             }
 
-            // Find Assessment for Patient
-            $assessmentQuery = PatientAssessment::with([
-                'doctor',
-                'doctor.doctorProfile.specializationdata',
-                'condition',
-                'parameters',
-                'goals',
-                'sessions',
-            ])->where('patient_id', $patient->id);
-
-            if ($request->filled('assessment_id')) {
-                $assessmentQuery->where('id', $request->assessment_id);
-            }
-
-            $assessment = $assessmentQuery->latest()->first();
-
             // Check if patient has plan subscription details
             $subscription = PatientPlanSubscription::with('plan')
                 ->where('patient_id', $patient->id)
-                ->latest()
+                ->latest('id')
                 ->first();
 
             // Doctor details fallback / real
@@ -139,14 +169,14 @@ class PatientReportController extends BaseApiController
             $goalsAchievedCount = 2;
 
             if ($assessment) {
-                $totalSessionsPlanned = $assessment->total_sessions > 0 ? $assessment->total_sessions : ($subscription?->plan?->total_sessions ?? 8);
+                $totalSessionsPlanned = $assessment->total_sessions > 0 ? (int)$assessment->total_sessions : ($subscription?->plan?->total_sessions ?? 8);
                 $completedSessionsInPeriod = $assessment->sessions()
                     ->where('status', 'completed')
                     ->whereBetween('session_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
                     ->count();
 
                 if ($completedSessionsInPeriod === 0) {
-                    $completedSessionsInPeriod = min($assessment->completed_sessions, $totalSessionsPlanned);
+                    $completedSessionsInPeriod = min((int)$assessment->completed_sessions, $totalSessionsPlanned);
                     if ($completedSessionsInPeriod === 0) {
                         $completedSessionsInPeriod = $subscription?->used_appointments ?? 6; // visual mockup fallback
                     }
@@ -199,8 +229,25 @@ class PatientReportController extends BaseApiController
             $shareToken = Str::random(32);
 
             $responsePayload = [
-                'has_report' => true,
-                'has_plan'   => true,
+                'has_report'     => true,
+                'has_plan'       => $hasPlan,
+                'has_assessment' => (bool)$hasAssessment,
+                'patient' => [
+                    'id'          => $patient->id,
+                    'name'        => $patient->name,
+                    'phone'       => $patient->phone,
+                    'condition'   => optional($assessment?->condition)->name ?? 'General Rehabilitation',
+                    'profile_img' => $patient->profile_img ? (str_starts_with($patient->profile_img, 'http') ? $patient->profile_img : asset($patient->profile_img)) : null,
+                ],
+                'assessment' => $assessment ? [
+                    'id'                 => $assessment->id,
+                    'condition'          => optional($assessment->condition)->name,
+                    'status'             => $assessment->status,
+                    'assessment_date'    => $assessment->assessment_date ? Carbon::parse($assessment->assessment_date)->format('d M Y') : null,
+                    'total_sessions'     => $assessment->total_sessions,
+                    'completed_sessions' => $assessment->completed_sessions,
+                    'baseline_score'     => $assessment->baseline_score,
+                ] : null,
                 'doctor' => [
                     'id'            => $doctor?->id ?? 1,
                     'name'          => $doctorName,

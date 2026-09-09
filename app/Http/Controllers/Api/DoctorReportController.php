@@ -74,18 +74,6 @@ class DoctorReportController extends BaseApiController
 
             $allPatientIds = array_values(array_unique(array_merge($apptPatientIds, $assessmentPatientIds)));
 
-            // Fallback: if doctor has no directly assigned patients yet, include general patients so doctor can view reports
-            if (empty($allPatientIds)) {
-                $allPatientIds = Appointment::pluck('patient_id')
-                    ->merge(PatientAssessment::pluck('patient_id'))
-                    ->merge(User::where('role', 'patient')->pluck('id'))
-                    ->filter()
-                    ->unique()
-                    ->values()
-                    ->take(20)
-                    ->all();
-            }
-
             $counts = [
                 'all'      => count($allPatientIds),
                 'today'    => count($todayPatientIds),
@@ -286,6 +274,18 @@ class DoctorReportController extends BaseApiController
      */
     private function buildPatientDetailsResponse($doctor, $patient, $assessment, $filterParam)
     {
+        $hasAppts = Appointment::where('doctor_id', $doctor->id)
+            ->where('patient_id', $patient->id)
+            ->exists();
+
+        if (!$assessment && !$hasAppts) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'No appointments or reports found for this patient with your practice.',
+                'data'    => null,
+            ], 404);
+        }
+
         // 1. Normalize Filter (7_days, 15_days, 30_days)
         $filter = match ($filterParam) {
             '7', '7_days', '7days'     => '7_days',

@@ -124,6 +124,11 @@ class User extends Authenticatable
         return $this->hasOne(DoctorProfile::class, 'user_id');
     }
 
+    public function doctorProfile()
+    {
+        return $this->hasOne(DoctorProfile::class, 'user_id');
+    }
+
     public function feedbacks()
     {
         return $this->hasMany(Feedback::class, 'doctor_id');

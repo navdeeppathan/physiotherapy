@@ -33,7 +33,6 @@ class PatientReportController extends BaseApiController
             if ($request->filled('assessment_id')) {
                 $assessment = PatientAssessment::with([
                     'doctor',
-                    'doctor.doctorProfile.specializationdata',
                     'condition',
                     'parameters',
                     'goals',
@@ -63,7 +62,6 @@ class PatientReportController extends BaseApiController
             if (!$assessment) {
                 $assessment = PatientAssessment::with([
                     'doctor',
-                    'doctor.doctorProfile.specializationdata',
                     'condition',
                     'parameters',
                     'goals',
@@ -144,7 +142,7 @@ class PatientReportController extends BaseApiController
             // Doctor details fallback / real
             $doctor = $assessment?->doctor;
             if (!$doctor) {
-                $latestAppt = Appointment::with('doctor.doctorProfile.specializationdata')
+                $latestAppt = Appointment::with('doctor')
                     ->where('patient_id', $patient->id)
                     ->whereNotNull('doctor_id')
                     ->latest('id')

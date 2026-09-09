@@ -162,12 +162,12 @@ class PatientReportController extends BaseApiController
 
             // Session Stats in this Period
             $completedSessionsInPeriod = 0;
-            $totalSessionsPlanned = $subscription?->plan?->total_sessions ?? 8;
+            $totalSessionsPlanned = $subscription?->plan?->total_appointments ?? 1;
             $totalGoalsCount = 4;
             $goalsAchievedCount = 2;
 
             if ($assessment) {
-                $totalSessionsPlanned = $assessment->total_sessions > 0 ? (int)$assessment->total_sessions : ($subscription?->plan?->total_sessions ?? 8);
+                $totalSessionsPlanned = $assessment->total_sessions > 0 ? (int)$assessment->total_sessions : ($subscription?->plan?->total_appointments ?? 1);
                 $completedSessionsInPeriod = $assessment->sessions()
                     ->where('status', 'completed')
                     ->whereBetween('session_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
@@ -176,17 +176,17 @@ class PatientReportController extends BaseApiController
                 if ($completedSessionsInPeriod === 0) {
                     $completedSessionsInPeriod = min((int)$assessment->completed_sessions, $totalSessionsPlanned);
                     if ($completedSessionsInPeriod === 0) {
-                        $completedSessionsInPeriod = $subscription?->used_appointments ?? 6; // visual mockup fallback
+                        $completedSessionsInPeriod = $subscription?->used_appointments ?? 1;
                     }
                 }
 
                 $totalGoalsCount = $assessment->goals->count() > 0 ? $assessment->goals->count() : 4;
                 $goalsAchievedCount = min(2, $totalGoalsCount);
             } elseif ($subscription) {
-                $completedSessionsInPeriod = $subscription->used_appointments ?? 6;
-                $totalSessionsPlanned = $subscription->plan?->total_sessions ?? 8;
+                $completedSessionsInPeriod = $subscription->used_appointments ?? 1;
+                $totalSessionsPlanned = $subscription->plan?->total_appointments ?? 1;
             } else {
-                $completedSessionsInPeriod = 6;
+                $completedSessionsInPeriod = 1;
             }
 
             // Improvement calculation

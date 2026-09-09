@@ -179,7 +179,7 @@ class DoctorReportController extends BaseApiController
                         ->where('patient_id', $patient->id)
                         ->where('status', 'completed')
                         ->count();
-                    $totalSessions = $totalAppts > 0 ? $totalAppts : 12;
+                    $totalSessions = $totalAppts > 0 ? $totalAppts : 1;
                     $completedSessions = $completedAppts;
                 }
 
@@ -407,8 +407,8 @@ class DoctorReportController extends BaseApiController
         } else {
             $totalAppts = Appointment::where('doctor_id', $doctor->id)->where('patient_id', $patient->id)->count();
             $completedAppts = Appointment::where('doctor_id', $doctor->id)->where('patient_id', $patient->id)->where('status', 'completed')->count();
-            $totalSessions = $totalAppts > 0 ? $totalAppts : 12;
-            $completedSessions = $completedAppts > 0 ? $completedAppts : 6;
+            $totalSessions = $totalAppts > 0 ? $totalAppts : 1;
+            $completedSessions = $completedAppts > 0 ? $completedAppts : 1;
         }
 
         $pendingSessions = max(0, $totalSessions - $completedSessions);

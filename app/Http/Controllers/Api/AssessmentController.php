@@ -239,8 +239,8 @@ class AssessmentController extends BaseApiController
                 'baseline_score'     => $this->sanitizeNumericValue($request->baseline_score),
                 'goal_text'          => $request->goal_text,
                 'goal_duration_weeks'=> $request->goal_duration_weeks ?? 8,
-                'total_sessions'     => $request->total_sessions ?? 12,
-                'completed_sessions' => 0,
+                'total_sessions'     => $request->total_sessions ?? 1,
+                'completed_sessions' => 1,
                 'assessment_date'    => $request->assessment_date,
                 'status'             => 'active',
             ]);
@@ -288,43 +288,16 @@ class AssessmentController extends BaseApiController
                 }
             }
 
-            // 5. Auto-generate sessions
-            $sessionCount = $request->total_sessions ?? 12;
-            $startDate    = Carbon::parse($request->assessment_date);
-            for ($i = 1; $i <= $sessionCount; $i++) {
-                PatientSession::create([
-                    'assessment_id'  => $assessment->id,
-                    'doctor_id'      => $doctor->id,
-                    'patient_id'     => $request->patient_id,
-                    'session_date'   => $startDate->copy()->addDays(($i - 1) * 3),
-                    'session_number' => $i,
-                    'status'         => 'scheduled',
-                ]);
-            }
-
-            // 6. Mark Session #1 as completed (since assessment is conducted on appointment 1)
-            $firstSession = PatientSession::where('assessment_id', $assessment->id)
-                ->where('session_number', 1)
-                ->first();
-
-            if ($firstSession) {
-                $firstSession->update([
-                    'status'       => 'completed',
-                    'session_date' => $request->assessment_date,
-                    'notes'        => $request->session_notes ?? 'Initial assessment completed & treatment plan created.',
-                ]);
-                $assessment->update(['completed_sessions' => 1]);
-            }
-
-            // Update next_session_date to session #2
-            $nextSession = PatientSession::where('assessment_id', $assessment->id)
-                ->where('status', 'scheduled')
-                ->orderBy('session_date')
-                ->first();
-
-            if ($nextSession) {
-                $assessment->update(['next_session_date' => $nextSession->session_date]);
-            }
+            // 5. Create initial assessment session (keep only 1 session: Session #1, completed)
+            PatientSession::create([
+                'assessment_id'  => $assessment->id,
+                'doctor_id'      => $doctor->id,
+                'patient_id'     => $request->patient_id,
+                'session_date'   => $request->assessment_date ?? now()->toDateString(),
+                'session_number' => 1,
+                'status'         => 'completed',
+                'notes'          => $request->session_notes ?? 'Initial assessment completed & treatment plan created.',
+            ]);
 
             // 7. Update Appointment status to 'completed' (from appointment_id or matching assessment_date)
             $appointmentData = null;

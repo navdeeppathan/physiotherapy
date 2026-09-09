@@ -742,19 +742,34 @@ class AppointmentController extends BaseApiController
                         'notes'        => $request->notes ?? $request->session_notes ?? 'Appointment marked as completed by doctor.',
                     ]);
                     $assessment->increment('completed_sessions');
-
-                    $completedSessionData = [
-                        'session_id'     => $session->id,
-                        'session_number' => $session->session_number,
-                    ];
-
-                    $nextScheduled = PatientSession::where('assessment_id', $assessment->id)
-                        ->where('status', 'scheduled')
-                        ->orderBy('session_number')
-                        ->first();
-                    if ($nextScheduled) {
-                        $assessment->update(['next_session_date' => $nextScheduled->session_date]);
+                } else {
+                    $nextNum = (int) PatientSession::where('assessment_id', $assessment->id)->max('session_number') + 1;
+                    $session = PatientSession::create([
+                        'assessment_id'  => $assessment->id,
+                        'doctor_id'      => $doctor->id,
+                        'patient_id'     => $appointment->patient_id,
+                        'session_date'   => $appointment->appointment_date ?? now()->toDateString(),
+                        'session_number' => $nextNum,
+                        'status'         => 'completed',
+                        'notes'          => $request->notes ?? $request->session_notes ?? 'Appointment marked as completed by doctor.',
+                    ]);
+                    $assessment->increment('completed_sessions');
+                    if ($assessment->total_sessions < $nextNum) {
+                        $assessment->update(['total_sessions' => $nextNum]);
                     }
+                }
+
+                $completedSessionData = [
+                    'session_id'     => $session->id,
+                    'session_number' => $session->session_number,
+                ];
+
+                $nextScheduled = PatientSession::where('assessment_id', $assessment->id)
+                    ->where('status', 'scheduled')
+                    ->orderBy('session_number')
+                    ->first();
+                if ($nextScheduled) {
+                    $assessment->update(['next_session_date' => $nextScheduled->session_date]);
                 }
             }
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Appointment;
 use App\Models\AssessmentParameter;
 use App\Models\PatientAssessment;
+use App\Models\PatientSession;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
@@ -168,20 +169,9 @@ class DoctorReportController extends BaseApiController
                     : null;
 
                 // Sessions completed / total
-                if ($assessment && $assessment->total_sessions > 0) {
-                    $totalSessions = (int) $assessment->total_sessions;
-                    $completedSessions = min((int) $assessment->completed_sessions, $totalSessions);
-                } else {
-                    $totalAppts = Appointment::where('doctor_id', $doctor->id)
-                        ->where('patient_id', $patient->id)
-                        ->count();
-                    $completedAppts = Appointment::where('doctor_id', $doctor->id)
-                        ->where('patient_id', $patient->id)
-                        ->where('status', 'completed')
-                        ->count();
-                    $totalSessions = $totalAppts > 0 ? $totalAppts : 1;
-                    $completedSessions = $completedAppts;
-                }
+                $sessionStats = $this->calculatePatientSessions($doctor, $patient, $assessment);
+                $totalSessions = $sessionStats['total'];
+                $completedSessions = $sessionStats['completed'];
 
                 $profileImg = $patient->profile_img
                     ? (str_contains($patient->profile_img, 'http') ? $patient->profile_img : asset($patient->profile_img))
@@ -401,17 +391,10 @@ class DoctorReportController extends BaseApiController
         }
 
         // 5. Sessions Card
-        if ($assessment && $assessment->total_sessions > 0) {
-            $totalSessions = (int) $assessment->total_sessions;
-            $completedSessions = min((int) $assessment->completed_sessions, $totalSessions);
-        } else {
-            $totalAppts = Appointment::where('doctor_id', $doctor->id)->where('patient_id', $patient->id)->count();
-            $completedAppts = Appointment::where('doctor_id', $doctor->id)->where('patient_id', $patient->id)->where('status', 'completed')->count();
-            $totalSessions = $totalAppts > 0 ? $totalAppts : 1;
-            $completedSessions = $completedAppts > 0 ? $completedAppts : 1;
-        }
-
-        $pendingSessions = max(0, $totalSessions - $completedSessions);
+        $sessionStats = $this->calculatePatientSessions($doctor, $patient, $assessment);
+        $totalSessions = $sessionStats['total'];
+        $completedSessions = $sessionStats['completed'];
+        $pendingSessions = $sessionStats['pending'];
 
         $sessionsCard = [
             'completed'         => $completedSessions,
@@ -605,5 +588,67 @@ class DoctorReportController extends BaseApiController
         }
 
         return strtoupper($initials);
+    }
+
+    /**
+     * Calculate patient session stats based on real appointments & assessment
+     */
+    protected function calculatePatientSessions($doctor, $patient, $assessment = null)
+    {
+        $allAppts = Appointment::where('doctor_id', $doctor->id)
+            ->where('patient_id', $patient->id)
+            ->where('status', '!=', 'cancelled')
+            ->orderBy('appointment_date')
+            ->orderBy('start_time')
+            ->get();
+
+        $completedApptsCount = $allAppts->where('status', 'completed')->count();
+        $totalApptsCount     = $allAppts->count();
+
+        if ($assessment && $allAppts->isNotEmpty()) {
+            foreach ($allAppts as $idx => $appt) {
+                $sess = PatientSession::where('assessment_id', $assessment->id)
+                    ->where('session_date', $appt->appointment_date)
+                    ->first();
+
+                if (!$sess) {
+                    PatientSession::create([
+                        'assessment_id'  => $assessment->id,
+                        'doctor_id'      => $doctor->id,
+                        'patient_id'     => $patient->id,
+                        'session_date'   => $appt->appointment_date,
+                        'session_time'   => $appt->start_time,
+                        'session_number' => $idx + 1,
+                        'status'         => $appt->status === 'completed' ? 'completed' : 'scheduled',
+                    ]);
+                } elseif ($appt->status === 'completed' && $sess->status !== 'completed') {
+                    $sess->update(['status' => 'completed']);
+                }
+            }
+
+            $assessmentCompleted = PatientSession::where('assessment_id', $assessment->id)->where('status', 'completed')->count();
+            $assessmentTotal     = PatientSession::where('assessment_id', $assessment->id)->count();
+
+            if ($assessment->completed_sessions !== $assessmentCompleted || $assessment->total_sessions !== $assessmentTotal) {
+                $assessment->update([
+                    'completed_sessions' => $assessmentCompleted,
+                    'total_sessions'     => $assessmentTotal,
+                ]);
+            }
+        }
+
+        $totalSessions = max($totalApptsCount, (int) ($assessment?->total_sessions ?? 0));
+        $completedSessions = max($completedApptsCount, (int) ($assessment?->completed_sessions ?? 0));
+
+        if ($totalSessions === 0) {
+            $totalSessions = 1;
+        }
+        $completedSessions = min($completedSessions, $totalSessions);
+
+        return [
+            'total'     => $totalSessions,
+            'completed' => $completedSessions,
+            'pending'   => max(0, $totalSessions - $completedSessions),
+        ];
     }
 }

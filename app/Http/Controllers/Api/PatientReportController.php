@@ -161,33 +161,23 @@ class PatientReportController extends BaseApiController
                 : null;
 
             // Session Stats in this Period
-            $completedSessionsInPeriod = 0;
-            $totalSessionsPlanned = $subscription?->plan?->total_appointments ?? 1;
-            $totalGoalsCount = 4;
-            $goalsAchievedCount = 2;
+            $allPatientAppts = Appointment::where('patient_id', $patient->id)
+                ->where('status', '!=', 'cancelled')
+                ->get();
 
-            if ($assessment) {
-                $totalSessionsPlanned = $assessment->total_sessions > 0 ? (int)$assessment->total_sessions : ($subscription?->plan?->total_appointments ?? 1);
-                $completedSessionsInPeriod = $assessment->sessions()
-                    ->where('status', 'completed')
-                    ->whereBetween('session_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
-                    ->count();
+            $completedApptsCount = $allPatientAppts->where('status', 'completed')->count();
+            $totalApptsCount     = $allPatientAppts->count();
 
-                if ($completedSessionsInPeriod === 0) {
-                    $completedSessionsInPeriod = min((int)$assessment->completed_sessions, $totalSessionsPlanned);
-                    if ($completedSessionsInPeriod === 0) {
-                        $completedSessionsInPeriod = $subscription?->used_appointments ?? 1;
-                    }
-                }
-
-                $totalGoalsCount = $assessment->goals->count() > 0 ? $assessment->goals->count() : 4;
-                $goalsAchievedCount = min(2, $totalGoalsCount);
-            } elseif ($subscription) {
-                $completedSessionsInPeriod = $subscription->used_appointments ?? 1;
-                $totalSessionsPlanned = $subscription->plan?->total_appointments ?? 1;
-            } else {
-                $completedSessionsInPeriod = 1;
+            $totalSessionsPlanned = max($totalApptsCount, (int)($assessment?->total_sessions ?? 0), (int)($subscription?->plan?->total_appointments ?? 0));
+            if ($totalSessionsPlanned === 0) {
+                $totalSessionsPlanned = 1;
             }
+
+            $completedSessionsInPeriod = max($completedApptsCount, (int)($assessment?->completed_sessions ?? 0), (int)($subscription?->used_appointments ?? 0));
+            $completedSessionsInPeriod = min($completedSessionsInPeriod, $totalSessionsPlanned);
+
+            $totalGoalsCount = ($assessment && $assessment->goals->count() > 0) ? $assessment->goals->count() : 4;
+            $goalsAchievedCount = min(2, $totalGoalsCount);
 
             // Improvement calculation
             $startImprovementPct = 22.0;

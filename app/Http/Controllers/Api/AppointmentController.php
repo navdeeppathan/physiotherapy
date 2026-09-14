@@ -1204,6 +1204,8 @@ class AppointmentController extends BaseApiController
                     'payment_status' => $appointment->doctor_payment_status,
                     'doctor_fee' => $doctorFee,
 
+                    
+
                     'patient' => [
                         'id' => optional($appointment->patient)->id,
                         'name' => optional($appointment->patient)->name,
@@ -1225,11 +1227,13 @@ class AppointmentController extends BaseApiController
                     'fee' => $doctorFee,
                 ],
 
+                'balance' => $remainingAmount,
+                'currency' => 'INR',
+                'transactions' => $appointments,
                 'summary' => [
                     'completed_appointments' => $completedCount,
                     'paid_appointments' => $paidAppointmentsCount,
                     'unpaid_appointments' => $unpaidCount,
-
                     'total_amount' => $totalAmount,
                     'paid_amount' => $paidAmount,
                     'remaining_amount' => $remainingAmount,

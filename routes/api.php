@@ -127,9 +127,14 @@ Route::middleware(['auth:api', 'role:doctor'])->group(function () {
     Route::post('/doctor/appointments/{id}/action', [AppointmentController::class, 'handleAction']);
     Route::post('/doctor/appointments/{id}/complete', [AppointmentController::class, 'completeAppointment'])->where('id', '[0-9]+');
     Route::put('/doctor/appointments/{id}/complete', [AppointmentController::class, 'completeAppointment'])->where('id', '[0-9]+');
+    Route::post('/doctor/appointments/complete', [AppointmentController::class, 'completeAppointment']);
+    Route::put('/doctor/appointments/complete', [AppointmentController::class, 'completeAppointment']);
     Route::post('/doctor/appointment/complete', [AppointmentController::class, 'completeAppointment']);
+    Route::put('/doctor/appointment/complete', [AppointmentController::class, 'completeAppointment']);
     Route::post('/appointment/{id}/complete', [AppointmentController::class, 'completeAppointment'])->where('id', '[0-9]+');
     Route::put('/appointment/{id}/complete', [AppointmentController::class, 'completeAppointment'])->where('id', '[0-9]+');
+    Route::post('/appointment/complete', [AppointmentController::class, 'completeAppointment']);
+    Route::put('/appointment/complete', [AppointmentController::class, 'completeAppointment']);
 
     Route::get('/doctor/{doctor_id}/wallet', [AppointmentController::class, 'getDoctorWallet'])->where('doctor_id', '[0-9]+');
     Route::get('/doctor/payment-history/{doctorId}', [UserController::class, 'doctorPaymentHistory'])->where('doctorId', '[0-9]+');

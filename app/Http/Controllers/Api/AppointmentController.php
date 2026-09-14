@@ -655,9 +655,7 @@ class AppointmentController extends BaseApiController
             }
             else if($request->action === 'complete')
             {
-                $appointment->update([
-                    'status' => 'completed'
-                ]);
+                return $this->completeAppointment($request, $id);
             }
 
             return $this->sendResponse($appointment, 'Appointment ' . $request->action . 'ed successfully');
@@ -678,7 +676,9 @@ class AppointmentController extends BaseApiController
      * Dedicated API: Complete Appointment by Doctor
      * POST/PUT /api/doctor/appointments/{id}/complete
      * POST/PUT /api/appointment/{id}/complete
-     * POST     /api/doctor/appointment/complete (body: { "appointment_id": 12 })
+     * POST/PUT /api/doctor/appointments/complete (body: { "appointment_id": 12, "session_time": "10:30:00" })
+     * POST/PUT /api/doctor/appointment/complete
+     * POST/PUT /api/appointment/complete
      */
     public function completeAppointment(Request $request, $id = null)
     {
@@ -707,58 +707,124 @@ class AppointmentController extends BaseApiController
                 return $this->sendError('Appointment not found or unauthorized', [], 404);
             }
 
-            if ($appointment->status === 'completed') {
-                return $this->sendResponse([
-                    'id'               => $appointment->id,
-                    'status'           => 'completed',
-                    'patient_id'       => $appointment->patient_id,
-                    'patient_name'     => optional($appointment->patient)->name ?? $appointment->patient_name,
-                    'appointment_date' => Carbon::parse($appointment->appointment_date)->format('d M Y'),
-                ], 'Appointment is already marked as completed');
-            }
+            // Safe parser for time inputs (handles "11:30 AM", "11:30", "11:30:00", ISO date-times, etc.)
+            $parseTime = function ($val) {
+                if (empty($val) || !is_string($val)) {
+                    return null;
+                }
+                $val = trim($val);
+                try {
+                    return Carbon::parse($val)->format('H:i:s');
+                } catch (\Exception $e) {
+                    if (preg_match('/^(\d{1,2}):(\d{2})(?::(\d{2}))?/', $val, $matches)) {
+                        $h = str_pad($matches[1], 2, '0', STR_PAD_LEFT);
+                        $m = $matches[2];
+                        $s = isset($matches[3]) ? $matches[3] : '00';
+                        return "{$h}:{$m}:{$s}";
+                    }
+                    return null;
+                }
+            };
 
-            DB::beginTransaction();
+            // Read session time provided by mobile app developer
+            $rawSessionTime = $request->input('session_time')
+                ?? $request->input('time')
+                ?? $request->input('session_start_time')
+                ?? $request->input('start_time');
 
-            // 1. Update appointment status
-            $appointment->update([
-                'status' => 'completed',
-            ]);
+            $parsedSessionTime = $parseTime($rawSessionTime);
 
-            // 2. Update patient plan subscription if linked directly or active
-            $subscription = null;
-            if ($appointment->patient_plan_subscription_id) {
-                $subscription = PatientPlanSubscription::find($appointment->patient_plan_subscription_id);
-            } elseif (!empty($appointment->unique_plan_id)) {
-                $subscription = PatientPlanSubscription::where('unique_plan_id', $appointment->unique_plan_id)->first();
-            } else {
-                $subscription = PatientPlanSubscription::where('patient_id', $appointment->patient_id)
-                    ->where('status', 'active')
-                    ->latest('id')
-                    ->first();
-            }
+            // Read end time or duration if provided
+            $rawEndTime = $request->input('end_time') ?? $request->input('session_end_time');
+            $parsedEndTime = $parseTime($rawEndTime);
 
-            if ($subscription) {
-                $subscription->increment('used_appointments');
-                if ($subscription->remaining_appointments > 0) {
-                    $subscription->decrement('remaining_appointments');
+            if (!$parsedEndTime && ($request->filled('duration') || $request->filled('session_duration'))) {
+                $durationMinutes = (int) ($request->input('duration') ?? $request->input('session_duration'));
+                $baseTime = $parsedSessionTime ?? ($appointment->start_time ? $parseTime($appointment->start_time) : null);
+                if ($durationMinutes > 0 && $baseTime) {
+                    try {
+                        $parsedEndTime = Carbon::parse($baseTime)->addMinutes($durationMinutes)->format('H:i:s');
+                    } catch (\Exception $e) {}
                 }
             }
 
-            // 3. Mark corresponding session in assessment as completed if active assessment exists
+            // Final session time to save:
+            // 1. Passed by developer
+            // 2. Appointment start time
+            // 3. Current time
+            $finalSessionTime = $parsedSessionTime
+                ?? ($appointment->start_time ? $parseTime($appointment->start_time) : null)
+                ?? now()->format('H:i:s');
+
+            $wasAlreadyCompleted = ($appointment->status === 'completed');
+
+            DB::beginTransaction();
+
+            // 1. Update appointment status & times
+            $appointmentUpdates = ['status' => 'completed'];
+            if ($parsedSessionTime) {
+                $appointmentUpdates['start_time'] = $parsedSessionTime;
+            }
+            if ($parsedEndTime) {
+                $appointmentUpdates['end_time'] = $parsedEndTime;
+            }
+            $appointment->update($appointmentUpdates);
+
+            // 2. Update patient plan subscription if first time completing
+            if (!$wasAlreadyCompleted) {
+                $subscription = null;
+                if ($appointment->patient_plan_subscription_id) {
+                    $subscription = PatientPlanSubscription::find($appointment->patient_plan_subscription_id);
+                } elseif (!empty($appointment->unique_plan_id)) {
+                    $subscription = PatientPlanSubscription::where('unique_plan_id', $appointment->unique_plan_id)->first();
+                } else {
+                    $subscription = PatientPlanSubscription::where('patient_id', $appointment->patient_id)
+                        ->where('status', 'active')
+                        ->latest('id')
+                        ->first();
+                }
+
+                if ($subscription) {
+                    $subscription->increment('used_appointments');
+                    if ($subscription->remaining_appointments > 0) {
+                        $subscription->decrement('remaining_appointments');
+                    }
+                }
+            }
+
+            // 3. Find and update or create session in patient assessment
             $assessment = PatientAssessment::where('patient_id', $appointment->patient_id)
                 ->where('doctor_id', $doctor->id)
                 ->where('status', 'active')
                 ->latest('id')
                 ->first();
 
+            if (!$assessment) {
+                $assessment = PatientAssessment::where('patient_id', $appointment->patient_id)
+                    ->where('status', 'active')
+                    ->latest('id')
+                    ->first();
+            }
+
+            if (!$assessment) {
+                $assessment = PatientAssessment::where('patient_id', $appointment->patient_id)
+                    ->latest('id')
+                    ->first();
+            }
+
+            $session = null;
             $completedSessionData = null;
+
             if ($assessment) {
-                // First try to match session by appointment date
+                $apptDate = $appointment->appointment_date ? Carbon::parse($appointment->appointment_date)->toDateString() : now()->toDateString();
+
+                // 1. Try to match scheduled session by appointment date
                 $session = PatientSession::where('assessment_id', $assessment->id)
-                    ->where('session_date', $appointment->appointment_date)
+                    ->whereDate('session_date', $apptDate)
                     ->where('status', 'scheduled')
                     ->first();
 
+                // 2. Try to match any scheduled session in assessment
                 if (!$session) {
                     $session = PatientSession::where('assessment_id', $assessment->id)
                         ->where('status', 'scheduled')
@@ -766,24 +832,36 @@ class AppointmentController extends BaseApiController
                         ->first();
                 }
 
+                // 3. If was already completed, find session on this date to update time/notes
+                if (!$session && $wasAlreadyCompleted) {
+                    $session = PatientSession::where('assessment_id', $assessment->id)
+                        ->whereDate('session_date', $apptDate)
+                        ->first();
+                }
+
+                $notes = $request->notes ?? $request->session_notes ?? ($session ? $session->notes : null) ?? 'Appointment marked as completed by doctor.';
+
                 if ($session) {
-                    $session->update([
+                    $sessionUpdates = [
                         'status'       => 'completed',
-                        'session_date' => $appointment->appointment_date ?? now()->toDateString(),
-                        'session_time' => $appointment->start_time ?? $session->session_time,
-                        'notes'        => $request->notes ?? $request->session_notes ?? 'Appointment marked as completed by doctor.',
-                    ]);
+                        'session_date' => $apptDate,
+                        'session_time' => $finalSessionTime,
+                    ];
+                    if ($request->filled('notes') || $request->filled('session_notes') || empty($session->notes)) {
+                        $sessionUpdates['notes'] = $notes;
+                    }
+                    $session->update($sessionUpdates);
                 } else {
                     $nextNum = (int) PatientSession::where('assessment_id', $assessment->id)->max('session_number') + 1;
                     $session = PatientSession::create([
                         'assessment_id'  => $assessment->id,
                         'doctor_id'      => $doctor->id,
                         'patient_id'     => $appointment->patient_id,
-                        'session_date'   => $appointment->appointment_date ?? now()->toDateString(),
-                        'session_time'   => $appointment->start_time ?? now()->format('H:i:s'),
+                        'session_date'   => $apptDate,
+                        'session_time'   => $finalSessionTime,
                         'session_number' => $nextNum,
                         'status'         => 'completed',
-                        'notes'          => $request->notes ?? $request->session_notes ?? 'Appointment marked as completed by doctor.',
+                        'notes'          => $notes,
                     ]);
                 }
 
@@ -792,13 +870,8 @@ class AppointmentController extends BaseApiController
 
                 $assessment->update([
                     'completed_sessions' => $completedSessionsCount,
-                    'total_sessions'     => $totalSessionsCount,
+                    'total_sessions'     => max($totalSessionsCount, (int) $assessment->total_sessions),
                 ]);
-
-                $completedSessionData = [
-                    'session_id'     => $session->id,
-                    'session_number' => $session->session_number,
-                ];
 
                 $nextScheduled = PatientSession::where('assessment_id', $assessment->id)
                     ->where('status', 'scheduled')
@@ -807,9 +880,20 @@ class AppointmentController extends BaseApiController
                 if ($nextScheduled) {
                     $assessment->update(['next_session_date' => $nextScheduled->session_date]);
                 }
+
+                $completedSessionData = [
+                    'session_id'     => $session->id,
+                    'session_number' => $session->session_number,
+                    'session_date'   => Carbon::parse($session->session_date)->format('d M Y'),
+                    'session_time'   => $session->session_time ? Carbon::parse($session->session_time)->format('h:i A') : null,
+                ];
             }
 
             DB::commit();
+
+            $msg = $wasAlreadyCompleted
+                ? 'Appointment is already marked as completed (session time updated)'
+                : 'Appointment marked as completed successfully!';
 
             return $this->sendResponse([
                 'id'                 => $appointment->id,
@@ -818,9 +902,35 @@ class AppointmentController extends BaseApiController
                 'patient_id'         => $appointment->patient_id,
                 'patient_name'       => optional($appointment->patient)->name ?? $appointment->patient_name,
                 'appointment_date'   => Carbon::parse($appointment->appointment_date)->format('d M Y'),
+                'start_time'         => $appointment->start_time ? Carbon::parse($appointment->start_time)->format('h:i A') : null,
+                'end_time'           => $appointment->end_time ? Carbon::parse($appointment->end_time)->format('h:i A') : null,
+                'session_time'       => $finalSessionTime ? Carbon::parse($finalSessionTime)->format('h:i A') : null,
+                'session_time_raw'   => $finalSessionTime,
                 'assessment_id'      => $assessment ? $assessment->id : null,
                 'completed_session'  => $completedSessionData,
-            ], 'Appointment marked as completed successfully!');
+                'appointment'        => [
+                    'id'               => $appointment->id,
+                    'status'           => 'completed',
+                    'appointment_date' => Carbon::parse($appointment->appointment_date)->format('d M Y'),
+                    'start_time'       => $appointment->start_time ? Carbon::parse($appointment->start_time)->format('h:i A') : null,
+                    'end_time'         => $appointment->end_time ? Carbon::parse($appointment->end_time)->format('h:i A') : null,
+                ],
+                'session'            => $session ? [
+                    'id'               => $session->id,
+                    'session_number'   => $session->session_number,
+                    'session_date'     => Carbon::parse($session->session_date)->format('d M Y'),
+                    'session_time'     => $session->session_time ? Carbon::parse($session->session_time)->format('h:i A') : null,
+                    'session_time_raw' => $session->session_time,
+                    'status'           => $session->status,
+                    'notes'            => $session->notes,
+                ] : null,
+                'assessment'         => $assessment ? [
+                    'id'                 => $assessment->id,
+                    'completed_sessions' => $assessment->completed_sessions,
+                    'total_sessions'     => $assessment->total_sessions,
+                    'remaining_sessions' => max(0, ((int) $assessment->total_sessions) - ((int) $assessment->completed_sessions)),
+                ] : null,
+            ], $msg);
 
         } catch (Exception $e) {
             DB::rollBack();

@@ -26,6 +26,7 @@ class Appointment extends Model
         'appointment_date',
         'start_time',
         'end_time',
+        'duration',
         'status',
         'payment_status',
         'doctor_payment_status',

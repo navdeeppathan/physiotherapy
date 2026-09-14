@@ -17,6 +17,8 @@ class PatientSession extends Model
         'patient_id',
         'session_date',
         'session_time',
+        'end_time',
+        'duration',
         'session_number',
         'status',
         'notes',

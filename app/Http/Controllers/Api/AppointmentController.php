@@ -8,6 +8,7 @@ use App\Models\DoctorTimeSlot;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use App\Models\AppointmentCancellation;
 use App\Models\AppointmentReschedule;
 use App\Models\AppointmentTransferRequest;
@@ -726,6 +727,38 @@ class AppointmentController extends BaseApiController
                 }
             };
 
+            // Safe parser for duration in minutes (handles 45, "45", "45 mins", "45 minutes", "00:45:00")
+            $parseDuration = function ($val, $startTime = null, $endTime = null) {
+                if (!empty($val)) {
+                    if (is_numeric($val)) {
+                        return (int) $val;
+                    }
+                    if (is_string($val)) {
+                        $trimmed = trim($val);
+                        if (preg_match('/^(\d+)\s*(?:mins?|minutes?|m)?$/i', $trimmed, $m)) {
+                            return (int) $m[1];
+                        }
+                        if (preg_match('/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/', $trimmed, $m)) {
+                            $hours = (int) $m[1];
+                            $mins = (int) $m[2];
+                            return ($hours * 60) + $mins;
+                        }
+                    }
+                }
+
+                // If duration not explicitly passed, calculate from startTime and endTime
+                if (!empty($startTime) && !empty($endTime)) {
+                    try {
+                        $start = Carbon::parse($startTime);
+                        $end = Carbon::parse($endTime);
+                        $diff = $start->diffInMinutes($end, false);
+                        return $diff > 0 ? (int) $diff : null;
+                    } catch (\Exception $e) {}
+                }
+
+                return null;
+            };
+
             // Read session time provided by mobile app developer
             $rawSessionTime = $request->input('session_time')
                 ?? $request->input('time')
@@ -734,27 +767,68 @@ class AppointmentController extends BaseApiController
 
             $parsedSessionTime = $parseTime($rawSessionTime);
 
-            // Read end time or duration if provided
+            // Read end time provided by mobile app developer
             $rawEndTime = $request->input('end_time') ?? $request->input('session_end_time');
             $parsedEndTime = $parseTime($rawEndTime);
 
-            if (!$parsedEndTime && ($request->filled('duration') || $request->filled('session_duration'))) {
-                $durationMinutes = (int) ($request->input('duration') ?? $request->input('session_duration'));
-                $baseTime = $parsedSessionTime ?? ($appointment->start_time ? $parseTime($appointment->start_time) : null);
-                if ($durationMinutes > 0 && $baseTime) {
-                    try {
-                        $parsedEndTime = Carbon::parse($baseTime)->addMinutes($durationMinutes)->format('H:i:s');
-                    } catch (\Exception $e) {}
-                }
-            }
-
-            // Final session time to save:
+            // Final session start time to save:
             // 1. Passed by developer
             // 2. Appointment start time
             // 3. Current time
             $finalSessionTime = $parsedSessionTime
                 ?? ($appointment->start_time ? $parseTime($appointment->start_time) : null)
                 ?? now()->format('H:i:s');
+
+            // Read or calculate duration in minutes
+            $rawDuration = $request->input('duration')
+                ?? $request->input('session_duration')
+                ?? $request->input('duration_minutes')
+                ?? $request->input('time_taken');
+
+            $parsedDuration = $parseDuration($rawDuration, $finalSessionTime, $parsedEndTime);
+
+            // If end_time was not explicitly passed, but duration was:
+            if (!$parsedEndTime && $parsedDuration && $finalSessionTime) {
+                try {
+                    $parsedEndTime = Carbon::parse($finalSessionTime)->addMinutes($parsedDuration)->format('H:i:s');
+                } catch (\Exception $e) {}
+            }
+
+            // If duration was not explicitly passed, but end_time was:
+            if (!$parsedDuration && $finalSessionTime && $parsedEndTime) {
+                $parsedDuration = $parseDuration(null, $finalSessionTime, $parsedEndTime);
+            }
+
+            // Ensure schema columns exist for duration and end_time (self-healing)
+            static $columnsChecked = false;
+            if (!$columnsChecked) {
+                try {
+                    if (Schema::hasTable('patient_sessions')) {
+                        if (!Schema::hasColumn('patient_sessions', 'end_time')) {
+                            Schema::table('patient_sessions', function ($table) {
+                                $table->time('end_time')->nullable()->after('session_time');
+                            });
+                        }
+                        if (!Schema::hasColumn('patient_sessions', 'duration')) {
+                            Schema::table('patient_sessions', function ($table) {
+                                $table->integer('duration')->nullable()->after('session_time')->comment('Duration in minutes');
+                            });
+                        }
+                    }
+                    if (Schema::hasTable('appointments')) {
+                        if (!Schema::hasColumn('appointments', 'duration')) {
+                            Schema::table('appointments', function ($table) {
+                                $table->integer('duration')->nullable()->after('end_time')->comment('Duration in minutes');
+                            });
+                        }
+                    }
+                } catch (\Exception $e) {}
+                $columnsChecked = true;
+            }
+
+            $hasSessionDuration = Schema::hasColumn('patient_sessions', 'duration');
+            $hasSessionEndTime = Schema::hasColumn('patient_sessions', 'end_time');
+            $hasApptDuration = Schema::hasColumn('appointments', 'duration');
 
             $wasAlreadyCompleted = ($appointment->status === 'completed');
 
@@ -767,6 +841,9 @@ class AppointmentController extends BaseApiController
             }
             if ($parsedEndTime) {
                 $appointmentUpdates['end_time'] = $parsedEndTime;
+            }
+            if ($parsedDuration && $hasApptDuration) {
+                $appointmentUpdates['duration'] = $parsedDuration;
             }
             $appointment->update($appointmentUpdates);
 
@@ -847,13 +924,19 @@ class AppointmentController extends BaseApiController
                         'session_date' => $apptDate,
                         'session_time' => $finalSessionTime,
                     ];
+                    if ($hasSessionEndTime && $parsedEndTime) {
+                        $sessionUpdates['end_time'] = $parsedEndTime;
+                    }
+                    if ($hasSessionDuration && $parsedDuration) {
+                        $sessionUpdates['duration'] = $parsedDuration;
+                    }
                     if ($request->filled('notes') || $request->filled('session_notes') || empty($session->notes)) {
                         $sessionUpdates['notes'] = $notes;
                     }
                     $session->update($sessionUpdates);
                 } else {
                     $nextNum = (int) PatientSession::where('assessment_id', $assessment->id)->max('session_number') + 1;
-                    $session = PatientSession::create([
+                    $createData = [
                         'assessment_id'  => $assessment->id,
                         'doctor_id'      => $doctor->id,
                         'patient_id'     => $appointment->patient_id,
@@ -862,7 +945,14 @@ class AppointmentController extends BaseApiController
                         'session_number' => $nextNum,
                         'status'         => 'completed',
                         'notes'          => $notes,
-                    ]);
+                    ];
+                    if ($hasSessionEndTime && $parsedEndTime) {
+                        $createData['end_time'] = $parsedEndTime;
+                    }
+                    if ($hasSessionDuration && $parsedDuration) {
+                        $createData['duration'] = $parsedDuration;
+                    }
+                    $session = PatientSession::create($createData);
                 }
 
                 $completedSessionsCount = PatientSession::where('assessment_id', $assessment->id)->where('status', 'completed')->count();
@@ -882,17 +972,20 @@ class AppointmentController extends BaseApiController
                 }
 
                 $completedSessionData = [
-                    'session_id'     => $session->id,
-                    'session_number' => $session->session_number,
-                    'session_date'   => Carbon::parse($session->session_date)->format('d M Y'),
-                    'session_time'   => $session->session_time ? Carbon::parse($session->session_time)->format('h:i A') : null,
+                    'session_id'       => $session->id,
+                    'session_number'   => $session->session_number,
+                    'session_date'     => Carbon::parse($session->session_date)->format('d M Y'),
+                    'session_time'     => $session->session_time ? Carbon::parse($session->session_time)->format('h:i A') : null,
+                    'end_time'         => !empty($session->end_time) ? Carbon::parse($session->end_time)->format('h:i A') : ($parsedEndTime ? Carbon::parse($parsedEndTime)->format('h:i A') : null),
+                    'duration'         => !empty($session->duration) ? "{$session->duration} mins" : ($parsedDuration ? "{$parsedDuration} mins" : null),
+                    'duration_minutes' => $session->duration ?? $parsedDuration,
                 ];
             }
 
             DB::commit();
 
             $msg = $wasAlreadyCompleted
-                ? 'Appointment is already marked as completed (session time updated)'
+                ? 'Appointment is already marked as completed (session time & duration updated)'
                 : 'Appointment marked as completed successfully!';
 
             return $this->sendResponse([
@@ -904,6 +997,8 @@ class AppointmentController extends BaseApiController
                 'appointment_date'   => Carbon::parse($appointment->appointment_date)->format('d M Y'),
                 'start_time'         => $appointment->start_time ? Carbon::parse($appointment->start_time)->format('h:i A') : null,
                 'end_time'           => $appointment->end_time ? Carbon::parse($appointment->end_time)->format('h:i A') : null,
+                'duration'           => $parsedDuration ? "{$parsedDuration} mins" : (!empty($appointment->duration) ? "{$appointment->duration} mins" : null),
+                'duration_minutes'   => $parsedDuration ?? $appointment->duration,
                 'session_time'       => $finalSessionTime ? Carbon::parse($finalSessionTime)->format('h:i A') : null,
                 'session_time_raw'   => $finalSessionTime,
                 'assessment_id'      => $assessment ? $assessment->id : null,
@@ -914,6 +1009,8 @@ class AppointmentController extends BaseApiController
                     'appointment_date' => Carbon::parse($appointment->appointment_date)->format('d M Y'),
                     'start_time'       => $appointment->start_time ? Carbon::parse($appointment->start_time)->format('h:i A') : null,
                     'end_time'         => $appointment->end_time ? Carbon::parse($appointment->end_time)->format('h:i A') : null,
+                    'duration'         => $parsedDuration ? "{$parsedDuration} mins" : null,
+                    'duration_minutes' => $parsedDuration,
                 ],
                 'session'            => $session ? [
                     'id'               => $session->id,
@@ -921,6 +1018,9 @@ class AppointmentController extends BaseApiController
                     'session_date'     => Carbon::parse($session->session_date)->format('d M Y'),
                     'session_time'     => $session->session_time ? Carbon::parse($session->session_time)->format('h:i A') : null,
                     'session_time_raw' => $session->session_time,
+                    'end_time'         => !empty($session->end_time) ? Carbon::parse($session->end_time)->format('h:i A') : ($parsedEndTime ? Carbon::parse($parsedEndTime)->format('h:i A') : null),
+                    'duration'         => !empty($session->duration) ? "{$session->duration} mins" : ($parsedDuration ? "{$parsedDuration} mins" : null),
+                    'duration_minutes' => $session->duration ?? $parsedDuration,
                     'status'           => $session->status,
                     'notes'            => $session->notes,
                 ] : null,

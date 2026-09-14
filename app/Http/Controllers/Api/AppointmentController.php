@@ -1230,6 +1230,7 @@ class AppointmentController extends BaseApiController
                 'balance' => $remainingAmount,
                 'currency' => 'INR',
                 'transactions' => $appointments,
+                'total_transactions' => $appointments->total(),
                 'summary' => [
                     'completed_appointments' => $completedCount,
                     'paid_appointments' => $paidAppointmentsCount,

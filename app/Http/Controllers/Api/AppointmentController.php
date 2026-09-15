@@ -70,6 +70,7 @@ class AppointmentController extends BaseApiController
                 'problem_description' => 'nullable|string',
                 'doctor_fee' => 'nullable|numeric|min:0',
                 'address' => 'nullable|string',
+                'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5048',
             ]);
 
             $patient = Auth::user();
@@ -213,6 +214,12 @@ class AppointmentController extends BaseApiController
                     );
                 }
 
+                if($request->hasFile('file')) {
+                    $file = $request->file('file');
+                    $fileName = time() . '_' . $file->getClientOriginalName();
+                    $filePath = $file->storeAs('uploads/appointments', $fileName, 'public');
+                    $request->merge(['address' => $filePath]);
+                }
                 $appointment = Appointment::create([
 
                     'doctor_id'                    => $request->doctor_id,
@@ -235,6 +242,8 @@ class AppointmentController extends BaseApiController
                     'patient_gender'               => $request->patient_gender,
                     'problem_description'          => $request->problem_description,
                     'patient_address'              => $request->address,
+                    'file'                         => $request->hasFile('file') ? $filePath : null,
+
 
                 ]);
 

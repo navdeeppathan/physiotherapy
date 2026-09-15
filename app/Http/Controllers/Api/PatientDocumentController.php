@@ -13,10 +13,14 @@ use Exception;
 class PatientDocumentController extends BaseApiController
 {
     /**
-     * Upload single or multiple documents by patient or on behalf of patient
+     * Upload Document by Patient / User (Takes only file and title)
      * POST /api/patient/document/upload
      * POST /api/patient/documents
      * POST /api/user/document/upload
+     * 
+     * Request Inputs:
+     * - file (or document): required file (PDF, PNG, JPG, JPEG, WEBP, DOC, DOCX up to 20MB)
+     * - title: optional string (e.g. "Knee MRI Scan", "Doctor Prescription")
      */
     public function store(Request $request)
     {
@@ -28,26 +32,32 @@ class PatientDocumentController extends BaseApiController
                 return $this->sendError('Unauthenticated', [], 401);
             }
 
-            // Determine patient_id
-            $patientId = $request->input('patient_id');
-            if (!$patientId || $user->role === 'patient') {
-                $patientId = $user->id;
-            }
+            // Check if file is provided
+            $file = $request->file('file') ?? $request->file('document');
 
-            // Verify patient exists
-            $patient = User::find($patientId);
-            if (!$patient) {
-                return $this->sendError('Patient not found', [], 404);
-            }
-
-            // Check if multiple files or single file sent
-            $hasFilesArray = $request->hasFile('files') || $request->hasFile('documents');
-            $hasSingleFile = $request->hasFile('file') || $request->hasFile('document');
-
-            if (!$hasFilesArray && !$hasSingleFile) {
+            if (!$file) {
                 return response()->json([
                     'status'  => false,
-                    'message' => 'Please select a file to upload. Allowed field names: file, document, files, documents',
+                    'message' => 'Please select a file to upload (field name: file).',
+                ], 422);
+            }
+
+            $allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'webp', 'doc', 'docx', 'txt'];
+            $extension = strtolower($file->getClientOriginalExtension());
+
+            if (!in_array($extension, $allowedExtensions)) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => "File format '{$extension}' is not supported. Allowed formats: " . implode(', ', $allowedExtensions),
+                ], 422);
+            }
+
+            // Check size (20 MB max = 20971520 bytes)
+            $fileSizeBytes = $file->getSize();
+            if ($fileSizeBytes > 20971520) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'File size exceeds maximum allowed limit of 20 MB.',
                 ], 422);
             }
 
@@ -57,71 +67,37 @@ class PatientDocumentController extends BaseApiController
                 File::makeDirectory($uploadDir, 0777, true, true);
             }
 
-            $allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'webp', 'doc', 'docx', 'txt'];
-            $uploadedRecords = [];
+            $originalName = $file->getClientOriginalName();
+            $uniqueFileName = 'doc_' . time() . '_' . rand(1000, 9999) . '.' . $extension;
+            $file->move($uploadDir, $uniqueFileName);
 
-            // Helper to process a single uploaded file
-            $processFile = function ($file, $title = null, $docType = null, $desc = null) use (
-                $patientId,
-                $request,
-                $uploadDir,
-                $allowedExtensions,
-                &$uploadedRecords
-            ) {
-                $extension = strtolower($file->getClientOriginalExtension());
-                if (!in_array($extension, $allowedExtensions)) {
-                    throw new Exception("File format '{$extension}' is not supported. Allowed formats: " . implode(', ', $allowedExtensions));
-                }
+            // Title: use provided title or default to original filename without extension
+            $title = $request->filled('title')
+                ? trim($request->input('title'))
+                : pathinfo($originalName, PATHINFO_FILENAME);
 
-                // Check size (20 MB max = 20971520 bytes)
-                $fileSizeBytes = $file->getSize();
-                if ($fileSizeBytes > 20971520) {
-                    throw new Exception("File exceeds maximum allowed size of 20 MB.");
-                }
+            $document = PatientDocument::create([
+                'patient_id'     => $user->id,
+                'title'          => $title,
+                'document_type'  => 'medical_document',
+                'file_path'      => 'patient_documents/' . $uniqueFileName,
+                'file_name'      => $originalName,
+                'file_size'      => $fileSizeBytes,
+                'file_type'      => $extension,
+                'status'         => 'submitted',
+            ]);
 
-                $originalName = $file->getClientOriginalName();
-                $cleanName = pathinfo($originalName, PATHINFO_FILENAME);
-                $cleanName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $cleanName);
-                $uniqueFileName = 'doc_' . time() . '_' . rand(1000, 9999) . '.' . $extension;
-
-                $file->move($uploadDir, $uniqueFileName);
-
-                $document = PatientDocument::create([
-                    'patient_id'     => $patientId,
-                    'doctor_id'      => $request->input('doctor_id'),
-                    'appointment_id' => $request->input('appointment_id'),
-                    'title'          => $title ?: $request->input('title') ?: $request->input('document_name') ?: pathinfo($originalName, PATHINFO_FILENAME),
-                    'document_type'  => $docType ?: $request->input('document_type') ?: $request->input('type') ?: 'medical_report',
-                    'file_path'      => 'patient_documents/' . $uniqueFileName,
-                    'file_name'      => $originalName,
-                    'file_size'      => $fileSizeBytes,
-                    'file_type'      => $extension,
-                    'description'    => $desc ?: $request->input('description') ?: $request->input('notes'),
-                    'status'         => 'submitted',
-                ]);
-
-                $uploadedRecords[] = $document;
-            };
-
-            // Process files
-            if ($hasFilesArray) {
-                $files = $request->file('files') ?? $request->file('documents');
-                $titles = $request->input('titles', []);
-                $docTypes = $request->input('document_types', []);
-
-                foreach ($files as $idx => $f) {
-                    $t = isset($titles[$idx]) ? $titles[$idx] : null;
-                    $dt = isset($docTypes[$idx]) ? $docTypes[$idx] : null;
-                    $processFile($f, $t, $dt);
-                }
-            } else {
-                $file = $request->file('file') ?? $request->file('document');
-                $processFile($file);
-            }
-
-            $responsePayload = count($uploadedRecords) === 1 ? $uploadedRecords[0] : $uploadedRecords;
-
-            return $this->sendResponse($responsePayload, 'Document(s) uploaded successfully!');
+            return $this->sendResponse([
+                'id'                  => $document->id,
+                'patient_id'          => $document->patient_id,
+                'title'               => $document->title,
+                'file_url'            => $document->file_url,
+                'file_name'           => $document->file_name,
+                'file_size'           => $document->file_size,
+                'formatted_file_size' => $document->formatted_file_size,
+                'file_type'           => $document->file_type,
+                'created_at'          => $document->created_at ? $document->created_at->toIso8601String() : null,
+            ], 'Document uploaded successfully!');
 
         } catch (Exception $e) {
             $this->logException($e, 'Patient Document Upload Error');

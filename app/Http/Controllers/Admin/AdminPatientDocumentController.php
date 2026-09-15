@@ -47,17 +47,17 @@ class AdminPatientDocumentController extends Controller
         $documents = $query->paginate(15)->withQueryString();
 
         // Summary statistics
-        $totalDocuments    = PatientDocument::count();
-        $todayDocuments    = PatientDocument::whereDate('created_at', Carbon::today())->count();
-        $prescriptionCount = PatientDocument::where('document_type', 'prescription')->count();
-        $reportCount       = PatientDocument::whereIn('document_type', ['medical_report', 'mri_scan', 'xray', 'lab_report'])->count();
+        $totalDocuments = PatientDocument::count();
+        $todayDocuments = PatientDocument::whereDate('created_at', Carbon::today())->count();
+        $pdfCount       = PatientDocument::where('file_type', 'pdf')->count();
+        $imageCount     = PatientDocument::whereIn('file_type', ['jpg', 'jpeg', 'png', 'webp'])->count();
 
         return view('admin.patient-documents.index', compact(
             'documents',
             'totalDocuments',
             'todayDocuments',
-            'prescriptionCount',
-            'reportCount'
+            'pdfCount',
+            'imageCount'
         ));
     }
 

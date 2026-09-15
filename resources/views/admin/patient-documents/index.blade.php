@@ -59,14 +59,14 @@
             </div>
 
             <div class="col-xl-3 col-md-6">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-3" style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%); color: #fff;">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-3" style="background: linear-gradient(135deg, #ef4444 0%, #f87171 100%); color: #fff;">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <div class="text-white-50 small font-weight-bold text-uppercase">Prescriptions</div>
-                            <div class="h2 mb-0 font-weight-bold mt-1">{{ number_format($prescriptionCount) }}</div>
+                            <div class="text-white-50 small font-weight-bold text-uppercase">PDF Documents</div>
+                            <div class="h2 mb-0 font-weight-bold mt-1">{{ number_format($pdfCount) }}</div>
                         </div>
                         <div class="rounded-3 p-3 bg-white bg-opacity-20">
-                            <i class="fas fa-prescription fa-2x"></i>
+                            <i class="fas fa-file-pdf fa-2x"></i>
                         </div>
                     </div>
                 </div>
@@ -76,11 +76,11 @@
                 <div class="card border-0 shadow-sm rounded-4 h-100 p-3" style="background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%); color: #fff;">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <div class="text-white-50 small font-weight-bold text-uppercase">Reports & Scans</div>
-                            <div class="h2 mb-0 font-weight-bold mt-1">{{ number_format($reportCount) }}</div>
+                            <div class="text-white-50 small font-weight-bold text-uppercase">Image Files</div>
+                            <div class="h2 mb-0 font-weight-bold mt-1">{{ number_format($imageCount) }}</div>
                         </div>
                         <div class="rounded-3 p-3 bg-white bg-opacity-20">
-                            <i class="fas fa-x-ray fa-2x"></i>
+                            <i class="fas fa-file-image fa-2x"></i>
                         </div>
                     </div>
                 </div>
@@ -91,33 +91,20 @@
         <div class="card border-0 shadow-sm rounded-4 mb-4">
             <div class="card-body p-3">
                 <form action="{{ route('admin.patient-documents.index') }}" method="GET" class="row g-2 align-items-center">
-                    <div class="col-md-5">
+                    <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted"></i></span>
-                            <input type="text" name="search" class="form-control bg-light border-0" placeholder="Search patient name, phone, document title..." value="{{ request('search') }}">
+                            <input type="text" name="search" class="form-control bg-light border-0" placeholder="Search by patient name, phone, email, or document title..." value="{{ request('search') }}">
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <select name="document_type" class="form-select bg-light border-0">
-                            <option value="">All Document Types</option>
-                            <option value="medical_report" {{ request('document_type') == 'medical_report' ? 'selected' : '' }}>Medical Report</option>
-                            <option value="prescription" {{ request('document_type') == 'prescription' ? 'selected' : '' }}>Prescription</option>
-                            <option value="mri_scan" {{ request('document_type') == 'mri_scan' ? 'selected' : '' }}>MRI Scan</option>
-                            <option value="xray" {{ request('document_type') == 'xray' ? 'selected' : '' }}>X-Ray</option>
-                            <option value="lab_report" {{ request('document_type') == 'lab_report' ? 'selected' : '' }}>Lab Report</option>
-                            <option value="id_proof" {{ request('document_type') == 'id_proof' ? 'selected' : '' }}>ID Proof</option>
-                            <option value="discharge_summary" {{ request('document_type') == 'discharge_summary' ? 'selected' : '' }}>Discharge Summary</option>
-                            <option value="other" {{ request('document_type') == 'other' ? 'selected' : '' }}>Other</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
                         <input type="date" name="date" class="form-control bg-light border-0" value="{{ request('date') }}" title="Upload Date">
                     </div>
                     <div class="col-md-2 d-flex gap-2">
                         <button type="submit" class="btn btn-primary w-100 rounded-3">
                             <i class="fas fa-filter me-1"></i> Filter
                         </button>
-                        @if(request()->hasAny(['search', 'document_type', 'date']))
+                        @if(request()->hasAny(['search', 'date']))
                             <a href="{{ route('admin.patient-documents.index') }}" class="btn btn-light rounded-3" title="Reset Filters">
                                 <i class="fas fa-redo"></i>
                             </a>
@@ -144,10 +131,8 @@
                         <tr>
                             <th class="ps-4">Patient</th>
                             <th>Document Title</th>
-                            <th>Type</th>
                             <th>File Info</th>
-                            <th>Linked Doctor / Appt</th>
-                            <th>Uploaded At</th>
+                            <th>Uploaded Date</th>
                             <th class="text-end pe-4">Actions</th>
                         </tr>
                     </thead>
@@ -158,15 +143,6 @@
                                 $isImage = in_array(strtolower($doc->file_type), ['jpg', 'jpeg', 'png', 'webp', 'gif']);
                                 $previewUrl = route('admin.patient-documents.preview', $doc->id);
                                 $downloadUrl = route('admin.patient-documents.download', $doc->id);
-
-                                $typeBadgeColor = match($doc->document_type) {
-                                    'prescription'      => 'bg-warning text-dark',
-                                    'mri_scan', 'xray'  => 'bg-info text-dark',
-                                    'lab_report'        => 'bg-primary text-white',
-                                    'medical_report'    => 'bg-success text-white',
-                                    'id_proof'          => 'bg-secondary text-white',
-                                    default             => 'bg-light text-dark border'
-                                };
                             @endphp
                             <tr>
                                 <td class="ps-4">
@@ -183,14 +159,6 @@
                                 </td>
                                 <td>
                                     <div class="font-weight-bold text-dark">{{ $doc->title ?: ($doc->file_name ?: 'Untitled Document') }}</div>
-                                    @if($doc->description)
-                                        <div class="small text-muted text-truncate" style="max-width: 260px;" title="{{ $doc->description }}">{{ $doc->description }}</div>
-                                    @endif
-                                </td>
-                                <td>
-                                    <span class="badge {{ $typeBadgeColor }} px-2 py-1 rounded-pill text-capitalize">
-                                        {{ str_replace('_', ' ', $doc->document_type) }}
-                                    </span>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
@@ -203,27 +171,12 @@
                                         @endif
                                         <span class="small text-muted">{{ $doc->formatted_file_size }}</span>
                                     </div>
-                                    <div class="small text-muted text-truncate mt-1" style="max-width: 180px;" title="{{ $doc->file_name }}">
+                                    <div class="small text-muted text-truncate mt-1" style="max-width: 220px;" title="{{ $doc->file_name }}">
                                         {{ $doc->file_name }}
                                     </div>
                                 </td>
                                 <td>
-                                    @if($doc->doctor)
-                                        <div class="small text-dark font-weight-bold">
-                                            <i class="fas fa-user-md text-primary me-1"></i> Dr. {{ $doc->doctor->name }}
-                                        </div>
-                                    @endif
-                                    @if($doc->appointment_id)
-                                        <div class="small text-muted">
-                                            <i class="fas fa-calendar-check text-muted me-1"></i> Appt #{{ $doc->appointment_id }}
-                                        </div>
-                                    @endif
-                                    @if(!$doc->doctor && !$doc->appointment_id)
-                                        <span class="small text-muted fst-italic">Direct Upload</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="small text-dark">{{ $doc->created_at ? $doc->created_at->format('d M Y') : 'N/A' }}</div>
+                                    <div class="small text-dark font-weight-bold">{{ $doc->created_at ? $doc->created_at->format('d M Y') : 'N/A' }}</div>
                                     <div class="small text-muted">{{ $doc->created_at ? $doc->created_at->format('h:i A') : '' }}</div>
                                 </td>
                                 <td class="text-end pe-4">
@@ -233,21 +186,21 @@
                                             <button type="button" class="btn btn-outline-primary"
                                                     title="Preview File"
                                                     onclick="openPreviewModal('{{ $previewUrl }}', '{{ addslashes($doc->title ?: $doc->file_name) }}', '{{ $doc->file_type }}', '{{ $downloadUrl }}')">
-                                                <i class="fas fa-eye"></i>
+                                                <i class="fas fa-eye me-1"></i> Preview
                                             </button>
                                         @else
                                             <a href="{{ $previewUrl }}" target="_blank" class="btn btn-outline-primary" title="Open File">
-                                                <i class="fas fa-external-link-alt"></i>
+                                                <i class="fas fa-external-link-alt me-1"></i> Open
                                             </a>
                                         @endif
 
                                         <!-- Download Button -->
                                         <a href="{{ $downloadUrl }}" class="btn btn-outline-success" title="Download File">
-                                            <i class="fas fa-download"></i>
+                                            <i class="fas fa-download me-1"></i> Download
                                         </a>
 
                                         <!-- Delete Button -->
-                                        <form action="{{ route('admin.patient-documents.destroy', $doc->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to permanently delete this document?');">
+                                        <form action="{{ route('admin.patient-documents.destroy', $doc->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this document?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-outline-danger" title="Delete">
@@ -259,10 +212,10 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-5 text-muted">
+                                <td colspan="5" class="text-center py-5 text-muted">
                                     <i class="fas fa-folder-open fa-3x mb-3 d-block text-secondary opacity-50"></i>
                                     <h5>No patient documents found</h5>
-                                    <p class="small mb-0">Documents uploaded by patients or assigned doctors will appear here.</p>
+                                    <p class="small mb-0">Documents uploaded by patients will appear here.</p>
                                 </td>
                             </tr>
                         @endforelse

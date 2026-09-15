@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\AssessmentController;
 use App\Http\Controllers\Api\ExerciseController;
 use App\Http\Controllers\Api\PatientReportController;
 use App\Http\Controllers\Api\DoctorReportController;
+use App\Http\Controllers\Api\PatientDocumentController;
 
 // Authentication
 Route::post('/login', [UserController::class, 'login']);
@@ -96,6 +97,15 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/exercises/{id}', [ExerciseController::class, 'show'])->where('id', '[0-9]+');
     Route::get('/assessment/conditions', [AssessmentController::class, 'conditions']);
     Route::get('/assessment/parameters', [AssessmentController::class, 'parameters']);
+
+    // ── Patient / User Document Uploads ──
+    Route::post('/patient/document/upload', [PatientDocumentController::class, 'store']);
+    Route::post('/patient/documents', [PatientDocumentController::class, 'store']);
+    Route::get('/patient/documents', [PatientDocumentController::class, 'index']);
+    Route::get('/patient/documents/{id}', [PatientDocumentController::class, 'show'])->where('id', '[0-9]+');
+    Route::delete('/patient/documents/{id}', [PatientDocumentController::class, 'destroy'])->where('id', '[0-9]+');
+    Route::post('/user/document/upload', [PatientDocumentController::class, 'store']);
+    Route::get('/user/documents', [PatientDocumentController::class, 'index']);
 });
 
 Route::middleware(['auth:api', 'role:doctor'])->group(function () {
@@ -158,6 +168,7 @@ Route::middleware(['auth:api', 'role:doctor'])->group(function () {
     Route::get('/doctor/patient/{patient_id}', [DoctorDashboardController::class, 'patientDetail']);
     Route::get('/doctor/patient/{patient_id}/assessments', [DoctorDashboardController::class, 'patientAssessments']);
     Route::get('/doctor/patient/{patient_id}/active-assessment', [AssessmentController::class, 'patientActiveAssessment'])->where('patient_id', '[0-9]+');
+    Route::get('/doctor/patient/{patient_id}/documents', [PatientDocumentController::class, 'doctorPatientDocuments'])->where('patient_id', '[0-9]+');
 
     // ── Assessment CRUD & Follow-up Progress ─────────────────────
     Route::post('/assessment/create', [AssessmentController::class, 'create']);

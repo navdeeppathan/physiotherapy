@@ -20,6 +20,7 @@ use App\Http\Controllers\UserAddressController;
 use App\Http\Controllers\Admin\AdminEnquiryController;
 use App\Http\Controllers\Admin\AdminAssessmentController;
 use App\Http\Controllers\Admin\AdminParameterController;
+use App\Http\Controllers\Admin\AdminPatientDocumentController;
 
 Route::get('/doctor/{id}', [DoctorController::class, 'show'])->name('doctor.profile');
 
@@ -116,5 +117,11 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
         Route::post('/{id}/approve', [AppointmentTransferRequestController::class, 'approve'])->name('appointment-transfer-requests.approve');
         Route::post('/{id}/reject', [AppointmentTransferRequestController::class, 'reject'])->name('appointment-transfer-requests.reject');
     });
+
+    // ── Patient Documents (Medical Reports, Prescriptions, Scans) ──
+    Route::get('/patient-documents', [AdminPatientDocumentController::class, 'index'])->name('patient-documents.index');
+    Route::get('/patient-documents/{id}/download', [AdminPatientDocumentController::class, 'download'])->name('patient-documents.download');
+    Route::get('/patient-documents/{id}/preview', [AdminPatientDocumentController::class, 'preview'])->name('patient-documents.preview');
+    Route::delete('/patient-documents/{id}', [AdminPatientDocumentController::class, 'destroy'])->name('patient-documents.destroy');
 });
 

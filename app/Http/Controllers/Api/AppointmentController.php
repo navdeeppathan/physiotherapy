@@ -243,8 +243,6 @@ class AppointmentController extends BaseApiController
                     'problem_description'          => $request->problem_description,
                     'patient_address'              => $request->address,
                     'file'                         => $request->hasFile('file') ? $filePath : null,
-
-
                 ]);
 
                 $slot->update([

@@ -1776,7 +1776,7 @@ img {
                          data-qual="{{ strtolower($qualification) }}"
                          data-keywords="{{ $searchKeywords }}">
                         <div>
-                            <div class="pth-doc-header">
+                            <a href="{{ route('doctor.profile', $doctor->id) }}" class="pth-doc-header" style="text-decoration:none;color:inherit;">
                                 @if($hasImg)
                                     <img
                                         src="{{ str_contains($doctor->profile_img, '/') ? asset($doctor->profile_img) : asset('uploads/profile/'.$doctor->profile_img) }}"
@@ -1800,20 +1800,14 @@ img {
                                         <span>&middot; {{ $expYears }} Years Exp.</span>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
 
                         <div class="pth-doc-card-bottom">
                             <span class="pth-status-tag">Available Today</span>
-                            @auth
-                                <a href="{{ route('doctor.booking', $doctor->id) }}" class="pth-btn-book-sm">
-                                    Book Home Session
-                                </a>
-                            @else
-                                <a href="{{ route('doctor.booking', $doctor->id) }}" class="pth-btn-book-sm">
-                                    Book Home Session
-                                </a>
-                            @endauth
+                            <a href="{{ route('doctor.profile', $doctor->id) }}" class="pth-btn-book-sm">
+                                Book Home Session
+                            </a>
                         </div>
                     </div>
                 @empty

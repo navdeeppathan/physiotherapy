@@ -180,12 +180,21 @@ class SpecializationControllerApi extends BaseApiController
                     $docFeeRecord->base_doctor_fee  = $baseDoctorFee;
                     $docFeeRecord->admin_fee_amount = $adminFeeAmount;
                     $docFeeRecord->doctor_fee       = $totalFee;
+                    $docFeeRecord->docter_fee       = $totalFee;
                     $docFeeRecord->total_fee        = $totalFee;
 
                     $doctor->doctor_fee             = $totalFee;
+                    $doctor->docter_fee             = $totalFee;
                     $doctor->total_fee              = $totalFee;
+
+                    if ($doctor->profile) {
+                        $doctor->profile->doctor_fee       = $totalFee;
+                        $doctor->profile->docter_fee       = $totalFee;
+                        $doctor->profile->consultation_fee = $totalFee;
+                    }
                 } else {
                     $doctor->doctor_fee             = 0.0;
+                    $doctor->docter_fee             = 0.0;
                     $doctor->total_fee              = 0.0;
                 }
 

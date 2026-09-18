@@ -969,11 +969,21 @@ class UserController extends BaseApiController
                 ->withAvg('feedbacks', 'rating')
                 ->get()
                 ->map(function ($doctor) {
+                    $totalFee = 0.0;
+                    if ($doctor->fee) {
+                        $totalFee = (float) $doctor->fee->getPerAppointmentTotal();
+                        $doctor->fee->doctor_fee = $totalFee;
+                        $doctor->fee->docter_fee = $totalFee;
+                        $doctor->fee->total_fee  = $totalFee;
+                    }
 
                     return [
                         'id' => $doctor->id,
                         'name' => $doctor->name,
                         'email' => $doctor->email,
+                        'doctor_fee' => $totalFee,
+                        'docter_fee' => $totalFee,
+                        'total_fee'  => $totalFee,
 
                         // Profile
                         'profile' => $doctor->profile,

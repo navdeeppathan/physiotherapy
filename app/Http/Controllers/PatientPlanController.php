@@ -32,8 +32,8 @@ class PatientPlanController extends Controller
         $discountPercentage = (float) ($request->discount_percentage ?? 0);
         $appointmentsCount = max(1, (int) ($request->total_appointments ?? 1));
         
-        // Benchmark rate: ₹500 Doctor Fee + ₹100 Physiopii/Admin Fee = ₹600
-        $refRate = 600.0;
+        // Benchmark rate: ₹800 Doctor Fee + ₹300 Physiopii/Admin Fee = ₹1,100
+        $refRate = 1100.0;
         $calculatedOriginalPrice = round($refRate * $appointmentsCount, 2);
         $calculatedDiscountAmount = round(($calculatedOriginalPrice * $discountPercentage) / 100, 2);
         $calculatedFinalPrice = round($calculatedOriginalPrice - $calculatedDiscountAmount, 2);
@@ -82,8 +82,8 @@ class PatientPlanController extends Controller
         $discountPercentage = (float) ($request->discount_percentage ?? 0);
         $appointmentsCount = max(1, (int) ($request->total_appointments ?? 1));
         
-        // Benchmark rate: ₹500 Doctor Fee + ₹100 Physiopii/Admin Fee = ₹600
-        $refRate = 600.0;
+        // Benchmark rate: ₹800 Doctor Fee + ₹300 Physiopii/Admin Fee = ₹1,100
+        $refRate = 1100.0;
         $calculatedOriginalPrice = round($refRate * $appointmentsCount, 2);
         $calculatedDiscountAmount = round(($calculatedOriginalPrice * $discountPercentage) / 100, 2);
         $calculatedFinalPrice = round($calculatedOriginalPrice - $calculatedDiscountAmount, 2);

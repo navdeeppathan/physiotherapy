@@ -205,44 +205,53 @@ textarea.field-input{ resize:vertical;min-height:90px; }
 
           </div>
 
-          <div class="field-row">
+          <div class="field-row" style="grid-template-columns: 1fr 1fr;">
 
-              <div class="field-wrap">
-                  <label class="field-label">Original Price</label>
-                  <input
-                      type="number"
-                      step="0.01"
-                      id="original_price"
-                      name="original_price"
-                      value="{{ $plan->original_price }}"
-                      class="field-input"
-                      required>
+            <div class="field-wrap">
+                <label class="field-label">Package Discount (%)</label>
+                <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="100"
+                    id="discount_percentage"
+                    name="discount_percentage"
+                    value="{{ old('discount_percentage', $plan->discount_percentage ?? 0) }}"
+                    class="field-input"
+                    placeholder="e.g. 10">
+                <div class="form-hint" style="font-size:11.5px;color:var(--text3);margin-top:3px;">
+                  Discount percentage deducted from the total package price at checkout.
+                </div>
+            </div>
+
+            <!-- Hidden price fallback for schema compatibility -->
+            <input type="hidden" name="price" id="price" value="{{ $plan->price ?? 0 }}">
+            <input type="hidden" name="original_price" id="original_price" value="{{ $plan->original_price ?? 0 }}">
+
+          </div>
+
+          <!-- Dynamic Pricing Explanation Card -->
+          <div style="background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 12px; padding: 16px; margin-top: 4px;">
+            <div style="font-size: 13px; font-weight: 700; color: #166534; display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+              How Package Pricing Works
+            </div>
+            <div style="font-size: 12px; color: #15803d; line-height: 1.5;">
+              Package prices are calculated dynamically when a patient selects a doctor:
+              <br>
+              <strong>Formula:</strong> <code>Package Price = (Doctor Fee + Admin Fee) × Appointments - Discount %</code>
+            </div>
+            <div style="margin-top: 10px; padding: 10px 12px; background: #fff; border: 1px solid #dcfce7; border-radius: 8px; font-size: 12px;">
+              <div style="font-weight: 700; color: #14532d; margin-bottom: 4px;">Sample Calculation (<span id="sampleApptsText">{{ $plan->total_appointments }} sessions</span>):</div>
+              <div style="color: #475569;">Doctor Fee (₹500) + Admin Fee (₹100) = <strong>₹600 per session</strong></div>
+              <div style="color: #475569; margin-top: 2px;">Base Package Price: <span id="sampleBasePrice">₹3,000</span></div>
+              <div style="color: #d97706; margin-top: 2px;">Package Discount (<span id="sampleDiscPct">0%</span>): <span id="sampleDiscAmt">-₹0</span></div>
+              <div style="margin-top: 4px; padding-top: 4px; border-top: 1px dashed #bbf7d0; color: #059669; font-weight: 800; font-size: 13.5px;">
+                Customer Pays: <span id="sampleFinalPrice">₹3,000</span>
               </div>
-
-              <div class="field-wrap">
-                  <label class="field-label">Discount (%)</label>
-                  <input
-                      type="number"
-                      step="0.01"
-                      id="discount_percentage"
-                      name="discount_percentage"
-                      value="{{ $plan->discount_percentage }}"
-                      class="field-input">
-              </div>
-
-              <div class="field-wrap">
-                  <label class="field-label">Final Price</label>
-                  <input
-                      type="number"
-                      step="0.01"
-                      id="price"
-                      name="price"
-                      value="{{ $plan->price }}"
-                      class="field-input"
-                      readonly
-                      required>
-              </div>
-
+            </div>
           </div>
 
           <div class="form-actions">
@@ -264,27 +273,34 @@ textarea.field-input{ resize:vertical;min-height:90px; }
 </div>
 
 <script>
-function updatePrice() {
+function updateSamplePreview() {
+    const apptsInput = document.querySelector('input[name="total_appointments"]');
+    const discInput  = document.getElementById('discount_percentage');
 
-    let original = parseFloat(document.getElementById('original_price').value) || 0;
-    let discount = parseFloat(document.getElementById('discount_percentage').value) || 0;
+    const appts = parseInt(apptsInput ? apptsInput.value : 0) || 1;
+    let discPct = parseFloat(discInput ? discInput.value : 0) || 0;
+    if (discPct < 0) discPct = 0;
+    if (discPct > 100) discPct = 100;
 
-    if (discount < 0) discount = 0;
-    if (discount > 100) discount = 100;
+    const sampleRate = 600; // e.g. 500 doctor fee + 100 admin fee
+    const baseTotal  = sampleRate * appts;
+    const discAmount = Math.round((baseTotal * discPct) / 100);
+    const finalPrice = baseTotal - discAmount;
 
-    let finalPrice = original;
-
-    if (discount > 0) {
-        finalPrice = original - (original * discount / 100);
-    }
-
-    document.getElementById('price').value = finalPrice.toFixed(2);
+    document.getElementById('sampleApptsText').textContent = appts + ' ' + (appts === 1 ? 'session' : 'sessions');
+    document.getElementById('sampleBasePrice').textContent = '₹' + baseTotal.toLocaleString('en-IN');
+    document.getElementById('sampleDiscPct').textContent   = discPct + '%';
+    document.getElementById('sampleDiscAmt').textContent   = '-₹' + discAmount.toLocaleString('en-IN');
+    document.getElementById('sampleFinalPrice').textContent= '₹' + finalPrice.toLocaleString('en-IN');
 }
 
-document.getElementById('original_price').addEventListener('input', updatePrice);
-document.getElementById('discount_percentage').addEventListener('input', updatePrice);
+const apptsElem = document.querySelector('input[name="total_appointments"]');
+const discElem  = document.getElementById('discount_percentage');
 
-updatePrice();
+if (apptsElem) apptsElem.addEventListener('input', updateSamplePreview);
+if (discElem)  discElem.addEventListener('input', updateSamplePreview);
+
+updateSamplePreview();
 </script>
 
 @endsection

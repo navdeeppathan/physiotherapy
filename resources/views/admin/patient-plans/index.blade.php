@@ -212,10 +212,9 @@ table.plans-table{ width:100%;border-collapse:collapse; }
           <tr>
             <th>#</th>
             <th>Plan Name</th>
-            <th>Original Price</th>
-            <th>Discount</th>
-            <th>Final Price</th>
             <th>Appointments</th>
+            <th>Discount (%)</th>
+            <th>Package Pricing Logic &amp; Example</th>
             <th>Duration</th>
             <th>Status</th>
             <th>Action</th>
@@ -224,54 +223,68 @@ table.plans-table{ width:100%;border-collapse:collapse; }
         <tbody>
 
           @forelse($plans as $key => $plan)
+          @php
+            $appts = (int) ($plan->total_appointments ?? 1);
+            $discPct = (float) ($plan->discount_percentage ?? 0);
+            // Example: Doctor Fee = 500, Admin Fee = 100 -> Per session = 600
+            $sampleRate = 600;
+            $sampleBaseTotal = $sampleRate * $appts;
+            $sampleDiscAmt = round(($sampleBaseTotal * $discPct) / 100, 2);
+            $sampleFinalTotal = round($sampleBaseTotal - $sampleDiscAmt, 2);
+          @endphp
           <tr>
 
             <td>{{ $plans->firstItem() + $key }}</td>
 
-            <td><div class="cell-plan-name">{{ $plan->name }}</div></td>
-
-            {{-- <td>
-              <div class="price-cur">{{ $plan->currency }}</div>
-              <div class="price-val">{{ $plan->price }}</div>
-            </td> --}}
-            {{-- Original Price --}}
             <td>
-                ₹{{ number_format($plan->original_price,2) }}
+              <div class="cell-plan-name">{{ $plan->name }}</div>
+              @if($plan->description)
+                <div style="font-size:11.5px;color:var(--text3);margin-top:2px;max-width:220px;">{{ Str::limit($plan->description, 50) }}</div>
+              @endif
             </td>
 
-            {{-- Discount --}}
+            {{-- Appointments --}}
             <td>
-                @if($plan->discount_percentage > 0)
-
-                    <span class="badge-pill bp-active">
-                        {{ rtrim(rtrim($plan->discount_percentage,'0'),'.') }}%
-                    </span>
-
-                    <br>
-
-                    <small class="text-danger">
-                        -₹{{ number_format($plan->discount_amount,2) }}
-                    </small>
-
-                @else
-
-                    <span class="text-muted">No Discount</span>
-
-                @endif
-            </td>
-
-            {{-- Final Price --}}
-            <td>
-                <strong>₹{{ number_format($plan->price,2) }}</strong>
-            </td>
-
-            <td>
-              <span class="appt-chip">
+              <span class="appt-chip" style="font-size:12.5px;font-weight:700;">
                 <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                {{ $plan->total_appointments }}
+                {{ $appts }} {{ Str::plural('Session', $appts) }}
               </span>
             </td>
 
+            {{-- Discount (%) --}}
+            <td>
+                @if($discPct > 0)
+                    <span class="badge-pill bp-active" style="font-size:12px;font-weight:800;padding:4px 10px;">
+                        {{ rtrim(rtrim($discPct,'0'),'.') }}% OFF
+                    </span>
+                    <div style="font-size:10.5px;color:var(--text3);margin-top:2px;">
+                        Applied on package total
+                    </div>
+                @else
+                    <span style="color:var(--text3);font-size:12px;">No Discount (0%)</span>
+                @endif
+            </td>
+
+            {{-- Package Pricing Formula & Example --}}
+            <td>
+              <div style="font-size:12px;line-height:1.4;">
+                <div style="font-weight:700;color:var(--text);">
+                  <code>(Doctor Fee + Admin Fee) × {{ $appts }}</code>
+                </div>
+                <div style="margin-top:3px;padding:4px 8px;background:var(--neutral-bg);border:1px solid var(--border);border-radius:6px;font-size:11px;color:var(--text2);display:inline-block;">
+                  <span style="color:var(--blue);font-weight:700;">e.g. Rate ₹{{ $sampleRate }}/session:</span>
+                  Base ₹{{ number_format($sampleBaseTotal) }}
+                  @if($discPct > 0)
+                    - {{ rtrim(rtrim($discPct,'0'),'.') }}%
+                    = <strong style="color:var(--green);font-weight:800;font-size:12px;">₹{{ number_format($sampleFinalTotal) }}</strong>
+                  @else
+                    = <strong style="color:var(--green);font-weight:800;font-size:12px;">₹{{ number_format($sampleBaseTotal) }}</strong>
+                  @endif
+                </div>
+              </div>
+            </td>
+
+            {{-- Duration --}}
             <td>
               <span class="dur-badge">
                 <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -279,6 +292,7 @@ table.plans-table{ width:100%;border-collapse:collapse; }
               </span>
             </td>
 
+            {{-- Status --}}
             <td>
               @if($plan->status == 'active')
                 <span class="badge-pill bp-active">Active</span>
@@ -312,7 +326,7 @@ table.plans-table{ width:100%;border-collapse:collapse; }
           </tr>
           @empty
           <tr class="empty-row">
-            <td colspan="7">
+            <td colspan="8">
               <div class="empty-icon">
                 <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
               </div>

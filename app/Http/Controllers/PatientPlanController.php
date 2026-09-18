@@ -24,23 +24,23 @@ class PatientPlanController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'price' => 'required|numeric',
-            'total_appointments' => 'required|integer',
+            'total_appointments' => 'required|integer|min:1',
             'duration' => 'required',
-            'original_price' => 'nullable|numeric',
-            'discount_percentage' => 'nullable|numeric',
-            
+            'discount_percentage' => 'nullable|numeric|min:0|max:100',
         ]);
 
-         $originalPrice = $request->original_price ?: $request->price;
-        $discountAmount = $originalPrice - $request->price;
+        $discountPercentage = (float) ($request->discount_percentage ?? 0);
+        $price = (float) ($request->price ?? 0);
+        $originalPrice = (float) ($request->original_price ?? $price);
+        $discountAmount = ($originalPrice > 0) ? round(($originalPrice * $discountPercentage) / 100, 2) : 0;
+
         PatientPlan::create([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
-            'price' => $request->price,
+            'price' => $price,
             'original_price' => $originalPrice,
-            'discount_percentage' => $request->discount_percentage ?? 0,
+            'discount_percentage' => $discountPercentage,
             'discount_amount' => $discountAmount,
             'currency' => $request->currency ?? 'INR',
             'total_appointments' => $request->total_appointments,
@@ -66,29 +66,28 @@ class PatientPlanController extends Controller
 
         $request->validate([
             'name' => 'required',
-            'price' => 'required|numeric',
-            'total_appointments' => 'required|integer',
+            'total_appointments' => 'required|integer|min:1',
             'duration' => 'required',
-            'original_price' => 'nullable|numeric',
-            'discount_percentage' => 'nullable|numeric',
+            'discount_percentage' => 'nullable|numeric|min:0|max:100',
         ]);
 
-         $originalPrice = $request->original_price ?: $request->price;
-
-        $discountAmount = $originalPrice - $request->price;
+        $discountPercentage = (float) ($request->discount_percentage ?? 0);
+        $price = (float) ($request->price ?? $plan->price ?? 0);
+        $originalPrice = (float) ($request->original_price ?? $plan->original_price ?? $price);
+        $discountAmount = ($originalPrice > 0) ? round(($originalPrice * $discountPercentage) / 100, 2) : 0;
 
         $plan->update([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
-            'price' => $request->price,
+            'price' => $price,
             'original_price' => $originalPrice,
-            'discount_percentage' => $request->discount_percentage ?? 0,
+            'discount_percentage' => $discountPercentage,
             'discount_amount' => $discountAmount,
             'currency' => $request->currency ?? 'INR',
             'total_appointments' => $request->total_appointments,
             'duration' => $request->duration,
-            'status' => $request->status,
+            'status' => $request->status ?? 'active',
         ]);
 
         return redirect()

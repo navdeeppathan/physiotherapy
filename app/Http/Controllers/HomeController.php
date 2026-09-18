@@ -70,18 +70,68 @@ class HomeController extends Controller
         ])->where('role', 'doctor')
         ->findOrFail($id);
 
-        $avgRating = $doctor->receivedReviews()
-            ->where('is_approved',1)
-            ->avg('rating');
+        $approvedReviews = $doctor->receivedReviews()
+            ->where('is_approved', 1)
+            ->with('patient')
+            ->latest()
+            ->get();
 
-        $totalReviews = $doctor->receivedReviews()
-            ->where('is_approved',1)
-            ->count();
+        $totalReviews = $approvedReviews->count();
+        $avgRating = $totalReviews > 0 ? round($approvedReviews->avg('rating'), 1) : 0;
+
+        // Today's available slots count
+        $todaySlotsCount = 0;
+        try {
+            if (class_exists(\App\Models\DoctorTimeSlot::class)) {
+                $todaySlotsCount = \App\Models\DoctorTimeSlot::whereHas('availabilityDate', function($q) use ($doctor) {
+                    $q->where('user_id', $doctor->id)
+                      ->whereDate('available_date', \Carbon\Carbon::today());
+                })->where('is_booked', false)->count();
+            }
+        } catch (\Throwable $e) {
+            $todaySlotsCount = 0;
+        }
+
+        // Rating breakdown (percentages for 5, 4, 3, 2, 1 stars)
+        $ratingCounts = [5 => 0, 4 => 0, 3 => 0, 2 => 0, 1 => 0];
+        foreach ($approvedReviews as $rev) {
+            $r = (int) $rev->rating;
+            if ($r >= 1 && $r <= 5) {
+                $ratingCounts[$r]++;
+            }
+        }
+        $ratingPercentages = [];
+        foreach ($ratingCounts as $star => $cnt) {
+            $ratingPercentages[$star] = $totalReviews > 0 ? round(($cnt / $totalReviews) * 100) : 0;
+        }
+
+        // Active patient plans with pricing for this doctor
+        $patientPlans = collect();
+        try {
+            if (class_exists(\App\Models\PatientPlan::class)) {
+                $patientPlans = \App\Models\PatientPlan::where('status', 'active')->get();
+                if (class_exists(\App\Services\PackagePricingService::class)) {
+                    foreach ($patientPlans as $plan) {
+                        $pricing = \App\Services\PackagePricingService::calculate($doctor, (int) $plan->total_appointments, $plan);
+                        $plan->calculated_pricing       = $pricing;
+                        $plan->calculated_package_price = $pricing['package_price'];
+                        $plan->calculated_per_session   = $pricing['per_appointment_rate'];
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            $patientPlans = collect();
+        }
 
         return view('patient.doctor_profile', compact(
             'doctor',
             'avgRating',
-            'totalReviews'
+            'totalReviews',
+            'approvedReviews',
+            'todaySlotsCount',
+            'ratingCounts',
+            'ratingPercentages',
+            'patientPlans'
         ));
     }
 }

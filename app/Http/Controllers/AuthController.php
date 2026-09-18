@@ -446,20 +446,57 @@ class AuthController extends Controller
     {
         $user = User::findOrFail($id);
 
-
-        if($user->status == 'active'){
+        if ($user->status == 'active') {
             $user->status = 'inactive';
         } else {
             $user->status = 'active';
         }
 
-       
-
         $user->save();
 
-        return response()->json([
-            'success' => true,
-            'status' => $user->status
-        ]);
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'status'  => $user->status,
+                'message' => 'Status updated to ' . ucfirst($user->status)
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Status updated to ' . ucfirst($user->status));
+    }
+
+    public function destroyDoctor($id)
+    {
+        try {
+            $doctor = User::where('role', 'doctor')->findOrFail($id);
+
+            // Clean up related doctor data safely
+            \App\Models\DoctorProfile::where('user_id', $doctor->id)->delete();
+            \App\Models\AppointmentFee::where('doctor_id', $doctor->id)->delete();
+            \App\Models\DoctorDocument::where('user_id', $doctor->id)->delete();
+            \App\Models\DoctorWallet::where('doctor_id', $doctor->id)->delete();
+            \App\Models\DoctorAvailabilityDate::where('doctor_id', $doctor->id)->delete();
+            \App\Models\DoctorTimeSlot::where('doctor_id', $doctor->id)->delete();
+
+            $doctor->delete();
+
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Doctor deleted successfully.'
+                ]);
+            }
+
+            return redirect()->route('admin.users.doctorsindex')->with('success', 'Doctor deleted successfully.');
+        } catch (\Exception $e) {
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to delete doctor: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()->back()->with('error', 'Failed to delete doctor: ' . $e->getMessage());
+        }
     }
 }

@@ -677,15 +677,21 @@
                                 @if($user->status == 'blocked')
                                     <span class="status-badge blocked">Blocked</span>
                                 @else
-                                    <label class="switch" title="{{ $user->status == 'active' ? 'Active – click to deactivate' : 'Inactive – click to activate' }}">
-                                        <input
-                                            type="checkbox"
-                                            class="toggle-status"
-                                            data-id="{{ $user->id }}"
-                                            {{ $user->status == 'active' ? 'checked' : '' }}
-                                        >
-                                        <span class="slider"></span>
-                                    </label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <label class="switch" title="{{ $user->status == 'active' ? 'Active – click to deactivate' : 'Inactive – click to activate' }}">
+                                            <input
+                                                type="checkbox"
+                                                class="toggle-status"
+                                                data-id="{{ $user->id }}"
+                                                {{ $user->status == 'active' ? 'checked' : '' }}
+                                            >
+                                            <span class="slider"></span>
+                                        </label>
+                                        <span class="status-pill" id="status-badge-{{ $user->id }}"
+                                            style="{{ $user->status == 'active' ? 'background:#DCFCE7;color:#15803D;border:1px solid #BBF7D0;' : 'background:#F1F5F9;color:#64748B;border:1px solid #E2E8F0;' }} font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px; letter-spacing: 0.02em;">
+                                            {{ $user->status == 'active' ? 'Active' : 'Inactive' }}
+                                        </span>
+                                    </div>
                                 @endif
                             </td>
 
@@ -722,7 +728,7 @@
                             </td>
 
                             <td>
-                                <div class="d-flex gap-2">
+                                <div class="d-flex gap-2 align-items-center flex-wrap" id="actions-{{ $user->id }}">
                                     <a href="{{ route('admin.doctors.edit',$user->id) }}"class="act-btn"
                                     style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;text-decoration:none;">
                                         ✏️ Edit
@@ -750,6 +756,30 @@
                                             <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                                         </svg>
                                         Set Fee
+                                    </button>
+
+                                    <!-- Inactive / Active Option Button -->
+                                    <button
+                                        type="button"
+                                        class="act-btn btn-status-toggle"
+                                        id="btn-status-toggle-{{ $user->id }}"
+                                        data-id="{{ $user->id }}"
+                                        style="{{ $user->status == 'active' ? 'background:#FFF1F2;color:#BE123C;border:1px solid #FECDD3;' : 'background:#F0FDF4;color:#15803D;border:1px solid #BBF7D0;' }}"
+                                        title="{{ $user->status == 'active' ? 'Mark as Inactive' : 'Mark as Active' }}"
+                                    >
+                                        {{ $user->status == 'active' ? '⏸️ Inactive' : '▶️ Activate' }}
+                                    </button>
+
+                                    <!-- Delete Doctor Option -->
+                                    <button
+                                        type="button"
+                                        class="act-btn btn-delete-doctor"
+                                        data-id="{{ $user->id }}"
+                                        data-name="{{ $user->name }}"
+                                        style="background:#FEF2F2;color:#DC2626;border:1px solid #FCA5A5;"
+                                        title="Delete Doctor"
+                                    >
+                                        🗑️ Delete
                                     </button>
                                 </div>
                             </td>
@@ -972,42 +1002,161 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // ── Toggle status ───────────────────────────────
+    // ── Status Helpers & Handlers ──────────────────
+    function updateStatusUI(userId, newStatus) {
+        const checkbox  = document.querySelector(`.toggle-status[data-id="${userId}"]`);
+        const badge     = document.getElementById(`status-badge-${userId}`);
+        const statusBtn = document.getElementById(`btn-status-toggle-${userId}`);
+
+        if (checkbox) {
+            checkbox.checked = (newStatus === 'active');
+        }
+
+        if (badge) {
+            if (newStatus === 'active') {
+                badge.textContent = 'Active';
+                badge.style.background = '#DCFCE7';
+                badge.style.color = '#15803D';
+                badge.style.borderColor = '#BBF7D0';
+            } else {
+                badge.textContent = 'Inactive';
+                badge.style.background = '#F1F5F9';
+                badge.style.color = '#64748B';
+                badge.style.borderColor = '#E2E8F0';
+            }
+        }
+
+        if (statusBtn) {
+            if (newStatus === 'active') {
+                statusBtn.textContent = '⏸️ Inactive';
+                statusBtn.style.background = '#FFF1F2';
+                statusBtn.style.color = '#BE123C';
+                statusBtn.style.borderColor = '#FECDD3';
+                statusBtn.title = 'Mark as Inactive';
+            } else {
+                statusBtn.textContent = '▶️ Activate';
+                statusBtn.style.background = '#F0FDF4';
+                statusBtn.style.color = '#15803D';
+                statusBtn.style.borderColor = '#BBF7D0';
+                statusBtn.title = 'Mark as Active';
+            }
+        }
+    }
+
+    function doToggleStatus(userId, checkbox = null) {
+        fetch(`/admin/users/toggle-status/${userId}`, {
+            method:  "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Accept":       "application/json"
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                updateStatusUI(userId, data.status);
+                Swal.fire({
+                    toast:            true,
+                    position:         'top-end',
+                    icon:             'success',
+                    title:            data.status === 'active' ? 'Doctor marked as Active' : 'Doctor marked as Inactive',
+                    showConfirmButton: false,
+                    timer:            1800,
+                    timerProgressBar: true,
+                    customClass:      { popup: 'swal-inter' }
+                });
+            } else {
+                if (checkbox) checkbox.checked = !checkbox.checked;
+                Swal.fire({ icon: 'error', title: 'Error', text: data.message || 'Could not update status.' });
+            }
+        })
+        .catch(() => {
+            if (checkbox) checkbox.checked = !checkbox.checked;
+            Swal.fire({ icon: 'error', title: 'Something went wrong', text: 'Please try again.' });
+        });
+    }
+
+    // Toggle status switch change
     document.querySelectorAll('.toggle-status').forEach(function (toggle) {
         toggle.addEventListener('change', function () {
+            doToggleStatus(this.dataset.id, this);
+        });
+    });
 
-            const userId   = this.dataset.id;
-            const checkbox = this;
+    // Inactive / Activate button click
+    document.querySelectorAll('.btn-status-toggle').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            doToggleStatus(this.dataset.id);
+        });
+    });
 
-            fetch(`/admin/users/toggle-status/${userId}`, {
-                method:  "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Accept":       "application/json"
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
+    // ── Delete Doctor Handler ────────────────────────
+    document.querySelectorAll('.btn-delete-doctor').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const doctorId   = this.dataset.id;
+            const doctorName = this.dataset.name || 'this doctor';
+            const tr         = this.closest('tr');
+
+            Swal.fire({
+                title: `Delete ${doctorName}?`,
+                text: 'Are you sure you want to delete this doctor? All related doctor records will be permanently removed.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#DC2626',
+                cancelButtonColor: '#64748B',
+                confirmButtonText: 'Yes, delete doctor',
+                cancelButtonText: 'Cancel',
+                customClass: { popup: 'swal-inter' }
+            }).then((result) => {
+                if (result.isConfirmed) {
                     Swal.fire({
-                        toast:            true,
-                        position:         'top-end',
-                        icon:             'success',
-                        title:            data.status === 'active'
-                                            ? 'User activated'
-                                            : 'User deactivated',
-                        showConfirmButton: false,
-                        timer:            1800,
-                        timerProgressBar: true,
-                        customClass:      { popup: 'swal-inter' }
+                        title: 'Deleting doctor…',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
                     });
-                } else {
-                    checkbox.checked = !checkbox.checked;
+
+                    fetch(`/admin/doctors/${doctorId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                            'Accept':       'application/json'
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Deleted!',
+                                text: data.message || 'Doctor deleted successfully.',
+                                timer: 1800,
+                                showConfirmButton: false,
+                                customClass: { popup: 'swal-inter' }
+                            });
+                            if (tr) {
+                                tr.style.transition = 'all 0.3s ease';
+                                tr.style.opacity    = '0';
+                                tr.style.transform  = 'scale(0.95)';
+                                setTimeout(() => tr.remove(), 320);
+                            }
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Cannot Delete',
+                                text: data.message || 'Could not delete doctor.',
+                                confirmButtonColor: '#2563EB'
+                            });
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Something went wrong while deleting. Please try again.',
+                            confirmButtonColor: '#2563EB'
+                        });
+                    });
                 }
-            })
-            .catch(() => {
-                checkbox.checked = !checkbox.checked;
-                Swal.fire({ icon: 'error', title: 'Something went wrong', text: 'Please try again.' });
             });
         });
     });

@@ -127,14 +127,17 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
     Route::get('/patient-documents/{id}/preview', [AdminPatientDocumentController::class, 'preview'])->name('patient-documents.preview');
     Route::delete('/patient-documents/{id}', [AdminPatientDocumentController::class, 'destroy'])->name('patient-documents.destroy');
 
-    // ── System Cache Clear (Views, Config, Cache) ──
+    // ── System Cache Clear (Views, Config, Cache, OPcache) ──
     Route::get('/clear-cache', function () {
         try {
             \Illuminate\Support\Facades\Artisan::call('view:clear');
             \Illuminate\Support\Facades\Artisan::call('cache:clear');
             \Illuminate\Support\Facades\Artisan::call('config:clear');
             \Illuminate\Support\Facades\Artisan::call('route:clear');
-            return redirect()->back()->with('success', 'View and system cache cleared successfully!');
+            if (function_exists('opcache_reset')) {
+                @opcache_reset();
+            }
+            return redirect()->back()->with('success', 'View, system, and OPcache cleared successfully!');
         } catch (\Throwable $e) {
             return redirect()->back()->with('error', 'Error clearing cache: ' . $e->getMessage());
         }

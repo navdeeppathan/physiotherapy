@@ -169,6 +169,26 @@ class SpecializationControllerApi extends BaseApiController
                     unset($doctor->profile->specializationData);
                 }
 
+                // Doctor Fee + Admin Fee = Doctor Fee
+                $docFeeRecord = $doctor->fee;
+                if ($docFeeRecord) {
+                    $baseDoctorFee  = (float) ($docFeeRecord->doctor_fee ?? 0);
+                    $adminFeeAmount = (float) $docFeeRecord->getAdminFeeAmount();
+                    $totalFee       = (float) $docFeeRecord->getPerAppointmentTotal();
+
+                    // docter fee + admin fee = docter fee in this api
+                    $docFeeRecord->base_doctor_fee  = $baseDoctorFee;
+                    $docFeeRecord->admin_fee_amount = $adminFeeAmount;
+                    $docFeeRecord->doctor_fee       = $totalFee;
+                    $docFeeRecord->total_fee        = $totalFee;
+
+                    $doctor->doctor_fee             = $totalFee;
+                    $doctor->total_fee              = $totalFee;
+                } else {
+                    $doctor->doctor_fee             = 0.0;
+                    $doctor->total_fee              = 0.0;
+                }
+
                 return $doctor;
             });
 

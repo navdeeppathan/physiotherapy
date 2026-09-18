@@ -26,21 +26,68 @@ class PatientPlanController extends BaseApiController
                 ->latest()
                 ->get();
 
-            // Calculate dynamic package price if doctor_id provided
+            // Resolve Doctor fee configuration if doctor_id passed
+            $doctor = null;
             if ($doctor_id) {
-                $plans->transform(function ($plan) use ($doctor_id) {
-                    $pricing = \App\Services\PackagePricingService::calculate($doctor_id, (int) $plan->total_appointments, $plan);
-                    $plan->doctor_id                 = (int) $doctor_id;
-                    $plan->doctor_fee                = $pricing['doctor_fee_per_appt'];
-                    $plan->admin_fee                 = $pricing['admin_fee_per_appt'];
-                    $plan->admin_fee_type            = $pricing['admin_fee_type'];
-                    $plan->per_appointment_rate      = $pricing['per_appointment_rate'];
-                    $plan->calculated_package_price  = $pricing['package_price'];
-                    $plan->customer_pays             = $pricing['customer_pays'];
-                    $plan->pricing_breakdown         = $pricing;
-                    return $plan;
-                });
+                $doctor = User::with('fee')->find($doctor_id);
             }
+
+            // If no specific doctor provided, check if an appointment fee is configured in system
+            $systemFeeRecord = null;
+            if (!$doctor) {
+                $systemFeeRecord = \App\Models\AppointmentFee::where('doctor_fee', '>', 0)->first();
+            }
+
+            $plans->transform(function ($plan) use ($doctor, $systemFeeRecord, $doctor_id) {
+                $appointmentsCount = max(1, (int) ($plan->total_appointments ?? 1));
+                $discountPct       = (float) ($plan->discount_percentage ?? 0);
+
+                if ($doctor) {
+                    $pricing = \App\Services\PackagePricingService::calculate($doctor, $appointmentsCount, $plan);
+                } elseif ($systemFeeRecord) {
+                    $pricing = \App\Services\PackagePricingService::calculateFromValues(
+                        (float) $systemFeeRecord->doctor_fee,
+                        (float) $systemFeeRecord->admin_fee,
+                        (string) ($systemFeeRecord->admin_fee_type ?? 'fixed'),
+                        $appointmentsCount,
+                        $discountPct
+                    );
+                } else {
+                    // Benchmark formula: ₹500 Doctor Fee + ₹100 Physiopii/Admin Fee = ₹600/appointment
+                    // (₹500 + ₹100) * appointments - discount %
+                    $pricing = \App\Services\PackagePricingService::calculateFromValues(
+                        500.0,
+                        100.0,
+                        'fixed',
+                        $appointmentsCount,
+                        $discountPct
+                    );
+                }
+
+                $originalPackagePrice = (float) $pricing['original_package_price'];
+                $finalPackagePrice    = (float) $pricing['package_price'];
+                $discountAmount       = (float) $pricing['discount_amount'];
+
+                // Overwrite original_price and price/final_price so no outdated static prices are returned
+                $plan->original_price            = (string) number_format($originalPackagePrice, 2, '.', '');
+                $plan->price                     = (string) number_format($finalPackagePrice, 2, '.', '');
+                $plan->discount_price            = (string) number_format($finalPackagePrice, 2, '.', '');
+                $plan->final_price               = (string) number_format($finalPackagePrice, 2, '.', '');
+                $plan->package_original_price    = $originalPackagePrice;
+                $plan->package_price             = $finalPackagePrice;
+                $plan->customer_pays             = $finalPackagePrice;
+                $plan->discount_percentage       = (string) number_format($discountPct, 2, '.', '');
+                $plan->discount_amount           = (string) number_format($discountAmount, 2, '.', '');
+                $plan->doctor_id                 = $doctor_id ? (int) $doctor_id : null;
+                $plan->doctor_fee                = $pricing['doctor_fee_per_appt'];
+                $plan->admin_fee                 = $pricing['admin_fee_per_appt'];
+                $plan->admin_fee_type            = $pricing['admin_fee_type'];
+                $plan->per_appointment_rate      = $pricing['per_appointment_rate'];
+                $plan->pricing_formula           = "(Doctor Fee + Admin Fee) * Appointments - Discount %";
+                $plan->pricing_breakdown         = $pricing;
+
+                return $plan;
+            });
 
             $userSubscription = null;
 

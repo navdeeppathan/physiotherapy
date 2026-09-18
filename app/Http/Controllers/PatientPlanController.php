@@ -30,9 +30,17 @@ class PatientPlanController extends Controller
         ]);
 
         $discountPercentage = (float) ($request->discount_percentage ?? 0);
-        $price = (float) ($request->price ?? 0);
-        $originalPrice = (float) ($request->original_price ?? $price);
-        $discountAmount = ($originalPrice > 0) ? round(($originalPrice * $discountPercentage) / 100, 2) : 0;
+        $appointmentsCount = max(1, (int) ($request->total_appointments ?? 1));
+        
+        // Benchmark rate: ₹500 Doctor Fee + ₹100 Physiopii/Admin Fee = ₹600
+        $refRate = 600.0;
+        $calculatedOriginalPrice = round($refRate * $appointmentsCount, 2);
+        $calculatedDiscountAmount = round(($calculatedOriginalPrice * $discountPercentage) / 100, 2);
+        $calculatedFinalPrice = round($calculatedOriginalPrice - $calculatedDiscountAmount, 2);
+
+        $price = $request->filled('price') ? (float) $request->price : $calculatedFinalPrice;
+        $originalPrice = $request->filled('original_price') ? (float) $request->original_price : $calculatedOriginalPrice;
+        $discountAmount = ($originalPrice > 0) ? round(($originalPrice * $discountPercentage) / 100, 2) : $calculatedDiscountAmount;
 
         PatientPlan::create([
             'name' => $request->name,
@@ -72,9 +80,17 @@ class PatientPlanController extends Controller
         ]);
 
         $discountPercentage = (float) ($request->discount_percentage ?? 0);
-        $price = (float) ($request->price ?? $plan->price ?? 0);
-        $originalPrice = (float) ($request->original_price ?? $plan->original_price ?? $price);
-        $discountAmount = ($originalPrice > 0) ? round(($originalPrice * $discountPercentage) / 100, 2) : 0;
+        $appointmentsCount = max(1, (int) ($request->total_appointments ?? 1));
+        
+        // Benchmark rate: ₹500 Doctor Fee + ₹100 Physiopii/Admin Fee = ₹600
+        $refRate = 600.0;
+        $calculatedOriginalPrice = round($refRate * $appointmentsCount, 2);
+        $calculatedDiscountAmount = round(($calculatedOriginalPrice * $discountPercentage) / 100, 2);
+        $calculatedFinalPrice = round($calculatedOriginalPrice - $calculatedDiscountAmount, 2);
+
+        $price = $request->filled('price') ? (float) $request->price : $calculatedFinalPrice;
+        $originalPrice = $request->filled('original_price') ? (float) $request->original_price : $calculatedOriginalPrice;
+        $discountAmount = ($originalPrice > 0) ? round(($originalPrice * $discountPercentage) / 100, 2) : $calculatedDiscountAmount;
 
         $plan->update([
             'name' => $request->name,

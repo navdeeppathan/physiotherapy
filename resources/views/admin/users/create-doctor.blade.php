@@ -364,8 +364,8 @@
                     <div class="form-group mb-3">
                         <label class="form-label">Physiopii / Admin Fee (<span id="createAdminFeeUnit">₹</span>)</label>
                         <input type="number" name="admin_fee" id="create_admin_fee" class="form-control" step="0.01" min="0"
-                            placeholder="e.g. 100 or 10"
-                            value="{{ old('admin_fee', '100') }}">
+                            placeholder="e.g. 300 or 10"
+                            value="{{ old('admin_fee', '300') }}">
                         <div class="form-hint">Platform fee charged per appointment for this doctor.</div>
                     </div>
 

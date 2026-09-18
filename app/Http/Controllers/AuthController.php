@@ -93,10 +93,25 @@ class AuthController extends Controller
             'pincode' => $request->pincode,
         ]);
 
+        $doctorFee = (float) $request->input('doctor_fee', 0);
+        if ($doctorFee <= 0) {
+            $doctorFee = (float) $request->input('consultation_fee', 800.00);
+        }
+        if ($doctorFee <= 0) {
+            $doctorFee = 800.00;
+        }
+
+        $adminFee = (float) $request->input('admin_fee', 0);
+        if ($adminFee <= 0) {
+            $adminFee = 300.00;
+        }
+        $adminFeeType = $request->input('admin_fee_type', 'fixed');
+
         $doctor->profile()->create([
             'specialization'         => $request->specialization,
             'qualification'          => $request->qualification ?? '',
             'experience_years'       => $request->experience_years,
+            'consultation_fee'       => $doctorFee,
             'bio'                    => $request->bio,
             'career_path'            => $request->career_path,
             'highlights'             => $request->highlights,
@@ -105,9 +120,6 @@ class AuthController extends Controller
             'clinic_visit_available' => $request->clinic_visit_available ?? 0,
         ]);
 
-        $adminFeeType = $request->input('admin_fee_type', 'fixed');
-        $adminFee = (float) $request->input('admin_fee', 0);
-        $doctorFee = (float) $request->input('doctor_fee', 0);
         $effectiveAdminFee = ($adminFeeType === 'percentage')
             ? round(($doctorFee * $adminFee) / 100, 2)
             : $adminFee;
@@ -190,27 +202,45 @@ class AuthController extends Controller
             $doctor->save();
         }
 
+        $doctorFee = (float) $request->input('doctor_fee', 0);
+        if ($doctorFee <= 0) {
+            $doctorFee = (float) $request->input('consultation_fee', 0);
+        }
+        if ($doctorFee <= 0 && $doctor->fee && (float)$doctor->fee->doctor_fee > 0) {
+            $doctorFee = (float)$doctor->fee->doctor_fee;
+        }
+        if ($doctorFee <= 0 && $doctor->profile && (float)$doctor->profile->consultation_fee > 0) {
+            $doctorFee = (float)$doctor->profile->consultation_fee;
+        }
+        if ($doctorFee <= 0) {
+            $doctorFee = 800.00;
+        }
+
+        $adminFee = (float) $request->input('admin_fee', 0);
+        if ($adminFee <= 0 && $doctor->fee && (float)$doctor->fee->admin_fee > 0) {
+            $adminFee = (float)$doctor->fee->admin_fee;
+        }
+        if ($adminFee <= 0) {
+            $adminFee = 300.00;
+        }
+        $adminFeeType = $request->input('admin_fee_type', ($doctor->fee->admin_fee_type ?? 'fixed'));
+
         $doctor->profile()->updateOrCreate(
             ['user_id'=>$doctor->id],
             [
-
-                'specialization'=>$request->specialization,
-                'qualification'=>$request->qualification ?? '',
-                'experience_years'=>$request->experience_years,
-                'bio'=>$request->bio,
-                'career_path'=>$request->career_path,
-                'highlights'=>$request->highlights,
-                'clinic_address'=>$request->clinic_address,
-
-                'home_visit_available'=>$request->home_visit_available ?? 0,
-                'clinic_visit_available'=>$request->clinic_visit_available ?? 0,
-
+                'specialization'         => $request->specialization,
+                'qualification'          => $request->qualification ?? '',
+                'experience_years'       => $request->experience_years,
+                'consultation_fee'       => $doctorFee,
+                'bio'                    => $request->bio,
+                'career_path'            => $request->career_path,
+                'highlights'             => $request->highlights,
+                'clinic_address'         => $request->clinic_address,
+                'home_visit_available'   => $request->home_visit_available ?? 0,
+                'clinic_visit_available' => $request->clinic_visit_available ?? 0,
             ]
         );
 
-        $adminFeeType = $request->input('admin_fee_type', 'fixed');
-        $adminFee = (float) $request->input('admin_fee', 0);
-        $doctorFee = (float) $request->input('doctor_fee', 0);
         $effectiveAdminFee = ($adminFeeType === 'percentage')
             ? round(($doctorFee * $adminFee) / 100, 2)
             : $adminFee;

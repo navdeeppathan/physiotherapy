@@ -23,6 +23,13 @@ class AppointmentFeeController extends Controller
         $adminFee = (float) $request->input('admin_fee', 0);
         $doctorFee = (float) $request->input('doctor_fee', 0);
 
+        if ($doctorFee <= 0) {
+            $doctorFee = 800.00;
+        }
+        if ($adminFee <= 0) {
+            $adminFee = 300.00;
+        }
+
         $effectiveAdminFee = ($adminFeeType === 'percentage')
             ? round(($doctorFee * $adminFee) / 100, 2)
             : $adminFee;
@@ -39,6 +46,11 @@ class AppointmentFeeController extends Controller
             ]
         );
 
+        // Sync with DoctorProfile consultation_fee
+        \App\Models\DoctorProfile::where('user_id', $request->doctor_id)->update([
+            'consultation_fee' => $doctorFee
+        ]);
+
         return response()->json([
             'success' => true,
             'message' => 'Fee saved successfully',
@@ -50,6 +62,18 @@ class AppointmentFeeController extends Controller
     public function getFee($doctor_id)
     {
         $fee = AppointmentFee::where('doctor_id', $doctor_id)->first();
+
+        if (!$fee) {
+            $profile = \App\Models\DoctorProfile::where('user_id', $doctor_id)->first();
+            $docFee = ($profile && (float)$profile->consultation_fee > 0) ? (float)$profile->consultation_fee : 800.00;
+            $fee = (object)[
+                'doctor_id'      => (int) $doctor_id,
+                'doctor_fee'     => $docFee,
+                'admin_fee'      => 300.00,
+                'admin_fee_type' => 'fixed',
+                'total_fee'      => round($docFee + 300.00, 2),
+            ];
+        }
 
         return response()->json([
             'success' => true,

@@ -58,7 +58,7 @@ class PackagePricingService
             }
         }
 
-        // If still 0, check if another doctor has configured fee or fallback to benchmark rate (₹500 Doctor + ₹100 Physiopii)
+        // If still 0, check if another doctor has configured fee or fallback to benchmark rate (₹800 Doctor + ₹300 Physiopii)
         if ($doctorFee <= 0) {
             $defaultSysFee = AppointmentFee::where('doctor_fee', '>', 0)->first();
             if ($defaultSysFee) {
@@ -66,8 +66,8 @@ class PackagePricingService
                 $adminFeeConfig = (float) $defaultSysFee->admin_fee;
                 $adminFeeType = (string) ($defaultSysFee->admin_fee_type ?? 'fixed');
             } else {
-                $doctorFee = 500.0;
-                $adminFeeConfig = 100.0;
+                $doctorFee = 800.0;
+                $adminFeeConfig = 300.0;
                 $adminFeeType = 'fixed';
             }
         } elseif ($adminFeeConfig <= 0) {
@@ -76,7 +76,7 @@ class PackagePricingService
                 $adminFeeConfig = (float) $defaultSysFee->admin_fee;
                 $adminFeeType = (string) ($defaultSysFee->admin_fee_type ?? 'fixed');
             } else {
-                $adminFeeConfig = 100.0;
+                $adminFeeConfig = 300.0;
                 $adminFeeType = 'fixed';
             }
         }

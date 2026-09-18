@@ -400,7 +400,7 @@
                         <label class="form-label">Doctor Fee (₹)</label>
                         <input type="number" name="doctor_fee" id="edit_doctor_fee" class="form-control" step="0.01" min="0"
                             placeholder="e.g. 800"
-                            value="{{ old('doctor_fee', $doctor->fee->doctor_fee ?? '') }}">
+                            value="{{ old('doctor_fee', $doctor->fee->doctor_fee ?? ($doctor->profile->consultation_fee ?? '800')) }}">
                         <div class="form-hint">Amount paid to the doctor per appointment.</div>
                     </div>
 
@@ -415,8 +415,8 @@
                     <div class="form-group mb-3">
                         <label class="form-label">Physiopii / Admin Fee (<span id="editAdminFeeUnit">₹</span>)</label>
                         <input type="number" name="admin_fee" id="edit_admin_fee" class="form-control" step="0.01" min="0"
-                            placeholder="e.g. 100 or 10"
-                            value="{{ old('admin_fee', $doctor->fee->admin_fee ?? '') }}">
+                            placeholder="e.g. 300 or 10"
+                            value="{{ old('admin_fee', $doctor->fee->admin_fee ?? '300') }}">
                         <div class="form-hint">Platform fee charged per appointment for this doctor.</div>
                     </div>
 

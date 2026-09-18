@@ -41,6 +41,20 @@ class DoctorProfile extends Model
     ];
 
     /**
+     * Set default consultation_fee to 800.00 if missing
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($model) {
+            if (!isset($model->consultation_fee) || (float)$model->consultation_fee <= 0) {
+                $model->consultation_fee = 800.00;
+            }
+        });
+    }
+
+    /**
      * Relationship: DoctorProfile belongs to User
      */
     public function user()

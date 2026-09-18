@@ -53,11 +53,11 @@ class PatientPlanController extends BaseApiController
                         $discountPct
                     );
                 } else {
-                    // Benchmark formula: ₹500 Doctor Fee + ₹100 Physiopii/Admin Fee = ₹600/appointment
-                    // (₹500 + ₹100) * appointments - discount %
+                    // Benchmark formula: ₹800 Doctor Fee + ₹300 Physiopii/Admin Fee = ₹1,100/appointment
+                    // (₹800 + ₹300) * appointments - discount %
                     $pricing = \App\Services\PackagePricingService::calculateFromValues(
-                        500.0,
-                        100.0,
+                        800.0,
+                        300.0,
                         'fixed',
                         $appointmentsCount,
                         $discountPct

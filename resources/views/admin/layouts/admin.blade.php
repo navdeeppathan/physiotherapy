@@ -975,7 +975,15 @@
     <!-- Main -->
     <div class="main-wrapper">
         <header class="topbar">
-            <div class="topbar-actions">
+            <div class="topbar-actions d-flex align-items-center gap-2">
+                <a href="{{ route('admin.clear.cache') }}" class="btn btn-sm btn-light border text-muted d-flex align-items-center gap-1 rounded-pill px-3 py-1 text-decoration-none" title="Clear Blade View & App Cache">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <polyline points="1 20 1 14 7 14"></polyline>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                    </svg>
+                    <span style="font-size: 12px; font-weight: 600;">Clear Cache</span>
+                </a>
                 <div class="user-profile">
                     <div class="user-avatar">{{ Auth::user()->name[0] }}</div>
                     <span class="user-profile-text">{{ Auth::user()->name }}</span>

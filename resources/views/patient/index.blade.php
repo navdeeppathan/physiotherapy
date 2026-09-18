@@ -198,7 +198,7 @@ img {
    HERO SECTION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .pth-hero-section {
-    padding: 70px 0 60px;
+    padding: 60px 0 50px;
     background: radial-gradient(circle at 10% 20%, rgba(226, 244, 246, 0.65) 0%, rgba(255, 255, 255, 0) 50%);
     position: relative;
 }
@@ -224,7 +224,7 @@ img {
     color: var(--primary-teal);
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 .pth-badge-dot {
     width: 6px;
@@ -234,27 +234,27 @@ img {
 }
 
 .pth-hero-title {
-    font-size: clamp(34px, 4.4vw, 54px);
+    font-size: clamp(34px, 4.4vw, 52px);
     font-weight: 900;
     color: var(--ink);
     line-height: 1.15;
     letter-spacing: -0.04em;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 }
 
 .pth-hero-sub {
-    font-size: 16px;
+    font-size: 15.5px;
     color: var(--body-text);
-    line-height: 1.7;
+    line-height: 1.65;
     max-width: 550px;
-    margin-bottom: 32px;
+    margin-bottom: 26px;
 }
 
 /* Search Box */
 .pth-search-container {
     position: relative;
     max-width: 580px;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 }
 
 .pth-search-box {
@@ -340,37 +340,100 @@ img {
     background: #f0fdfa;
 }
 
-/* Popular tags */
-.pth-popular-row {
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   POPULAR CONDITIONS GRID CARDS (Direct Filter)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.pth-popular-conditions {
+    margin-top: 22px;
+    max-width: 580px;
+}
+
+.pth-pop-cond-header {
     display: flex;
     align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    font-size: 13px;
+    justify-content: space-between;
+    margin-bottom: 10px;
 }
 
-.pth-pop-label {
-    color: #64748b;
-    font-weight: 600;
-    margin-right: 2px;
+.pth-pop-cond-title {
+    font-size: 14.5px;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -0.01em;
 }
 
-.pth-pop-pill {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    color: #334155;
-    padding: 4px 12px;
-    border-radius: 50px;
+.pth-pop-clear-btn {
+    background: none;
+    border: none;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
+    color: #ef4444;
     cursor: pointer;
-    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+.pth-pop-clear-btn:hover {
+    background: #fee2e2;
 }
 
-.pth-pop-pill:hover {
-    background: var(--teal-badge-bg);
-    border-color: var(--teal-badge-border);
+.pth-pop-cond-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+.pth-cond-card {
+    background: #ffffff;
+    border: 1.5px solid #d1e9ec;
+    border-radius: 14px;
+    padding: 12px 6px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 88px;
+    user-select: none;
+    box-shadow: 0 2px 8px rgba(12, 105, 120, 0.04);
+}
+
+.pth-cond-card:hover {
+    border-color: var(--primary-teal);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(12, 105, 120, 0.12);
+    background: var(--teal-bg-soft);
+}
+
+.pth-cond-card.active {
+    border-color: var(--primary-teal);
+    background: #eef8f9;
+    box-shadow: 0 4px 16px rgba(12, 105, 120, 0.22);
+    outline: 2px solid rgba(12, 105, 120, 0.15);
+}
+
+.pth-cond-card.active .pth-cond-name {
+    color: var(--primary-teal-dark);
+    font-weight: 900;
+}
+
+.pth-cond-icon-svg {
+    width: 38px;
+    height: 38px;
+    margin-bottom: 6px;
     color: var(--primary-teal);
+    flex-shrink: 0;
+}
+
+.pth-cond-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary-teal);
+    line-height: 1.25;
 }
 
 /* Hero Right: Sleek App Mockup Frame */
@@ -681,7 +744,7 @@ img {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    margin-bottom: 36px;
+    margin-bottom: 24px;
     flex-wrap: wrap;
     gap: 16px;
 }
@@ -706,10 +769,48 @@ img {
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    cursor: pointer;
 }
 .pth-see-all-link:hover {
     color: var(--primary-teal-dark);
     gap: 9px;
+}
+
+/* Filter active status banner */
+#pth-filter-banner {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    background: #eef8f9;
+    border: 1.5px solid #bce5ea;
+    border-radius: 12px;
+    padding: 12px 20px;
+    margin-bottom: 24px;
+}
+.pth-filter-banner-text {
+    font-size: 14px;
+    color: #074752;
+    font-weight: 700;
+}
+.pth-filter-banner-text strong {
+    color: var(--primary-teal);
+    font-weight: 800;
+}
+.pth-filter-badge-btn {
+    background: #ffffff;
+    border: 1px solid #bce5ea;
+    color: #0c6978;
+    border-radius: 6px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+.pth-filter-badge-btn:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #b91c1c;
 }
 
 .pth-doctors-grid {
@@ -1317,6 +1418,15 @@ img {
     .pth-footer-grid {
         grid-template-columns: 1fr;
     }
+    .pth-pop-cond-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 440px) {
+    .pth-pop-cond-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 </style>
 
@@ -1408,15 +1518,75 @@ img {
                         <div id="hp-doctor-dropdown"></div>
                     </div>
 
-                    {{-- Popular Pills --}}
-                    <div class="pth-popular-row">
-                        <span class="pth-pop-label">Popular:</span>
-                        <span class="pth-pop-pill" onclick="searchCondition('Back Pain')">Back Pain</span>
-                        <span class="pth-pop-pill" onclick="searchCondition('Osteoarthritis')">Osteoarthritis</span>
-                        <span class="pth-pop-pill" onclick="searchCondition('Post-Surgery Recovery')">Post-Surgery Recovery</span>
-                        <span class="pth-pop-pill" onclick="searchCondition('Frozen Shoulder')">Frozen Shoulder</span>
-                        <span class="pth-pop-pill" onclick="searchCondition('Sports Injury')">Sports Injury</span>
+                    {{-- ── Popular Conditions Grid Cards (Click & Filter Directly) ── --}}
+                    <div class="pth-popular-conditions">
+                        <div class="pth-pop-cond-header">
+                            <span class="pth-pop-cond-title">Popular Conditions</span>
+                            <button type="button" class="pth-pop-clear-btn" id="clearPopCondBtn" style="display:none;" onclick="clearConditionFilter()">
+                                <i class="fa-solid fa-xmark"></i> Clear Filter
+                            </button>
+                        </div>
+
+                        <div class="pth-pop-cond-grid">
+                            {{-- Back Pain --}}
+                            <div class="pth-cond-card" data-condition="Back Pain" onclick="toggleConditionFilter('Back Pain', this)">
+                                <svg class="pth-cond-icon-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M16 10 C16 6, 32 6, 32 10 C32 14, 28 16, 28 20 C28 26, 34 32, 34 40 L14 40 C14 32, 20 26, 20 20 C20 16, 16 14, 16 10 Z" stroke="#0c6978" fill="#f0fdfa"/>
+                                    <circle cx="24" cy="14" r="1.5" fill="#0c6978"/>
+                                    <circle cx="24" cy="20" r="1.8" fill="#0c6978"/>
+                                    <circle cx="24" cy="26" r="2.2" fill="#ef4444"/>
+                                    <circle cx="24" cy="32" r="2.2" fill="#ef4444"/>
+                                    <path d="M19 28 L17 29 M29 28 L31 29 M19 31 L17 32 M29 31 L31 32" stroke="#ef4444" stroke-width="2"/>
+                                </svg>
+                                <span class="pth-cond-name">Back Pain</span>
+                            </div>
+
+                            {{-- Neck Pain --}}
+                            <div class="pth-cond-card" data-condition="Neck Pain" onclick="toggleConditionFilter('Neck Pain', this)">
+                                <svg class="pth-cond-icon-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="24" cy="14" r="7" stroke="#0c6978" fill="#f0fdfa"/>
+                                    <path d="M21 21 L21 27 C16 28, 12 32, 10 38 L38 38 C36 32, 32 28, 27 27 L27 21" stroke="#0c6978"/>
+                                    <path d="M17 23 L14 22 M17 26 L14 27 M31 23 L34 22 M31 26 L34 27" stroke="#ef4444" stroke-width="2"/>
+                                    <circle cx="24" cy="25" r="2" fill="#ef4444"/>
+                                </svg>
+                                <span class="pth-cond-name">Neck Pain</span>
+                            </div>
+
+                            {{-- Knee Pain --}}
+                            <div class="pth-cond-card" data-condition="Knee Pain" onclick="toggleConditionFilter('Knee Pain', this)">
+                                <svg class="pth-cond-icon-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M16 10 L28 22 L20 38" stroke="#0c6978" stroke-width="3" fill="none"/>
+                                    <circle cx="28" cy="22" r="4" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+                                    <path d="M34 18 L37 16 M35 22 L39 22 M34 26 L37 28" stroke="#ef4444" stroke-width="2"/>
+                                </svg>
+                                <span class="pth-cond-name">Knee Pain</span>
+                            </div>
+
+                            {{-- Shoulder Pain --}}
+                            <div class="pth-cond-card" data-condition="Shoulder Pain" onclick="toggleConditionFilter('Shoulder Pain', this)">
+                                <svg class="pth-cond-icon-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="20" cy="14" r="6" stroke="#0c6978" fill="#f0fdfa"/>
+                                    <path d="M17 20 C12 24, 12 34, 12 40 L28 40" stroke="#0c6978"/>
+                                    <path d="M24 20 C32 20, 36 26, 34 34 L26 28" stroke="#0c6978"/>
+                                    <circle cx="30" cy="23" r="3" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+                                    <path d="M35 18 L38 16 M36 24 L40 24" stroke="#ef4444" stroke-width="2"/>
+                                </svg>
+                                <span class="pth-cond-name">Shoulder Pain</span>
+                            </div>
+
+                            {{-- Hip Pain --}}
+                            <div class="pth-cond-card" data-condition="Hip Pain" onclick="toggleConditionFilter('Hip Pain', this)">
+                                <svg class="pth-cond-icon-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="24" cy="11" r="5" stroke="#0c6978" fill="#f0fdfa"/>
+                                    <path d="M24 16 L24 27 M24 27 L18 39 M24 27 L30 39" stroke="#0c6978" stroke-width="2.5"/>
+                                    <circle cx="27" cy="27" r="3.5" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+                                    <path d="M32 24 L35 23 M33 29 L36 31" stroke="#ef4444" stroke-width="2"/>
+                                </svg>
+                                <span class="pth-cond-name">Hip Pain</span>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
 
                 {{-- Right Visual: Sleek Interactive App Mockup --}}
@@ -1429,19 +1599,19 @@ img {
                         </div>
 
                         <div class="pth-mock-categories">
-                            <div class="pth-mock-cat-item">
+                            <div class="pth-mock-cat-item" style="cursor:pointer" onclick="toggleConditionFilter('Back Pain')">
                                 <div class="pth-mock-cat-icon"><i class="fa-solid fa-bone"></i></div>
                                 <div class="pth-mock-cat-text">Spine</div>
                             </div>
-                            <div class="pth-mock-cat-item">
+                            <div class="pth-mock-cat-item" style="cursor:pointer" onclick="toggleConditionFilter('Knee Pain')">
                                 <div class="pth-mock-cat-icon"><i class="fa-solid fa-person-walking"></i></div>
                                 <div class="pth-mock-cat-text">Knee</div>
                             </div>
-                            <div class="pth-mock-cat-item">
+                            <div class="pth-mock-cat-item" style="cursor:pointer" onclick="toggleConditionFilter('Shoulder Pain')">
                                 <div class="pth-mock-cat-icon"><i class="fa-solid fa-hand-dots"></i></div>
                                 <div class="pth-mock-cat-text">Joints</div>
                             </div>
-                            <div class="pth-mock-cat-item">
+                            <div class="pth-mock-cat-item" style="cursor:pointer" onclick="toggleConditionFilter('Neck Pain')">
                                 <div class="pth-mock-cat-icon"><i class="fa-solid fa-brain"></i></div>
                                 <div class="pth-mock-cat-text">Neuro</div>
                             </div>
@@ -1478,7 +1648,7 @@ img {
                                 <div class="pth-mock-doc-avatar">DJ</div>
                                 <div>
                                     <div class="pth-mock-doc-name">
-                                        Dr. John Doe
+                                        Dr. John
                                         <span class="pth-mock-doc-badge">★ Verified</span>
                                     </div>
                                     <div class="pth-mock-doc-sub">MPT (Neuro Rehab) &middot; 10 Years Exp.</div>
@@ -1569,13 +1739,26 @@ img {
                     <h2 class="pth-sec-title">Available Nearby Physios</h2>
                     <p class="pth-sec-sub">Certified, home-visit physiotherapists active in your immediate locality</p>
                 </div>
-                <a href="#conditions" class="pth-see-all-link">
+                <a href="javascript:void(0)" onclick="clearConditionFilter()" class="pth-see-all-link">
                     See All Specialists <i class="fa-solid fa-chevron-right"></i>
                 </a>
             </div>
 
-            <div class="pth-doctors-grid">
-                @forelse($doctors->take(3) as $doctor)
+            {{-- Filter Status Alert Bar --}}
+            <div id="pth-filter-banner">
+                <div class="pth-filter-banner-text">
+                    <i class="fa-solid fa-filter" style="margin-right:6px;color:var(--primary-teal);"></i>
+                    Filtered by: <strong id="pth-active-filter-text">Back Pain</strong>
+                    <span id="pth-filter-count" style="font-size:12.5px;color:#64748b;margin-left:8px;"></span>
+                </div>
+                <button type="button" class="pth-filter-badge-btn" onclick="clearConditionFilter()">
+                    <i class="fa-solid fa-xmark"></i> Clear Filter
+                </button>
+            </div>
+
+            {{-- Doctors Grid --}}
+            <div class="pth-doctors-grid" id="pthDoctorsGrid">
+                @forelse($doctors as $doctor)
                     @php
                         $rating = round(optional($doctor->profile)->rating ?? 4.9, 1);
                         if ($rating < 4.5) $rating = 4.9;
@@ -1584,8 +1767,14 @@ img {
                         $specName = optional(optional($doctor->profile)->specializationdata)->name ?? 'Pain & Mobility Rehab';
                         $hasImg = !empty($doctor->profile_img);
                         $reviewsCount = rand(90, 210);
+
+                        $searchKeywords = strtolower($doctor->name . ' ' . $qualification . ' ' . $specName . ' ' . ($doctor->address ?? ''));
                     @endphp
-                    <div class="pth-doctor-card">
+                    <div class="pth-doctor-card"
+                         data-name="{{ strtolower($doctor->name) }}"
+                         data-spec="{{ strtolower($specName) }}"
+                         data-qual="{{ strtolower($qualification) }}"
+                         data-keywords="{{ $searchKeywords }}">
                         <div>
                             <div class="pth-doc-header">
                                 @if($hasImg)
@@ -1629,7 +1818,7 @@ img {
                     </div>
                 @empty
                     {{-- Default fallback doctor cards if empty database --}}
-                    <div class="pth-doctor-card">
+                    <div class="pth-doctor-card" data-keywords="back spine neuro ortho john">
                         <div>
                             <div class="pth-doc-header">
                                 <div class="pth-doc-avatar-ph">J</div>
@@ -1638,7 +1827,7 @@ img {
                                         <div class="pth-doc-name">Dr. John</div>
                                         <span class="pth-badge-verified">★ Verified</span>
                                     </div>
-                                    <div class="pth-doc-spec">MPT (Neuro Rehab)</div>
+                                    <div class="pth-doc-spec">MPT (Neuro &amp; Spine Rehab)</div>
                                     <div class="pth-doc-stats-mini">
                                         <span class="pth-doc-rating">★ 4.9 (152 Reviews)</span>
                                         <span>&middot; 10 Years Exp.</span>
@@ -1652,7 +1841,7 @@ img {
                         </div>
                     </div>
 
-                    <div class="pth-doctor-card">
+                    <div class="pth-doctor-card" data-keywords="knee joint ortho arthritis millward">
                         <div>
                             <div class="pth-doc-header">
                                 <div class="pth-doc-avatar-ph">K</div>
@@ -1661,7 +1850,7 @@ img {
                                         <div class="pth-doc-name">Dr. Karen Millward</div>
                                         <span class="pth-badge-verified">★ Verified</span>
                                     </div>
-                                    <div class="pth-doc-spec">MPT (Orthopaedic &amp; Joint Care)</div>
+                                    <div class="pth-doc-spec">MPT (Orthopaedic &amp; Knee Care)</div>
                                     <div class="pth-doc-stats-mini">
                                         <span class="pth-doc-rating">★ 4.9 (142 Reviews)</span>
                                         <span>&middot; 8 Years Exp.</span>
@@ -1675,7 +1864,7 @@ img {
                         </div>
                     </div>
 
-                    <div class="pth-doctor-card">
+                    <div class="pth-doctor-card" data-keywords="shoulder neck sports patel">
                         <div>
                             <div class="pth-doc-header">
                                 <div class="pth-doc-avatar-ph">A</div>
@@ -1684,7 +1873,7 @@ img {
                                         <div class="pth-doc-name">Dr. Avis Patel</div>
                                         <span class="pth-badge-verified">★ Verified</span>
                                     </div>
-                                    <div class="pth-doc-spec">MPT (Sports Rehabilitation)</div>
+                                    <div class="pth-doc-spec">MPT (Sports &amp; Shoulder Rehabilitation)</div>
                                     <div class="pth-doc-stats-mini">
                                         <span class="pth-doc-rating">★ 4.9 (196 Reviews)</span>
                                         <span>&middot; 12 Years Exp.</span>
@@ -1698,6 +1887,16 @@ img {
                         </div>
                     </div>
                 @endforelse
+            </div>
+
+            {{-- Zero results message --}}
+            <div id="pthNoDoctors" style="display:none;text-align:center;padding:48px 24px;background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:18px;margin-top:20px;">
+                <div style="font-size:36px;color:#0c6978;margin-bottom:10px;"><i class="fa-solid fa-user-doctor"></i></div>
+                <h3 style="font-size:18px;font-weight:800;color:#0f172a;margin-bottom:6px;">No specific specialists found for this category</h3>
+                <p style="font-size:14px;color:#64748b;margin-bottom:18px;">All our licensed home physiotherapists are certified across multiple rehabilitation categories.</p>
+                <button type="button" class="pth-btn-book" onclick="clearConditionFilter()" style="margin:0 auto;">
+                    View All Available Physios
+                </button>
             </div>
 
         </div>
@@ -1965,73 +2164,214 @@ img {
 </div>{{-- /main-wrapper --}}
 
 <script>
-function searchCondition(conditionName) {
+// Dictionary mapping popular conditions to doctor keywords
+const conditionKeywords = {
+    'Back Pain': ['back', 'spine', 'lumbar', 'sciatica', 'posture', 'disc', 'ortho', 'pain', 'rehab', 'physio'],
+    'Neck Pain': ['neck', 'cervical', 'spine', 'shoulder', 'posture', 'ortho', 'pain', 'rehab', 'physio'],
+    'Knee Pain': ['knee', 'joint', 'acl', 'arthritis', 'osteoarthritis', 'cartilage', 'ortho', 'sports', 'physio'],
+    'Shoulder Pain': ['shoulder', 'frozen', 'rotator', 'joint', 'arm', 'ortho', 'sports', 'physio'],
+    'Hip Pain': ['hip', 'joint', 'pelvic', 'pelvis', 'arthritis', 'groin', 'mobility', 'ortho', 'physio']
+};
+
+let activeCondition = null;
+
+function toggleConditionFilter(conditionName, cardElement) {
     const input = document.getElementById('doctorSearch');
+    const allCards = document.querySelectorAll('.pth-cond-card');
+    const clearBtn = document.getElementById('clearPopCondBtn');
+
+    // If clicking the currently active card, toggle off (reset)
+    if (activeCondition === conditionName) {
+        clearConditionFilter();
+        return;
+    }
+
+    activeCondition = conditionName;
+
+    // Highlight card
+    allCards.forEach(c => {
+        if (c.getAttribute('data-condition') === conditionName) {
+            c.classList.add('active');
+        } else {
+            c.classList.remove('active');
+        }
+    });
+
+    if (clearBtn) clearBtn.style.display = 'inline-flex';
+
+    // Update search box
     if (input) {
         input.value = conditionName;
-        input.dispatchEvent(new Event('input'));
-        input.focus();
+    }
+
+    // Filter doctor cards on page
+    applyDoctorFilter(conditionName);
+
+    // Smooth scroll down to doctors list
+    const docSection = document.getElementById('specialists');
+    if (docSection) {
+        docSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
 
+function clearConditionFilter() {
+    activeCondition = null;
+    const input = document.getElementById('doctorSearch');
+    const allCards = document.querySelectorAll('.pth-cond-card');
+    const clearBtn = document.getElementById('clearPopCondBtn');
+    const filterBanner = document.getElementById('pth-filter-banner');
+    const noDocsBanner = document.getElementById('pthNoDoctors');
+
+    allCards.forEach(c => c.classList.remove('active'));
+    if (clearBtn) clearBtn.style.display = 'none';
+    if (filterBanner) filterBanner.style.display = 'none';
+    if (noDocsBanner) noDocsBanner.style.display = 'none';
+
+    if (input) input.value = '';
+
+    // Show all doctor cards
+    const docCards = document.querySelectorAll('.pth-doctor-card');
+    docCards.forEach(card => card.style.display = 'flex');
+}
+
+function applyDoctorFilter(conditionName) {
+    const filterBanner = document.getElementById('pth-filter-banner');
+    const activeText = document.getElementById('pth-active-filter-text');
+    const filterCount = document.getElementById('pth-filter-count');
+    const noDocsBanner = document.getElementById('pthNoDoctors');
+    const docCards = document.querySelectorAll('.pth-doctor-card');
+
+    if (!docCards.length) return;
+
+    const keywords = conditionKeywords[conditionName] || [conditionName.toLowerCase()];
+    let visibleCount = 0;
+
+    docCards.forEach(card => {
+        const text = (card.getAttribute('data-keywords') || '') + ' ' + 
+                     (card.getAttribute('data-spec') || '') + ' ' +
+                     (card.getAttribute('data-qual') || '') + ' ' +
+                     (card.getAttribute('data-name') || '');
+
+        const matches = keywords.some(k => text.includes(k.toLowerCase()));
+
+        if (matches) {
+            card.style.display = 'flex';
+            visibleCount++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    // If none matched specific keywords, show all with note
+    if (visibleCount === 0) {
+        docCards.forEach(card => card.style.display = 'flex');
+        visibleCount = docCards.length;
+        if (noDocsBanner) noDocsBanner.style.display = 'block';
+    } else {
+        if (noDocsBanner) noDocsBanner.style.display = 'none';
+    }
+
+    if (filterBanner && activeText) {
+        activeText.textContent = conditionName;
+        if (filterCount) {
+            filterCount.textContent = `(${visibleCount} specialist${visibleCount === 1 ? '' : 's'} available)`;
+        }
+        filterBanner.style.display = 'flex';
+    }
+}
+
+// Live Autocomplete Search + Direct filter on input
 (function() {
     const input = document.getElementById('doctorSearch');
     const dropdown = document.getElementById('hp-doctor-dropdown');
-    if (!input || !dropdown) return;
+    const searchSubmitBtn = document.getElementById('searchSubmitBtn');
+    if (!input) return;
 
     let debounceTimer;
+
     input.addEventListener('input', function() {
         clearTimeout(debounceTimer);
         const q = this.value.trim();
-        if (q.length < 2) {
-            dropdown.innerHTML = '';
-            dropdown.classList.remove('open');
+
+        // If emptied, reset filters
+        if (!q) {
+            clearConditionFilter();
+            if (dropdown) {
+                dropdown.innerHTML = '';
+                dropdown.classList.remove('open');
+            }
             return;
         }
 
         debounceTimer = setTimeout(() => {
-            fetch(`/search-doctors?q=${encodeURIComponent(q)}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (!data || !data.length) {
-                        dropdown.innerHTML = `
-                            <div style="padding:14px 18px;color:#64748b;font-size:13.5px;">
-                                No doctors found for "${q}". Try another condition or doctor name.
-                            </div>
-                        `;
-                        dropdown.classList.add('open');
-                        return;
-                    }
-
-                    dropdown.innerHTML = data.slice(0, 6).map(doc => {
-                        const spec = (doc.profile && doc.profile.specializationdata && doc.profile.specializationdata.name)
-                            ? doc.profile.specializationdata.name
-                            : 'Physiotherapist';
-                        const initial = doc.name ? doc.name.charAt(0).toUpperCase() : 'D';
-
-                        return `
-                            <a href="/doctor/${doc.id}">
-                                <div style="display:flex;align-items:center;gap:12px">
-                                    <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0c6978,#2dd4bf);color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                                        ${initial}
-                                    </div>
-                                    <div>
-                                        <div style="font-size:14px;font-weight:800;color:#0f172a">Dr. ${doc.name}</div>
-                                        <div style="font-size:12px;color:#64748b;margin-top:1px">${spec}</div>
-                                    </div>
+            // Live Autocomplete
+            if (dropdown && q.length >= 2) {
+                fetch(`/search-doctors?q=${encodeURIComponent(q)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data || !data.length) {
+                            dropdown.innerHTML = `
+                                <div style="padding:14px 18px;color:#64748b;font-size:13px;">
+                                    No direct doctor matches found. Showing nearby physiotherapists.
                                 </div>
-                                <span style="font-size:12px;font-weight:700;color:#0c6978;">View Profile &rarr;</span>
-                            </a>
-                        `;
-                    }).join('');
-                    dropdown.classList.add('open');
-                })
-                .catch(() => {});
-        }, 250);
+                            `;
+                            dropdown.classList.add('open');
+                            return;
+                        }
+
+                        dropdown.innerHTML = data.slice(0, 6).map(doc => {
+                            const spec = (doc.profile && doc.profile.specializationdata && doc.profile.specializationdata.name)
+                                ? doc.profile.specializationdata.name
+                                : 'Physiotherapist';
+                            const initial = doc.name ? doc.name.charAt(0).toUpperCase() : 'D';
+
+                            return `
+                                <a href="/doctor/${doc.id}">
+                                    <div style="display:flex;align-items:center;gap:12px">
+                                        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0c6978,#2dd4bf);color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                                            ${initial}
+                                        </div>
+                                        <div>
+                                            <div style="font-size:14px;font-weight:800;color:#0f172a">Dr. ${doc.name}</div>
+                                            <div style="font-size:12px;color:#64748b;margin-top:1px">${spec}</div>
+                                        </div>
+                                    </div>
+                                    <span style="font-size:12px;font-weight:700;color:#0c6978;">View Profile &rarr;</span>
+                                </a>
+                            `;
+                        }).join('');
+                        dropdown.classList.add('open');
+                    })
+                    .catch(() => {});
+            }
+
+            // Also filter doctor cards dynamically
+            const query = q.toLowerCase();
+            const docCards = document.querySelectorAll('.pth-doctor-card');
+            docCards.forEach(card => {
+                const text = (card.getAttribute('data-keywords') || '') + ' ' + 
+                             (card.getAttribute('data-spec') || '') + ' ' +
+                             (card.getAttribute('data-qual') || '') + ' ' +
+                             (card.getAttribute('data-name') || '');
+                card.style.display = text.includes(query) ? 'flex' : 'none';
+            });
+        }, 220);
     });
 
+    if (searchSubmitBtn) {
+        searchSubmitBtn.addEventListener('click', function() {
+            const q = input.value.trim();
+            if (q) {
+                const docSection = document.getElementById('specialists');
+                if (docSection) {
+                    docSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        });
+    }
+
     document.addEventListener('click', function(e) {
-        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+        if (dropdown && !input.contains(e.target) && !dropdown.contains(e.target)) {
             dropdown.classList.remove('open');
         }
     });

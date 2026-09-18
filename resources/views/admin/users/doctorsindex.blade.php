@@ -706,7 +706,7 @@
                             <td>
                                 @if($user->fee && $user->fee->admin_fee > 0)
                                     @if(($user->fee->admin_fee_type ?? 'fixed') === 'percentage')
-                                        <span class="fee-val" style="color: #d97706; font-weight: 700;">{{ rtrim(rtrim(number_format($user->fee->admin_fee, 2), '0'), '.') }}%</span>
+                                        <span class="fee-val" style="color: #d97706; font-weight: 700;">{{ (float) $user->fee->admin_fee }}%</span>
                                         <div style="font-size: 11px; color: #64748b; margin-top: 1px;">(₹{{ number_format($user->fee->getAdminFeeAmount(), 2) }})</div>
                                     @else
                                         <span class="fee-val" style="color: #d97706; font-weight: 700;">₹{{ number_format($user->fee->admin_fee, 2) }}</span>

@@ -245,11 +245,11 @@ textarea.field-input{ resize:vertical;min-height:90px; }
             </div>
             <div style="margin-top: 10px; padding: 10px 12px; background: #fff; border: 1px solid #dcfce7; border-radius: 8px; font-size: 12px;">
               <div style="font-weight: 700; color: #14532d; margin-bottom: 4px;">Sample Calculation (<span id="sampleApptsText">{{ $plan->total_appointments }} sessions</span>):</div>
-              <div style="color: #475569;">Doctor Fee (₹500) + Admin Fee (₹100) = <strong>₹600 per session</strong></div>
-              <div style="color: #475569; margin-top: 2px;">Base Package Price: <span id="sampleBasePrice">₹3,000</span></div>
+              <div style="color: #475569;">Doctor Fee (₹800) + Admin Fee (₹300) = <strong>₹1,100 per session</strong></div>
+              <div style="color: #475569; margin-top: 2px;">Base Package Price: <span id="sampleBasePrice">₹5,500</span></div>
               <div style="color: #d97706; margin-top: 2px;">Package Discount (<span id="sampleDiscPct">0%</span>): <span id="sampleDiscAmt">-₹0</span></div>
               <div style="margin-top: 4px; padding-top: 4px; border-top: 1px dashed #bbf7d0; color: #059669; font-weight: 800; font-size: 13.5px;">
-                Customer Pays: <span id="sampleFinalPrice">₹3,000</span>
+                Customer Pays: <span id="sampleFinalPrice">₹5,500</span>
               </div>
             </div>
           </div>
@@ -282,7 +282,7 @@ function updateSamplePreview() {
     if (discPct < 0) discPct = 0;
     if (discPct > 100) discPct = 100;
 
-    const sampleRate = 600; // e.g. 500 doctor fee + 100 admin fee
+    const sampleRate = 1100; // e.g. 800 doctor fee + 300 admin fee
     const baseTotal  = sampleRate * appts;
     const discAmount = Math.round((baseTotal * discPct) / 100);
     const finalPrice = baseTotal - discAmount;

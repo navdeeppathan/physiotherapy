@@ -304,7 +304,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
                                     <span class="pm-session-price">₹{{ number_format($perSession, 0) }} per session &middot; {{ $plan->total_appointments }} session(s)</span>
                                     @if($discPct > 0)
                                         <span class="pm-old-price">₹{{ number_format($origPrice, 2) }}</span>
-                                        <span class="pm-discount-badge">{{ rtrim(rtrim((string)$discPct, '0'), '.') }}% Off</span>
+                                        <span class="pm-discount-badge">{{ (float) $discPct }}% Off</span>
                                     @endif
                                 </div>
                             </div>

@@ -226,8 +226,8 @@ table.plans-table{ width:100%;border-collapse:collapse; }
           @php
             $appts = (int) ($plan->total_appointments ?? 1);
             $discPct = (float) ($plan->discount_percentage ?? 0);
-            // Example: Doctor Fee = 500, Admin Fee = 100 -> Per session = 600
-            $sampleRate = 600;
+            // Example: Doctor Fee = 800, Admin Fee = 300 -> Per session = 1100
+            $sampleRate = 1100;
             $sampleBaseTotal = $sampleRate * $appts;
             $sampleDiscAmt = round(($sampleBaseTotal * $discPct) / 100, 2);
             $sampleFinalTotal = round($sampleBaseTotal - $sampleDiscAmt, 2);
@@ -255,7 +255,7 @@ table.plans-table{ width:100%;border-collapse:collapse; }
             <td>
                 @if($discPct > 0)
                     <span class="badge-pill bp-active" style="font-size:12px;font-weight:800;padding:4px 10px;">
-                        {{ rtrim(rtrim($discPct,'0'),'.') }}% OFF
+                        {{ (float) $discPct }}% OFF
                     </span>
                     <div style="font-size:10.5px;color:var(--text3);margin-top:2px;">
                         Applied on package total
@@ -272,10 +272,10 @@ table.plans-table{ width:100%;border-collapse:collapse; }
                   <code>(Doctor Fee + Admin Fee) × {{ $appts }}</code>
                 </div>
                 <div style="margin-top:3px;padding:4px 8px;background:var(--neutral-bg);border:1px solid var(--border);border-radius:6px;font-size:11px;color:var(--text2);display:inline-block;">
-                  <span style="color:var(--blue);font-weight:700;">e.g. Rate ₹{{ $sampleRate }}/session:</span>
+                  <span style="color:var(--blue);font-weight:700;">e.g. Rate ₹{{ number_format($sampleRate) }}/session:</span>
                   Base ₹{{ number_format($sampleBaseTotal) }}
                   @if($discPct > 0)
-                    - {{ rtrim(rtrim($discPct,'0'),'.') }}%
+                    - {{ (float) $discPct }}%
                     = <strong style="color:var(--green);font-weight:800;font-size:12px;">₹{{ number_format($sampleFinalTotal) }}</strong>
                   @else
                     = <strong style="color:var(--green);font-weight:800;font-size:12px;">₹{{ number_format($sampleBaseTotal) }}</strong>

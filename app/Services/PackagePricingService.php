@@ -49,6 +49,38 @@ class PackagePricingService
         $adminFeeType = ($feeRecord && !empty($feeRecord->admin_fee_type)) 
             ? strtolower((string) $feeRecord->admin_fee_type) 
             : 'fixed';
+
+        // If no fee record in appointment_fees or doctor_fee is 0, check doctor profile consultation_fee
+        if ($doctorFee <= 0 && $doctorId) {
+            $profile = \App\Models\DoctorProfile::where('user_id', $doctorId)->first();
+            if ($profile && (float) ($profile->consultation_fee ?? 0) > 0) {
+                $doctorFee = (float) $profile->consultation_fee;
+            }
+        }
+
+        // If still 0, check if another doctor has configured fee or fallback to benchmark rate (₹500 Doctor + ₹100 Physiopii)
+        if ($doctorFee <= 0) {
+            $defaultSysFee = AppointmentFee::where('doctor_fee', '>', 0)->first();
+            if ($defaultSysFee) {
+                $doctorFee = (float) $defaultSysFee->doctor_fee;
+                $adminFeeConfig = (float) $defaultSysFee->admin_fee;
+                $adminFeeType = (string) ($defaultSysFee->admin_fee_type ?? 'fixed');
+            } else {
+                $doctorFee = 500.0;
+                $adminFeeConfig = 100.0;
+                $adminFeeType = 'fixed';
+            }
+        } elseif ($adminFeeConfig <= 0) {
+            $defaultSysFee = AppointmentFee::where('admin_fee', '>', 0)->first();
+            if ($defaultSysFee) {
+                $adminFeeConfig = (float) $defaultSysFee->admin_fee;
+                $adminFeeType = (string) ($defaultSysFee->admin_fee_type ?? 'fixed');
+            } else {
+                $adminFeeConfig = 100.0;
+                $adminFeeType = 'fixed';
+            }
+        }
+
         $fallbackPlanPrice = ($plan && isset($plan->price)) ? (float)$plan->price : 0.0;
         $discountPct = ($plan && isset($plan->discount_percentage)) ? (float)$plan->discount_percentage : 0.0;
 

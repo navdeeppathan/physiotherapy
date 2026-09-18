@@ -37,6 +37,16 @@ Route::get('/enquiry-symptoms', [EnquiryController::class, 'symptoms']);
 Route::post('users', [UserController::class, 'store']);
 Route::get('/all-specializations', [SpecializationControllerApi::class, 'index']);
 
+// Public Discovery: Doctors & Patient Plans
+Route::get('/doctors', [UserController::class, 'doctors']);
+Route::get('/doctor/profile/{doctor_id}', [DoctorProfileController::class, 'show']);
+Route::get('/doctor/slots/{doctor_id}', [DoctorAvailabilityController::class, 'getSlotsByDoctorId']);
+Route::get('/find-doctors', [SpecializationControllerApi::class, 'findDoctors']);
+Route::get('/doctor/{doctor_id}/feedback', [FeedbackController::class, 'getDoctorFeedback']);
+Route::get('/doctor/{doctor_id}/rating', [FeedbackController::class, 'getDoctorRating']);
+Route::get('/patient-plans', [PatientPlanController::class, 'index']);
+Route::get('/patient/plans', [PatientPlanController::class, 'index']);
+
 Route::middleware('auth:api')->group(function () {
 
     Route::post('/logout', [UserController::class, 'logout']);
@@ -46,19 +56,8 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('/change-password', [UserController::class, 'changePassword']);
 
-    // Doctors Listing
-    Route::get('/doctors', [UserController::class, 'doctors']);
-    Route::get('/doctor/profile/{doctor_id}', [DoctorProfileController::class, 'show']);
-    Route::get('/doctor/slots/{doctor_id}', [DoctorAvailabilityController::class, 'getSlotsByDoctorId']);
-
     // Feedback
     Route::post('/feedback', [FeedbackController::class, 'store']);
-    Route::get('/doctor/{doctor_id}/feedback', [FeedbackController::class, 'getDoctorFeedback']);
-    Route::get('/doctor/{doctor_id}/rating', [FeedbackController::class, 'getDoctorRating']);
-
-    // Specializations
-    // Route::get('/all-specializations', [SpecializationControllerApi::class, 'index']);
-    Route::get('/find-doctors', [SpecializationControllerApi::class, 'findDoctors']);
 
     // Plans
     Route::prefix('plans')->group(function () {
@@ -75,9 +74,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/subscribe', [UserSubscriptionController::class, 'store']);
     Route::post('/cancel-subscription', [UserSubscriptionController::class, 'cancel']);
 
-    // Patient Plans & Subscriptions
-    Route::get('/patient-plans', [PatientPlanController::class, 'index']);
-    Route::get('/patient/plans', [PatientPlanController::class, 'index']);
+    // Patient Plans & Subscriptions (Actions)
     Route::post('/patient-plans/subscribe', [PatientPlanController::class, 'subscribe']);
     Route::post('/patient/plan/subscribe', [PatientPlanController::class, 'subscribe']);
     Route::post('/patient/plans/subscribe', [PatientPlanController::class, 'subscribe']);

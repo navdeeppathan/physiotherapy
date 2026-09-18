@@ -42,8 +42,8 @@ class PatientPlanController extends BaseApiController
                 $appointmentsCount = max(1, (int) ($plan->total_appointments ?? 1));
                 $discountPct       = (float) ($plan->discount_percentage ?? 0);
 
-                if ($doctor) {
-                    $pricing = \App\Services\PackagePricingService::calculate($doctor, $appointmentsCount, $plan);
+                if ($doctor || $doctor_id) {
+                    $pricing = \App\Services\PackagePricingService::calculate($doctor ?? (int) $doctor_id, $appointmentsCount, $plan);
                 } elseif ($systemFeeRecord) {
                     $pricing = \App\Services\PackagePricingService::calculateFromValues(
                         (float) $systemFeeRecord->doctor_fee,

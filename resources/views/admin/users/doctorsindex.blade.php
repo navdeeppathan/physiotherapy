@@ -556,15 +556,23 @@
     <!-- ── HEADER ── -->
     <div class="page-header">
         <div class="page-header-left">
-            <h1>All Users</h1>
-            <p>Manage doctors, patients, and their access across the platform.</p>
+            <h1>Doctors Directory</h1>
+            <p>Manage doctors, consultation fees, platform admin fees, and their access.</p>
         </div>
-        <div class="header-badge">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-            {{ $users->total() }} users total
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ route('admin.doctors.create') }}" style="text-decoration:none; height:38px; display:inline-flex; align-items:center; gap:6px; padding:0 16px; border-radius:8px; font-weight:600; font-size:13px; background:#2563EB; color:#fff; transition: background 0.15s;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Add Doctor
+            </a>
+            <div class="header-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                {{ $users->total() }} doctors total
+            </div>
         </div>
     </div>
 
@@ -616,9 +624,9 @@
 
         <div class="table-card-head">
             <div>
-                <div class="table-card-head-title">User Directory</div>
+                <div class="table-card-head-title">Doctors Directory</div>
                 <div class="table-card-head-count">
-                    Showing {{ $users->firstItem() }}–{{ $users->lastItem() }} of {{ $users->total() }} users
+                    Showing {{ $users->firstItem() }}–{{ $users->lastItem() }} of {{ $users->total() }} doctors
                 </div>
             </div>
         </div>
@@ -633,8 +641,8 @@
                         <th>Role</th>
                         <th>Status</th>
                         <th>Doctor Fee</th>
-                        {{-- <th>Admin Fee</th>
-                        <th>Total</th> --}}
+                        <th>Admin Fee</th>
+                        <th>Total Fee</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -682,28 +690,36 @@
                             </td>
 
                             <td>
-                                @if($user->fee && $user->fee->doctor_fee)
-                                    <span class="fee-val">₹{{ number_format($user->fee->doctor_fee) }}</span>
-                                @else
-                                    <span class="fee-na">—</span>
-                                @endif
-                            </td>
-
-                            {{-- <td>
-                                @if($user->fee && $user->fee->admin_fee)
-                                    <span class="fee-val">₹{{ number_format($user->fee->admin_fee) }}</span>
+                                @if($user->fee && $user->fee->doctor_fee > 0)
+                                    <span class="fee-val" style="font-weight: 700; color: #1e293b;">₹{{ number_format($user->fee->doctor_fee, 2) }}</span>
                                 @else
                                     <span class="fee-na">—</span>
                                 @endif
                             </td>
 
                             <td>
-                                @if($user->fee && $user->fee->total_fee)
-                                    <span class="fee-val" style="color: #059669; font-weight: 600;">₹{{ number_format($user->fee->total_fee) }}</span>
+                                @if($user->fee && $user->fee->admin_fee > 0)
+                                    @if(($user->fee->admin_fee_type ?? 'fixed') === 'percentage')
+                                        <span class="fee-val" style="color: #d97706; font-weight: 700;">{{ rtrim(rtrim(number_format($user->fee->admin_fee, 2), '0'), '.') }}%</span>
+                                        <div style="font-size: 11px; color: #64748b; margin-top: 1px;">(₹{{ number_format($user->fee->getAdminFeeAmount(), 2) }})</div>
+                                    @else
+                                        <span class="fee-val" style="color: #d97706; font-weight: 700;">₹{{ number_format($user->fee->admin_fee, 2) }}</span>
+                                    @endif
                                 @else
                                     <span class="fee-na">—</span>
                                 @endif
-                            </td> --}}
+                            </td>
+
+                            <td>
+                                @if($user->fee && $user->fee->getPerAppointmentTotal() > 0)
+                                    <span class="fee-val" style="color: #059669; font-weight: 800; font-size: 13.5px;">₹{{ number_format($user->fee->getPerAppointmentTotal(), 2) }}</span>
+                                    <div style="font-size: 10.5px; color: #64748b; margin-top: 1px; white-space: nowrap;">
+                                        ₹{{ number_format($user->fee->doctor_fee, 0) }} + ₹{{ number_format($user->fee->getAdminFeeAmount(), 0) }}
+                                    </div>
+                                @else
+                                    <span class="fee-na">—</span>
+                                @endif
+                            </td>
 
                             <td>
                                 <div class="d-flex gap-2">

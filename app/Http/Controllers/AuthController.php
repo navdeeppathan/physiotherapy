@@ -37,7 +37,7 @@ class AuthController extends Controller
 
     public function doctors(Request $request)
     {
-        $query = User::where('role', 'doctor');
+        $query = User::where('role', 'doctor')->with('fee');
 
         // Search
         if ($request->search) {
@@ -55,6 +55,74 @@ class AuthController extends Controller
         $users = $query->paginate(10)->withQueryString();
 
         return view('admin.users.doctorsindex', compact('users'));
+    }
+
+    public function createDoctor()
+    {
+        $specializations = Specializations::where('status', 'active')->get();
+
+        return view('admin.users.create-doctor', compact('specializations'));
+    }
+
+    public function storeDoctor(Request $request)
+    {
+        $request->validate([
+            'name'     => 'required|string|max:150',
+            'email'    => 'required|email|unique:users,email',
+            'phone'    => 'required|unique:users,phone',
+            'password' => 'required|min:6',
+        ]);
+
+        $doctor = User::create([
+            'role'     => 'doctor',
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'phone'    => $request->phone,
+            'dob'      => $request->dob,
+            'gender'   => $request->gender,
+            'status'   => $request->status ?? 'active',
+            'password' => Hash::make($request->password),
+
+            'default_start_time' => $request->default_start_time,
+            'default_end_time'   => $request->default_end_time,
+            'default_available_days' => json_encode($request->available_days ?? []),
+
+            'address' => $request->address,
+            'city'    => $request->city,
+            'state'   => $request->state,
+            'pincode' => $request->pincode,
+        ]);
+
+        $doctor->profile()->create([
+            'specialization'         => $request->specialization,
+            'qualification'          => $request->qualification ?? '',
+            'experience_years'       => $request->experience_years,
+            'bio'                    => $request->bio,
+            'career_path'            => $request->career_path,
+            'highlights'             => $request->highlights,
+            'clinic_address'         => $request->clinic_address,
+            'home_visit_available'   => $request->home_visit_available ?? 0,
+            'clinic_visit_available' => $request->clinic_visit_available ?? 0,
+        ]);
+
+        $adminFeeType = $request->input('admin_fee_type', 'fixed');
+        $adminFee = (float) $request->input('admin_fee', 0);
+        $doctorFee = (float) $request->input('doctor_fee', 0);
+        $effectiveAdminFee = ($adminFeeType === 'percentage')
+            ? round(($doctorFee * $adminFee) / 100, 2)
+            : $adminFee;
+        $totalFee = round($doctorFee + $effectiveAdminFee, 2);
+
+        $doctor->fee()->create([
+            'doctor_fee'     => $doctorFee,
+            'admin_fee'      => $adminFee,
+            'admin_fee_type' => $adminFeeType,
+            'total_fee'      => $totalFee,
+        ]);
+
+        return redirect()
+            ->route('admin.users.doctorsindex')
+            ->with('success', 'Doctor created successfully.');
     }
 
     public function showDoctor($id)
@@ -140,10 +208,21 @@ class AuthController extends Controller
             ]
         );
 
+        $adminFeeType = $request->input('admin_fee_type', 'fixed');
+        $adminFee = (float) $request->input('admin_fee', 0);
+        $doctorFee = (float) $request->input('doctor_fee', 0);
+        $effectiveAdminFee = ($adminFeeType === 'percentage')
+            ? round(($doctorFee * $adminFee) / 100, 2)
+            : $adminFee;
+        $totalFee = round($doctorFee + $effectiveAdminFee, 2);
+
         $doctor->fee()->updateOrCreate(
             ['doctor_id'=>$doctor->id],
             [
-                'doctor_fee'=>$request->doctor_fee
+                'doctor_fee'     => $doctorFee,
+                'admin_fee'      => $adminFee,
+                'admin_fee_type' => $adminFeeType,
+                'total_fee'      => $totalFee,
             ]
         );
 

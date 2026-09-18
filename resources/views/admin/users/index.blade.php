@@ -632,9 +632,6 @@
                         <th>Phone</th>
                         <th>Role</th>
                         <th>Status</th>
-                        {{-- <th>Doctor Fee</th>
-                        <th>Admin Fee</th>
-                        <th>Total</th> --}}
                         <th>Actions</th> 
                     </tr>
                 </thead>
@@ -682,61 +679,15 @@
                             </td>
                              <td>
                                 @if($user->role == 'patient')
-                                    <a href="{{ route(
-                                        'admin.appointments.create',
-                                        $user->id
-                                    ) }}"
-                                    class="btn btn-primary btn-sm">
+                                    <a href="{{ route('admin.appointments.create', $user->id) }}" class="btn btn-primary btn-sm">
                                         Book Appointment
                                     </a>
                                 @endif
                             </td>
-
-                            {{-- <td>
-                                @if($user->fee && $user->fee->doctor_fee)
-                                    <span class="fee-val">₹{{ number_format($user->fee->doctor_fee) }}</span>
-                                @else
-                                    <span class="fee-na">—</span>
-                                @endif
-                            </td>
-
-                            <td>
-                                @if($user->fee && $user->fee->admin_fee)
-                                    <span class="fee-val">₹{{ number_format($user->fee->admin_fee) }}</span>
-                                @else
-                                    <span class="fee-na">—</span>
-                                @endif
-                            </td>
-
-                            <td>
-                                @if($user->fee && $user->fee->total_fee)
-                                    <span class="fee-val" style="color: #059669; font-weight: 600;">₹{{ number_format($user->fee->total_fee) }}</span>
-                                @else
-                                    <span class="fee-na">—</span>
-                                @endif
-                            </td>
-                           
-
-                            <td>
-                                @if($user->role == 'doctor')
-                                    <button
-                                        class="act-btn fee open-fee-modal"
-                                        data-id="{{ $user->id }}"
-                                        data-name="{{ $user->name }}"
-                                    >
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                            <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                                        </svg>
-                                        Set Fee
-                                    </button>
-                                @else
-                                    <span class="fee-na">—</span>
-                                @endif
-                            </td> --}}
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" style="text-align: center; padding: 36px 20px; color: #94a3b8; font-size: 13px;">
+                            <td colspan="6" style="text-align: center; padding: 36px 20px; color: #94a3b8; font-size: 13px;">
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display: block; margin: 0 auto 10px;">
                                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
                                     <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>

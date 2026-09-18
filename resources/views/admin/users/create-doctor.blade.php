@@ -65,7 +65,7 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: #059669;
+        background: #2563EB;
         color: #fff;
         border: none;
         border-radius: 10px;
@@ -73,10 +73,13 @@
         font-size: 13.5px;
         font-weight: 600;
         cursor: pointer;
-        transition: background 0.15s;
+        transition: background 0.15s, box-shadow 0.15s;
     }
 
-    .save-btn:hover { background: #047857; }
+    .save-btn:hover {
+        background: #1d4ed8;
+        box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+    }
 
     /* ── GRID ────────────────────────────────────────── */
     .detail-grid {
@@ -99,61 +102,24 @@
         margin-bottom: 20px;
     }
 
-    .card:last-child { margin-bottom: 0; }
-
     .card-head {
+        padding: 14px 20px;
+        border-bottom: 1px solid #f1f5f9;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 14px 20px;
-        border-bottom: 1px solid #f1f5f9;
     }
 
     .card-head-title {
         font-size: 13.5px;
-        font-weight: 600;
+        font-weight: 700;
         color: #0f172a;
         display: flex;
         align-items: center;
         gap: 8px;
     }
 
-    .card-head-title svg { color: #94a3b8; }
-
     .card-body { padding: 20px; }
-
-    .profile-avatar {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid #e2e8f0;
-        margin: 24px auto 6px;
-        display: block;
-    }
-
-    .profile-avatar-placeholder {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background: #ECFDF5;
-        color: #059669;
-        font-size: 24px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 24px auto 6px;
-        border: 3px solid #e2e8f0;
-    }
-
-    .profile-name-preview {
-        text-align: center;
-        font-size: 15px;
-        font-weight: 700;
-        color: #0f172a;
-        margin-bottom: 20px;
-    }
 
     /* ── FORM ────────────────────────────────────────── */
     .form-grid {
@@ -195,23 +161,16 @@
 
     .form-control:focus {
         outline: none;
-        border-color: #059669;
-        box-shadow: 0 0 0 3px rgba(5,150,105,0.1);
+        border-color: #2563EB;
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
     }
 
     textarea.form-control { resize: vertical; min-height: 80px; }
-
     select.form-control { appearance: none; cursor: pointer; }
 
     .form-hint {
         font-size: 11.5px;
         color: #94a3b8;
-        margin-top: 4px;
-    }
-
-    .error-text {
-        font-size: 11.5px;
-        color: #be123c;
         margin-top: 4px;
     }
 
@@ -222,9 +181,7 @@
         gap: 8px;
     }
 
-    .toggle-pill {
-        position: relative;
-    }
+    .toggle-pill { position: relative; }
 
     .toggle-pill input {
         position: absolute;
@@ -268,31 +225,30 @@
     }
 </style>
 
-<form action="{{ route('admin.doctors.update', $doctor->id) }}" method="POST">
+<form action="{{ route('admin.doctors.store') }}" method="POST">
 @csrf
-@method('PUT')
 
 <div class="doctor-wrap">
 
     <!-- ── PAGE HEADER ── -->
     <div class="page-header">
         <div class="page-header-left">
-            <a href="{{ route('admin.doctors.show', $doctor->id) }}" class="back-btn" title="Back to Profile">
+            <a href="{{ route('admin.users.doctorsindex') }}" class="back-btn" title="Back to Doctors">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="15 18 9 12 15 6"/>
                 </svg>
             </a>
             <div>
-                <h1>Edit Doctor</h1>
-                <p>Update details for {{ $doctor->name }}</p>
+                <h1>Add New Doctor</h1>
+                <p>Register a new doctor with custom doctor fee &amp; platform admin fee.</p>
             </div>
         </div>
 
         <button type="submit" class="save-btn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+                <polyline points="20 6 9 17 4 12"/>
             </svg>
-            Save Changes
+            Create Doctor
         </button>
     </div>
 
@@ -317,45 +273,44 @@
 
             <!-- Basic Info -->
             <div class="card">
-
-                @if($doctor->profile_img)
-                    <img src="{{ asset($doctor->profile_img) }}" alt="{{ $doctor->name }}" class="profile-avatar">
-                @else
-                    <div class="profile-avatar-placeholder">
-                        {{ strtoupper(substr($doctor->name, 0, 2)) }}
+                <div class="card-head">
+                    <div class="card-head-title">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        Account &amp; Personal Info
                     </div>
-                @endif
-                <div class="profile-name-preview">{{ $doctor->name }}</div>
+                </div>
 
-                <div class="card-body" style="padding-top:0;">
+                <div class="card-body">
 
                     <div class="form-group">
-                        <label class="form-label">Full Name</label>
-                        <input type="text" name="name" class="form-control" value="{{ old('name', $doctor->name) }}" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control" value="{{ old('email', $doctor->email) }}" required>
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" name="name" class="form-control" value="{{ old('name') }}" placeholder="Dr. Jane Smith" required>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Phone</label>
-                        <input type="text" name="phone" class="form-control" value="{{ old('phone', $doctor->phone) }}" required>
+                        <label class="form-label">Email Address *</label>
+                        <input type="email" name="email" class="form-control" value="{{ old('email') }}" placeholder="doctor@example.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Phone Number *</label>
+                        <input type="text" name="phone" class="form-control" value="{{ old('phone') }}" placeholder="9876543210" required>
                     </div>
 
                     <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">Date of Birth</label>
-                            <input type="date" name="dob" class="form-control" value="{{ old('dob', $doctor->dob) }}">
+                            <input type="date" name="dob" class="form-control" value="{{ old('dob') }}">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Gender</label>
                             <select name="gender" class="form-control">
                                 <option value="">Select</option>
-                                <option value="male" {{ old('gender', $doctor->gender) === 'male' ? 'selected' : '' }}>Male</option>
-                                <option value="female" {{ old('gender', $doctor->gender) === 'female' ? 'selected' : '' }}>Female</option>
-                                <option value="other" {{ old('gender', $doctor->gender) === 'other' ? 'selected' : '' }}>Other</option>
+                                <option value="male" {{ old('gender') === 'male' ? 'selected' : '' }}>Male</option>
+                                <option value="female" {{ old('gender') === 'female' ? 'selected' : '' }}>Female</option>
+                                <option value="other" {{ old('gender') === 'other' ? 'selected' : '' }}>Other</option>
                             </select>
                         </div>
                     </div>
@@ -363,29 +318,23 @@
                     <div class="form-group">
                         <label class="form-label">Status</label>
                         <select name="status" class="form-control">
-                            <option value="active" {{ old('status', $doctor->status) === 'active' ? 'selected' : '' }}>Active</option>
-                            <option value="inactive" {{ old('status', $doctor->status) === 'inactive' ? 'selected' : '' }}>Inactive</option>
-                            <option value="blocked" {{ old('status', $doctor->status) === 'blocked' ? 'selected' : '' }}>Blocked</option>
+                            <option value="active" {{ old('status', 'active') === 'active' ? 'selected' : '' }}>Active</option>
+                            <option value="inactive" {{ old('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                            <option value="blocked" {{ old('status') === 'blocked' ? 'selected' : '' }}>Blocked</option>
                         </select>
                     </div>
 
                     <hr class="section-divider">
 
                     <div class="form-group">
-                        <label class="form-label">New Password</label>
-                        <input type="password" name="password" class="form-control" placeholder="Leave blank to keep current">
-                        <div class="form-hint">Only fill this in if you want to change the password.</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Confirm Password</label>
-                        <input type="password" name="password_confirmation" class="form-control" placeholder="Repeat new password">
+                        <label class="form-label">Password *</label>
+                        <input type="password" name="password" class="form-control" placeholder="Minimum 6 characters" required>
                     </div>
 
                 </div>
             </div>
 
-            <!-- Consultation Fee & Admin Fee -->
+            <!-- Fee Configuration -->
             <div class="card">
                 <div class="card-head">
                     <div class="card-head-title">
@@ -397,45 +346,45 @@
                 </div>
                 <div class="card-body">
                     <div class="form-group mb-3">
-                        <label class="form-label">Doctor Fee (₹)</label>
-                        <input type="number" name="doctor_fee" id="edit_doctor_fee" class="form-control" step="0.01" min="0"
+                        <label class="form-label">Doctor Fee (₹) *</label>
+                        <input type="number" name="doctor_fee" id="create_doctor_fee" class="form-control" step="0.01" min="0"
                             placeholder="e.g. 800"
-                            value="{{ old('doctor_fee', $doctor->fee->doctor_fee ?? '') }}">
-                        <div class="form-hint">Amount paid to the doctor per appointment.</div>
+                            value="{{ old('doctor_fee', '800') }}">
+                        <div class="form-hint">Fee retained by this doctor per appointment.</div>
                     </div>
 
                     <div class="form-group mb-3">
                         <label class="form-label">Physiopii / Admin Fee Type</label>
-                        <select name="admin_fee_type" id="edit_admin_fee_type" class="form-control">
-                            <option value="fixed" {{ old('admin_fee_type', $doctor->fee->admin_fee_type ?? 'fixed') === 'fixed' ? 'selected' : '' }}>Fixed Amount (₹)</option>
-                            <option value="percentage" {{ old('admin_fee_type', $doctor->fee->admin_fee_type ?? '') === 'percentage' ? 'selected' : '' }}>Percentage (%)</option>
+                        <select name="admin_fee_type" id="create_admin_fee_type" class="form-control">
+                            <option value="fixed" {{ old('admin_fee_type', 'fixed') === 'fixed' ? 'selected' : '' }}>Fixed Amount (₹)</option>
+                            <option value="percentage" {{ old('admin_fee_type') === 'percentage' ? 'selected' : '' }}>Percentage (%)</option>
                         </select>
                     </div>
 
                     <div class="form-group mb-3">
-                        <label class="form-label">Physiopii / Admin Fee (<span id="editAdminFeeUnit">₹</span>)</label>
-                        <input type="number" name="admin_fee" id="edit_admin_fee" class="form-control" step="0.01" min="0"
+                        <label class="form-label">Physiopii / Admin Fee (<span id="createAdminFeeUnit">₹</span>)</label>
+                        <input type="number" name="admin_fee" id="create_admin_fee" class="form-control" step="0.01" min="0"
                             placeholder="e.g. 100 or 10"
-                            value="{{ old('admin_fee', $doctor->fee->admin_fee ?? '') }}">
+                            value="{{ old('admin_fee', '100') }}">
                         <div class="form-hint">Platform fee charged per appointment for this doctor.</div>
                     </div>
 
                     <div class="fee-preview-box" style="background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px; padding: 14px; margin-top: 14px;">
                         <div style="display:flex; justify-content:space-between; margin-bottom: 6px; font-size: 13px; color: #166534;">
                             <span>Doctor Fee:</span>
-                            <strong id="previewDocFee">₹0</strong>
+                            <strong id="createPreviewDocFee">₹0</strong>
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-bottom: 6px; font-size: 13px; color: #166534;">
                             <span>Admin Fee:</span>
-                            <strong id="previewAdmFee">₹0</strong>
+                            <strong id="createPreviewAdmFee">₹0</strong>
                         </div>
                         <div style="display:flex; justify-content:space-between; padding-top: 6px; border-top: 1px dashed #86efac; font-size: 14px; color: #14532d; font-weight: 700;">
                             <span>Total Fee (Customer Pays):</span>
-                            <strong id="previewTotalFee" style="color:#059669; font-size:15px;">₹0</strong>
+                            <strong id="createPreviewTotalFee" style="color:#059669; font-size:15px;">₹0</strong>
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-top: 6px; padding-top: 6px; border-top: 1px solid #dcfce7; font-size: 12.5px; color: #15803d;">
                             <span>5-Session Package:</span>
-                            <strong id="previewPkgFee">₹0</strong>
+                            <strong id="createPreviewPkgFee">₹0</strong>
                         </div>
                     </div>
                 </div>
@@ -464,7 +413,7 @@
                             <select name="specialization" class="form-control">
                                 <option value="">Select Specialization</option>
                                 @foreach($specializations as $spec)
-                                    <option value="{{ $spec->id }}" {{ old('specialization', $doctor->profile->specialization ?? '') == $spec->id ? 'selected' : '' }}>
+                                    <option value="{{ $spec->id }}" {{ old('specialization') == $spec->id ? 'selected' : '' }}>
                                         {{ $spec->name }}
                                     </option>
                                 @endforeach
@@ -472,114 +421,69 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Qualification</label>
-                            <input type="text" name="qualification" class="form-control"
-                                value="{{ old('qualification', $doctor->profile->qualification ?? '') }}">
+                            <input type="text" name="qualification" class="form-control" placeholder="e.g. BPT, MPT (Neuro)"
+                                value="{{ old('qualification') }}">
                         </div>
                     </div>
 
                     <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">Experience (years)</label>
-                            <input type="number" name="experience_years" class="form-control" min="0"
-                                value="{{ old('experience_years', $doctor->profile->experience_years ?? '') }}">
+                            <input type="number" name="experience_years" class="form-control" min="0" placeholder="e.g. 5"
+                                value="{{ old('experience_years') }}">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Career Path</label>
-                            <input type="text" name="career_path" class="form-control"
-                                value="{{ old('career_path', $doctor->profile->career_path ?? '') }}">
+                            <input type="text" name="career_path" class="form-control" placeholder="e.g. Senior Physiotherapist"
+                                value="{{ old('career_path') }}">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Highlights</label>
-                        <input type="text" name="highlights" class="form-control"
-                            value="{{ old('highlights', $doctor->profile->highlights ?? '') }}"
-                            placeholder="e.g. 10+ years in sports rehab, published researcher">
+                        <label class="form-label">Biography / About</label>
+                        <textarea name="bio" class="form-control" placeholder="Professional bio and experience overview…">{{ old('bio') }}</textarea>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Bio</label>
-                        <textarea name="bio" class="form-control" rows="4">{{ old('bio', $doctor->profile->bio ?? '') }}</textarea>
+                        <label class="form-label">Key Highlights</label>
+                        <textarea name="highlights" class="form-control" placeholder="Special skills, certifications, awards…">{{ old('highlights') }}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Clinic / Hospital Address</label>
+                        <textarea name="clinic_address" class="form-control" placeholder="Clinic location details…">{{ old('clinic_address') }}</textarea>
                     </div>
 
                 </div>
             </div>
 
-            <!-- Address -->
-            <div class="card">
-                <div class="card-head">
-                    <div class="card-head-title">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-                        </svg>
-                        Address
-                    </div>
-                </div>
-                <div class="card-body">
-
-                    <div class="form-group">
-                        <label class="form-label">Personal Address</label>
-                        <input type="text" name="address" class="form-control"
-                            value="{{ old('address', $doctor->address) }}">
-                    </div>
-
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">City</label>
-                            <input type="text" name="city" class="form-control"
-                                value="{{ old('city', $doctor->city) }}">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">State</label>
-                            <input type="text" name="state" class="form-control"
-                                value="{{ old('state', $doctor->state) }}">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Pincode</label>
-                        <input type="text" name="pincode" class="form-control"
-                            value="{{ old('pincode', $doctor->pincode) }}">
-                    </div>
-
-                    <hr class="section-divider">
-
-                    <div class="form-group">
-                        <label class="form-label">Clinic Address</label>
-                        <input type="text" name="clinic_address" class="form-control"
-                            value="{{ old('clinic_address', $doctor->profile->clinic_address ?? '') }}">
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- Availability -->
+            <!-- Schedule & Availability -->
             <div class="card">
                 <div class="card-head">
                     <div class="card-head-title">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                         </svg>
-                        Availability
+                        Schedule &amp; Availability
                     </div>
                 </div>
                 <div class="card-body">
 
-                    <div class="form-grid" style="margin-bottom:20px;">
+                    <div class="form-grid">
                         <div class="form-group">
-                            <label class="form-label">Start Time</label>
+                            <label class="form-label">Default Start Time</label>
                             <input type="time" name="default_start_time" class="form-control"
-                                value="{{ old('default_start_time', $doctor->default_start_time ? \Carbon\Carbon::createFromFormat('H:i:s', $doctor->default_start_time)->format('H:i') : '') }}">
+                                value="{{ old('default_start_time', '09:00') }}">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">End Time</label>
+                            <label class="form-label">Default End Time</label>
                             <input type="time" name="default_end_time" class="form-control"
-                                value="{{ old('default_end_time', $doctor->default_end_time ? \Carbon\Carbon::createFromFormat('H:i:s', $doctor->default_end_time)->format('H:i') : '') }}">
+                                value="{{ old('default_end_time', '18:00') }}">
                         </div>
                     </div>
 
                     @php
-                        $selectedDays = old('available_days', $doctor->default_available_days ? json_decode($doctor->default_available_days, true) : []);
+                        $selectedDays = old('available_days', ['monday','tuesday','wednesday','thursday','friday','saturday']);
                         $allDays = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
                     @endphp
 
@@ -588,9 +492,9 @@
                         <div class="toggle-group">
                             @foreach($allDays as $day)
                                 <div class="toggle-pill">
-                                    <input type="checkbox" name="available_days[]" id="day-{{ $day }}" value="{{ $day }}"
+                                    <input type="checkbox" name="available_days[]" id="create-day-{{ $day }}" value="{{ $day }}"
                                         {{ in_array($day, $selectedDays ?? []) ? 'checked' : '' }}>
-                                    <label for="day-{{ $day }}">{{ ucfirst($day) }}</label>
+                                    <label for="create-day-{{ $day }}">{{ ucfirst($day) }}</label>
                                 </div>
                             @endforeach
                         </div>
@@ -600,14 +504,14 @@
                         <label class="form-label" style="margin-bottom:10px;">Visit Types</label>
                         <div class="toggle-group">
                             <div class="toggle-pill visit">
-                                <input type="checkbox" name="home_visit_available" id="home-visit" value="1"
-                                    {{ old('home_visit_available', $doctor->profile->home_visit_available ?? false) ? 'checked' : '' }}>
-                                <label for="home-visit">🏠 Home Visit</label>
+                                <input type="checkbox" name="home_visit_available" id="create-home-visit" value="1"
+                                    {{ old('home_visit_available', 1) ? 'checked' : '' }}>
+                                <label for="create-home-visit">🏠 Home Visit</label>
                             </div>
                             <div class="toggle-pill visit">
-                                <input type="checkbox" name="clinic_visit_available" id="clinic-visit" value="1"
-                                    {{ old('clinic_visit_available', $doctor->profile->clinic_visit_available ?? false) ? 'checked' : '' }}>
-                                <label for="clinic-visit">🏥 Clinic Visit</label>
+                                <input type="checkbox" name="clinic_visit_available" id="create-clinic-visit" value="1"
+                                    {{ old('clinic_visit_available', 1) ? 'checked' : '' }}>
+                                <label for="create-clinic-visit">🏥 Clinic Visit</label>
                             </div>
                         </div>
                     </div>
@@ -625,10 +529,10 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const docFeeInput  = document.getElementById('edit_doctor_fee');
-    const admFeeInput  = document.getElementById('edit_admin_fee');
-    const feeTypeInput = document.getElementById('edit_admin_fee_type');
-    const unitSpan     = document.getElementById('editAdminFeeUnit');
+    const docFeeInput  = document.getElementById('create_doctor_fee');
+    const admFeeInput  = document.getElementById('create_admin_fee');
+    const feeTypeInput = document.getElementById('create_admin_fee_type');
+    const unitSpan     = document.getElementById('createAdminFeeUnit');
 
     function updateFeePreview() {
         const df   = parseFloat(docFeeInput.value) || 0;
@@ -646,10 +550,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const singleTotal  = df + effectiveAdmin;
         const packageTotal = singleTotal * 5;
 
-        document.getElementById('previewDocFee').textContent   = '₹' + Math.round(df).toLocaleString('en-IN');
-        document.getElementById('previewAdmFee').textContent   = '₹' + Math.round(effectiveAdmin).toLocaleString('en-IN') + (type === 'percentage' ? ' (' + af + '%)' : '');
-        document.getElementById('previewTotalFee').textContent = '₹' + Math.round(singleTotal).toLocaleString('en-IN');
-        document.getElementById('previewPkgFee').textContent   = '₹' + Math.round(packageTotal).toLocaleString('en-IN');
+        document.getElementById('createPreviewDocFee').textContent   = '₹' + Math.round(df).toLocaleString('en-IN');
+        document.getElementById('createPreviewAdmFee').textContent   = '₹' + Math.round(effectiveAdmin).toLocaleString('en-IN') + (type === 'percentage' ? ' (' + af + '%)' : '');
+        document.getElementById('createPreviewTotalFee').textContent = '₹' + Math.round(singleTotal).toLocaleString('en-IN');
+        document.getElementById('createPreviewPkgFee').textContent   = '₹' + Math.round(packageTotal).toLocaleString('en-IN');
     }
 
     if (docFeeInput && admFeeInput && feeTypeInput) {

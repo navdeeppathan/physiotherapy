@@ -69,6 +69,8 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
     Route::post('/users/toggle-status/{id}', [AuthController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::get('/users', [AuthController::class, 'index'])->name('users.index');
     Route::get('/doctors', [AuthController::class, 'doctors'])->name('users.doctorsindex');
+    Route::get('/doctors/create', [AuthController::class, 'createDoctor'])->name('doctors.create');
+    Route::post('/doctors/store', [AuthController::class, 'storeDoctor'])->name('doctors.store');
     Route::get('/doctors/{id}', [AuthController::class, 'showDoctor'])->name('doctors.show');
 
     Route::get('/doctors/{id}/edit', [AuthController::class, 'editDoctor'])->name('doctors.edit');

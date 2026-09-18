@@ -500,15 +500,44 @@ class AuthController extends Controller
         try {
             $doctor = User::where('role', 'doctor')->findOrFail($id);
 
-            // Clean up related doctor data safely
-            \App\Models\DoctorProfile::where('user_id', $doctor->id)->delete();
-            \App\Models\AppointmentFee::where('doctor_id', $doctor->id)->delete();
-            \App\Models\DoctorDocument::where('user_id', $doctor->id)->delete();
-            \App\Models\DoctorWallet::where('doctor_id', $doctor->id)->delete();
-            \App\Models\DoctorAvailabilityDate::where('doctor_id', $doctor->id)->delete();
-            \App\Models\DoctorTimeSlot::where('doctor_id', $doctor->id)->delete();
+            \Illuminate\Support\Facades\DB::transaction(function () use ($doctor) {
+                // Clean up related doctor data safely
+                \App\Models\DoctorProfile::where('user_id', $doctor->id)->delete();
+                \App\Models\AppointmentFee::where('doctor_id', $doctor->id)->delete();
+                \App\Models\DoctorDocument::where('user_id', $doctor->id)->delete();
+                \App\Models\DoctorWallet::where('doctor_id', $doctor->id)->delete();
+                \App\Models\DoctorReview::where('doctor_id', $doctor->id)->delete();
+                \App\Models\Feedback::where('doctor_id', $doctor->id)->delete();
+                \App\Models\AppointmentTransfer::where('old_doctor_id', $doctor->id)->orWhere('new_doctor_id', $doctor->id)->delete();
+                \App\Models\AppointmentTransferRequest::where('doctor_id', $doctor->id)->delete();
 
-            $doctor->delete();
+                // Appointments & associated records cleanup if any
+                $appointmentIds = \App\Models\Appointment::where('doctor_id', $doctor->id)->pluck('id');
+                if ($appointmentIds->isNotEmpty()) {
+                    \App\Models\AppointmentCancellation::whereIn('appointment_id', $appointmentIds)->delete();
+                    \App\Models\DoctorReview::whereIn('appointment_id', $appointmentIds)->delete();
+                    \App\Models\AppointmentTransfer::whereIn('appointment_id', $appointmentIds)->delete();
+                    \App\Models\Appointment::whereIn('id', $appointmentIds)->delete();
+                }
+
+                // Patient assessments linked to doctor
+                $assessmentIds = \App\Models\PatientAssessment::where('doctor_id', $doctor->id)->pluck('id');
+                if ($assessmentIds->isNotEmpty()) {
+                    \App\Models\AssessmentParameter::whereIn('assessment_id', $assessmentIds)->delete();
+                    \App\Models\AssessmentExercise::whereIn('assessment_id', $assessmentIds)->delete();
+                    \App\Models\AssessmentGoal::whereIn('assessment_id', $assessmentIds)->delete();
+                    \App\Models\PatientSession::whereIn('assessment_id', $assessmentIds)->delete();
+                    \App\Models\PatientReport::whereIn('assessment_id', $assessmentIds)->delete();
+                    \App\Models\PatientAssessment::whereIn('id', $assessmentIds)->delete();
+                }
+
+                // Delete availability & time slots (both use user_id, NOT doctor_id)
+                \App\Models\DoctorTimeSlot::where('user_id', $doctor->id)->delete();
+                \App\Models\DoctorAvailabilityDate::where('user_id', $doctor->id)->delete();
+
+                // Delete doctor user record
+                $doctor->delete();
+            });
 
             if (request()->ajax() || request()->wantsJson()) {
                 return response()->json([

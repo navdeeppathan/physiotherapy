@@ -185,14 +185,27 @@ class AppointmentController extends BaseApiController
                 $totalAppts   = (int) ($plan->total_appointments ?? count($slots));
                 $uniquePlanId = PatientPlanSubscription::generateUniquePlanId($patient->id);
 
+                // Compute pricing: (Doctor Fee + Physiopii/Admin Fee) * Package Appointments
+                $pricing = \App\Services\PackagePricingService::calculate(
+                    $request->doctor_id,
+                    $totalAppts,
+                    $plan
+                );
+
                 $subscription = PatientPlanSubscription::create([
                     'unique_plan_id'         => $uniquePlanId,
                     'patient_id'             => $patient->id,
+                    'doctor_id'              => (int) $request->doctor_id,
                     'patient_plan_id'        => $plan->id,
                     'start_date'             => $start->toDateString(),
                     'end_date'               => $end->toDateString(),
                     'used_appointments'      => 0,
                     'remaining_appointments' => $totalAppts,
+                    'package_appointments'   => $totalAppts,
+                    'doctor_fee'             => $pricing['doctor_fee_per_appt'],
+                    'admin_fee'              => $pricing['admin_fee_per_appt'],
+                    'admin_fee_type'         => $pricing['admin_fee_type'],
+                    'package_price'          => $pricing['package_price'],
                     'payment_status'         => 'paid',
                     'payment_method'         => 'Online',
                     'transaction_id'         => $request->payment_gateway_responce['razorpay_payment_id'] ?? ('TXN_' . time()),

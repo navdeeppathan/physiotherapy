@@ -262,7 +262,9 @@ table.subs-table{ width:100%;border-collapse:collapse; }
           <tr>
             <th>#</th>
             <th>Patient</th>
+            <th>Doctor</th>
             <th>Plan</th>
+            <th>Package Price</th>
             <th>Start Date</th>
             <th>End Date</th>
             <th>Usage</th>
@@ -284,6 +286,11 @@ table.subs-table{ width:100%;border-collapse:collapse; }
             $initials  = collect(explode(' ', $subscription->patient->name ?? 'U'))
                            ->map(fn($w) => strtoupper(substr($w,0,1)))
                            ->take(2)->implode('');
+
+            $pkgAppts  = $subscription->package_appointments ?? $subscription->total_appointments ?? $total;
+            $pkgPrice  = $subscription->package_price ?? $subscription->plan->price ?? 0;
+            $docShare  = $subscription->doctor_fee ? ($subscription->doctor_fee * $pkgAppts) : null;
+            $admShare  = $subscription->admin_fee ? ($subscription->admin_fee * $pkgAppts) : null;
           @endphp
 
           <tr>
@@ -298,12 +305,38 @@ table.subs-table{ width:100%;border-collapse:collapse; }
               </div>
             </td>
 
+            {{-- Doctor --}}
+            <td>
+              @if($subscription->doctor)
+                <div class="cell-name" style="font-size:12.5px;">Dr. {{ $subscription->doctor->name }}</div>
+                <div class="cell-label">{{ $subscription->doctor->specialist ?? 'Physiotherapist' }}</div>
+              @elseif($subscription->doctor_id)
+                <div class="cell-name" style="font-size:12.5px;">Doctor #{{ $subscription->doctor_id }}</div>
+              @else
+                <span style="color:var(--text3);font-size:12px;">Any Doctor</span>
+              @endif
+            </td>
+
             {{-- Plan --}}
             <td>
               <span class="plan-chip">
                 <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                 {{ $subscription->plan->name ?? '-' }}
               </span>
+            </td>
+
+            {{-- Package Price & Breakdown --}}
+            <td>
+              <div style="font-weight:800;font-size:13.5px;color:var(--text);">₹{{ number_format($pkgPrice, 2) }}</div>
+              @if($docShare !== null || $admShare !== null)
+                <div style="font-size:10.5px;color:var(--text3);margin-top:3px;white-space:nowrap;">
+                  @if($docShare !== null)<span style="color:var(--blue);">Dr: ₹{{ number_format($docShare, 0) }}</span>@endif
+                  @if($docShare !== null && $admShare !== null) · @endif
+                  @if($admShare !== null)<span style="color:var(--green);">Admin: ₹{{ number_format($admShare, 0) }}</span>@endif
+                </div>
+              @elseif($pkgAppts > 0)
+                <div style="font-size:10.5px;color:var(--text3);margin-top:2px;">{{ $pkgAppts }} sessions</div>
+              @endif
             </td>
 
             {{-- Start Date --}}
@@ -363,7 +396,7 @@ table.subs-table{ width:100%;border-collapse:collapse; }
 
           @empty
           <tr class="empty-row">
-            <td colspan="9">
+            <td colspan="11">
               <div class="empty-icon">
                 <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               </div>

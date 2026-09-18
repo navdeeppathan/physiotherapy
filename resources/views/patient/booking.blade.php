@@ -287,19 +287,24 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
             <div class="pm-modal-body">
                 <div class="pm-plan-list">
                     @foreach($patientPlans as $plan)
-                        @php $perSession = $plan->total_appointments > 0 ? $plan->price / $plan->total_appointments : 0; @endphp
-                        <div class="pm-plan-card" data-id="{{ $plan->id }}" data-total="{{ $plan->total_appointments }}">
+                        @php 
+                            $pkgPrice = $plan->calculated_package_price ?? $plan->price;
+                            $perSession = $plan->calculated_per_session ?? ($plan->total_appointments > 0 ? $pkgPrice / $plan->total_appointments : 0);
+                            $origPrice = $plan->calculated_pricing['original_package_price'] ?? ($plan->original_price ?? $pkgPrice);
+                            $discPct = $plan->calculated_pricing['discount_percentage'] ?? ($plan->discount_percentage ?? 0);
+                        @endphp
+                        <div class="pm-plan-card" data-id="{{ $plan->id }}" data-total="{{ $plan->total_appointments }}" data-price="{{ $pkgPrice }}">
                             <div class="pm-radio"></div>
                             <div class="pm-plan-content">
                                 <div class="pm-plan-top">
                                     <div class="pm-plan-name">{{ $plan->name }}</div>
-                                    <div class="pm-plan-price">₹{{ number_format($plan->price,2) }}</div>
+                                    <div class="pm-plan-price">₹{{ number_format($pkgPrice, 2) }}</div>
                                 </div>
                                 <div class="pm-plan-bottom">
-                                    <span class="pm-session-price">₹{{ number_format($perSession,0) }} per session &middot; {{ $plan->total_appointments }} session(s)</span>
-                                    @if($plan->discount_percentage > 0)
-                                        <span class="pm-old-price">₹{{ number_format($plan->original_price,2) }}</span>
-                                        <span class="pm-discount-badge">{{ rtrim(rtrim($plan->discount_percentage,'0'),'.') }}% Off</span>
+                                    <span class="pm-session-price">₹{{ number_format($perSession, 0) }} per session &middot; {{ $plan->total_appointments }} session(s)</span>
+                                    @if($discPct > 0)
+                                        <span class="pm-old-price">₹{{ number_format($origPrice, 2) }}</span>
+                                        <span class="pm-discount-badge">{{ rtrim(rtrim((string)$discPct, '0'), '.') }}% Off</span>
                                     @endif
                                 </div>
                             </div>

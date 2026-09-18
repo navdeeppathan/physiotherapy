@@ -11,6 +11,7 @@ class PatientPlanSubscriptionController extends Controller
     {
         $subscriptions = PatientPlanSubscription::with([
                 'patient',
+                'doctor',
                 'plan'
             ])
             ->latest()

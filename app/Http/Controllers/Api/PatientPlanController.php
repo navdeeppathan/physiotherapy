@@ -19,18 +19,33 @@ class PatientPlanController extends BaseApiController
     public function index(Request $request)
     {
         try {
-
             $patient_id = $request->query('patient_id');
+            $doctor_id  = $request->query('doctor_id');
 
             $plans = PatientPlan::where('status', 'active')
                 ->latest()
                 ->get();
 
+            // Calculate dynamic package price if doctor_id provided
+            if ($doctor_id) {
+                $plans->transform(function ($plan) use ($doctor_id) {
+                    $pricing = \App\Services\PackagePricingService::calculate($doctor_id, (int) $plan->total_appointments, $plan);
+                    $plan->doctor_id                 = (int) $doctor_id;
+                    $plan->doctor_fee                = $pricing['doctor_fee_per_appt'];
+                    $plan->admin_fee                 = $pricing['admin_fee_per_appt'];
+                    $plan->admin_fee_type            = $pricing['admin_fee_type'];
+                    $plan->per_appointment_rate      = $pricing['per_appointment_rate'];
+                    $plan->calculated_package_price  = $pricing['package_price'];
+                    $plan->customer_pays             = $pricing['customer_pays'];
+                    $plan->pricing_breakdown         = $pricing;
+                    return $plan;
+                });
+            }
+
             $userSubscription = null;
 
             // ✅ Get patient active subscription
             if ($patient_id) {
-
                 $userSubscription = PatientPlanSubscription::where('patient_id', $patient_id)
                     ->with('plan')
                     ->latest()
@@ -44,7 +59,6 @@ class PatientPlanController extends BaseApiController
             ], 'Patient plans fetched successfully');
 
         } catch (\Exception $e) {
-
             $this->logException($e, 'Patient Plan Index Error');
 
             return response()->json([
@@ -65,6 +79,7 @@ class PatientPlanController extends BaseApiController
         try {
             $patientId = $request->input('patient_id') ?? $request->input('user_id') ?? Auth::id() ?? auth('api')->id();
             $planId    = $request->input('patient_plan_id') ?? $request->input('plan_id') ?? $request->input('id');
+            $doctorId  = $request->input('doctor_id');
 
             if (!$patientId) {
                 return response()->json([
@@ -110,18 +125,33 @@ class PatientPlanController extends BaseApiController
                 default:
                     $endDate = $startDate->copy()->addMonth();
                     break;
-            }            // Generate Unique Plan Code (e.g. PLN-20260907-P11-9A8B)
+            }
+
+            // Generate Unique Plan Code (e.g. PLN-20260907-P11-9A8B)
             $uniquePlanId = PatientPlanSubscription::generateUniquePlanId($patientId);
+
+            // Compute pricing: (Doctor Fee + Physiopii/Admin Fee) * Package Appointments
+            $pricing = \App\Services\PackagePricingService::calculate(
+                $doctorId,
+                (int) ($plan->total_appointments ?? 1),
+                $plan
+            );
 
             // Create Subscription
             $subscription = PatientPlanSubscription::create([
                 'unique_plan_id'         => $uniquePlanId,
                 'patient_id'             => (int) $patientId,
+                'doctor_id'              => $doctorId ? (int) $doctorId : null,
                 'patient_plan_id'        => $plan->id,
                 'start_date'             => $startDate->toDateString(),
                 'end_date'               => $endDate->toDateString(),
                 'used_appointments'      => 0,
                 'remaining_appointments' => (int) ($plan->total_appointments ?? 1),
+                'package_appointments'   => (int) ($plan->total_appointments ?? 1),
+                'doctor_fee'             => $pricing['doctor_fee_per_appt'],
+                'admin_fee'              => $pricing['admin_fee_per_appt'],
+                'admin_fee_type'         => $pricing['admin_fee_type'],
+                'package_price'          => $pricing['package_price'],
                 'payment_status'         => $request->payment_status ?? 'paid',
                 'payment_method'         => $request->payment_method ?? 'Razorpay',
                 'transaction_id'         => $request->transaction_id ?? ('TXN_' . strtoupper(uniqid())),
@@ -132,8 +162,13 @@ class PatientPlanController extends BaseApiController
                 'subscription_id'        => $subscription->id,
                 'unique_plan_id'         => $subscription->unique_plan_id,
                 'patient_id'             => $subscription->patient_id,
+                'doctor_id'              => $subscription->doctor_id,
                 'patient_plan_id'        => $subscription->patient_plan_id,
                 'plan_name'              => $plan->name,
+                'package_price'          => $subscription->package_price,
+                'customer_pays'          => $pricing['customer_pays'],
+                'doctor_fee'             => $pricing['doctor_fee_per_appt'],
+                'admin_fee'              => $pricing['admin_fee_per_appt'],
                 'start_date'             => $startDate->format('d M Y'),
                 'end_date'               => $endDate->format('d M Y'),
                 'total_appointments'     => (int) ($plan->total_appointments ?? 1),
@@ -141,6 +176,7 @@ class PatientPlanController extends BaseApiController
                 'remaining_appointments' => (int) ($plan->total_appointments ?? 1),
                 'status'                 => $subscription->status,
                 'payment_status'         => $subscription->payment_status,
+                'pricing_breakdown'      => $pricing,
                 'data'                   => $subscription,
             ], 'Plan subscribed successfully');
 

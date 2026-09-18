@@ -166,7 +166,8 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color:
 </style>
 
 @php
-    $finalPrice = ($plan->price > 0) ? $plan->price : ($plan->original_price ?? 0);
+    $finalPrice = $pricing['customer_pays'] ?? (($plan->price > 0) ? $plan->price : ($plan->original_price ?? 0));
+    $perSessionRate = $pricing['per_appointment_rate'] ?? ($plan->total_appointments > 0 ? $finalPrice / $plan->total_appointments : 0);
 @endphp
 
 <div class="main-wrapper">
@@ -383,10 +384,16 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color:
                     </div>
                     <div class="co-total-row">
                         <span>Total Sessions</span>
-                        <span>{{ $slots->count() }} Session(s)</span>
+                        <span>{{ $plan->total_appointments ?? $slots->count() }} Session(s)</span>
                     </div>
+                    @if($perSessionRate > 0)
+                        <div class="co-total-row" style="font-size:12px;color:#0369a1">
+                            <span>Per Session Rate</span>
+                            <span>₹{{ number_format($perSessionRate, 2) }}</span>
+                        </div>
+                    @endif
                     <div class="co-total-row grand">
-                        <span>Total Amount</span>
+                        <span>Total Amount Payable</span>
                         <span>₹{{ number_format($finalPrice, 2) }}</span>
                     </div>
                 </div>

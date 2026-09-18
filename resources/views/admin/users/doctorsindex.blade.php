@@ -782,7 +782,7 @@
                 <form id="feeForm">
                     <input type="hidden" name="doctor_id" id="doctor_id">
 
-                    <div class="fee-field-wrap">
+                    <div class="fee-field-wrap mb-3">
                         <label class="fee-field-label" for="doctor_fee">Doctor Fee (₹)</label>
                         <span class="fee-field-icon">₹</span>
                         <input
@@ -792,13 +792,21 @@
                             class="fee-field-input"
                             placeholder="0"
                             min="0"
-                            step="1"
+                            step="0.01"
                         >
                     </div>
 
-                    {{-- <div class="fee-field-wrap">
-                        <label class="fee-field-label" for="admin_fee">Admin Fee (₹)</label>
-                        <span class="fee-field-icon">₹</span>
+                    <div class="mb-3">
+                        <label class="fee-field-label d-block mb-1" for="admin_fee_type">Physiopii / Admin Fee Type</label>
+                        <select name="admin_fee_type" id="admin_fee_type" class="form-select form-select-sm" style="border-radius: 9px; font-weight: 600;">
+                            <option value="fixed">Fixed Amount (₹)</option>
+                            <option value="percentage">Percentage (%)</option>
+                        </select>
+                    </div>
+
+                    <div class="fee-field-wrap mb-3">
+                        <label class="fee-field-label" for="admin_fee">Physiopii / Admin Fee</label>
+                        <span class="fee-field-icon" id="adminFeeIcon">₹</span>
                         <input
                             type="number"
                             name="admin_fee"
@@ -806,14 +814,20 @@
                             class="fee-field-input"
                             placeholder="0"
                             min="0"
-                            step="1"
+                            step="0.01"
                         >
                     </div>
 
-                    <div class="fee-total-preview">
-                        <span class="fee-total-label">Total fee</span>
-                        <span class="fee-total-value" id="feeTotalPreview">₹0</span>
-                    </div> --}}
+                    <div class="fee-total-preview p-3 rounded-3" style="background: #f0fdf4; border: 1px solid #bbf7d0;">
+                        <div class="d-flex justify-content-between mb-1" style="font-size: 13px; color: #166534;">
+                            <span>Single Session Rate:</span>
+                            <strong id="feeTotalPreview">₹0</strong>
+                        </div>
+                        <div class="d-flex justify-content-between" style="font-size: 12.5px; color: #15803d; border-top: 1px dashed #86efac; padding-top: 4px;">
+                            <span>5-Session Package:</span>
+                            <strong id="feePackagePreview">₹0</strong>
+                        </div>
+                    </div>
 
                 </form>
             </div>
@@ -840,16 +854,29 @@ document.addEventListener("DOMContentLoaded", function () {
     const modal = new bootstrap.Modal(document.getElementById('feeModal'));
 
     // ── Live total preview ──────────────────────────
-    // function updateTotal() {
-    //     const df = parseFloat(document.getElementById('doctor_fee').value) || 0;
-    //     const af = parseFloat(document.getElementById('admin_fee').value) || 0;
-    //     document.getElementById('feeTotalPreview').textContent = '₹' + (df + af).toLocaleString('en-IN');
-    // }
+    function updateTotal() {
+        const df = parseFloat(document.getElementById('doctor_fee').value) || 0;
+        const af = parseFloat(document.getElementById('admin_fee').value) || 0;
+        const type = document.getElementById('admin_fee_type').value;
 
-    // function updateTotal()
+        let effectiveAdmin = af;
+        if (type === 'percentage') {
+            effectiveAdmin = (df * af) / 100;
+            document.getElementById('adminFeeIcon').textContent = '%';
+        } else {
+            document.getElementById('adminFeeIcon').textContent = '₹';
+        }
 
-    // document.getElementById('doctor_fee').addEventListener('input', updateTotal);
-    // document.getElementById('admin_fee').addEventListener('input',  updateTotal);
+        const singleTotal = df + effectiveAdmin;
+        const packageTotal = singleTotal * 5;
+
+        document.getElementById('feeTotalPreview').textContent = '₹' + Math.round(singleTotal).toLocaleString('en-IN');
+        document.getElementById('feePackagePreview').textContent = '₹' + Math.round(packageTotal).toLocaleString('en-IN');
+    }
+
+    document.getElementById('doctor_fee').addEventListener('input', updateTotal);
+    document.getElementById('admin_fee').addEventListener('input',  updateTotal);
+    document.getElementById('admin_fee_type').addEventListener('change', updateTotal);
 
     // ── Open fee modal ──────────────────────────────
     document.querySelectorAll('.open-fee-modal').forEach(btn => {
@@ -861,8 +888,10 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById('doctor_id').value         = userId;
             document.getElementById('feeModalDoctorName').textContent = 'Dr. ' + userName;
             document.getElementById('doctor_fee').value        = '';
-            // document.getElementById('admin_fee').value         = '';
-            // document.getElementById('feeTotalPreview').textContent = '₹0';
+            document.getElementById('admin_fee').value         = '';
+            document.getElementById('admin_fee_type').value    = 'fixed';
+            document.getElementById('feeTotalPreview').textContent = '₹0';
+            document.getElementById('feePackagePreview').textContent = '₹0';
 
             fetch(`/admin/fees/${userId}`)
                 .then(res => res.json())
@@ -870,8 +899,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     const fee = data.data;
                     if (fee) {
                         document.getElementById('doctor_fee').value = fee.doctor_fee || '';
-                        // document.getElementById('admin_fee').value  = fee.admin_fee  || '';
-                        // updateTotal();
+                        document.getElementById('admin_fee').value  = fee.admin_fee  || '';
+                        if (fee.admin_fee_type) {
+                            document.getElementById('admin_fee_type').value = fee.admin_fee_type;
+                        }
+                        updateTotal();
                     }
                 })
                 .catch(() => {});

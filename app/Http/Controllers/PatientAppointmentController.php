@@ -24,6 +24,7 @@ Class PatientAppointmentController extends Controller
     {
         $doctor = User::with([
             'profile',
+            'fee',
             'availabilityDates' => function ($query) {
                 $query->whereDate('available_date', '>=', Carbon::today())
                     ->orderBy('available_date');
@@ -37,13 +38,16 @@ Class PatientAppointmentController extends Controller
 
         ])->findOrFail($id);
 
-        $patientPlans =PatientPlan::where('status','active')->get();            
+        $patientPlans = PatientPlan::where('status','active')->get();
 
-       
-        
-        // dd($doctor);
+        // Calculate dynamic package prices for this doctor for each plan
+        foreach ($patientPlans as $plan) {
+            $pricing = \App\Services\PackagePricingService::calculate($doctor, (int) $plan->total_appointments, $plan);
+            $plan->calculated_pricing       = $pricing;
+            $plan->calculated_package_price = $pricing['package_price'];
+            $plan->calculated_per_session   = $pricing['per_appointment_rate'];
+        }
 
-        // dd($doctor->availabilityDates->pluck('available_date'));
         return view('patient.booking', compact('doctor', 'patientPlans'));
     }
 
@@ -56,65 +60,37 @@ Class PatientAppointmentController extends Controller
                     ->whereIn('id', explode(',', $request->slots))
                     ->get();
 
-        // $subscriptionId = $request->subscription_id;
-
         $plan = PatientPlan::findOrFail($request->plan_id);
 
-        
-        return view('patient.checkout',compact(
+        $pricing = \App\Services\PackagePricingService::calculate($doctor, (int) $plan->total_appointments, $plan);
 
+        return view('patient.checkout', compact(
             'doctor',
-
             'slots',
-
-            'plan'
-
+            'plan',
+            'pricing'
         ));
     }
 
-
-    
-
     public function store(Request $request)
     {
-
-    
         $request->validate([
             'doctor_id' => 'required|exists:users,id',
             'plan_id' => 'required|exists:patient_plans,id',
             'slot_ids'=>'required|array',
             'slot_ids.*'=>'exists:doctor_time_slots,id',
             'booking_for' => 'required|in:self,other',
-            // 'patient_name' => 'required|string|max:150',
-            // 'patient_age' => 'nullable|integer',
-            // 'patient_gender' => 'nullable|in:male,female,other',
             'problem_description' => 'nullable|string',
             'address' => 'nullable',
-            // 'subscription_id' => 'required|exists:patient_plan_subscriptions,id',
         ]);
 
         DB::beginTransaction();
 
         $patient = Auth::user();
-
-        
-
         $patient_age = Carbon::parse($patient->dob)->age;
 
         try {
-
-            // $patient = Auth::user();
-
             $bookedCount = 0;
-
-            // $subscription = PatientPlanSubscription::where('id', $request->subscription_id)
-            //     ->where('patient_id', $patient->id)
-            //     ->where('status', 'active')
-            //     ->lockForUpdate()
-            //     ->first();
-
-            $patient = Auth::user();
-
             $plan = PatientPlan::findOrFail($request->plan_id);
 
             $start = now();
@@ -141,14 +117,27 @@ Class PatientAppointmentController extends Controller
 
             $uniquePlanId = PatientPlanSubscription::generateUniquePlanId($patient->id);
 
+            // Calculate package price = (Doctor Fee + Physiopii/Admin Fee) * Package Appointments
+            $pricing = \App\Services\PackagePricingService::calculate(
+                $request->doctor_id, 
+                (int) $plan->total_appointments, 
+                $plan
+            );
+
             $subscription = PatientPlanSubscription::create([
                 'unique_plan_id'         => $uniquePlanId,
                 'patient_id'             => $patient->id,
+                'doctor_id'              => (int) $request->doctor_id,
                 'patient_plan_id'        => $plan->id,
                 'start_date'             => $start,
                 'end_date'               => $end,
                 'used_appointments'      => 0,
                 'remaining_appointments' => $plan->total_appointments,
+                'package_appointments'   => (int) $plan->total_appointments,
+                'doctor_fee'             => $pricing['doctor_fee_per_appt'],
+                'admin_fee'              => $pricing['admin_fee_per_appt'],
+                'admin_fee_type'         => $pricing['admin_fee_type'],
+                'package_price'          => $pricing['package_price'],
                 'payment_status'         => 'paid',
                 'payment_method'         => 'Manual',
                 'status'                 => 'active',
@@ -156,14 +145,14 @@ Class PatientAppointmentController extends Controller
 
             Payment::create([
                 'appointment_id' => null,
-                'patient_id' => $patient->id,
-                'doctor_id' => $request->doctor_id,
-                'amount' => $plan->price,
-                'currency' => 'INR',
+                'patient_id'     => $patient->id,
+                'doctor_id'      => $request->doctor_id,
+                'amount'         => $pricing['customer_pays'],
+                'currency'       => 'INR',
                 'payment_method' => 'Manual',
                 'transaction_id' => 'TXN-' . time(),
-                'status' => 'success',
-                'paid_at' => now(),
+                'status'         => 'success',
+                'paid_at'        => now(),
             ]);
 
             foreach($request->slot_ids as $slotId){

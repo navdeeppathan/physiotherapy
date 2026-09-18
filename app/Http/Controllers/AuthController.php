@@ -423,7 +423,7 @@ class AuthController extends Controller
                 return back()->with('error', 'Your account has been blocked.');
             }
 
-            return redirect()->route('home')
+            return redirect()->intended(route('home'))
                 ->with('success', 'Welcome back, ' . $user->name . '!');
         }
 

@@ -23,18 +23,63 @@
         ? \App\Models\UserAddress::where('user_id', \Illuminate\Support\Facades\Auth::id())->latest()->get() 
         : collect();
 
-    // Upcoming dates
-    $calendarDays = [];
-    $startDate = \Carbon\Carbon::now();
-    for ($i = 0; $i < 7; $i++) {
-        $day = $startDate->copy()->addDays($i);
-        $calendarDays[] = [
-            'dayName' => $day->format('D'),
-            'dateNum' => $day->format('d'),
-            'fullDate' => $day->format('d-m-Y'),
-            'dbDate'   => $day->format('Y-m-d'),
-            'isSelected' => $i === 6, // 20th active as shown in screenshot
-        ];
+    // Prepare real database dates & time slots from doctor's availability
+    $liveDates = [];
+    $slotsMap = [];
+
+    if ($doctor->availabilityDates && $doctor->availabilityDates->isNotEmpty()) {
+        foreach ($doctor->availabilityDates as $avDate) {
+            $carbonDate = \Carbon\Carbon::parse($avDate->available_date);
+            $dateKey = $carbonDate->format('Y-m-d');
+
+            $slots = [];
+            if ($avDate->timeSlots) {
+                foreach ($avDate->timeSlots as $slot) {
+                    if (!$slot->is_booked) {
+                        $slots[] = [
+                            'id'         => (string) $slot->id,
+                            'start_time' => \Carbon\Carbon::parse($slot->start_time)->format('h:i A'),
+                            'end_time'   => \Carbon\Carbon::parse($slot->end_time)->format('h:i A'),
+                        ];
+                    }
+                }
+            }
+
+            $liveDates[] = [
+                'dateKey'    => $dateKey,
+                'dayName'    => $carbonDate->format('D'),
+                'dateNum'    => $carbonDate->format('d'),
+                'fullDate'   => $carbonDate->format('d F Y'),
+                'hasSlots'   => count($slots) > 0,
+                'slotsCount' => count($slots),
+            ];
+
+            $slotsMap[$dateKey] = $slots;
+        }
+    }
+
+    // Fallback if doctor has no dates configured
+    if (empty($liveDates)) {
+        for ($i = 0; $i < 7; $i++) {
+            $day = \Carbon\Carbon::today()->addDays($i);
+            $dKey = $day->format('Y-m-d');
+            $liveDates[] = [
+                'dateKey'    => $dKey,
+                'dayName'    => $day->format('D'),
+                'dateNum'    => $day->format('d'),
+                'fullDate'   => $day->format('d F Y'),
+                'hasSlots'   => true,
+                'slotsCount' => 6,
+            ];
+            $slotsMap[$dKey] = [
+                ['id' => '1', 'start_time' => '09:00 AM', 'end_time' => '10:00 AM'],
+                ['id' => '2', 'start_time' => '10:00 AM', 'end_time' => '11:00 AM'],
+                ['id' => '3', 'start_time' => '11:00 AM', 'end_time' => '12:00 PM'],
+                ['id' => '4', 'start_time' => '12:00 PM', 'end_time' => '01:00 PM'],
+                ['id' => '5', 'start_time' => '04:00 PM', 'end_time' => '05:00 PM'],
+                ['id' => '6', 'start_time' => '06:00 PM', 'end_time' => '07:00 PM'],
+            ];
+        }
     }
 @endphp
 
@@ -1365,14 +1410,14 @@ a {
                     </div>
 
                     {{-- Days Row --}}
-                    <div class="bk-days-grid">
-                        @foreach($calendarDays as $cDay)
+                    <div class="bk-days-grid" id="daysGridContainer">
+                        @foreach($liveDates as $idx => $cDay)
                             <div>
                                 <div class="bk-day-head">{{ $cDay['dayName'] }}</div>
-                                <div class="bk-day-card {{ $cDay['isSelected'] ? 'selected' : '' }}" 
-                                     data-date="{{ $cDay['fullDate'] }}" 
-                                     data-db-date="{{ $cDay['dbDate'] }}"
-                                     onclick="selectDateCard(this)">
+                                <div class="bk-day-card {{ $idx === 0 ? 'selected' : '' }}" 
+                                     data-date-key="{{ $cDay['dateKey'] }}" 
+                                     data-date-text="{{ $cDay['fullDate'] }}"
+                                     onclick="selectDateCard(this, '{{ $cDay['dateKey'] }}', '{{ $cDay['fullDate'] }}')">
                                     <div class="bk-day-num">{{ $cDay['dateNum'] }}</div>
                                 </div>
                             </div>
@@ -1380,29 +1425,10 @@ a {
                     </div>
 
                     {{-- Available Slots --}}
-                    <div class="bk-avail-slots-title">Available Slots: <span id="slotSelectedDateDisplay">20-09-2026</span></div>
+                    <div class="bk-avail-slots-title">Available Slots: <span id="slotSelectedDateDisplay">{{ $liveDates[0]['fullDate'] ?? date('d F Y') }}</span></div>
                     
                     <div class="bk-slots-grid" id="bookingSlotsGrid">
-                        @if($doctor->availabilityDates->isNotEmpty())
-                            @foreach($doctor->availabilityDates as $av)
-                                @foreach($av->timeSlots as $ts)
-                                    <div class="bk-slot-btn {{ $loop->first ? 'selected' : '' }}" 
-                                         data-slot-id="{{ $ts->id }}" 
-                                         data-time="{{ \Carbon\Carbon::parse($ts->start_time)->format('h:i A') }}" 
-                                         onclick="selectSlotBtn(this)">
-                                        {{ \Carbon\Carbon::parse($ts->start_time)->format('h:i A') }}
-                                    </div>
-                                @endforeach
-                            @endforeach
-                        @else
-                            {{-- Fallback Slots matching Screen 2 mockup --}}
-                            <div class="bk-slot-btn" data-slot-id="1" data-time="09:00 AM" onclick="selectSlotBtn(this)">09:00 AM</div>
-                            <div class="bk-slot-btn selected" data-slot-id="2" data-time="10:00 AM" onclick="selectSlotBtn(this)">10:00 AM</div>
-                            <div class="bk-slot-btn" data-slot-id="3" data-time="11:00 AM" onclick="selectSlotBtn(this)">11:00 AM</div>
-                            <div class="bk-slot-btn" data-slot-id="4" data-time="12:00 PM" onclick="selectSlotBtn(this)">12:00 PM</div>
-                            <div class="bk-slot-btn" data-slot-id="5" data-time="04:00 PM" onclick="selectSlotBtn(this)">04:00 PM</div>
-                            <div class="bk-slot-btn" data-slot-id="6" data-time="06:00 PM" onclick="selectSlotBtn(this)">06:00 PM</div>
-                        @endif
+                        {{-- Populated dynamically via renderSlotsForDate() --}}
                     </div>
 
                     <div class="bk-time-notice">
@@ -1431,49 +1457,28 @@ a {
                     <div class="bk-addr-list" id="savedAddressList">
                         @if($userAddresses->isNotEmpty())
                             @foreach($userAddresses as $idx => $ua)
+                                @php
+                                    $uaTitle = $ua->city ?? 'Home';
+                                    $uaFull  = trim($ua->address . ', ' . $ua->city . ', ' . $ua->state . ' ' . $ua->postal_code, ', ');
+                                @endphp
                                 <div class="bk-addr-card {{ $idx === 0 ? 'selected' : '' }}" 
-                                     data-addr-title="{{ $ua->city ?? 'Home' }}" 
-                                     data-addr-full="{{ $ua->address }}, {{ $ua->city }}, {{ $ua->state }} {{ $ua->postal_code }}"
+                                     data-addr-id="{{ $ua->id }}"
+                                     data-addr-title="{{ $uaTitle }}" 
+                                     data-addr-full="{{ $uaFull }}"
                                      onclick="selectAddressCard(this)">
                                     <div class="bk-radio-custom"><div class="bk-radio-dot"></div></div>
                                     <div class="bk-addr-icon"><i class="fa-solid fa-house-chimney"></i></div>
                                     <div class="bk-addr-content">
-                                        <div class="bk-addr-label">{{ $ua->city ?? 'Home' }}</div>
-                                        <div class="bk-addr-text">{{ $ua->address }}, {{ $ua->city }}, {{ $ua->state }} {{ $ua->postal_code }}</div>
+                                        <div class="bk-addr-label">{{ $uaTitle }}</div>
+                                        <div class="bk-addr-text">{{ $uaFull }}</div>
                                     </div>
-                                    <span class="bk-addr-edit-link" onclick="openAddressModal()">Edit</span>
                                 </div>
                             @endforeach
                         @else
-                            {{-- Sample Addresses matching Screen 3 mockup --}}
-                            <div class="bk-addr-card selected" data-addr-title="Home" data-addr-full="123, MG Road, Indore, Madhya Pradesh 452001" onclick="selectAddressCard(this)">
-                                <div class="bk-radio-custom"><div class="bk-radio-dot"></div></div>
-                                <div class="bk-addr-icon"><i class="fa-solid fa-house-chimney"></i></div>
-                                <div class="bk-addr-content">
-                                    <div class="bk-addr-label">Home</div>
-                                    <div class="bk-addr-text">123, MG Road, Indore, Madhya Pradesh 452001</div>
-                                </div>
-                                <span class="bk-addr-edit-link" onclick="openAddressModal()">Edit</span>
-                            </div>
-
-                            <div class="bk-addr-card" data-addr-title="Office" data-addr-full="456, Scheme 54, Indore, Madhya Pradesh 452010" onclick="selectAddressCard(this)">
-                                <div class="bk-radio-custom"><div class="bk-radio-dot"></div></div>
-                                <div class="bk-addr-icon"><i class="fa-solid fa-building"></i></div>
-                                <div class="bk-addr-content">
-                                    <div class="bk-addr-label">Office</div>
-                                    <div class="bk-addr-text">456, Scheme 54, Indore, Madhya Pradesh 452010</div>
-                                </div>
-                                <span class="bk-addr-edit-link" onclick="openAddressModal()">Edit</span>
-                            </div>
-
-                            <div class="bk-addr-card" data-addr-title="Parents Home" data-addr-full="789, Vijay Nagar, Indore, Madhya Pradesh 452010" onclick="selectAddressCard(this)">
-                                <div class="bk-radio-custom"><div class="bk-radio-dot"></div></div>
-                                <div class="bk-addr-icon"><i class="fa-solid fa-people-roof"></i></div>
-                                <div class="bk-addr-content">
-                                    <div class="bk-addr-label">Parents Home</div>
-                                    <div class="bk-addr-text">789, Vijay Nagar, Indore, Madhya Pradesh 452010</div>
-                                </div>
-                                <span class="bk-addr-edit-link" onclick="openAddressModal()">Edit</span>
+                            <div id="noAddressNotice" style="padding: 24px; text-align: center; background: #f8fafc; border-radius: 12px; border: 1.5px dashed #cbd5e1; color: #64748b; margin-bottom: 16px;">
+                                <i class="fa-solid fa-location-dot" style="font-size: 26px; color: var(--primary-teal); margin-bottom: 8px; display: block;"></i>
+                                <div style="font-weight: 700; color: var(--ink); font-size: 14.5px;">No saved address found</div>
+                                <div style="font-size: 12.5px; margin-top: 4px;">Please click "+ Add New Address" below to add your address for the home session.</div>
                             </div>
                         @endif
                     </div>
@@ -1500,36 +1505,42 @@ a {
                     <h2 class="bk-step-title">Patient Details</h2>
                     <p class="bk-step-desc">Please provide your details to confirm the booking</p>
 
+                    @php
+                        $authUser = auth()->user();
+                        $patientAge = $authUser && $authUser->dob ? \Carbon\Carbon::parse($authUser->dob)->age : 28;
+                        $patientGender = $authUser->gender ?? 'Male';
+                    @endphp
+
                     <div class="bk-form-grid">
                         <div class="bk-form-group full">
                             <label class="bk-label">Full Name *</label>
-                            <input type="text" class="bk-input" id="patientNameInput" placeholder="Enter full name" value="{{ auth()->user()->name ?? 'Alex' }}">
+                            <input type="text" class="bk-input" id="patientNameInput" placeholder="Enter full name" value="{{ $authUser->name ?? '' }}">
                         </div>
 
                         <div class="bk-form-group full">
                             <label class="bk-label">Mobile Number *</label>
                             <div class="bk-input-phone-wrap">
                                 <span class="bk-phone-prefix">+91</span>
-                                <input type="tel" class="bk-phone-input" id="patientPhoneInput" placeholder="Enter mobile number" value="{{ auth()->user()->phone ?? '991 98765 43210' }}">
+                                <input type="tel" class="bk-phone-input" id="patientPhoneInput" placeholder="Enter mobile number" value="{{ preg_replace('/^\+?91\s*/', '', $authUser->phone ?? '') }}">
                             </div>
                         </div>
 
                         <div class="bk-form-group full">
                             <label class="bk-label">Email Address *</label>
-                            <input type="email" class="bk-input" id="patientEmailInput" placeholder="Enter email address" value="{{ auth()->user()->email ?? 'alex@example.com' }}">
+                            <input type="email" class="bk-input" id="patientEmailInput" placeholder="Enter email address" value="{{ $authUser->email ?? '' }}">
                         </div>
 
                         <div class="bk-form-group">
                             <label class="bk-label">Age *</label>
-                            <input type="number" class="bk-input" id="patientAgeInput" placeholder="Enter age" value="28">
+                            <input type="number" class="bk-input" id="patientAgeInput" placeholder="Enter age" value="{{ $patientAge }}">
                         </div>
 
                         <div class="bk-form-group">
                             <label class="bk-label">Gender *</label>
                             <select class="bk-select" id="patientGenderInput">
-                                <option value="Male" selected>Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
+                                <option value="Male" {{ strtolower($patientGender) === 'male' ? 'selected' : '' }}>Male</option>
+                                <option value="Female" {{ strtolower($patientGender) === 'female' ? 'selected' : '' }}>Female</option>
+                                <option value="Other" {{ strtolower($patientGender) === 'other' ? 'selected' : '' }}>Other</option>
                             </select>
                         </div>
 
@@ -1923,7 +1934,7 @@ a {
         </div>
         <div class="bk-modal-footer">
             <button type="button" class="bk-btn-outline" style="padding:9px 18px;" onclick="closeAddressModal()">Cancel</button>
-            <button type="button" class="bk-btn-filled" style="padding:9px 22px;" onclick="saveAddressFromModal()">Save</button>
+            <button type="button" class="bk-btn-filled" id="mSaveAddrBtn" style="padding:9px 22px;" onclick="saveAddressFromModal()">Save</button>
         </div>
     </div>
 </div>
@@ -1942,35 +1953,50 @@ a {
 <script>
 // State Management for Multi-Step Form
 var currentStep = 1;
+var slotsByDate = @json($slotsMap);
+var initialDateKey = "{{ $liveDates[0]['dateKey'] ?? date('Y-m-d') }}";
+var initialDateText = "{{ $liveDates[0]['fullDate'] ?? date('d F Y') }}";
 
 var bookingData = {
     planId: "1",
     planName: "Advance",
     planAppts: "1",
-    planPrice: 979,
-    perRate: 979,
-    dateText: "20 September 2026",
-    slotTime: "10:00 AM",
-    slotId: "1",
+    planPrice: {{ $totalFee }},
+    perRate: {{ $totalFee }},
+    dateKey: initialDateKey,
+    dateText: initialDateText,
+    slotTime: "",
+    slotId: "",
     addrTitle: "Home",
-    addrFull: "123, MG Road, Indore, Madhya Pradesh 452001",
-    patientName: "Alex",
-    patientPhone: "+91 98765 43210",
-    patientEmail: "alex@example.com",
-    patientAge: "28",
-    patientGender: "Male",
+    addrFull: "",
+    patientName: "{{ $authUser->name ?? '' }}",
+    patientPhone: "{{ $authUser->phone ?? '' }}",
+    patientEmail: "{{ $authUser->email ?? '' }}",
+    patientAge: "{{ $patientAge }}",
+    patientGender: "{{ $patientGender }}",
     patientNotes: ""
 };
 
-// Initialize from first selected cards if present
+// Initialize from first selected cards on load
 document.addEventListener('DOMContentLoaded', function() {
+    // 1. Initial Package Selection
     var selPkg = document.querySelector('.bk-pkg-card.selected');
     if (selPkg) {
         bookingData.planId = selPkg.getAttribute('data-plan-id') || "1";
         bookingData.planName = selPkg.getAttribute('data-plan-name') || "Advance";
         bookingData.planAppts = selPkg.getAttribute('data-appts') || "1";
-        bookingData.planPrice = parseFloat(selPkg.getAttribute('data-price')) || 979;
-        bookingData.perRate = parseFloat(selPkg.getAttribute('data-per-rate')) || 979;
+        bookingData.planPrice = parseFloat(selPkg.getAttribute('data-price')) || {{ $totalFee }};
+        bookingData.perRate = parseFloat(selPkg.getAttribute('data-per-rate')) || {{ $totalFee }};
+    }
+
+    // 2. Initial Date & Slot Rendering
+    renderSlotsForDate(initialDateKey, initialDateText);
+
+    // 3. Initial Address Selection
+    var selAddr = document.querySelector('.bk-addr-card.selected');
+    if (selAddr) {
+        bookingData.addrTitle = selAddr.getAttribute('data-addr-title') || "Home";
+        bookingData.addrFull = selAddr.getAttribute('data-addr-full') || "";
     }
 });
 
@@ -1978,14 +2004,49 @@ document.addEventListener('DOMContentLoaded', function() {
 function goToStep(step) {
     if (step < 1 || step > 7) return;
 
-    // Save current step data before navigating
-    if (currentStep === 4) {
-        bookingData.patientName = document.getElementById('patientNameInput').value || 'Alex';
-        bookingData.patientPhone = document.getElementById('patientPhoneInput').value || '+91 98765 43210';
-        bookingData.patientEmail = document.getElementById('patientEmailInput').value || 'alex@example.com';
-        bookingData.patientAge = document.getElementById('patientAgeInput').value || '28';
-        bookingData.patientGender = document.getElementById('patientGenderInput').value || 'Male';
-        bookingData.patientNotes = document.getElementById('patientNotesInput').value || '';
+    // Validation when navigating forward
+    if (step > currentStep) {
+        if (currentStep === 1) {
+            if (!bookingData.planId) {
+                alert('Please select a treatment package to continue.');
+                return;
+            }
+        }
+        if (currentStep === 2) {
+            if (!bookingData.slotId) {
+                alert('Please select an available appointment time slot to continue.');
+                return;
+            }
+        }
+        if (currentStep === 3) {
+            if (!bookingData.addrFull) {
+                alert('Please select a saved address or click "+ Add New Address" to enter your address.');
+                return;
+            }
+        }
+        if (currentStep === 4) {
+            let nameInput = document.getElementById('patientNameInput');
+            let phoneInput = document.getElementById('patientPhoneInput');
+            let emailInput = document.getElementById('patientEmailInput');
+
+            bookingData.patientName = nameInput ? nameInput.value.trim() : '';
+            bookingData.patientPhone = phoneInput ? phoneInput.value.trim() : '';
+            bookingData.patientEmail = emailInput ? emailInput.value.trim() : '';
+            bookingData.patientAge = document.getElementById('patientAgeInput') ? document.getElementById('patientAgeInput').value.trim() : '28';
+            bookingData.patientGender = document.getElementById('patientGenderInput') ? document.getElementById('patientGenderInput').value : 'Male';
+            bookingData.patientNotes = document.getElementById('patientNotesInput') ? document.getElementById('patientNotesInput').value.trim() : '';
+
+            if (!bookingData.patientName) {
+                alert('Please enter your full name.');
+                nameInput.focus();
+                return;
+            }
+            if (!bookingData.patientPhone) {
+                alert('Please enter your mobile phone number.');
+                phoneInput.focus();
+                return;
+            }
+        }
     }
 
     currentStep = step;
@@ -2041,7 +2102,7 @@ function goToStep(step) {
     let bc = document.getElementById('bcStepTitle');
     if (bc && bcTitles[step]) bc.innerText = bcTitles[step];
 
-    // Hide sidebar on Success screen for centered card layout matching mockup
+    // Hide sidebar on Success screen for clean centered card layout matching mockup
     let sb = document.getElementById('bookingSidebar');
     let st = document.getElementById('stepperContainer');
     if (step === 7) {
@@ -2067,28 +2128,66 @@ function selectPackage(el) {
     bookingData.planId = el.getAttribute('data-plan-id');
     bookingData.planName = el.getAttribute('data-plan-name');
     bookingData.planAppts = el.getAttribute('data-appts');
-    bookingData.planPrice = parseFloat(el.getAttribute('data-price')) || 979;
-    bookingData.perRate = parseFloat(el.getAttribute('data-per-rate')) || 979;
+    bookingData.planPrice = parseFloat(el.getAttribute('data-price')) || {{ $totalFee }};
+    bookingData.perRate = parseFloat(el.getAttribute('data-per-rate')) || {{ $totalFee }};
 }
 
-// Step 2: Date Selection
-function selectDateCard(el) {
+// Step 2: Date Selection & Dynamic Slots Rendering
+function selectDateCard(el, dateKey, fullDateText) {
     document.querySelectorAll('.bk-day-card').forEach(d => d.classList.remove('selected'));
     el.classList.add('selected');
-    let dVal = el.getAttribute('data-date');
-    let display = document.getElementById('slotSelectedDateDisplay');
-    if (display && dVal) {
-        display.innerText = dVal;
-    }
-    bookingData.dateText = dVal ? (dVal.split('-')[0] + ' ' + 'September 2026') : '20 September 2026';
+    renderSlotsForDate(dateKey, fullDateText);
 }
 
-// Step 2: Slot Selection
+function renderSlotsForDate(dateKey, fullDateText) {
+    let slots = slotsByDate[dateKey] || [];
+    let container = document.getElementById('bookingSlotsGrid');
+    let display = document.getElementById('slotSelectedDateDisplay');
+    if (display) display.innerText = fullDateText;
+
+    bookingData.dateKey = dateKey;
+    bookingData.dateText = fullDateText;
+
+    if (!container) return;
+
+    if (slots.length === 0) {
+        container.innerHTML = `
+            <div style="grid-column: 1 / -1; padding: 24px; text-align: center; background: #f8fafc; border-radius: 12px; border: 1.5px dashed #cbd5e1; color: #64748b;">
+                <i class="fa-regular fa-calendar-xmark" style="font-size: 28px; color: #94a3b8; margin-bottom: 8px; display: block;"></i>
+                <div style="font-weight: 700; font-size: 14px; color: var(--ink);">No slots available on this date</div>
+                <div style="font-size: 12px; margin-top: 4px;">Please choose another date above to view available appointments.</div>
+            </div>
+        `;
+        bookingData.slotId = "";
+        bookingData.slotTime = "";
+        return;
+    }
+
+    let html = '';
+    slots.forEach((s, idx) => {
+        let isSel = idx === 0 ? 'selected' : '';
+        if (idx === 0) {
+            bookingData.slotId = String(s.id);
+            bookingData.slotTime = s.start_time;
+        }
+        html += `
+            <div class="bk-slot-btn ${isSel}" 
+                 data-slot-id="${s.id}" 
+                 data-time="${s.start_time}" 
+                 onclick="selectSlotBtn(this)">
+                ${s.start_time}
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+// Step 2: Slot Button Click
 function selectSlotBtn(el) {
     document.querySelectorAll('.bk-slot-btn').forEach(s => s.classList.remove('selected'));
     el.classList.add('selected');
-    bookingData.slotTime = el.getAttribute('data-time') || '10:00 AM';
-    bookingData.slotId = el.getAttribute('data-slot-id') || '1';
+    bookingData.slotTime = el.getAttribute('data-time') || '';
+    bookingData.slotId = el.getAttribute('data-slot-id') || '';
 }
 
 // Step 3: Address Selection
@@ -2096,10 +2195,10 @@ function selectAddressCard(el) {
     document.querySelectorAll('.bk-addr-card').forEach(a => a.classList.remove('selected'));
     el.classList.add('selected');
     bookingData.addrTitle = el.getAttribute('data-addr-title') || 'Home';
-    bookingData.addrFull = el.getAttribute('data-addr-full') || '123, MG Road, Indore, Madhya Pradesh 452001';
+    bookingData.addrFull = el.getAttribute('data-addr-full') || '';
 }
 
-// Step 3: Address Modal
+// Step 3: Address Modal Controls
 function openAddressModal() {
     let m = document.getElementById('addAddressModal');
     if (m) m.classList.add('show');
@@ -2109,51 +2208,119 @@ function closeAddressModal() {
     if (m) m.classList.remove('show');
 }
 
+// Step 3: Real AJAX Save Address to Database
 function saveAddressFromModal() {
-    let city = document.getElementById('mCityInput').value || 'Indore';
-    let postal = document.getElementById('mPostalInput').value || '452001';
-    let state = document.getElementById('mStateInput').value || 'Madhya Pradesh';
-    let desc = document.getElementById('mAddressDescInput').value || '123, MG Road';
-    let fullAddr = desc + ', ' + city + ', ' + state + ' ' + postal;
+    let city = document.getElementById('mCityInput').value.trim();
+    let postal = document.getElementById('mPostalInput').value.trim();
+    let state = document.getElementById('mStateInput').value;
+    let desc = document.getElementById('mAddressDescInput').value.trim();
+    let isDef = document.getElementById('mDefaultCheckbox').checked ? 1 : 0;
 
-    // Create and prepend new address card
-    let list = document.getElementById('savedAddressList');
-    if (list) {
-        document.querySelectorAll('.bk-addr-card').forEach(a => a.classList.remove('selected'));
-        let newCard = document.createElement('div');
-        newCard.className = 'bk-addr-card selected';
-        newCard.setAttribute('data-addr-title', 'New Address');
-        newCard.setAttribute('data-addr-full', fullAddr);
-        newCard.onclick = function() { selectAddressCard(this); };
-        newCard.innerHTML = `
-            <div class="bk-radio-custom"><div class="bk-radio-dot"></div></div>
-            <div class="bk-addr-icon"><i class="fa-solid fa-location-dot"></i></div>
-            <div class="bk-addr-content">
-                <div class="bk-addr-label">New Address</div>
-                <div class="bk-addr-text">${fullAddr}</div>
-            </div>
-            <span class="bk-addr-edit-link" onclick="openAddressModal()">Edit</span>
-        `;
-        list.prepend(newCard);
+    if (!city) {
+        alert('Please enter the city.');
+        document.getElementById('mCityInput').focus();
+        return;
+    }
+    if (!postal) {
+        alert('Please enter the postal code.');
+        document.getElementById('mPostalInput').focus();
+        return;
+    }
+    if (!desc) {
+        alert('Please enter your street address description.');
+        document.getElementById('mAddressDescInput').focus();
+        return;
     }
 
-    bookingData.addrTitle = 'New Address';
-    bookingData.addrFull = fullAddr;
-    closeAddressModal();
+    let saveBtn = document.getElementById('mSaveAddrBtn');
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerText = 'Saving...';
+    }
+
+    let token = document.querySelector('meta[name="csrf-token"]') 
+        ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') 
+        : '{{ csrf_token() }}';
+
+    let fd = new FormData();
+    fd.append('_token', token);
+    fd.append('city', city);
+    fd.append('postal_code', postal);
+    fd.append('state', state);
+    fd.append('country', 'India');
+    fd.append('address', desc);
+    fd.append('is_default', isDef);
+
+    fetch("{{ route('user.address.store') }}", {
+        method: "POST",
+        body: fd,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(resData => {
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerText = 'Save';
+        }
+
+        let fullAddr = desc + ', ' + city + ', ' + state + ' ' + postal;
+        let newId = (resData && resData.data) ? resData.data.id : '';
+
+        let noNotice = document.getElementById('noAddressNotice');
+        if (noNotice) noNotice.remove();
+
+        let list = document.getElementById('savedAddressList');
+        if (list) {
+            document.querySelectorAll('.bk-addr-card').forEach(a => a.classList.remove('selected'));
+            let newCard = document.createElement('div');
+            newCard.className = 'bk-addr-card selected';
+            newCard.setAttribute('data-addr-id', newId);
+            newCard.setAttribute('data-addr-title', city);
+            newCard.setAttribute('data-addr-full', fullAddr);
+            newCard.onclick = function() { selectAddressCard(this); };
+            newCard.innerHTML = `
+                <div class="bk-radio-custom"><div class="bk-radio-dot"></div></div>
+                <div class="bk-addr-icon"><i class="fa-solid fa-house-chimney"></i></div>
+                <div class="bk-addr-content">
+                    <div class="bk-addr-label">${city}</div>
+                    <div class="bk-addr-text">${fullAddr}</div>
+                </div>
+            `;
+            list.prepend(newCard);
+        }
+
+        bookingData.addrTitle = city;
+        bookingData.addrFull = fullAddr;
+        closeAddressModal();
+    })
+    .catch(err => {
+        console.error('Error saving address:', err);
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerText = 'Save';
+        }
+        let fullAddr = desc + ', ' + city + ', ' + state + ' ' + postal;
+        bookingData.addrTitle = city;
+        bookingData.addrFull = fullAddr;
+        closeAddressModal();
+    });
 }
 
-// Step 5: Payment Method selection
+// Step 5: Payment Method Selection
 function selectPayMethod(el) {
     document.querySelectorAll('.bk-pay-option').forEach(p => p.classList.remove('selected'));
     el.classList.add('selected');
 }
 
-// Populate Review Step
+// Step 5: Populate Review Step
 function populateReviewStep() {
     document.getElementById('revPackageVal').innerHTML = `${bookingData.planName} (${bookingData.planAppts} Appointment)<br><small style="color:var(--muted-text);font-weight:500;">₹${bookingData.perRate} per session</small>`;
     document.getElementById('revDateTimeVal').innerText = `${bookingData.dateText}, ${bookingData.slotTime}`;
     document.getElementById('revAddressVal').innerHTML = `${bookingData.addrTitle}<br><small style="color:var(--muted-text);font-weight:500;">${bookingData.addrFull}</small>`;
-    document.getElementById('revPatientVal').innerHTML = `${bookingData.patientName}<br><small style="color:var(--muted-text);font-weight:500;">${bookingData.patientEmail} | ${bookingData.patientPhone}</small>`;
+    document.getElementById('revPatientVal').innerHTML = `${bookingData.patientName}<br><small style="color:var(--muted-text);font-weight:500;">${bookingData.patientEmail || ''} ${bookingData.patientEmail ? '| ' : ''}+91 ${bookingData.patientPhone}</small>`;
 
     let docFeeVal = Math.round(bookingData.planPrice * 0.82);
     let adminFeeVal = Math.round(bookingData.planPrice - docFeeVal);
@@ -2162,20 +2329,33 @@ function populateReviewStep() {
     document.getElementById('revTotalPrice').innerText = `₹${bookingData.planPrice.toFixed(2)}`;
 }
 
-// Process Payment Animation & Complete Booking
+// Step 6 & 7: Process Payment Animation & Real Live Booking Submission
 function startPaymentProcess() {
+    if (!bookingData.slotId) {
+        alert('Please select an appointment date and time slot.');
+        goToStep(2);
+        return;
+    }
+    if (!bookingData.addrFull) {
+        alert('Please select or add an address for the home session.');
+        goToStep(3);
+        return;
+    }
+
     goToStep(6);
 
-    // Progressive checklist ticks matching mockup
-    setTimeout(() => {
-        let chk4 = document.getElementById('chkStep4');
-        if (chk4) {
-            chk4.className = 'fa-solid fa-circle-check check';
-        }
-    }, 1500);
+    let chk2 = document.getElementById('chkStep2');
+    let chk3 = document.getElementById('chkStep3');
+    let chk4 = document.getElementById('chkStep4');
+    let txt4 = document.getElementById('txtStep4');
 
-    // Try backend submission in background
-    let token = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : '';
+    setTimeout(() => { if (chk2) chk2.className = 'fa-solid fa-circle-check check'; }, 500);
+    setTimeout(() => { if (chk3) chk3.className = 'fa-solid fa-circle-check check'; }, 1000);
+
+    let token = document.querySelector('meta[name="csrf-token"]') 
+        ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') 
+        : '{{ csrf_token() }}';
+
     let fd = new FormData();
     fd.append('_token', token);
     fd.append('doctor_id', '{{ $doctor->id }}');
@@ -2183,22 +2363,50 @@ function startPaymentProcess() {
     fd.append('slot_ids[]', bookingData.slotId);
     fd.append('booking_for', 'self');
     fd.append('address', bookingData.addrFull);
-    fd.append('problem_description', bookingData.patientNotes);
+    fd.append('problem_description', bookingData.patientNotes || 'Physiotherapy Consultation');
 
     fetch("{{ route('doctor.book') }}", {
         method: "POST",
         body: fd,
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    }).catch(e => console.log('Mock fallback for front preview'));
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            if (chk4) chk4.className = 'fa-solid fa-circle-check check';
+            if (txt4) txt4.innerText = 'Appointment Confirmed!';
 
-    // Move to Success step after short simulated gateway confirmation
-    setTimeout(() => {
-        document.getElementById('sucDateTime').innerText = `${bookingData.dateText}, ${bookingData.slotTime}`;
-        document.getElementById('sucPackage').innerText = `${bookingData.planName} (${bookingData.planAppts} Appointment)`;
-        document.getElementById('sucAddress').innerText = bookingData.addrFull;
-        document.getElementById('sucAmount').innerText = `₹${bookingData.planPrice.toFixed(2)}`;
-        goToStep(7);
-    }, 2200);
+            setTimeout(() => {
+                if (document.getElementById('sucBookingId')) {
+                    document.getElementById('sucBookingId').innerText = '#' + (data.booking_id || ('PHY' + Date.now()));
+                }
+                if (document.getElementById('sucDateTime')) {
+                    document.getElementById('sucDateTime').innerText = data.date_time || `${bookingData.dateText}, ${bookingData.slotTime}`;
+                }
+                if (document.getElementById('sucPackage')) {
+                    document.getElementById('sucPackage').innerText = data.package_name || `${bookingData.planName} (${bookingData.planAppts} Appointment)`;
+                }
+                if (document.getElementById('sucAddress')) {
+                    document.getElementById('sucAddress').innerText = data.address || bookingData.addrFull;
+                }
+                if (document.getElementById('sucAmount')) {
+                    document.getElementById('sucAmount').innerText = '₹' + (data.amount_paid || parseFloat(bookingData.planPrice).toFixed(2));
+                }
+                goToStep(7);
+            }, 600);
+        } else {
+            alert(data.message || 'Booking could not be completed. Please choose another slot.');
+            goToStep(2);
+        }
+    })
+    .catch(err => {
+        console.error('Booking failed:', err);
+        alert('Network error while confirming booking. Please check your connection.');
+        goToStep(5);
+    });
 }
 </script>
 

@@ -993,6 +993,115 @@ a {
         gap: 14px;
     }
 }
+
+/* ── MODAL: LOGIN REQUIRED PROMPT ── */
+.dp-login-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(5px);
+    z-index: 1200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.dp-login-modal-overlay.show {
+    display: flex;
+}
+.dp-login-modal-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
+    padding: 32px 28px 26px;
+    text-align: center;
+    animation: dpModalPop 0.2s ease-out;
+}
+@keyframes dpModalPop {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+.dp-lm-icon-box {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--teal-bg-soft);
+    color: var(--primary-teal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    margin: 0 auto 16px;
+}
+.dp-lm-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 8px;
+}
+.dp-lm-desc {
+    font-size: 13.5px;
+    color: var(--muted-text);
+    line-height: 1.55;
+    margin-bottom: 24px;
+}
+.dp-lm-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.dp-btn-lm-login {
+    background: var(--primary-teal);
+    color: #ffffff !important;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 14.5px;
+    font-weight: 800;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(12, 105, 120, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.dp-btn-lm-login:hover {
+    background: var(--primary-teal-dark);
+}
+.dp-btn-lm-reg {
+    background: #ffffff;
+    color: var(--primary-teal) !important;
+    border: 1.5px solid var(--primary-teal);
+    padding: 11px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.dp-btn-lm-reg:hover {
+    background: var(--teal-bg-soft);
+}
+.dp-btn-lm-cancel {
+    background: none;
+    border: none;
+    color: var(--muted-text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px;
+    margin-top: 4px;
+}
+.dp-btn-lm-cancel:hover {
+    color: var(--ink);
+}
 </style>
 
 <div class="dp-page-wrap">
@@ -1090,7 +1199,7 @@ a {
                 </div>
 
                 <div>
-                    <a href="{{ route('doctor.booking', $doctor->id) }}" class="dp-btn-book-session" id="btnBookHero">
+                    <a href="{{ route('doctor.booking', $doctor->id) }}" class="dp-btn-book-session" id="btnBookHero" onclick="return checkAuthAndBook(event, this.href)">
                         <i class="fa-regular fa-calendar-check"></i>
                         <span>Book Home Session</span>
                         <i class="fa-solid fa-arrow-right" style="font-size:13px;"></i>
@@ -1168,7 +1277,7 @@ a {
                         <div class="dp-sec-sub">Choose a package that suits your recovery goals</div>
                     </div>
                 </div>
-                <a href="{{ route('doctor.booking', $doctor->id) }}#packages" class="dp-sec-link">
+                <a href="{{ route('doctor.booking', $doctor->id) }}#packages" class="dp-sec-link" onclick="return checkAuthAndBook(event, this.href)">
                     <span>View All Packages</span>
                     <i class="fa-solid fa-arrow-right"></i>
                 </a>
@@ -1192,7 +1301,7 @@ a {
                         <div class="dp-pkg-price-text">
                             ₹{{ number_format($totalFee) }} <small>/ session</small>
                         </div>
-                        <a href="{{ route('doctor.booking', $doctor->id) }}" class="dp-btn-choose-pkg">
+                        <a href="{{ route('doctor.booking', $doctor->id) }}" class="dp-btn-choose-pkg" onclick="return checkAuthAndBook(event, this.href)">
                             Choose Package
                         </a>
                     </div>
@@ -1219,7 +1328,7 @@ a {
                         <div class="dp-pkg-price-text">
                             ₹{{ number_format($pkg2Price) }} <small>/ 3 sessions</small>
                         </div>
-                        <a href="{{ route('doctor.booking', $doctor->id) }}#packages" class="dp-btn-choose-pkg filled">
+                        <a href="{{ route('doctor.booking', $doctor->id) }}#packages" class="dp-btn-choose-pkg filled" onclick="return checkAuthAndBook(event, this.href)">
                             Choose Package
                         </a>
                     </div>
@@ -1245,7 +1354,7 @@ a {
                         <div class="dp-pkg-price-text">
                             ₹{{ number_format($pkg3Price) }} <small>/ 6 sessions</small>
                         </div>
-                        <a href="{{ route('doctor.booking', $doctor->id) }}#packages" class="dp-btn-choose-pkg">
+                        <a href="{{ route('doctor.booking', $doctor->id) }}#packages" class="dp-btn-choose-pkg" onclick="return checkAuthAndBook(event, this.href)">
                             Choose Package
                         </a>
                     </div>
@@ -1545,7 +1654,7 @@ a {
             <div class="dp-bb-content">
                 <h3 class="dp-bb-title">Ready to Start Your Recovery?</h3>
                 <p class="dp-bb-desc">Book a home session with Dr. {{ $cleanDoctorName }} and take the first step towards a pain-free life.</p>
-                <a href="{{ route('doctor.booking', $doctor->id) }}" class="dp-btn-white-pill">
+                <a href="{{ route('doctor.booking', $doctor->id) }}" class="dp-btn-white-pill" onclick="return checkAuthAndBook(event, this.href)">
                     <i class="fa-regular fa-calendar-check"></i>
                     <span>Book Home Session</span>
                     <i class="fa-solid fa-arrow-right" style="font-size:12px;"></i>
@@ -1572,7 +1681,61 @@ a {
 
 </div>
 
+{{-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MODAL: LOGIN REQUIRED PROMPT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ --}}
+<div class="dp-login-modal-overlay" id="loginPromptModal" onclick="if(event.target===this) closeLoginModal()">
+    <div class="dp-login-modal-card">
+        <div class="dp-lm-icon-box">
+            <i class="fa-solid fa-lock"></i>
+        </div>
+        <h3 class="dp-lm-title">Please Log In to Book</h3>
+        <p class="dp-lm-desc">
+            You need to be logged into your patient account to choose packages, select appointment slots, and book a home session with Dr. {{ $cleanDoctorName }}.
+        </p>
+        <div class="dp-lm-actions">
+            <a href="{{ route('login') }}" class="dp-btn-lm-login">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i> Log In to Continue
+            </a>
+            <a href="{{ route('patient.register') }}" class="dp-btn-lm-reg">
+                Create New Account
+            </a>
+            <button type="button" class="dp-btn-lm-cancel" onclick="closeLoginModal()">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
+var isUserLoggedIn = {{ \Illuminate\Support\Facades\Auth::check() ? 'true' : 'false' }};
+var bookingUrl = "{{ route('doctor.booking', $doctor->id) }}";
+
+function checkAuthAndBook(event, targetUrl) {
+    if (!isUserLoggedIn) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        openLoginModal();
+        return false;
+    }
+    if (targetUrl) {
+        window.location.href = targetUrl;
+    }
+    return true;
+}
+
+function openLoginModal() {
+    let m = document.getElementById('loginPromptModal');
+    if (m) m.classList.add('show');
+}
+
+function closeLoginModal() {
+    let m = document.getElementById('loginPromptModal');
+    if (m) m.classList.remove('show');
+}
+
 // Interactive Date Picker
 function selectDate(el, dateVal) {
     document.querySelectorAll('.dp-date-pill').forEach(p => p.classList.remove('active'));

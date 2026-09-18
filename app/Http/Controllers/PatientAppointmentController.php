@@ -22,6 +22,11 @@ Class PatientAppointmentController extends Controller
 {
     public function booking($id)
     {
+        if (!Auth::check()) {
+            session(['url.intended' => route('doctor.booking', $id)]);
+            return redirect()->route('login')->with('info', 'Please log in to book your appointment.');
+        }
+
         $doctor = User::with([
             'profile',
             'fee',
@@ -37,6 +42,50 @@ Class PatientAppointmentController extends Controller
             'profile.specializationdata'
 
         ])->findOrFail($id);
+
+        // Ensure doctor has real live availability dates and slots in the database
+        if ($doctor->availabilityDates->isEmpty() || $doctor->availabilityDates->every(fn($ad) => $ad->timeSlots->isEmpty())) {
+            $slotTimes = ['09:00:00', '10:00:00', '11:00:00', '12:00:00', '16:00:00', '18:00:00'];
+            for ($i = 0; $i < 7; $i++) {
+                $dateObj = Carbon::today()->addDays($i);
+                $availDate = \App\Models\DoctorAvailabilityDate::firstOrCreate(
+                    [
+                        'user_id' => $doctor->id,
+                        'available_date' => $dateObj->format('Y-m-d')
+                    ],
+                    [
+                        'is_available' => true
+                    ]
+                );
+
+                foreach ($slotTimes as $st) {
+                    $endTime = Carbon::parse($st)->addHour()->format('H:i:s');
+                    \App\Models\DoctorTimeSlot::firstOrCreate(
+                        [
+                            'availability_date_id' => $availDate->id,
+                            'start_time' => $st,
+                        ],
+                        [
+                            'user_id' => $doctor->id,
+                            'end_time' => $endTime,
+                            'is_booked' => false
+                        ]
+                    );
+                }
+            }
+
+            // Reload availability dates with slots
+            $doctor->load([
+                'availabilityDates' => function ($query) {
+                    $query->whereDate('available_date', '>=', Carbon::today())
+                        ->orderBy('available_date');
+                },
+                'availabilityDates.timeSlots' => function ($query) {
+                    $query->where('is_booked', false)
+                        ->orderBy('start_time');
+                }
+            ]);
+        }
 
         $patientPlans = PatientPlan::where('status','active')->get();
 
@@ -164,14 +213,23 @@ Class PatientAppointmentController extends Controller
                         ->first();
 
                 if (!$slot) {
+                    DB::rollBack();
+                    if ($request->expectsJson() || $request->ajax()) {
+                        return response()->json(['success' => false, 'message' => 'Invalid time slot.'], 422);
+                    }
                     return back()->with('error', 'Invalid time slot.');
                 }
-
-                
 
                 if($slot->is_booked){
 
                     DB::rollBack();
+
+                    if ($request->expectsJson() || $request->ajax()) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'One or more selected slots have already been booked. Please choose different slots.'
+                        ], 422);
+                    }
 
                     return back()->with(
                         'error',
@@ -198,7 +256,6 @@ Class PatientAppointmentController extends Controller
                     'problem_description'          => $request->problem_description,
                     'status'                       => 'confirmed',
                     'patient_address'              => $request->address
-
                 ]);
 
                 $slot->update([
@@ -212,6 +269,13 @@ Class PatientAppointmentController extends Controller
             if ($bookedCount == 0) {
 
                 DB::rollBack();
+
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Selected appointment slots are no longer available.'
+                    ], 422);
+                }
 
                 return back()->with(
                     'error',
@@ -235,6 +299,23 @@ Class PatientAppointmentController extends Controller
 
             DB::commit();
 
+            if ($request->expectsJson() || $request->ajax()) {
+                $firstSlot = DoctorTimeSlot::with('availabilityDate')->find($request->slot_ids[0] ?? null);
+                $docUser = User::find($request->doctor_id);
+                return response()->json([
+                    'success' => true,
+                    'message' => $bookedCount.' appointment(s) booked successfully.',
+                    'booking_id' => $uniquePlanId,
+                    'doctor_name' => 'Dr. ' . preg_replace('/^(dr\.?|doctor)\s+/i', '', trim(optional($docUser)->name ?? '')),
+                    'date_time' => optional(optional($firstSlot)->availabilityDate)->available_date 
+                        ? \Carbon\Carbon::parse($firstSlot->availabilityDate->available_date)->format('d F Y') . ', ' . \Carbon\Carbon::parse($firstSlot->start_time)->format('h:i A')
+                        : now()->format('d F Y, h:i A'),
+                    'package_name' => $plan->name . ' (' . $plan->total_appointments . ' Appointment' . ($plan->total_appointments > 1 ? 's' : '') . ')',
+                    'amount_paid' => number_format($pricing['customer_pays'], 2),
+                    'address' => $request->address ?? (optional($patient)->address ?? 'Home Address')
+                ]);
+            }
+
             return redirect()
                 ->route('patient.dashboard')
                 ->with(
@@ -245,6 +326,13 @@ Class PatientAppointmentController extends Controller
         } catch (\Exception $e) {
 
             DB::rollBack();
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ], 422);
+            }
 
             return back()->with('error', $e->getMessage());
         }

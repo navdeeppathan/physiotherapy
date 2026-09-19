@@ -917,22 +917,29 @@ table.pd-table tr:hover td { background: #fbfdfd; }
                         <table class="pd-table">
                             <thead><tr><th>Invoice</th><th>Doctor</th><th>Amount</th><th>Paid On</th><th>Status</th></tr></thead>
                             <tbody>
-                                @forelse($payments as $payment)
+                                @forelse($payments->take(5) as $payment)
                                     @php
                                         $rawPn = $payment->doctor->name ?? '';
                                         $cleanPn = preg_replace('/^(dr\.?|doctor)\s+/i', '', trim($rawPn));
                                         $pn = $cleanPn !== '' ? 'Dr. ' . $cleanPn : '—';
                                         $pi = $payment->doctor->profile_img ? (str_contains($payment->doctor->profile_img, '/') ? asset($payment->doctor->profile_img) : asset('uploads/profile/'.$payment->doctor->profile_img)) : null;
                                         $ps = $payment->status ?? 'pending';
+                                        $psLabel = match(strtolower($ps)) { 'success','paid','completed'=>'Paid','failed','refunded'=>'Failed',default=>'Pending' };
+                                        $psCls   = match(strtolower($ps)) { 'success','paid','completed'=>'success','failed','refunded'=>'cancelled',default=>'pending' };
                                     @endphp
                                     <tr>
-                                        <td><span class="pd-inv">#INV-{{ str_pad($payment->id,5,'0',STR_PAD_LEFT) }}</span></td>
+                                        <td>
+                                            <a href="{{ route('patient.billing.payments') }}?invoice={{ $payment->id }}"
+                                               style="font-family:monospace;font-size:12.5px;font-weight:700;color:var(--primary-teal);text-decoration:none;">
+                                                #INV-{{ str_pad($payment->id,5,'0',STR_PAD_LEFT) }}
+                                            </a>
+                                        </td>
                                         <td>
                                             <div class="pd-doc-cell">
                                                 @if($pi)
                                                     <img class="pd-doc-img" src="{{ $pi }}" alt="{{ $pn }}">
                                                 @else
-                                                    <div class="pd-doc-ph">{{ strtoupper(substr(preg_replace('/^Dr\.\s*/','',$pn),0,2)) }}</div>
+                                                    <div class="pd-doc-ph">{{ strtoupper(substr(preg_replace('/^Dr\.\s*/','', $pn),0,2)) }}</div>
                                                 @endif
                                                 <div>
                                                     <div class="pd-doc-name">{{ $pn }}</div>
@@ -942,7 +949,7 @@ table.pd-table tr:hover td { background: #fbfdfd; }
                                         </td>
                                         <td style="font-weight:800;color:var(--ink)">₹{{ number_format($payment->amount,2) }}</td>
                                         <td style="color:#64748b;font-size:12.5px">{{ optional($payment->paid_at)->format('d M Y') ?? $payment->created_at->format('d M Y') }}</td>
-                                        <td><span class="pd-pill {{ $ps }}"><span class="pd-pill-dot"></span>{{ ucfirst($ps) }}</span></td>
+                                        <td><span class="pd-pill {{ $psCls }}"><span class="pd-pill-dot"></span>{{ $psLabel }}</span></td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -990,6 +997,19 @@ table.pd-table tr:hover td { background: #fbfdfd; }
                                 <div class="pd-empty-title">No billing history</div>
                             </div>
                         @endforelse
+                    </div>
+
+                    {{-- View All link --}}
+                    <div style="padding:14px 20px;border-top:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                        <span style="font-size:12.5px;color:var(--muted-text);">
+                            Showing {{ $payments->take(5)->count() }} of {{ $payments->count() }} records
+                        </span>
+                        <a href="{{ route('patient.billing.payments') }}"
+                           style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:9px;background:var(--primary-teal);color:#fff;font-size:13px;font-weight:700;text-decoration:none;transition:background 0.15s;"
+                           onmouseover="this.style.background='#074752'" onmouseout="this.style.background='var(--primary-teal)'">
+                            View Full Billing &amp; Payments
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                        </a>
                     </div>
                 </div>
 

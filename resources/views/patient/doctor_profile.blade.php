@@ -1301,18 +1301,35 @@ a {
             <div class="dp-packages-grid">
                 @forelse($patientPlans ?? [] as $pkgIdx => $plan)
                     @php
-                        $isPopular       = ($pkgIdx === $popularIndex);
-                        $pkgSessions     = (int) ($plan->total_appointments ?? 1);
-                        $pkgPrice        = (float) ($plan->price ?? ($totalFee * $pkgSessions));
-                        $pkgOriginal     = (float) ($plan->original_price ?? 0);
-                        $pkgDiscount     = (float) ($plan->discount_percentage ?? 0);
-                        $pkgDesc         = $plan->description ?? ($pkgSessions > 1
+                        $isPopular    = ($pkgIdx === $popularIndex);
+                        $pkgSessions  = (int) ($plan->total_appointments ?? 1);
+
+                        // Use pre-calculated price from PackagePricingService (same as booking page)
+                        $pkgPrice     = (float) ($plan->calculated_package_price
+                                            ?? ($plan->calculated_pricing['package_price'] ?? 0));
+                        $pkgOriginal  = (float) ($plan->calculated_pricing['original_package_price']
+                                            ?? ($plan->original_price ?? 0));
+                        $perSession   = (float) ($plan->calculated_per_session
+                                            ?? ($plan->calculated_pricing['per_appointment_rate'] ?? 0));
+                        $pkgDiscount  = (float) ($plan->discount_percentage ?? 0);
+
+                        // Fallback: if service didn't run (e.g. no DB connection at build time)
+                        if ($pkgPrice <= 0) {
+                            $pkgPrice    = round($totalFee * $pkgSessions * (1 - $pkgDiscount / 100));
+                            $pkgOriginal = round($totalFee * $pkgSessions);
+                            $perSession  = $totalFee;
+                        }
+                        if ($perSession <= 0 && $pkgSessions > 0) {
+                            $perSession = round($pkgPrice / $pkgSessions);
+                        }
+
+                        $pkgDesc      = $plan->description ?? ($pkgSessions > 1
                                             ? "A {$pkgSessions}-session plan for consistent recovery and mobility improvement."
                                             : 'Single session for pain relief and improved mobility.');
-                        $iconClass       = $pkgIcons[$pkgIdx % count($pkgIcons)];
-                        $sessionLabel    = $pkgSessions === 1 ? '/ session' : "/ {$pkgSessions} sessions";
-                        $perSession      = $pkgSessions > 0 ? round($pkgPrice / $pkgSessions) : $pkgPrice;
+                        $iconClass    = $pkgIcons[$pkgIdx % count($pkgIcons)];
+                        $sessionLabel = $pkgSessions === 1 ? '/ session' : "/ {$pkgSessions} sessions";
                     @endphp
+
                     <div class="dp-pkg-item-card {{ $isPopular ? 'popular' : '' }}">
                         @if($isPopular)
                             <span class="dp-popular-tag">Most Popular</span>

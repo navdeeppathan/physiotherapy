@@ -36,6 +36,8 @@ Route::post('/patient/profile/update', [PatientController::class, 'updateProfile
 Route::get('/change-password', [PatientController::class, 'changePassword'])->name('patient.change.password');
 Route::post('/patient/change-password', [PatientController::class, 'updatePassword'])->name('patient.change-password.update');
 
+Route::get('/patient/billing-payments', [PatientController::class, 'billingPayments'])->name('patient.billing.payments');
+
 Route::get('login', [AuthController::class, 'patientlogin'])->name('login');
 Route::get('patient-login', [AuthController::class, 'patientlogin'])->name('patient.login');
 Route::get('/patient-register', [AuthController::class, 'patientregister'])->name('patient.register');

@@ -137,6 +137,42 @@ Class PatientController extends Controller
     }
 
 
+    public function billingPayments(Request $request)
+    {
+        $patient = Auth::user();
+
+        // All payments paginated (5 per page)
+        $payments = Payment::with(['doctor', 'doctor.profile.specializationdata', 'appointment', 'appointment.plan'])
+            ->where('patient_id', $patient->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
+
+        // Totals
+        $totalSpent = Payment::where('patient_id', $patient->id)
+            ->where('status', 'success')
+            ->sum('amount');
+
+        $unpaidAmount = Payment::where('patient_id', $patient->id)
+            ->where('status', 'pending')
+            ->sum('amount');
+
+        $totalSessions = Payment::where('patient_id', $patient->id)
+            ->where('status', 'success')
+            ->count();
+
+        // Selected payment for invoice modal (via ?invoice=ID)
+        $invoicePayment = null;
+        if ($request->filled('invoice')) {
+            $invoicePayment = Payment::with(['doctor', 'appointment', 'appointment.plan', 'patient'])
+                ->where('patient_id', $patient->id)
+                ->find($request->invoice);
+        }
+
+        return view('patient.billing-payments', compact(
+            'patient', 'payments', 'totalSpent', 'unpaidAmount', 'totalSessions', 'invoicePayment'
+        ));
+    }
+
     public function changePassword(){
         $patient = Auth::user();
         return view('patient.change-password', compact('patient'));

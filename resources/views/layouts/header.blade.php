@@ -15,13 +15,12 @@
         position: sticky;
         top: 0;
         z-index: 1000;
-        background: rgba(255,255,255,0.92);
+        background: rgba(255,255,255,0.96);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        border-bottom: 1px solid rgba(0,0,0,0.06);
-        box-shadow: 0 1px 20px rgba(0,0,0,0.06);
+        border-bottom: 1px solid rgba(12,105,120,0.10);
+        box-shadow: 0 1px 20px rgba(12,105,120,0.07);
         padding: 0;
-        /* Prevent backdrop-filter from creating a stacking context that traps modals */
         isolation: isolate;
     }
 
@@ -35,22 +34,20 @@
         gap: 32px;
     }
 
-    /* Logo */
+    /* ── Logo ── */
     .pt-logo {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 0;
         text-decoration: none;
         flex-shrink: 0;
     }
-    .pt-logo-img { height: 36px; width: auto; object-fit: contain; }
-    .pt-logo-text {
-        font-size: 18px;
-        font-weight: 800;
-        color: #0f172a;
-        letter-spacing: -0.03em;
+    .pt-logo-img {
+        height: 44px;
+        width: auto;
+        object-fit: contain;
+        display: block;
     }
-    .pt-logo-text span { color: #0ea5e9; }
 
     /* Nav links */
     .pt-nav-links {
@@ -75,8 +72,8 @@
         transition: all 0.18s;
     }
     .pt-nav-links li a:hover, .pt-nav-links li.active a {
-        background: #f0f9ff;
-        color: #0ea5e9;
+        background: #eef8f9;
+        color: #0c6978;
     }
     .pt-nav-links li.active a { font-weight: 700; }
 
@@ -92,15 +89,17 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        background: #f0f9ff;
-        border: 1px solid #bae6fd;
+        background: #eef8f9;
+        border: 1px solid #bce5ea;
         border-radius: 50px;
         padding: 6px 14px;
         font-size: 13px;
         font-weight: 600;
-        color: #0369a1;
+        color: #0c6978;
         text-decoration: none;
+        transition: all 0.18s;
     }
+    .pt-contact-pill:hover { background: #d6f1f4; border-color: #0c6978; }
     .pt-contact-pill svg { width: 14px; height: 14px; flex-shrink: 0; }
 
     .pt-btn-login {
@@ -117,14 +116,14 @@
         align-items: center;
         gap: 6px;
     }
-    .pt-btn-login:hover { border-color: #0ea5e9; color: #0ea5e9; background: #f0f9ff; }
+    .pt-btn-login:hover { border-color: #0c6978; color: #0c6978; background: #eef8f9; }
 
     .pt-btn-signup {
         padding: 8px 18px;
         border-radius: 9px;
         font-size: 14px;
         font-weight: 700;
-        background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+        background: linear-gradient(135deg, #0c6978, #108598);
         color: #fff;
         text-decoration: none;
         border: none;
@@ -132,11 +131,11 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        box-shadow: 0 4px 12px rgba(14,165,233,0.3);
+        box-shadow: 0 4px 12px rgba(12,105,120,0.28);
     }
     .pt-btn-signup:hover {
-        background: linear-gradient(135deg, #0284c7, #0ea5e9);
-        box-shadow: 0 6px 18px rgba(14,165,233,0.4);
+        background: linear-gradient(135deg, #074752, #0c6978);
+        box-shadow: 0 6px 18px rgba(12,105,120,0.38);
         transform: translateY(-1px);
     }
 
@@ -149,14 +148,14 @@
         align-items: center;
         gap: 10px;
         padding: 5px 14px 5px 6px;
-        background: #f0f9ff;
-        border: 1.5px solid #bae6fd;
+        background: #eef8f9;
+        border: 1.5px solid #bce5ea;
         border-radius: 50px;
         cursor: pointer;
         transition: all 0.18s;
         text-decoration: none;
     }
-    .pt-user-btn:hover { border-color: #0ea5e9; background: #e0f2fe; }
+    .pt-user-btn:hover { border-color: #0c6978; background: #d6f1f4; }
     .pt-user-avatar {
         width: 32px;
         height: 32px;
@@ -221,7 +220,7 @@
         transition: all 0.15s;
         text-align: left;
     }
-    .pt-dropdown a:hover, .pt-dropdown button:hover { background: #f8fafc; color: #0ea5e9; }
+    .pt-dropdown a:hover, .pt-dropdown button:hover { background: #eef8f9; color: #0c6978; }
     .pt-dropdown .logout-item { color: #ef4444; }
     .pt-dropdown .logout-item:hover { background: #fef2f2; color: #dc2626; }
 
@@ -261,7 +260,7 @@
         color: #475569;
         text-decoration: none;
     }
-    .pt-mobile-nav a:hover { background: #f0f9ff; color: #0ea5e9; }
+    .pt-mobile-nav a:hover { background: #eef8f9; color: #0c6978; }
     .pt-mobile-nav .pt-btn-signup { justify-content: center; margin-top: 8px; }
 
     @media (max-width: 768px) {

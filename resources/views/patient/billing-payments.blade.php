@@ -185,8 +185,8 @@ table.bp-table{width:100%;border-collapse:collapse;}
         <nav class="bp-nav">
             <a href="{{ route('patient.dashboard') }}" class="bp-nav-item"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
             <a href="{{ route('patient.dashboard') }}" class="bp-nav-item"><i class="fa-regular fa-calendar-check"></i> My Appointments</a>
-            <a href="{{ route('home') }}#specialists" class="bp-nav-item"><i class="fa-solid fa-user-doctor"></i> Doctors</a>
-            <a href="{{ route('home') }}#pricing" class="bp-nav-item"><i class="fa-solid fa-box-open"></i> Packages</a>
+            <a href="{{ route('home') }}" class="bp-nav-item"><i class="fa-solid fa-user-doctor"></i> Doctors</a>
+            <a href="{{ route('home') }}" class="bp-nav-item"><i class="fa-solid fa-box-open"></i> Packages</a>
             <div class="bp-nav-divider"></div>
             <a href="{{ route('patient.billing.payments') }}" class="bp-nav-item active"><i class="fa-solid fa-receipt"></i> Billing &amp; Payments</a>
             <a href="{{ route('patient.profile') }}" class="bp-nav-item"><i class="fa-regular fa-file-lines"></i> My Documents</a>

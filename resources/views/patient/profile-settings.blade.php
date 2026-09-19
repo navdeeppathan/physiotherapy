@@ -7,7 +7,60 @@
 		
 			@include('layouts.header')
 			
-			<!-- Breadcrumb -->
+<style>
+.breadcrumb-bar {
+    background: linear-gradient(135deg, #074752 0%, #0c6978 100%) !important;
+    padding: 24px 0 !important;
+    box-shadow: 0 4px 16px rgba(7, 71, 82, 0.15);
+}
+.breadcrumb-bar .breadcrumb a { color: rgba(255,255,255,.8) !important; }
+.breadcrumb-bar .breadcrumb-item.active { color: #fff !important; font-weight: 600; }
+.breadcrumb-title { color: #fff !important; font-weight: 800 !important; }
+.profile-sidebar {
+    background: #fff;
+    border-radius: 18px;
+    border: 1.5px solid #e2e8f0;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(12,105,120,.05);
+}
+.widget-profile {
+    border-bottom: 1.5px solid #f1f5f9;
+}
+.dashboard-menu ul li.active a {
+    color: #0c6978 !important;
+    background: #eef8f9 !important;
+    font-weight: 700;
+}
+.dashboard-menu ul li a:hover {
+    color: #0c6978 !important;
+}
+.btn-primary.submit-btn {
+    background: linear-gradient(135deg, #0c6978 0%, #108598 100%) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 12px 30px !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 14px rgba(12,105,120,.25) !important;
+    transition: all .2s !important;
+}
+.btn-primary.submit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(12,105,120,.35) !important;
+}
+.change-photo-btn {
+    background: #0c6978 !important;
+    border-radius: 10px !important;
+}
+.card {
+    border-radius: 18px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    box-shadow: 0 4px 20px rgba(12,105,120,.04) !important;
+}
+.form-control:focus {
+    border-color: #0c6978 !important;
+    box-shadow: 0 0 0 3px rgba(12,105,120,.12) !important;
+}
+</style>
 			<div class="breadcrumb-bar">
 				<div class="container-fluid">
 					<div class="row align-items-center">

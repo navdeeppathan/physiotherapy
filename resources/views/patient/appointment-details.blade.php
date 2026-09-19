@@ -13,21 +13,22 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
 
 /* Breadcrumb */
 .ad-bc {
-    background: linear-gradient(135deg, #0c4a6e, #0369a1);
-    padding: 20px 0; position: relative;
+    background: linear-gradient(135deg, #074752 0%, #0c6978 100%);
+    padding: 22px 0; position: relative;
+    box-shadow: 0 4px 16px rgba(7, 71, 82, 0.15);
 }
 .ad-bc::after { content:''; position:absolute; inset:0; background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='20' cy='20' r='20'/%3E%3C/g%3E%3C/svg%3E") repeat; }
 .ad-bc-inner { max-width: 1280px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 1; }
-.ad-bc-trail { display: flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(255,255,255,.6); }
-.ad-bc-trail a { color: rgba(255,255,255,.7); font-weight: 600; }
+.ad-bc-trail { display: flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(255,255,255,.7); }
+.ad-bc-trail a { color: rgba(255,255,255,.85); font-weight: 600; }
 .ad-back-btn {
     display: flex; align-items: center; gap: 7px;
-    background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25);
+    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25);
     color: #fff; border-radius: 10px; padding: 8px 16px;
     font-size: 13px; font-weight: 700;
     transition: all .18s;
 }
-.ad-back-btn:hover { background: rgba(255,255,255,.22); }
+.ad-back-btn:hover { background: rgba(255,255,255,.25); }
 
 /* Body */
 .ad-body { max-width: 1280px; margin: 0 auto; padding: 32px 24px 56px; display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
@@ -35,23 +36,23 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
 /* ── LEFT CARD ── */
 .ad-doc-card {
     background: #fff; border: 1.5px solid #e2e8f0; border-radius: 20px;
-    overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,.06);
+    overflow: hidden; box-shadow: 0 4px 20px rgba(12,105,120,.06);
     position: sticky; top: 88px;
     display: flex; flex-direction: column; gap: 0;
 }
-.ad-doc-banner { height: 72px; background: linear-gradient(135deg,#0369a1,#0ea5e9); position: relative; }
+.ad-doc-banner { height: 74px; background: linear-gradient(135deg, #074752 0%, #0c6978 100%); position: relative; }
 .ad-doc-av-wrap { position: absolute; bottom: -36px; left: 50%; transform: translateX(-50%); }
 .ad-doc-av { width: 72px; height: 72px; border-radius: 50%; border: 3px solid #fff; object-fit: cover; box-shadow: 0 4px 14px rgba(0,0,0,.15); }
-.ad-doc-av-ph { width: 72px; height: 72px; border-radius: 50%; border: 3px solid #fff; background: linear-gradient(135deg,#0ea5e9,#38bdf8); color: #fff; font-size: 22px; font-weight: 900; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,.15); }
+.ad-doc-av-ph { width: 72px; height: 72px; border-radius: 50%; border: 3px solid #fff; background: linear-gradient(135deg,#0c6978,#108598); color: #fff; font-size: 22px; font-weight: 900; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,.15); }
 .ad-doc-body { padding: 46px 20px 20px; text-align: center; }
 .ad-doc-name { font-size: 16px; font-weight: 800; color: #0f172a; }
-.ad-doc-spec { font-size: 13px; color: #0ea5e9; font-weight: 600; margin-top: 4px; }
+.ad-doc-spec { font-size: 13px; color: #0c6978; font-weight: 600; margin-top: 4px; }
 
 .ad-divider { height: 1px; background: #f1f5f9; }
 
 .ad-info-list { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
 .ad-info-row { display: flex; align-items: center; gap: 10px; }
-.ad-info-icon { width: 32px; height: 32px; border-radius: 9px; background: #e0f2fe; color: #0ea5e9; display: flex; align-items: center; justify-content: center; font-size: 12.5px; flex-shrink: 0; }
+.ad-info-icon { width: 32px; height: 32px; border-radius: 9px; background: #eef8f9; color: #0c6978; border: 1px solid #bce5ea; display: flex; align-items: center; justify-content: center; font-size: 12.5px; flex-shrink: 0; }
 .ad-info-lbl { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 700; letter-spacing: .05em; }
 .ad-info-val { font-size: 13.5px; color: #0f172a; font-weight: 600; margin-top: 1px; }
 
@@ -61,16 +62,16 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
     padding: 6px 14px; border-radius: 50px; font-size: 13px; font-weight: 700;
 }
 .ad-status-dot { width: 7px; height: 7px; border-radius: 50%; }
-.ad-status.confirmed { background: #e0f2fe; color: #0369a1; }
-.ad-status.confirmed .ad-status-dot { background: #0ea5e9; }
-.ad-status.pending   { background: #fef3c7; color: #92400e; }
+.ad-status.confirmed { background: #e2f4f6; color: #074752; border: 1px solid #bce5ea; }
+.ad-status.confirmed .ad-status-dot { background: #0c6978; }
+.ad-status.pending   { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
 .ad-status.pending .ad-status-dot { background: #f59e0b; }
-.ad-status.completed { background: #d1fae5; color: #065f46; }
+.ad-status.completed { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
 .ad-status.completed .ad-status-dot { background: #10b981; }
-.ad-status.cancelled { background: #fee2e2; color: #991b1b; }
+.ad-status.cancelled { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
 .ad-status.cancelled .ad-status-dot { background: #ef4444; }
-.ad-status.shifted   { background: #f3e8ff; color: #6b21a8; }
-.ad-status.shifted .ad-status-dot { background: #a855f7; }
+.ad-status.shifted   { background: #f5f3ff; color: #5b21b6; border: 1px solid #ddd6fe; }
+.ad-status.shifted .ad-status-dot { background: #8b5cf6; }
 
 /* Cancel button */
 .ad-cancel-btn {
@@ -87,10 +88,10 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
 /* ── MAIN ── */
 .ad-main { display: flex; flex-direction: column; gap: 18px; }
 
-.ad-card { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 18px; overflow: hidden; box-shadow: 0 2px 14px rgba(0,0,0,.04); }
+.ad-card { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 20px rgba(12,105,120,.04); }
 .ad-card-header { padding: 18px 24px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 10px; }
 .ad-card-title { font-size: 15px; font-weight: 800; color: #0f172a; }
-.ad-card-icon { width: 34px; height: 34px; border-radius: 9px; background: #e0f2fe; color: #0ea5e9; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.ad-card-icon { width: 34px; height: 34px; border-radius: 9px; background: #eef8f9; color: #0c6978; border: 1px solid #bce5ea; display: flex; align-items: center; justify-content: center; font-size: 14px; }
 .ad-card-body { padding: 20px 24px; }
 
 .ad-info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
@@ -124,7 +125,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
 }
 .cm-select { height: 46px; padding: 0 14px; appearance: none; cursor: pointer; }
 .cm-textarea { padding: 12px 14px; resize: vertical; min-height: 90px; margin-top: 14px; display: none; }
-.cm-select:focus, .cm-textarea:focus { border-color: #0ea5e9; background: #fff; box-shadow: 0 0 0 3px rgba(14,165,233,.1); }
+.cm-select:focus, .cm-textarea:focus { border-color: #0c6978; background: #fff; box-shadow: 0 0 0 3px rgba(12,105,120,.12); }
 .cm-modal-footer { padding: 16px 24px; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 10px; }
 .cm-cancel-btn { padding: 10px 20px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: #fff; color: #334155; font-size: 14px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer; transition: all .15s; }
 .cm-cancel-btn:hover { background: #f8fafc; }
@@ -166,8 +167,13 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
                     <div class="ad-doc-av-ph">{{ strtoupper(substr($appointment->doctor->name,0,1)) }}</div>
                 @endif
             </div>
+            @php
+                $rawDocName = $appointment->doctor->name ?? '';
+                $cleanDocName = preg_replace('/^(dr\.?|doctor)\s+/i', '', trim($rawDocName));
+                $displayDocName = $cleanDocName !== '' ? 'Dr. ' . $cleanDocName : '—';
+            @endphp
             <div class="ad-doc-body">
-                <div class="ad-doc-name">Dr. {{ $appointment->doctor->name }}</div>
+                <div class="ad-doc-name">{{ $displayDocName }}</div>
                 <div class="ad-doc-spec">{{ optional(optional($appointment->doctor->profile)->specializationdata)->name ?? 'Physiotherapist' }}</div>
             </div>
 

@@ -644,31 +644,6 @@ table.pd-table tr:hover td { background: #fbfdfd; }
 
         {{-- Desktop Sidebar --}}
         <aside class="pd-sidebar">
-            <div class="pd-profile-card">
-                @if($patient->profile_img)
-                    <img src="{{ str_contains($patient->profile_img, '/') ? asset($patient->profile_img) : asset('uploads/profile/'.$patient->profile_img) }}" class="pd-avatar" alt="{{ Auth::user()->name }}">
-                @else
-                    <div class="pd-avatar-ph">{{ strtoupper(substr(Auth::user()->name,0,1)) }}</div>
-                @endif
-                <div class="pd-profile-name">{{ Auth::user()->name }}</div>
-                <div class="pd-profile-badge">
-                    <i class="fas fa-check-circle" style="font-size:10px;color:var(--accent-mint)"></i> Verified Patient
-                </div>
-                <div class="pd-profile-meta">
-                    @if(Auth::user()->dob)
-                    <div class="pd-profile-meta-item">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        {{ \Carbon\Carbon::parse(Auth::user()->dob)->format('d M Y') }} &middot; {{ \Carbon\Carbon::parse(Auth::user()->dob)->age }} yrs
-                    </div>
-                    @endif
-                    @if(Auth::user()->city)
-                    <div class="pd-profile-meta-item">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                        {{ Auth::user()->city }}{{ Auth::user()->state ? ', '.Auth::user()->state : '' }}
-                    </div>
-                    @endif
-                </div>
-            </div>
             <div class="pd-nav-card">
                 <a href="{{ route('patient.dashboard') }}" class="pd-nav-item active">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>

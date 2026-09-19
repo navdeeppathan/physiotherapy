@@ -1264,7 +1264,7 @@ a {
         </div>
 
         {{-- ══════════════════════════════════════════════════
-             SECTION 3: TREATMENT PACKAGES
+             SECTION 3: TREATMENT PACKAGES (DYNAMIC)
         ══════════════════════════════════════════════════ --}}
         <div class="dp-card dp-packages-card">
             <div class="dp-sec-header-row">
@@ -1283,82 +1283,159 @@ a {
                 </a>
             </div>
 
+            @php
+                // Icon pool for cycling through packages
+                $pkgIcons = [
+                    'fa-solid fa-person-dots-from-line',
+                    'fa-solid fa-person-walking',
+                    'fa-solid fa-child-reaching',
+                    'fa-solid fa-dumbbell',
+                    'fa-solid fa-heart-pulse',
+                    'fa-solid fa-hand-holding-medical',
+                ];
+                // Find the middle plan index for "Most Popular" badge
+                $pkgCount        = count($patientPlans ?? []);
+                $popularIndex    = $pkgCount > 0 ? (int) floor(($pkgCount - 1) / 2) : 1;
+            @endphp
+
             <div class="dp-packages-grid">
-                {{-- Package 1: Pain Relief Session --}}
-                <div class="dp-pkg-item-card">
-                    <div>
-                        <div class="dp-pkg-icon-wrap">
-                            <i class="fa-solid fa-person-dots-from-line"></i>
+                @forelse($patientPlans ?? [] as $pkgIdx => $plan)
+                    @php
+                        $isPopular       = ($pkgIdx === $popularIndex);
+                        $pkgSessions     = (int) ($plan->total_appointments ?? 1);
+                        $pkgPrice        = (float) ($plan->price ?? ($totalFee * $pkgSessions));
+                        $pkgOriginal     = (float) ($plan->original_price ?? 0);
+                        $pkgDiscount     = (float) ($plan->discount_percentage ?? 0);
+                        $pkgDesc         = $plan->description ?? ($pkgSessions > 1
+                                            ? "A {$pkgSessions}-session plan for consistent recovery and mobility improvement."
+                                            : 'Single session for pain relief and improved mobility.');
+                        $iconClass       = $pkgIcons[$pkgIdx % count($pkgIcons)];
+                        $sessionLabel    = $pkgSessions === 1 ? '/ session' : "/ {$pkgSessions} sessions";
+                        $perSession      = $pkgSessions > 0 ? round($pkgPrice / $pkgSessions) : $pkgPrice;
+                    @endphp
+                    <div class="dp-pkg-item-card {{ $isPopular ? 'popular' : '' }}">
+                        @if($isPopular)
+                            <span class="dp-popular-tag">Most Popular</span>
+                        @endif
+                        <div>
+                            <div class="dp-pkg-icon-wrap">
+                                <i class="{{ $iconClass }}"></i>
+                            </div>
+                            <h3 class="dp-pkg-title">{{ $plan->name }}</h3>
+                            <p class="dp-pkg-subtext">{{ $pkgDesc }}</p>
+                            <div class="dp-pkg-meta-tags">
+                                <span><i class="fa-regular fa-clock"></i> 60 Min / Session</span>
+                                <span><i class="fa-solid fa-house-chimney"></i> Home Visit</span>
+                                @if($pkgSessions > 1)
+                                    <span><i class="fa-solid fa-layer-group"></i> {{ $pkgSessions }} Sessions</span>
+                                @endif
+                            </div>
+                            @if($pkgDiscount > 0)
+                                <div style="margin-top:8px;">
+                                    <span style="background:#d1fae5;color:#065f46;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.3px;">
+                                        {{ number_format($pkgDiscount, 0) }}% OFF
+                                    </span>
+                                    @if($pkgOriginal > 0)
+                                        <span style="color:var(--muted-text);font-size:12px;text-decoration:line-through;margin-left:6px;">₹{{ number_format($pkgOriginal) }}</span>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
-                        <h3 class="dp-pkg-title">Pain Relief Session</h3>
-                        <p class="dp-pkg-subtext">Single session for pain relief and improved mobility.</p>
-                        <div class="dp-pkg-meta-tags">
-                            <span><i class="fa-regular fa-clock"></i> 60 Minutes</span>
-                            <span><i class="fa-solid fa-house-chimney"></i> Home Visit</span>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="dp-pkg-price-text">
-                            ₹{{ number_format($totalFee) }} <small>/ session</small>
-                        </div>
-                        <a href="{{ route('doctor.booking', $doctor->id) }}" class="dp-btn-choose-pkg" onclick="return checkAuthAndBook(event, this.href)">
-                            Choose Package
-                        </a>
-                    </div>
-                </div>
-
-                {{-- Package 2: Recovery & Mobility (Most Popular) --}}
-                <div class="dp-pkg-item-card popular">
-                    <span class="dp-popular-tag">Most Popular</span>
-                    <div>
-                        <div class="dp-pkg-icon-wrap">
-                            <i class="fa-solid fa-person-walking"></i>
-                        </div>
-                        <h3 class="dp-pkg-title">Recovery &amp; Mobility</h3>
-                        <p class="dp-pkg-subtext">Focused treatment plan for better movement and faster recovery.</p>
-                        <div class="dp-pkg-meta-tags">
-                            <span><i class="fa-regular fa-clock"></i> 60 Minutes</span>
-                            <span><i class="fa-solid fa-house-chimney"></i> Home Visit</span>
-                        </div>
-                    </div>
-                    <div>
-                        @php
-                            $pkg2Price = round($totalFee * 3 * 0.9); // 10% discount on 3 sessions
-                        @endphp
-                        <div class="dp-pkg-price-text">
-                            ₹{{ number_format($pkg2Price) }} <small>/ 3 sessions</small>
-                        </div>
-                        <a href="{{ route('doctor.booking', $doctor->id) }}#packages" class="dp-btn-choose-pkg filled" onclick="return checkAuthAndBook(event, this.href)">
-                            Choose Package
-                        </a>
-                    </div>
-                </div>
-
-                {{-- Package 3: Complete Home Rehabilitation --}}
-                <div class="dp-pkg-item-card">
-                    <div>
-                        <div class="dp-pkg-icon-wrap">
-                            <i class="fa-solid fa-child-reaching"></i>
-                        </div>
-                        <h3 class="dp-pkg-title">Complete Home Rehabilitation</h3>
-                        <p class="dp-pkg-subtext">Comprehensive program for long-term recovery and injury prevention.</p>
-                        <div class="dp-pkg-meta-tags">
-                            <span><i class="fa-regular fa-clock"></i> 60 Minutes</span>
-                            <span><i class="fa-solid fa-house-chimney"></i> Home Visit</span>
+                        <div>
+                            <div class="dp-pkg-price-text">
+                                ₹{{ number_format($pkgPrice) }} <small>{{ $sessionLabel }}</small>
+                            </div>
+                            @if($pkgSessions > 1)
+                                <div style="color:var(--muted-text);font-size:11px;margin-bottom:10px;">₹{{ number_format($perSession) }} per session</div>
+                            @endif
+                            <a href="{{ route('doctor.booking', $doctor->id) }}{{ $pkgSessions > 1 ? '#packages' : '' }}"
+                               class="dp-btn-choose-pkg {{ $isPopular ? 'filled' : '' }}"
+                               onclick="return checkAuthAndBook(event, this.href)">
+                                Choose Package
+                            </a>
                         </div>
                     </div>
-                    <div>
-                        @php
-                            $pkg3Price = round($totalFee * 6 * 0.8); // 20% discount on 6 sessions
-                        @endphp
-                        <div class="dp-pkg-price-text">
-                            ₹{{ number_format($pkg3Price) }} <small>/ 6 sessions</small>
+                @empty
+                    {{-- Fallback: show 3 computed cards when no plans in DB --}}
+                    @php
+                        $fallbackPlans = [
+                            [
+                                'icon'       => 'fa-solid fa-person-dots-from-line',
+                                'name'       => 'Pain Relief Session',
+                                'desc'       => 'Single session for pain relief and improved mobility.',
+                                'price'      => $totalFee,
+                                'label'      => '/ session',
+                                'sessions'   => 1,
+                                'popular'    => false,
+                                'discount'   => 0,
+                            ],
+                            [
+                                'icon'       => 'fa-solid fa-person-walking',
+                                'name'       => 'Recovery & Mobility',
+                                'desc'       => 'Focused treatment plan for better movement and faster recovery.',
+                                'price'      => round($totalFee * 3 * 0.9),
+                                'label'      => '/ 3 sessions',
+                                'sessions'   => 3,
+                                'popular'    => true,
+                                'discount'   => 10,
+                                'original'   => $totalFee * 3,
+                            ],
+                            [
+                                'icon'       => 'fa-solid fa-child-reaching',
+                                'name'       => 'Complete Home Rehabilitation',
+                                'desc'       => 'Comprehensive program for long-term recovery and injury prevention.',
+                                'price'      => round($totalFee * 6 * 0.8),
+                                'label'      => '/ 6 sessions',
+                                'sessions'   => 6,
+                                'popular'    => false,
+                                'discount'   => 20,
+                                'original'   => $totalFee * 6,
+                            ],
+                        ];
+                    @endphp
+                    @foreach($fallbackPlans as $fp)
+                        <div class="dp-pkg-item-card {{ $fp['popular'] ? 'popular' : '' }}">
+                            @if($fp['popular'])
+                                <span class="dp-popular-tag">Most Popular</span>
+                            @endif
+                            <div>
+                                <div class="dp-pkg-icon-wrap">
+                                    <i class="{{ $fp['icon'] }}"></i>
+                                </div>
+                                <h3 class="dp-pkg-title">{{ $fp['name'] }}</h3>
+                                <p class="dp-pkg-subtext">{{ $fp['desc'] }}</p>
+                                <div class="dp-pkg-meta-tags">
+                                    <span><i class="fa-regular fa-clock"></i> 60 Minutes</span>
+                                    <span><i class="fa-solid fa-house-chimney"></i> Home Visit</span>
+                                    @if($fp['sessions'] > 1)
+                                        <span><i class="fa-solid fa-layer-group"></i> {{ $fp['sessions'] }} Sessions</span>
+                                    @endif
+                                </div>
+                                @if($fp['discount'] > 0)
+                                    <div style="margin-top:8px;">
+                                        <span style="background:#d1fae5;color:#065f46;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;">
+                                            {{ $fp['discount'] }}% OFF
+                                        </span>
+                                        <span style="color:var(--muted-text);font-size:12px;text-decoration:line-through;margin-left:6px;">₹{{ number_format($fp['original']) }}</span>
+                                    </div>
+                                @endif
+                            </div>
+                            <div>
+                                <div class="dp-pkg-price-text">
+                                    ₹{{ number_format($fp['price']) }} <small>{{ $fp['label'] }}</small>
+                                </div>
+                                @if($fp['sessions'] > 1)
+                                    <div style="color:var(--muted-text);font-size:11px;margin-bottom:10px;">₹{{ number_format(round($fp['price'] / $fp['sessions'])) }} per session</div>
+                                @endif
+                                <a href="{{ route('doctor.booking', $doctor->id) }}{{ $fp['sessions'] > 1 ? '#packages' : '' }}"
+                                   class="dp-btn-choose-pkg {{ $fp['popular'] ? 'filled' : '' }}"
+                                   onclick="return checkAuthAndBook(event, this.href)">
+                                    Choose Package
+                                </a>
+                            </div>
                         </div>
-                        <a href="{{ route('doctor.booking', $doctor->id) }}#packages" class="dp-btn-choose-pkg" onclick="return checkAuthAndBook(event, this.href)">
-                            Choose Package
-                        </a>
-                    </div>
-                </div>
+                    @endforeach
+                @endforelse
             </div>
         </div>
 

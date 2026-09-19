@@ -1439,10 +1439,7 @@ img {
         <div class="home-container">
             <div class="pth-nav-inner">
                 <a href="{{ route('home') }}" class="pth-brand">
-                    <div class="pth-brand-icon">
-                        <i class="fa-solid fa-heart-pulse"></i>
-                    </div>
-                    <div class="pth-brand-name">Physio<span>AtHome</span></div>
+                    <img src="{{ asset('logo.png') }}" alt="PhysioPii" style="height:44px;width:auto;object-fit:contain;display:block;">
                 </a>
 
                 <ul class="pth-nav-links">
@@ -2101,10 +2098,7 @@ img {
             <div class="pth-footer-grid">
                 <div>
                     <a href="{{ route('home') }}" class="pth-footer-brand">
-                        <div class="pth-brand-icon" style="background:#0c6978;">
-                            <i class="fa-solid fa-heart-pulse"></i>
-                        </div>
-                        <div class="pth-footer-brand-name">Physio<span>AtHome</span></div>
+                        <img src="{{ asset('logo.png') }}" alt="PhysioPii" style="height:40px;width:auto;object-fit:contain;display:block;filter:brightness(0) invert(1);">
                     </a>
                     <p class="pth-footer-about">
                         Bringing professional, trusted physical therapy directly to your doorstep. Experience personalized pain recovery and health comfort.

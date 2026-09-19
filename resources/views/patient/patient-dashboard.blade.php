@@ -644,25 +644,40 @@ table.pd-table tr:hover td { background: #fbfdfd; }
 
         {{-- Desktop Sidebar --}}
         <aside class="pd-sidebar">
+
+            {{-- Profile mini card --}}
+            <div class="pd-nav-card" style="padding:16px 14px;display:flex;align-items:center;gap:12px;border-bottom:0;margin-bottom:0;">
+                @if($patient->profile_img)
+                    <img src="{{ str_contains($patient->profile_img, '/') ? asset($patient->profile_img) : asset('uploads/profile/'.$patient->profile_img) }}"
+                         style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--teal-badge-border);flex-shrink:0;" alt="{{ $patient->name }}">
+                @else
+                    <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--primary-teal),var(--primary-teal-sub));display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:800;flex-shrink:0;">{{ strtoupper(substr($patient->name,0,1)) }}</div>
+                @endif
+                <div>
+                    <div style="font-size:14px;font-weight:800;color:var(--ink);line-height:1.2;">{{ $patient->name }}</div>
+                    <div style="font-size:12px;color:var(--muted);margin-top:2px;font-weight:500;">Patient</div>
+                </div>
+            </div>
+
             <div class="pd-nav-card">
-                <a href="{{ route('patient.dashboard') }}" class="pd-nav-item active">
+                <a href="#" onclick="switchSection('dashboard',this);return false;" class="pd-nav-item active" id="nav-dashboard">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
                     Dashboard
                 </a>
-                <a href="{{ route('patient.dashboard') }}" class="pd-nav-item" onclick="setTimeout(()=>switchTabByName('all'),100)">
+                <a href="#" onclick="switchSection('dashboard',this);return false;" class="pd-nav-item" id="nav-appointments">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                     My Appointments
                 </a>
-                <!-- <a href="{{ route('home') }}" class="pd-nav-item">
+                <a href="{{ route('home') }}" class="pd-nav-item">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                     Doctors
                 </a>
                 <a href="{{ route('home') }}" class="pd-nav-item">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/></svg>
                     Packages
-                </a> -->
+                </a>
                 <div class="pd-nav-divider"></div>
-                <a href="{{ route('patient.billing.payments') }}" class="pd-nav-item">
+                <a href="#" onclick="switchSection('billing',this);return false;" class="pd-nav-item" id="nav-billing">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14H5a1 1 0 01-1-1V4a1 1 0 011-1h11a1 1 0 011 1v1M9 14a1 1 0 001 1h9a1 1 0 001-1v-5a1 1 0 00-1-1h-9a1 1 0 00-1 1v5z"/></svg>
                     Billing &amp; Payments
                 </a>
@@ -671,10 +686,6 @@ table.pd-table tr:hover td { background: #fbfdfd; }
                     My Documents
                 </a>
                 <div class="pd-nav-divider"></div>
-                <!-- <a href="{{ route('patient.profile') }}" class="pd-nav-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-                    Notifications
-                </a> -->
                 <a href="{{ route('patient.profile') }}" class="pd-nav-item">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     Settings
@@ -688,10 +699,22 @@ table.pd-table tr:hover td { background: #fbfdfd; }
                     </button>
                 </form>
             </div>
+
+            {{-- Need Help box --}}
+            <div class="pd-nav-card" style="padding:18px 16px;text-align:center;">
+                <i class="fas fa-headset" style="font-size:22px;color:var(--primary-teal);margin-bottom:8px;display:block;"></i>
+                <div style="font-size:13.5px;font-weight:800;color:var(--ink);margin-bottom:4px;">Need Help?</div>
+                <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">Our support team is here for you.</div>
+                <a href="mailto:support@physiopii.com" style="display:block;padding:9px;border-radius:10px;background:var(--primary-teal);color:#fff;font-size:13px;font-weight:700;text-decoration:none;text-align:center;transition:background .15s;" onmouseover="this.style.background='#074752'" onmouseout="this.style.background='var(--primary-teal)'">Contact Support</a>
+            </div>
+
         </aside>
 
         {{-- Main Content --}}
         <main class="pd-main">
+
+            {{-- ═══════ SECTION: DASHBOARD ═══════ --}}
+            <div id="sec-dashboard" class="pd-section" style="display:block;">
 
             <div class="pd-page-header">
                 <div>
@@ -1011,11 +1034,143 @@ table.pd-table tr:hover td { background: #fbfdfd; }
                 </div>
 
             </div>{{-- /pd-card --}}
+
+            </div>{{-- /sec-dashboard --}}
+
+            {{-- ═══════ SECTION: BILLING & PAYMENTS ═══════ --}}
+            <div id="sec-billing" class="pd-section" style="display:none;">
+                <div class="pd-page-header">
+                    <div>
+                        <div class="pd-page-title">Billing &amp; Payments</div>
+                        <div class="pd-page-sub">Manage your payments, invoices and wallet details</div>
+                    </div>
+                    <div class="pd-date-chip">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14H5a1 1 0 01-1-1V4a1 1 0 011-1h11a1 1 0 011 1v1M9 14a1 1 0 001 1h9a1 1 0 001-1v-5a1 1 0 00-1-1h-9a1 1 0 00-1 1v5z"/></svg>
+                        Payment Records
+                    </div>
+                </div>
+
+                {{-- Overview Stats --}}
+                <div class="pd-stats" style="grid-template-columns:1fr 1fr 1fr;">
+                    <div class="pd-stat teal">
+                        <div class="pd-stat-icon teal">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                        </div>
+                        <div>
+                            <div class="pd-stat-val">₹{{ number_format($totalPaymentAmount, 0) }}</div>
+                            <div class="pd-stat-lbl">Total Paid</div>
+                        </div>
+                    </div>
+                    <div class="pd-stat" style="--stat-accent:#f59e0b;--stat-bg:#fef3c7;--stat-border:#fde68a;">
+                        <div class="pd-stat-icon" style="background:#fef3c7;border:1px solid #fde68a;color:#f59e0b;">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <div>
+                            <div class="pd-stat-val" style="color:#d97706;">₹{{ number_format($unpaidAmount, 0) }}</div>
+                            <div class="pd-stat-lbl">Unpaid</div>
+                        </div>
+                    </div>
+                    <div class="pd-stat green">
+                        <div class="pd-stat-icon green">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14H5a1 1 0 01-1-1V4a1 1 0 011-1h11a1 1 0 011 1v1M9 14a1 1 0 001 1h9a1 1 0 001-1v-5a1 1 0 00-1-1h-9a1 1 0 00-1 1v5z"/></svg>
+                        </div>
+                        <div>
+                            <div class="pd-stat-val">{{ $payments->count() }}</div>
+                            <div class="pd-stat-lbl">Total Invoices</div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Transaction Table --}}
+                <div class="pd-card">
+                    <div class="pd-billing-stats" style="padding:0;display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #f1f5f9;">
+                        <div style="font-size:15px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:8px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;color:var(--primary-teal);"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                            Transaction History
+                        </div>
+                        <span style="font-size:12px;color:var(--muted);background:#f1f5f9;padding:5px 12px;border-radius:8px;">{{ $payments->count() }} records</span>
+                    </div>
+                    <div class="pd-table-wrap">
+                        <table class="pd-table">
+                            <thead><tr><th>Invoice</th><th>Doctor</th><th>Amount</th><th>Paid On</th><th>Status</th></tr></thead>
+                            <tbody>
+                                @forelse($payments->take(10) as $payment)
+                                    @php
+                                        $rawPn = $payment->doctor->name ?? '';
+                                        $cleanPn = preg_replace('/^(dr\.?|doctor)\s+/i', '', trim($rawPn));
+                                        $pn = $cleanPn !== '' ? 'Dr. ' . $cleanPn : '—';
+                                        $pi = $payment->doctor->profile_img ? (str_contains($payment->doctor->profile_img, '/') ? asset($payment->doctor->profile_img) : asset('uploads/profile/'.$payment->doctor->profile_img)) : null;
+                                        $ps = $payment->status ?? 'pending';
+                                        $psLabel = match(strtolower($ps)) { 'success','paid','completed'=>'Paid','failed','refunded'=>'Failed',default=>'Pending' };
+                                        $psCls   = match(strtolower($ps)) { 'success','paid','completed'=>'success','failed','refunded'=>'cancelled',default=>'pending' };
+                                    @endphp
+                                    <tr>
+                                        <td>
+                                            <span style="font-family:monospace;font-size:12.5px;font-weight:700;color:var(--primary-teal);">
+                                                #INV-{{ str_pad($payment->id,5,'0',STR_PAD_LEFT) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="pd-doc-cell">
+                                                @if($pi)
+                                                    <img class="pd-doc-img" src="{{ $pi }}" alt="{{ $pn }}">
+                                                @else
+                                                    <div class="pd-doc-ph">{{ strtoupper(substr(preg_replace('/^Dr\.\s*/','', $pn),0,2)) }}</div>
+                                                @endif
+                                                <div>
+                                                    <div class="pd-doc-name">{{ $pn }}</div>
+                                                    <div class="pd-doc-spec">{{ optional(optional($payment->doctor->profile)->specializationdata)->name ?? 'Physiotherapist' }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="font-weight:800;color:var(--ink)">₹{{ number_format($payment->amount,2) }}</td>
+                                        <td style="color:#64748b;font-size:12.5px">{{ optional($payment->paid_at)->format('d M Y') ?? $payment->created_at->format('d M Y') }}</td>
+                                        <td><span class="pd-pill {{ $psCls }}"><span class="pd-pill-dot"></span>{{ $psLabel }}</span></td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5">
+                                            <div class="pd-empty">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 14H5a1 1 0 01-1-1V4a1 1 0 011-1h11a1 1 0 011 1v1M9 14a1 1 0 001 1h9a1 1 0 001-1v-5a1 1 0 00-1-1h-9a1 1 0 00-1 1v5z"/></svg>
+                                                <div class="pd-empty-title">No billing history</div>
+                                                <div class="pd-empty-sub">Your payment invoices will appear here.</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>{{-- /sec-billing --}}
+
         </main>
     </div>
 </div>
 
 <script>
+// ── Section switching (sidebar nav) ──
+function switchSection(sectionId, clickedItem) {
+    // Hide all sections
+    document.querySelectorAll('.pd-section').forEach(s => s.style.display = 'none');
+    // Deactivate all nav items that are in the sidebar nav
+    document.querySelectorAll('.pd-nav-item').forEach(n => n.classList.remove('active'));
+    // Show selected section
+    const sec = document.getElementById('sec-' + sectionId);
+    if (sec) sec.style.display = 'block';
+    // Activate the clicked item (and matching sibling for Dashboard/My Appointments)
+    if (clickedItem) {
+        clickedItem.classList.add('active');
+        // If clicking My Appointments, also activate Dashboard nav
+        if (clickedItem.id === 'nav-appointments') {
+            document.getElementById('nav-dashboard')?.classList.remove('active');
+        }
+    }
+    // Scroll top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Appointment tab switching ──
 function switchTab(tabId, btn) {
     document.querySelectorAll('.pd-tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.pd-tab-content').forEach(c => c.classList.remove('active'));

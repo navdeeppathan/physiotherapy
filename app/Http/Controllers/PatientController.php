@@ -76,7 +76,11 @@ Class PatientController extends Controller
             ->latest()
             ->get();
             
-        return view('patient.patient-dashboard', compact('patient', 'appointments', 'payments', 'upcomingAppointments', 'completedAppointments', 'shiftedAppointments', 'cancelledAppointments', 'totalPaymentAmount'));
+        $unpaidAmount = Payment::where('patient_id', $patient->id)
+            ->where('status', 'pending')
+            ->sum('amount');
+            
+        return view('patient.patient-dashboard', compact('patient', 'appointments', 'payments', 'upcomingAppointments', 'completedAppointments', 'shiftedAppointments', 'cancelledAppointments', 'totalPaymentAmount', 'unpaidAmount'));
     }
 
     public function profile(){

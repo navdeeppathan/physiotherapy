@@ -304,21 +304,40 @@ a {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: all 0.2s;
+    background: #ffffff;
+    transition: all 0.2s ease;
+    pointer-events: none;
 }
-.bk-pkg-card.selected .bk-radio-custom {
-    border-color: var(--primary-teal);
-}
+
 .bk-radio-dot {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: var(--primary-teal);
     opacity: 0;
-    transition: opacity 0.15s;
+    transform: scale(0.2);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.bk-pkg-card.selected .bk-radio-dot {
-    opacity: 1;
+
+/* When selected on ANY card (Packages, Address, Payment Methods) */
+.bk-pkg-card.selected .bk-radio-custom,
+.bk-addr-card.selected .bk-radio-custom,
+.bk-pay-option.selected .bk-radio-custom,
+.selected > .bk-radio-custom,
+.selected .bk-radio-custom {
+    border-color: var(--primary-teal) !important;
+    background: #ffffff;
+    box-shadow: 0 0 0 1px var(--primary-teal);
+}
+
+.bk-pkg-card.selected .bk-radio-dot,
+.bk-addr-card.selected .bk-radio-dot,
+.bk-pay-option.selected .bk-radio-dot,
+.selected > .bk-radio-dot,
+.selected .bk-radio-dot {
+    opacity: 1 !important;
+    transform: scale(1) !important;
+    background: var(--primary-teal) !important;
 }
 
 .bk-pkg-icon-box {
@@ -550,6 +569,7 @@ a {
 .bk-addr-card.selected {
     border-color: var(--primary-teal);
     background: #fbfdfd;
+    box-shadow: 0 4px 16px rgba(12, 105, 120, 0.08);
 }
 .bk-addr-icon {
     width: 38px;

@@ -1456,7 +1456,7 @@ img {
     border-radius: 20px;
     width: 100%;
     max-width: 520px;
-    max-height: 92vh;
+    max-height: 90vh;
     display: flex;
     flex-direction: column;
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
@@ -1468,13 +1468,22 @@ img {
     from { opacity: 0; transform: scale(0.95) translateY(10px); }
     to { opacity: 1; transform: scale(1) translateY(0); }
 }
+#enquiryForm {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    margin: 0;
+}
 .pth-enquiry-header {
     background: linear-gradient(135deg, #074752 0%, #0c6978 100%);
-    padding: 20px 24px;
+    padding: 18px 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     color: #ffffff;
+    flex-shrink: 0;
 }
 .pth-enquiry-header-left {
     display: flex;
@@ -1482,28 +1491,28 @@ img {
     gap: 14px;
 }
 .pth-enquiry-icon {
-    width: 44px;
-    height: 44px;
+    width: 42px;
+    height: 42px;
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.18);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 19px;
     color: #ffffff;
     flex-shrink: 0;
 }
 .pth-enquiry-title {
-    font-size: 17.5px;
+    font-size: 17px;
     font-weight: 800;
     color: #ffffff;
     line-height: 1.25;
     margin: 0;
 }
 .pth-enquiry-sub {
-    font-size: 12.5px;
+    font-size: 12px;
     color: rgba(255, 255, 255, 0.82);
-    margin-top: 3px;
+    margin-top: 2px;
     margin-bottom: 0;
 }
 .pth-enquiry-close {
@@ -1525,12 +1534,21 @@ img {
     background: rgba(255, 255, 255, 0.3);
 }
 .pth-enquiry-body {
-    padding: 22px 24px 16px;
+    padding: 18px 24px 14px;
     overflow-y: auto;
     flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 13px;
+    -webkit-overflow-scrolling: touch;
+}
+.pth-enquiry-body::-webkit-scrollbar {
+    width: 5px;
+}
+.pth-enquiry-body::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
 }
 .pth-form-group {
     display: flex;
@@ -2671,7 +2689,7 @@ function openEnquiryModal() {
     const btnText = document.getElementById('enqBtnText');
     const btnSpinner = document.getElementById('enqBtnSpinner');
 
-    if (form) form.style.display = 'block';
+    if (form) form.style.display = 'flex';
     if (successBox) successBox.style.display = 'none';
     if (errorBox) {
         errorBox.style.display = 'none';

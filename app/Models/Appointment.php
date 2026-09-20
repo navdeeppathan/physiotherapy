@@ -98,6 +98,11 @@ class Appointment extends Model
         return $this->hasMany(AppointmentReschedule::class);
     }
 
+    public function payment()
+    {
+        return $this->hasOne(Payment::class, 'appointment_id');
+    }
+
     public function cancellation()
     {
         return $this->hasOne(AppointmentCancellation::class, 'appointment_id', 'id')

@@ -465,12 +465,46 @@ Class PatientAppointmentController extends Controller
             'doctor.fee',
             'review',
             'cancellation.reason',
-            // 'transferRequest',
-            'timeSlot',
+            'timeSlot.availabilityDate',
+            'plan',
+            'subscription',
+            'payment',
         ]);
 
-        $reasons = CancellationReason::where('is_active',1)->get();
-        return view('patient.appointment-details', compact('appointment', 'reasons'));
+        $patient = auth()->user();
+        $reasons = CancellationReason::where('is_active', 1)->get();
+
+        // Calculate session index & total sessions
+        $totalSessions = 1;
+        $sessionIndex = 1;
+        if ($appointment->patient_plan_subscription_id) {
+            $planAppointments = Appointment::where('patient_plan_subscription_id', $appointment->patient_plan_subscription_id)
+                ->orderBy('appointment_date', 'asc')
+                ->orderBy('start_time', 'asc')
+                ->pluck('id')
+                ->toArray();
+
+            $pos = array_search($appointment->id, $planAppointments);
+            if ($pos !== false) {
+                $sessionIndex = $pos + 1;
+            }
+            $totalSessions = optional($appointment->subscription)->package_appointments 
+                ?? (optional($appointment->plan)->total_appointments ?? (count($planAppointments) ?: 1));
+        } elseif ($appointment->plan) {
+            $totalSessions = $appointment->plan->total_appointments ?? 1;
+        }
+
+        // Payment for Invoice
+        $payment = $appointment->payment 
+            ?? Payment::where('patient_id', $patient->id)
+                ->where(function($q) use ($appointment) {
+                    $q->where('appointment_id', $appointment->id)
+                      ->orWhere('doctor_id', $appointment->doctor_id);
+                })
+                ->latest()
+                ->first();
+
+        return view('patient.appointment-details', compact('appointment', 'reasons', 'patient', 'sessionIndex', 'totalSessions', 'payment'));
     }
 
 

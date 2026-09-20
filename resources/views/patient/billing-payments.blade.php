@@ -267,31 +267,6 @@ table.bp-table{width:100%;border-collapse:collapse;}
                     </div>
                 </div>
 
-                {{-- Quick Actions --}}
-                <div class="bp-card">
-                    <div class="bp-card-head">
-                        <div class="bp-card-head-icon"><i class="fa-solid fa-bolt"></i></div>
-                        <div><h3>Quick Actions</h3></div>
-                    </div>
-                    <div class="bp-card-body">
-                        <div class="bp-actions-row">
-                            <a href="#" class="bp-action-card" onclick="window.print();return false;">
-                                <div class="bp-action-icon"><i class="fa-solid fa-download"></i></div>
-                                <div>
-                                    <div>Download Statement</div>
-                                    <div class="bp-action-sub">Get your payment history in PDF</div>
-                                </div>
-                            </a>
-                            <a href="mailto:support@physiopii.com" class="bp-action-card">
-                                <div class="bp-action-icon"><i class="fa-solid fa-headset"></i></div>
-                                <div>
-                                    <div>Help &amp; Support</div>
-                                    <div class="bp-action-sub">Get help with payments and invoices</div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
 
                 {{-- Transaction History --}}
                 <div class="bp-card">

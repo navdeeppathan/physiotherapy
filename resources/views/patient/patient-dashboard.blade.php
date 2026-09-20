@@ -623,9 +623,16 @@ table.bp-table{width:100%;border-collapse:collapse;}
 .bp-status-pill.paid{background:#d1fae5;color:#065f46;}
 .bp-status-pill.pending{background:#fef3c7;color:#92400e;}
 .bp-status-pill.failed{background:#fee2e2;color:#991b1b;}
-.bp-amount-cell{font-size:14px;font-weight:800;color:var(--ink);white-space:nowrap;}
 .bp-tbl-btn{width:30px;height:30px;border-radius:8px;background:var(--teal-bg-soft);border:none;display:flex;align-items:center;justify-content:center;color:var(--primary-teal);cursor:pointer;transition:all 0.15s;text-decoration:none;}
 .bp-tbl-btn:hover{background:var(--primary-teal);color:#fff;}
+
+.bp-tbl-footer{padding:14px 20px;border-top:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.bp-page-info{font-size:12.5px;color:var(--muted);font-weight:600;}
+.bp-pagination{display:flex;gap:5px;align-items:center;}
+.bp-pagination button,.bp-pagination a,.bp-pagination span{display:flex;align-items:center;justify-content:center;min-width:32px;height:32px;padding:0 6px;border-radius:8px;font-size:12.5px;font-weight:700;text-decoration:none;border:1.5px solid var(--border);color:var(--body-c);background:#fff;transition:all 0.15s;cursor:pointer;}
+.bp-pagination button:hover:not(:disabled){border-color:var(--primary-teal);color:var(--primary-teal);background:var(--teal-bg-soft);}
+.bp-pagination button.active,.bp-pagination span.active{background:var(--primary-teal);color:#fff;border-color:var(--primary-teal);}
+.bp-pagination button:disabled{opacity:0.35;cursor:not-allowed;}
 
 .bp-wallet-card{background:linear-gradient(145deg,var(--primary-teal),var(--primary-teal-sub));border-radius:var(--r-lg);padding:20px;color:#fff;margin-bottom:16px;}
 .bp-wallet-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
@@ -1254,32 +1261,6 @@ table.bp-table{width:100%;border-collapse:collapse;}
                             </div>
                         </div>
 
-                        {{-- Quick Actions --}}
-                        <div class="bp-card">
-                            <div class="bp-card-head">
-                                <div class="bp-card-head-icon"><i class="fa-solid fa-bolt"></i></div>
-                                <div><h3>Quick Actions</h3></div>
-                            </div>
-                            <div class="bp-card-body">
-                                <div class="bp-actions-row">
-                                    <a href="#" class="bp-action-card" onclick="window.print();return false;">
-                                        <div class="bp-action-icon"><i class="fa-solid fa-download"></i></div>
-                                        <div>
-                                            <div style="color:var(--ink);">Download Statement</div>
-                                            <div class="bp-action-sub">Get your payment history in PDF</div>
-                                        </div>
-                                    </a>
-                                    <a href="mailto:support@physiopii.com" class="bp-action-card">
-                                        <div class="bp-action-icon"><i class="fa-solid fa-headset"></i></div>
-                                        <div>
-                                            <div style="color:var(--ink);">Help &amp; Support</div>
-                                            <div class="bp-action-sub">Get help with payments and invoices</div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
                         {{-- Transaction History --}}
                         <div class="bp-card">
                             <div class="bp-card-head" style="justify-content:space-between;">
@@ -1312,7 +1293,7 @@ table.bp-table{width:100%;border-collapse:collapse;}
                                                 <th></th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody id="bpTableBody">
                                             @foreach($payments as $pay)
                                                 @php
                                                     $doc      = $pay->doctor;
@@ -1335,7 +1316,7 @@ table.bp-table{width:100%;border-collapse:collapse;}
                                                     $apptDate = optional(optional($pay->appointment)->appointment_date)->format('d M Y') ?? ($payDate?->format('d M Y') ?? '—');
                                                     $apptTime = $pay->appointment && $pay->appointment->start_time ? \Carbon\Carbon::parse($pay->appointment->start_time)->format('h:i A') : ($payDate?->format('h:i A') ?? '—');
                                                 @endphp
-                                                <tr>
+                                                <tr class="bp-txn-row">
                                                     <td>
                                                         <div class="bp-doc-cell">
                                                             <div class="bp-doc-avatar">{{ $docInit }}</div>
@@ -1379,6 +1360,10 @@ table.bp-table{width:100%;border-collapse:collapse;}
                                             @endforeach
                                         </tbody>
                                     </table>
+                                </div>
+                                <div class="bp-tbl-footer" id="bpPaginationFooter">
+                                    <div class="bp-page-info" id="bpPageInfo">Showing 1–6 of {{ $payments->count() }} transactions</div>
+                                    <div class="bp-pagination" id="bpPaginationBtns"></div>
                                 </div>
                             @endif
                         </div>
@@ -1511,6 +1496,7 @@ function switchSection(sectionId, clickedItem) {
 
     const sec = document.getElementById('sec-' + sectionId);
     if (sec) sec.style.display = 'block';
+    if (sectionId === 'billing') renderBpPagination();
 
     if (clickedItem) {
         clickedItem.classList.add('active');
@@ -1562,6 +1548,60 @@ function closeInvoice() {
     document.getElementById('invoiceOverlay').classList.add('hidden');
 }
 
+// ── Billing Table Pagination ──
+const BP_PER_PAGE = 6;
+let bpCurrentPage = 1;
+
+function renderBpPagination() {
+    const rows = document.querySelectorAll('#bpTableBody tr.bp-txn-row');
+    const totalRows = rows.length;
+    if (totalRows === 0) return;
+
+    const totalPages = Math.ceil(totalRows / BP_PER_PAGE);
+    if (bpCurrentPage > totalPages) bpCurrentPage = totalPages;
+    if (bpCurrentPage < 1) bpCurrentPage = 1;
+
+    const start = (bpCurrentPage - 1) * BP_PER_PAGE;
+    const end = start + BP_PER_PAGE;
+
+    rows.forEach((row, idx) => {
+        row.style.display = (idx >= start && idx < end) ? '' : 'none';
+    });
+
+    const infoEl = document.getElementById('bpPageInfo');
+    if (infoEl) {
+        const showingStart = totalRows > 0 ? start + 1 : 0;
+        const showingEnd = Math.min(end, totalRows);
+        infoEl.textContent = `Showing ${showingStart}–${showingEnd} of ${totalRows} transactions`;
+    }
+
+    const btnsEl = document.getElementById('bpPaginationBtns');
+    if (btnsEl) {
+        if (totalPages <= 1) {
+            btnsEl.innerHTML = '';
+            return;
+        }
+        let html = '';
+        html += `<button type="button" onclick="setBpPage(${bpCurrentPage - 1})" ${bpCurrentPage === 1 ? 'disabled' : ''} aria-label="Previous Page"><i class="fa-solid fa-chevron-left" style="font-size:11px;"></i></button>`;
+
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= bpCurrentPage - 1 && i <= bpCurrentPage + 1)) {
+                html += `<button type="button" onclick="setBpPage(${i})" class="${i === bpCurrentPage ? 'active' : ''}">${i}</button>`;
+            } else if (i === bpCurrentPage - 2 || i === bpCurrentPage + 2) {
+                html += `<span style="border:none;cursor:default;background:transparent;display:flex;align-items:center;justify-content:center;min-width:24px;">...</span>`;
+            }
+        }
+
+        html += `<button type="button" onclick="setBpPage(${bpCurrentPage + 1})" ${bpCurrentPage === totalPages ? 'disabled' : ''} aria-label="Next Page"><i class="fa-solid fa-chevron-right" style="font-size:11px;"></i></button>`;
+        btnsEl.innerHTML = html;
+    }
+}
+
+function setBpPage(page) {
+    bpCurrentPage = page;
+    renderBpPagination();
+}
+
 // ── Mobile drawer ──
 function closeMobileDrawer() {
     const drawer  = document.getElementById('pdDrawer');
@@ -1581,6 +1621,9 @@ function closeMobileDrawer() {
     if(toggle)  toggle.addEventListener('click', open);
     if(close)   close.addEventListener('click', shut);
     if(overlay) overlay.addEventListener('click', shut);
+
+    // Initial render of billing pagination
+    renderBpPagination();
 })();
 </script>
 

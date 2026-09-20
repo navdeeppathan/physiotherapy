@@ -866,19 +866,49 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-page);
 
 /* Responsive adjustments */
 @media (max-width: 991px) {
-    .ad-page-container { grid-template-columns: 1fr; gap: 24px; }
-    .ad-sidebar { position: static; }
+    .ad-page-container { grid-template-columns: 1fr; gap: 20px; padding: 20px 16px 40px; }
+    .ad-sidebar { display: none !important; }
 }
 @media (max-width: 640px) {
-    .ad-page-container { padding: 12px 12px 40px; gap: 16px; }
+    .ad-page-container { padding: 12px 12px 40px; gap: 14px; }
     .ad-page-title { font-size: 20px; }
     .ad-card { padding: 16px 14px; border-radius: 14px; }
     .ad-actions-row { grid-template-columns: 1fr; gap: 10px; }
     .ad-btn-outline, .ad-btn-solid-teal, .ad-btn-solid-red { width: 100%; justify-content: center; padding: 12px 16px; font-size: 14px; }
-    .ad-doc-row { flex-direction: column; align-items: flex-start; gap: 12px; }
-    .ad-doc-side-badge { width: 100%; text-align: left; }
-    .ad-datetime-row { flex-direction: column; align-items: flex-start; gap: 12px; }
-    .ad-status-pill { align-self: flex-start; }
+    .ad-doc-row { flex-direction: row; align-items: center; gap: 12px; }
+    .ad-doc-info-group { gap: 12px; }
+    .ad-doc-avatar, .ad-doc-avatar-ph { width: 50px; height: 50px; font-size: 20px; border-radius: 12px; }
+    .ad-doc-main-name { font-size: 15.5px; }
+    .ad-datetime-row {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: auto auto;
+        gap: 8px 14px;
+        align-items: center;
+    }
+    .ad-date-box {
+        grid-column: 1;
+        grid-row: 1 / span 2;
+        padding: 6px 12px;
+        min-width: 64px;
+    }
+    .ad-date-box-day { font-size: 20px; }
+    .ad-date-box-month { font-size: 12px; }
+    .ad-date-box-year { font-size: 10.5px; }
+    .ad-time-center {
+        grid-column: 2;
+        grid-row: 1;
+    }
+    .ad-time-val { font-size: 17px; }
+    .ad-status-pill-wrap {
+        grid-column: 2;
+        grid-row: 2;
+    }
+    .ad-status-pill {
+        padding: 4px 10px;
+        font-size: 12px;
+        align-self: flex-start;
+    }
     .inv-modal { max-width: 100%; max-height: 94vh; margin: 8px; }
     .inv-modal-head { padding: 14px 16px; font-size: 15px; }
     .inv-modal-body { padding: 16px 14px; gap: 12px; }
@@ -1046,11 +1076,6 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-page);
                         <div class="ad-doc-main-meta">{{ $qualification }} &nbsp;|&nbsp; {{ $experienceYears }} Years Experience</div>
                     </div>
                 </div>
-
-                <div class="ad-doc-side-badge">
-                    <div class="ad-doc-side-badge-title">dr. {{ $cleanDocFirstName }}</div>
-                    <div class="ad-doc-side-badge-sub">{{ explode(' ', $qualification)[0] ?? 'MPT' }}</div>
-                </div>
             </div>
         </div>
 
@@ -1072,7 +1097,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-page);
                     <div class="ad-time-span">{{ $startTimeFormatted }} - {{ $endTimeFormatted }}</div>
                 </div>
 
-                <div>
+                <div class="ad-status-pill-wrap">
                     @if($isCompleted)
                         <span class="ad-status-pill completed">
                             <i class="fa-solid fa-circle-check"></i>

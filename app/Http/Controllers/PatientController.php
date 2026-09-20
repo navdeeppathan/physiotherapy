@@ -20,7 +20,7 @@ Class PatientController extends Controller
                 ->where('patient_id', $patient->id)
                 ->orderBy('appointment_date', 'desc')
                 ->get();
-        $payments = Payment::with(['doctor', 'appointment'])
+        $payments = Payment::with(['doctor.profile.specializationdata', 'appointment.plan'])
                 ->where('patient_id', $patient->id)
                 ->orderBy('created_at', 'desc')
                 ->get(); 
@@ -79,8 +79,13 @@ Class PatientController extends Controller
         $unpaidAmount = Payment::where('patient_id', $patient->id)
             ->where('status', 'pending')
             ->sum('amount');
+
+        $totalSpent = $totalPaymentAmount; // alias
+        $totalSessions = Payment::where('patient_id', $patient->id)
+            ->whereIn('status', ['success', 'paid', 'completed'])
+            ->count();
             
-        return view('patient.patient-dashboard', compact('patient', 'appointments', 'payments', 'upcomingAppointments', 'completedAppointments', 'shiftedAppointments', 'cancelledAppointments', 'totalPaymentAmount', 'unpaidAmount'));
+        return view('patient.patient-dashboard', compact('patient', 'appointments', 'payments', 'upcomingAppointments', 'completedAppointments', 'shiftedAppointments', 'cancelledAppointments', 'totalPaymentAmount', 'unpaidAmount', 'totalSpent', 'totalSessions'));
     }
 
     public function profile(){

@@ -2,6 +2,7 @@
 
 @section('content')
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 /* ─────────────────────────────────────────────
    DESIGN TOKENS & RESET (Premium Teal Theme)
@@ -570,6 +571,121 @@ table.pd-table tr:hover td { background: #fbfdfd; }
     .pd-billing-stats { grid-template-columns: 1fr; }
     .pd-body { padding: 10px 10px 36px; }
 }
+
+/* ─────────────────────────────────────────────
+   BILLING & PAYMENTS SECTION STYLES (bp-*)
+───────────────────────────────────────────── */
+.bp-top-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:22px;}
+.bp-page-title{font-size:24px;font-weight:800;color:var(--ink);}
+.bp-page-sub{font-size:13px;color:var(--muted);margin-top:2px;}
+.bp-top-actions{display:flex;gap:10px;}
+.bp-btn-back{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:9px;border:1.5px solid var(--border);background:#fff;color:var(--body-c);font-size:13px;font-weight:600;text-decoration:none;transition:all 0.15s;cursor:pointer;}
+.bp-btn-back:hover{border-color:var(--primary-teal);color:var(--primary-teal);background:var(--teal-bg-soft);}
+.bp-btn-refresh{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:9px;background:var(--teal-bg-soft);border:1.5px solid var(--teal-badge-border);color:var(--primary-teal);font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:all 0.15s;}
+.bp-btn-refresh:hover{background:var(--teal-badge-border);}
+
+.bp-grid-2{display:grid;grid-template-columns:1fr 310px;gap:20px;align-items:start;}
+
+.bp-card{background:#ffffff;border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden;}
+.bp-card-head{padding:16px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:10px;}
+.bp-card-head-icon{width:36px;height:36px;border-radius:9px;background:var(--teal-bg-soft);display:flex;align-items:center;justify-content:center;color:var(--primary-teal);font-size:15px;}
+.bp-card-head h3{font-size:15px;font-weight:700;color:var(--ink);margin:0;}
+.bp-card-body{padding:20px;}
+
+.bp-overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.bp-ov-box{background:var(--teal-bg-soft);border:1px solid var(--teal-badge-border);border-radius:11px;padding:16px;}
+.bp-ov-label{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:4px;}
+.bp-ov-val{font-size:22px;font-weight:800;color:var(--primary-teal);letter-spacing:-0.5px;}
+.bp-ov-sub{font-size:11px;color:var(--muted);margin-top:3px;}
+.bp-ov-box.pending{background:#fffbeb;border-color:#fde68a;}
+.bp-ov-box.pending .bp-ov-val{color:#d97706;}
+
+.bp-actions-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.bp-action-card{display:flex;align-items:center;gap:12px;padding:14px;background:var(--teal-bg-soft);border:1px solid var(--teal-badge-border);border-radius:11px;text-decoration:none;color:var(--ink);font-size:13px;font-weight:600;transition:all 0.15s;cursor:pointer;}
+.bp-action-card:hover{background:var(--teal-badge-border);}
+.bp-action-icon{width:36px;height:36px;border-radius:9px;background:var(--primary-teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.bp-action-sub{font-size:11px;color:var(--muted);font-weight:400;margin-top:1px;}
+
+.bp-table-wrap{overflow-x:auto;}
+table.bp-table{width:100%;border-collapse:collapse;}
+.bp-table thead tr{border-bottom:2px solid var(--teal-bg-soft);}
+.bp-table thead th{padding:10px 14px;font-size:12px;font-weight:700;color:var(--muted);text-align:left;text-transform:uppercase;letter-spacing:.5px;}
+.bp-table tbody tr{border-bottom:1px solid #f1f5f9;transition:background 0.12s;}
+.bp-table tbody tr:hover{background:var(--teal-bg-soft);}
+.bp-table td{padding:13px 14px;font-size:13px;color:var(--body-c);vertical-align:middle;}
+.bp-doc-cell{display:flex;align-items:center;gap:10px;}
+.bp-doc-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--primary-teal),var(--primary-teal-sub));display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0;}
+.bp-doc-name{font-size:13px;font-weight:700;color:var(--ink);}
+.bp-doc-spec{font-size:11px;color:var(--muted);}
+.bp-txn-id{font-size:11.5px;color:var(--muted);font-family:monospace;}
+.bp-method-pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:20px;background:#f1f5f9;color:var(--body-c);}
+.bp-status-pill{display:inline-block;padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;}
+.bp-status-pill.paid{background:#d1fae5;color:#065f46;}
+.bp-status-pill.pending{background:#fef3c7;color:#92400e;}
+.bp-status-pill.failed{background:#fee2e2;color:#991b1b;}
+.bp-amount-cell{font-size:14px;font-weight:800;color:var(--ink);white-space:nowrap;}
+.bp-tbl-btn{width:30px;height:30px;border-radius:8px;background:var(--teal-bg-soft);border:none;display:flex;align-items:center;justify-content:center;color:var(--primary-teal);cursor:pointer;transition:all 0.15s;text-decoration:none;}
+.bp-tbl-btn:hover{background:var(--primary-teal);color:#fff;}
+
+.bp-wallet-card{background:linear-gradient(145deg,var(--primary-teal),var(--primary-teal-sub));border-radius:var(--r-lg);padding:20px;color:#fff;margin-bottom:16px;}
+.bp-wallet-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.bp-wallet-icon{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:17px;}
+.bp-wallet-title{font-size:14px;font-weight:700;opacity:.9;}
+.bp-wallet-sub{font-size:11px;opacity:.7;}
+.bp-wallet-bal-lbl{font-size:12px;opacity:.8;margin-bottom:4px;}
+.bp-wallet-bal{font-size:32px;font-weight:800;letter-spacing:-1px;margin-bottom:16px;}
+.bp-wallet-add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;border-radius:9px;background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.35);color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:background 0.15s;}
+.bp-wallet-add:hover{background:rgba(255,255,255,0.28);}
+.bp-wallet-features{margin-top:14px;display:flex;flex-direction:column;gap:8px;}
+.bp-wallet-feat{display:flex;align-items:center;gap:8px;font-size:12px;opacity:.85;}
+.bp-assist-card{background:#ffffff;border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;text-align:center;}
+.bp-assist-icon{font-size:28px;color:var(--primary-teal);margin-bottom:8px;}
+.bp-assist-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px;}
+.bp-assist-sub{font-size:12px;color:var(--muted);margin-bottom:12px;}
+.bp-assist-btn{display:block;padding:9px;border-radius:9px;border:1.5px solid var(--primary-teal);color:var(--primary-teal);font-size:13px;font-weight:700;text-decoration:none;text-align:center;transition:all 0.15s;}
+.bp-assist-btn:hover{background:var(--primary-teal);color:#fff;}
+
+.bp-empty{padding:50px 20px;text-align:center;}
+.bp-empty i{font-size:40px;color:var(--teal-badge-border);margin-bottom:12px;}
+.bp-empty h4{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+.bp-empty p{font-size:13px;color:var(--muted);}
+
+/* Modal */
+.bp-modal-overlay{position:fixed;inset:0;z-index:9000;background:rgba(15,23,42,0.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;}
+.bp-modal-overlay.hidden{display:none;}
+.bp-modal{background:#ffffff;border-radius:18px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,0.22);animation:modalIn .22s ease;}
+@keyframes modalIn{from{transform:scale(.95);opacity:0;}to{transform:scale(1);opacity:1;}}
+.bp-modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border);font-size:16px;font-weight:800;color:var(--ink);}
+.bp-modal-close{width:32px;height:32px;border-radius:8px;background:#f1f5f9;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--muted);transition:all .15s;}
+.bp-modal-close:hover{background:#ef4444;color:#fff;}
+.bp-modal-body{padding:22px 20px;}
+.bp-inv-brand{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.bp-inv-logo{height:36px;}
+.bp-inv-num{font-size:11px;font-weight:700;color:var(--muted);text-align:right;}
+.bp-inv-num span{display:block;font-size:13px;color:var(--ink);font-weight:800;}
+.bp-inv-parties{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.bp-inv-label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;}
+.bp-inv-val{font-size:13px;font-weight:700;color:var(--ink);margin-top:2px;}
+.bp-inv-sub-val{font-size:11.5px;color:var(--muted);margin-top:1px;}
+.bp-inv-section-title{font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:6px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.bp-inv-row{display:flex;justify-content:space-between;padding:8px 0;font-size:13px;}
+.bp-inv-row+.bp-inv-row{border-top:1px solid #f1f5f9;}
+.bp-inv-row .lbl{color:var(--muted);}
+.bp-inv-row .val{font-weight:600;color:var(--ink);}
+.bp-inv-total{display:flex;justify-content:space-between;padding:12px 0;margin-top:8px;border-top:2px solid var(--border);font-size:15px;font-weight:800;color:var(--ink);}
+.bp-inv-paid-box{background:var(--teal-bg-soft);border:1px solid var(--teal-badge-border);border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;margin:14px 0;}
+.bp-inv-paid-lbl{font-size:13px;font-weight:700;color:var(--primary-teal);}
+.bp-inv-paid-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.bp-inv-paid-amt{font-size:20px;font-weight:800;color:var(--primary-teal);}
+.bp-inv-note{display:flex;align-items:flex-start;gap:8px;background:#f8fafc;border-radius:9px;padding:11px 13px;font-size:11.5px;color:var(--muted);line-height:1.5;margin-bottom:16px;}
+.bp-modal-footer{display:flex;gap:10px;padding:0 20px 20px;}
+.bp-modal-btn{flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;border:1.5px solid var(--border);color:var(--body-c);background:#ffffff;transition:all .15s;text-decoration:none;}
+.bp-modal-btn:hover{border-color:var(--primary-teal);color:var(--primary-teal);background:var(--teal-bg-soft);}
+.bp-modal-btn.primary{background:var(--primary-teal);color:#fff;border-color:var(--primary-teal);}
+.bp-modal-btn.primary:hover{background:var(--primary-teal-dark);}
+
+@media(max-width:960px){.bp-grid-2{grid-template-columns:1fr;}}
+@media(max-width:640px){.bp-overview-grid{grid-template-columns:1fr;}.bp-actions-row{grid-template-columns:1fr;}}
 </style>
 
 <div class="pd-page">
@@ -616,17 +732,35 @@ table.pd-table tr:hover td { background: #fbfdfd; }
             </div>
         </div>
         <nav class="pd-drawer-nav">
-            <a href="{{ route('patient.dashboard') }}" class="pd-drawer-nav-item active">
+            <a href="#" onclick="switchSection('dashboard', document.getElementById('nav-dashboard')); closeMobileDrawer(); return false;" class="pd-drawer-nav-item active">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
                 Dashboard
             </a>
+            <a href="#" onclick="switchSection('dashboard', document.getElementById('nav-appointments')); closeMobileDrawer(); return false;" class="pd-drawer-nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                My Appointments
+            </a>
+            <a href="{{ route('home') }}" class="pd-drawer-nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                Doctors
+            </a>
+            <a href="{{ route('home') }}" class="pd-drawer-nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/></svg>
+                Packages
+            </a>
+            <div class="pd-drawer-divider"></div>
+            <a href="#" onclick="switchSection('billing', document.getElementById('nav-billing')); closeMobileDrawer(); return false;" class="pd-drawer-nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14H5a1 1 0 01-1-1V4a1 1 0 011-1h11a1 1 0 011 1v1M9 14a1 1 0 001 1h9a1 1 0 001-1v-5a1 1 0 00-1-1h-9a1 1 0 00-1 1v5z"/></svg>
+                Billing &amp; Payments
+            </a>
+            <a href="{{ route('patient.profile') }}" class="pd-drawer-nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                My Documents
+            </a>
+            <div class="pd-drawer-divider"></div>
             <a href="{{ route('patient.profile') }}" class="pd-drawer-nav-item">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                Profile Settings
-            </a>
-            <a href="{{ route('patient.change.password') }}" class="pd-drawer-nav-item">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M7 11V7a5 5 0 0110 0v4"/></svg>
-                Change Password
+                Settings
             </a>
             <div class="pd-drawer-divider"></div>
             <form action="{{ route('patient.logout') }}" method="GET">
@@ -946,10 +1080,25 @@ table.pd-table tr:hover td { background: #fbfdfd; }
                                         $ps = $payment->status ?? 'pending';
                                         $psLabel = match(strtolower($ps)) { 'success','paid','completed'=>'Paid','failed','refunded'=>'Failed',default=>'Pending' };
                                         $psCls   = match(strtolower($ps)) { 'success','paid','completed'=>'success','failed','refunded'=>'cancelled',default=>'pending' };
+                                        $invNo = '#INV-' . date('Y') . '-' . str_pad($payment->id, 5, '0', STR_PAD_LEFT);
+                                        $planName = optional($payment->appointment)->plan->name ?? 'Single Session';
+                                        $apptDate = optional(optional($payment->appointment)->appointment_date)->format('d M Y') ?? (optional($payment->paid_at)->format('d M Y') ?? '—');
+                                        $apptTime = $payment->appointment && $payment->appointment->start_time ? \Carbon\Carbon::parse($payment->appointment->start_time)->format('h:i A') : (optional($payment->paid_at)->format('h:i A') ?? '—');
                                     @endphp
                                     <tr>
                                         <td>
-                                            <a href="{{ route('patient.billing.payments') }}?invoice={{ $payment->id }}"
+                                            <a href="#" onclick="openInvoiceModal({
+                                                invNo: '{{ $invNo }}',
+                                                billTo: '{{ addslashes($patient->name) }}',
+                                                billAddress: '{{ addslashes(trim(implode(', ', array_filter([$patient->address ?? null, $patient->city ?? null, $patient->state ?? null])))) }}',
+                                                invDate: '{{ optional($payment->paid_at)->format('d M Y') ?? $payment->created_at->format('d M Y') }}',
+                                                payDate: '{{ optional($payment->paid_at)->format('d M Y • h:i A') ?? $payment->created_at->format('d M Y • h:i A') }}',
+                                                docName: '{{ addslashes($pn) }}',
+                                                apptDate: '{{ $apptDate }}',
+                                                apptTime: '{{ $apptTime }}',
+                                                pkgName: '{{ addslashes($planName) }}',
+                                                amount: '{{ number_format($payment->amount, 0) }}'
+                                            }); return false;"
                                                style="font-family:monospace;font-size:12.5px;font-weight:700;color:var(--primary-teal);text-decoration:none;">
                                                 #INV-{{ str_pad($payment->id,5,'0',STR_PAD_LEFT) }}
                                             </a>
@@ -1024,7 +1173,7 @@ table.pd-table tr:hover td { background: #fbfdfd; }
                         <span style="font-size:12.5px;color:var(--muted-text);">
                             Showing {{ $payments->take(5)->count() }} of {{ $payments->count() }} records
                         </span>
-                        <a href="{{ route('patient.billing.payments') }}"
+                        <a href="#" onclick="switchSection('billing', document.getElementById('nav-billing')); return false;"
                            style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:9px;background:var(--primary-teal);color:#fff;font-size:13px;font-weight:700;text-decoration:none;transition:background 0.15s;"
                            onmouseover="this.style.background='#074752'" onmouseout="this.style.background='var(--primary-teal)'">
                             View Full Billing &amp; Payments
@@ -1039,108 +1188,228 @@ table.pd-table tr:hover td { background: #fbfdfd; }
 
             {{-- ═══════ SECTION: BILLING & PAYMENTS ═══════ --}}
             <div id="sec-billing" class="pd-section" style="display:none;">
-                <div class="pd-page-header">
+                <div class="bp-top-bar">
                     <div>
-                        <div class="pd-page-title">Billing &amp; Payments</div>
-                        <div class="pd-page-sub">Manage your payments, invoices and wallet details</div>
+                        <div class="bp-page-title">Billing &amp; Payments</div>
+                        <div class="bp-page-sub">Manage your payments, invoices and wallet details</div>
                     </div>
-                    <div class="pd-date-chip">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14H5a1 1 0 01-1-1V4a1 1 0 011-1h11a1 1 0 011 1v1M9 14a1 1 0 001 1h9a1 1 0 001-1v-5a1 1 0 00-1-1h-9a1 1 0 00-1 1v5z"/></svg>
-                        Payment Records
-                    </div>
-                </div>
-
-                {{-- Overview Stats --}}
-                <div class="pd-stats" style="grid-template-columns:1fr 1fr 1fr;">
-                    <div class="pd-stat teal">
-                        <div class="pd-stat-icon teal">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-                        </div>
-                        <div>
-                            <div class="pd-stat-val">₹{{ number_format($totalPaymentAmount, 0) }}</div>
-                            <div class="pd-stat-lbl">Total Paid</div>
-                        </div>
-                    </div>
-                    <div class="pd-stat" style="--stat-accent:#f59e0b;--stat-bg:#fef3c7;--stat-border:#fde68a;">
-                        <div class="pd-stat-icon" style="background:#fef3c7;border:1px solid #fde68a;color:#f59e0b;">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        </div>
-                        <div>
-                            <div class="pd-stat-val" style="color:#d97706;">₹{{ number_format($unpaidAmount, 0) }}</div>
-                            <div class="pd-stat-lbl">Unpaid</div>
-                        </div>
-                    </div>
-                    <div class="pd-stat green">
-                        <div class="pd-stat-icon green">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14H5a1 1 0 01-1-1V4a1 1 0 011-1h11a1 1 0 011 1v1M9 14a1 1 0 001 1h9a1 1 0 001-1v-5a1 1 0 00-1-1h-9a1 1 0 00-1 1v5z"/></svg>
-                        </div>
-                        <div>
-                            <div class="pd-stat-val">{{ $payments->count() }}</div>
-                            <div class="pd-stat-lbl">Total Invoices</div>
-                        </div>
+                    <div class="bp-top-actions">
+                        <a href="#" onclick="switchSection('dashboard', document.getElementById('nav-dashboard')); return false;" class="bp-btn-back">
+                            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                        </a>
+                        <a href="#" onclick="window.location.reload(); return false;" class="bp-btn-refresh">
+                            <i class="fa-solid fa-rotate-right"></i> Refresh
+                        </a>
                     </div>
                 </div>
 
-                {{-- Transaction Table --}}
-                <div class="pd-card">
-                    <div class="pd-billing-stats" style="padding:0;display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #f1f5f9;">
-                        <div style="font-size:15px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:8px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;color:var(--primary-teal);"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                            Transaction History
+                <div class="bp-grid-2">
+                    {{-- LEFT COLUMN --}}
+                    <div style="display:flex;flex-direction:column;gap:20px;min-width:0;">
+
+                        {{-- Payment History Header Card --}}
+                        <div class="bp-card">
+                            <div class="bp-card-body" style="display:flex;align-items:center;gap:14px;">
+                                <div style="width:52px;height:52px;border-radius:12px;background:var(--teal-bg-soft);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--primary-teal);flex-shrink:0;">
+                                    <i class="fa-solid fa-file-invoice"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size:17px;font-weight:800;color:var(--ink);">Payment History</div>
+                                    <div style="font-size:12.5px;color:var(--muted);margin-top:2px;">Track your invoices, session payments and wallet details</div>
+                                </div>
+                            </div>
                         </div>
-                        <span style="font-size:12px;color:var(--muted);background:#f1f5f9;padding:5px 12px;border-radius:8px;">{{ $payments->count() }} records</span>
+
+                        {{-- Payment Overview --}}
+                        <div class="bp-card">
+                            <div class="bp-card-head">
+                                <div class="bp-card-head-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                                <div><h3>Payment Overview</h3></div>
+                            </div>
+                            <div class="bp-card-body">
+                                <div class="bp-overview-grid">
+                                    <div class="bp-ov-box">
+                                        <div class="bp-ov-label">Total Spent</div>
+                                        <div class="bp-ov-val">₹{{ number_format($totalSpent, 0) }}</div>
+                                        <div class="bp-ov-sub">Across {{ $totalSessions }} sessions</div>
+                                    </div>
+                                    <div class="bp-ov-box pending">
+                                        <div class="bp-ov-label">Unpaid Amount</div>
+                                        <div class="bp-ov-val">₹{{ number_format($unpaidAmount, 0) }}</div>
+                                        <div class="bp-ov-sub">Pending payment</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Quick Actions --}}
+                        <div class="bp-card">
+                            <div class="bp-card-head">
+                                <div class="bp-card-head-icon"><i class="fa-solid fa-bolt"></i></div>
+                                <div><h3>Quick Actions</h3></div>
+                            </div>
+                            <div class="bp-card-body">
+                                <div class="bp-actions-row">
+                                    <a href="#" class="bp-action-card" onclick="window.print();return false;">
+                                        <div class="bp-action-icon"><i class="fa-solid fa-download"></i></div>
+                                        <div>
+                                            <div style="color:var(--ink);">Download Statement</div>
+                                            <div class="bp-action-sub">Get your payment history in PDF</div>
+                                        </div>
+                                    </a>
+                                    <a href="mailto:support@physiopii.com" class="bp-action-card">
+                                        <div class="bp-action-icon"><i class="fa-solid fa-headset"></i></div>
+                                        <div>
+                                            <div style="color:var(--ink);">Help &amp; Support</div>
+                                            <div class="bp-action-sub">Get help with payments and invoices</div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Transaction History --}}
+                        <div class="bp-card">
+                            <div class="bp-card-head" style="justify-content:space-between;">
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                    <div class="bp-card-head-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                                    <div><h3>Transaction History</h3></div>
+                                </div>
+                                <span style="font-size:12px;color:var(--muted);background:#f1f5f9;padding:5px 12px;border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;gap:5px;">
+                                    <i class="fa-solid fa-filter" style="color:var(--primary-teal);font-size:11px;"></i> {{ $payments->count() }} records
+                                </span>
+                            </div>
+
+                            @if($payments->isEmpty())
+                                <div class="bp-empty">
+                                    <i class="fa-solid fa-receipt"></i>
+                                    <h4>No Transactions Yet</h4>
+                                    <p>Your payment history will appear here once you book an appointment.</p>
+                                </div>
+                            @else
+                                <div class="bp-table-wrap">
+                                    <table class="bp-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Doctor / Service</th>
+                                                <th>Date &amp; Time</th>
+                                                <th>Transaction ID</th>
+                                                <th>Payment Method</th>
+                                                <th>Status</th>
+                                                <th>Amount</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($payments as $pay)
+                                                @php
+                                                    $doc      = $pay->doctor;
+                                                    $rawName  = $doc->name ?? 'Doctor';
+                                                    $clean    = preg_replace('/^(dr\.?|doctor)\s+/i', '', trim($rawName));
+                                                    $docName  = 'Dr. ' . $clean;
+                                                    $specName = optional(optional(optional($doc)->profile)->specializationdata)->name ?? 'Physiotherapy';
+                                                    $docInit  = strtoupper(substr($clean, 0, 1) ?: 'D');
+                                                    $payDate  = $pay->paid_at ?? $pay->created_at;
+                                                    $method   = strtoupper($pay->payment_method ?? 'UPI');
+                                                    $statusCls = match(strtolower($pay->status ?? 'pending')) {
+                                                        'success','paid','completed' => 'paid',
+                                                        'failed','refunded'          => 'failed',
+                                                        default                      => 'pending',
+                                                    };
+                                                    $statusLabel = match($statusCls) { 'paid'=>'Paid','failed'=>'Failed',default=>'Pending' };
+                                                    $txnId = $pay->transaction_id ?? ('TXN'.str_pad($pay->id, 10,'0',STR_PAD_LEFT));
+                                                    $invNo = '#INV-' . date('Y') . '-' . str_pad($pay->id, 5, '0', STR_PAD_LEFT);
+                                                    $planName = optional($pay->appointment)->plan->name ?? 'Single Session';
+                                                    $apptDate = optional(optional($pay->appointment)->appointment_date)->format('d M Y') ?? ($payDate?->format('d M Y') ?? '—');
+                                                    $apptTime = $pay->appointment && $pay->appointment->start_time ? \Carbon\Carbon::parse($pay->appointment->start_time)->format('h:i A') : ($payDate?->format('h:i A') ?? '—');
+                                                @endphp
+                                                <tr>
+                                                    <td>
+                                                        <div class="bp-doc-cell">
+                                                            <div class="bp-doc-avatar">{{ $docInit }}</div>
+                                                            <div>
+                                                                <div class="bp-doc-name">{{ $docName }}</div>
+                                                                <div class="bp-doc-spec">{{ $specName }}</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div style="font-size:12.5px;font-weight:600;color:var(--ink);">{{ $payDate?->format('d M Y') ?? '—' }}</div>
+                                                        <div style="font-size:11px;color:var(--muted);">{{ $payDate?->format('h:i A') ?? '' }}</div>
+                                                    </td>
+                                                    <td><span class="bp-txn-id">{{ $txnId }}</span></td>
+                                                    <td>
+                                                        <span class="bp-method-pill">
+                                                            <i class="fa-solid fa-mobile-screen-button" style="font-size:11px;color:var(--primary-teal);"></i>
+                                                            {{ $method }}
+                                                        </span>
+                                                    </td>
+                                                    <td><span class="bp-status-pill {{ $statusCls }}">{{ $statusLabel }}</span></td>
+                                                    <td><div class="bp-amount-cell">₹{{ number_format($pay->amount, 0) }}</div></td>
+                                                    <td>
+                                                        <button type="button" class="bp-tbl-btn" title="View Invoice"
+                                                                onclick="openInvoiceModal({
+                                                                    invNo: '{{ $invNo }}',
+                                                                    billTo: '{{ addslashes($patient->name) }}',
+                                                                    billAddress: '{{ addslashes(trim(implode(', ', array_filter([$patient->address ?? null, $patient->city ?? null, $patient->state ?? null])))) }}',
+                                                                    invDate: '{{ $payDate?->format('d M Y') ?? '—' }}',
+                                                                    payDate: '{{ $payDate?->format('d M Y • h:i A') ?? '—' }}',
+                                                                    docName: '{{ addslashes($docName) }}',
+                                                                    apptDate: '{{ $apptDate }}',
+                                                                    apptTime: '{{ $apptTime }}',
+                                                                    pkgName: '{{ addslashes($planName) }}',
+                                                                    amount: '{{ number_format($pay->amount, 0) }}'
+                                                                })">
+                                                            <i class="fa-solid fa-chevron-right" style="font-size:11px;"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @endif
+                        </div>
+
                     </div>
-                    <div class="pd-table-wrap">
-                        <table class="pd-table">
-                            <thead><tr><th>Invoice</th><th>Doctor</th><th>Amount</th><th>Paid On</th><th>Status</th></tr></thead>
-                            <tbody>
-                                @forelse($payments->take(10) as $payment)
-                                    @php
-                                        $rawPn = $payment->doctor->name ?? '';
-                                        $cleanPn = preg_replace('/^(dr\.?|doctor)\s+/i', '', trim($rawPn));
-                                        $pn = $cleanPn !== '' ? 'Dr. ' . $cleanPn : '—';
-                                        $pi = $payment->doctor->profile_img ? (str_contains($payment->doctor->profile_img, '/') ? asset($payment->doctor->profile_img) : asset('uploads/profile/'.$payment->doctor->profile_img)) : null;
-                                        $ps = $payment->status ?? 'pending';
-                                        $psLabel = match(strtolower($ps)) { 'success','paid','completed'=>'Paid','failed','refunded'=>'Failed',default=>'Pending' };
-                                        $psCls   = match(strtolower($ps)) { 'success','paid','completed'=>'success','failed','refunded'=>'cancelled',default=>'pending' };
-                                    @endphp
-                                    <tr>
-                                        <td>
-                                            <span style="font-family:monospace;font-size:12.5px;font-weight:700;color:var(--primary-teal);">
-                                                #INV-{{ str_pad($payment->id,5,'0',STR_PAD_LEFT) }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div class="pd-doc-cell">
-                                                @if($pi)
-                                                    <img class="pd-doc-img" src="{{ $pi }}" alt="{{ $pn }}">
-                                                @else
-                                                    <div class="pd-doc-ph">{{ strtoupper(substr(preg_replace('/^Dr\.\s*/','', $pn),0,2)) }}</div>
-                                                @endif
-                                                <div>
-                                                    <div class="pd-doc-name">{{ $pn }}</div>
-                                                    <div class="pd-doc-spec">{{ optional(optional($payment->doctor->profile)->specializationdata)->name ?? 'Physiotherapist' }}</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td style="font-weight:800;color:var(--ink)">₹{{ number_format($payment->amount,2) }}</td>
-                                        <td style="color:#64748b;font-size:12.5px">{{ optional($payment->paid_at)->format('d M Y') ?? $payment->created_at->format('d M Y') }}</td>
-                                        <td><span class="pd-pill {{ $psCls }}"><span class="pd-pill-dot"></span>{{ $psLabel }}</span></td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5">
-                                            <div class="pd-empty">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 14H5a1 1 0 01-1-1V4a1 1 0 011-1h11a1 1 0 011 1v1M9 14a1 1 0 001 1h9a1 1 0 001-1v-5a1 1 0 00-1-1h-9a1 1 0 00-1 1v5z"/></svg>
-                                                <div class="pd-empty-title">No billing history</div>
-                                                <div class="pd-empty-sub">Your payment invoices will appear here.</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+
+                    {{-- RIGHT COLUMN --}}
+                    <div style="display:flex;flex-direction:column;gap:16px;">
+                        <div class="bp-wallet-card">
+                            <div class="bp-wallet-head">
+                                <div class="bp-wallet-icon"><i class="fa-solid fa-wallet"></i></div>
+                                <div>
+                                    <div class="bp-wallet-title">PhysioPii Wallet</div>
+                                    <div class="bp-wallet-sub">Secure | Simple | Convenient</div>
+                                </div>
+                            </div>
+                            <div class="bp-wallet-bal-lbl">Wallet Balance</div>
+                            <div class="bp-wallet-bal">₹{{ number_format($totalSpent, 0) }}</div>
+                            <button class="bp-wallet-add" type="button"><i class="fa-solid fa-plus"></i> Add Money</button>
+                            <div class="bp-wallet-features">
+                                <div class="bp-wallet-feat">
+                                    <i class="fa-solid fa-shield-halved"></i>
+                                    <div><strong style="font-size:12px;">Fast &amp; Secure Payments</strong><br><span style="font-size:10.5px;opacity:.7;">100% Encrypted</span></div>
+                                </div>
+                                <div class="bp-wallet-feat">
+                                    <i class="fa-solid fa-rotate-left"></i>
+                                    <div><strong style="font-size:12px;">Easy Refunds</strong><br><span style="font-size:10.5px;opacity:.7;">Hassle-free process</span></div>
+                                </div>
+                                <div class="bp-wallet-feat">
+                                    <i class="fa-solid fa-bookmark"></i>
+                                    <div><strong style="font-size:12px;">Use for Future Bookings</strong><br><span style="font-size:10.5px;opacity:.7;">Seamless experience</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bp-assist-card">
+                            <div class="bp-assist-icon"><i class="fa-solid fa-headset"></i></div>
+                            <div class="bp-assist-title">Need Assistance?</div>
+                            <div class="bp-assist-sub">Facing any issues with payments? Our support team is here to help.</div>
+                            <a href="mailto:support@physiopii.com" class="bp-assist-btn">Contact Support</a>
+                        </div>
                     </div>
+
                 </div>
             </div>{{-- /sec-billing --}}
 
@@ -1148,30 +1417,94 @@ table.pd-table tr:hover td { background: #fbfdfd; }
     </div>
 </div>
 
+{{-- INVOICE MODAL (Populated via JS) --}}
+<div class="bp-modal-overlay hidden" id="invoiceOverlay" onclick="if(event.target===this)closeInvoice()">
+    <div class="bp-modal" onclick="event.stopPropagation()">
+        <div class="bp-modal-head">
+            <span>Transaction Invoice</span>
+            <button type="button" class="bp-modal-close" onclick="closeInvoice()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="bp-modal-body">
+            <div class="bp-inv-brand">
+                <img src="{{ asset('logo.png') }}" alt="PhysioPii" class="bp-inv-logo">
+                <div class="bp-inv-num">TAX INVOICE<span id="invModalNum">#INV-2026-00000</span></div>
+            </div>
+            <div class="bp-inv-parties">
+                <div>
+                    <div class="bp-inv-label">Bill To</div>
+                    <div class="bp-inv-val" id="invModalBillTo">{{ $patient->name }}</div>
+                    <div class="bp-inv-sub-val" id="invModalBillAddr">—</div>
+                </div>
+                <div style="text-align:right;">
+                    <div class="bp-inv-label">Invoice Date</div>
+                    <div class="bp-inv-val" id="invModalInvDate">—</div>
+                    <div class="bp-inv-label" style="margin-top:8px;">Payment Date</div>
+                    <div class="bp-inv-val" id="invModalPayDate">—</div>
+                </div>
+            </div>
+            <div class="bp-inv-section-title"><i class="fa-solid fa-file-lines" style="color:var(--primary-teal);"></i> Invoice Details</div>
+            <div class="bp-inv-row"><span class="lbl">Doctor Name</span><span class="val" id="invModalDocName">—</span></div>
+            <div class="bp-inv-row"><span class="lbl">Appointment Date</span><span class="val" id="invModalApptDate">—</span></div>
+            <div class="bp-inv-row"><span class="lbl">Start Time</span><span class="val" id="invModalApptTime">—</span></div>
+            <div class="bp-inv-row"><span class="lbl">Package</span><span class="val" id="invModalPkgName">Single Session</span></div>
+            <div style="margin-top:16px;"></div>
+            <div class="bp-inv-section-title"><i class="fa-solid fa-list" style="color:var(--primary-teal);"></i> Description &amp; Amount</div>
+            <div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);font-weight:700;padding-bottom:6px;border-bottom:1px solid var(--border);">
+                <span>Description</span><span>Amount (₹)</span>
+            </div>
+            <div class="bp-inv-row"><span class="lbl" id="invModalDesc">Session Fee</span><span class="val" id="invModalFee">₹0</span></div>
+            <div class="bp-inv-row"><span class="lbl">Convenience Fee</span><span class="val">₹0</span></div>
+            <div class="bp-inv-total"><span>Total Amount</span><span id="invModalTotal">₹0</span></div>
+            <div class="bp-inv-paid-box">
+                <div>
+                    <div class="bp-inv-paid-lbl">Amount Paid</div>
+                    <div class="bp-inv-paid-sub">You have paid this amount.</div>
+                </div>
+                <div class="bp-inv-paid-amt" id="invModalPaidAmt">₹0</div>
+            </div>
+            <div class="bp-inv-note">
+                <i class="fa-solid fa-circle-info" style="color:var(--primary-teal);margin-top:2px;flex-shrink:0;"></i>
+                This is a computer generated invoice and does not require a physical signature.
+            </div>
+        </div>
+        <div class="bp-modal-footer">
+            <button type="button" class="bp-modal-btn" onclick="window.print()"><i class="fa-solid fa-download"></i> Download Invoice</button>
+            <button type="button" class="bp-modal-btn primary" onclick="closeInvoice()"><i class="fa-solid fa-arrow-left"></i> Back to Billing</button>
+        </div>
+    </div>
+</div>
+
 <script>
 // ── Section switching (sidebar nav) ──
 function switchSection(sectionId, clickedItem) {
-    // Hide all sections
     document.querySelectorAll('.pd-section').forEach(s => s.style.display = 'none');
-    // Deactivate all nav items that are in the sidebar nav
     document.querySelectorAll('.pd-nav-item').forEach(n => n.classList.remove('active'));
-    // Show selected section
+    document.querySelectorAll('.pd-drawer-nav-item').forEach(n => n.classList.remove('active'));
+
     const sec = document.getElementById('sec-' + sectionId);
     if (sec) sec.style.display = 'block';
-    // Activate the clicked item (and matching sibling for Dashboard/My Appointments)
+
     if (clickedItem) {
         clickedItem.classList.add('active');
-        // If clicking My Appointments, also activate Dashboard nav
         if (clickedItem.id === 'nav-appointments') {
             document.getElementById('nav-dashboard')?.classList.remove('active');
         }
+    } else {
+        if (sectionId === 'dashboard') {
+            document.getElementById('nav-dashboard')?.classList.add('active');
+        } else if (sectionId === 'billing') {
+            document.getElementById('nav-billing')?.classList.add('active');
+        }
     }
-    // Scroll top
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ── Appointment tab switching ──
 function switchTab(tabId, btn) {
+    if (tabId === 'billing') {
+        switchSection('billing', document.getElementById('nav-billing'));
+        return;
+    }
     document.querySelectorAll('.pd-tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.pd-tab-content').forEach(c => c.classList.remove('active'));
     btn.classList.add('active');
@@ -1179,14 +1512,44 @@ function switchTab(tabId, btn) {
     if(target) target.classList.add('active');
 }
 
-// Mobile drawer
+// ── Invoice Modal ──
+function openInvoiceModal(data) {
+    document.getElementById('invModalNum').textContent = data.invNo || '';
+    document.getElementById('invModalBillTo').textContent = data.billTo || '';
+    document.getElementById('invModalBillAddr').textContent = data.billAddress || '—';
+    document.getElementById('invModalInvDate').textContent = data.invDate || '—';
+    document.getElementById('invModalPayDate').textContent = data.payDate || '—';
+    document.getElementById('invModalDocName').textContent = data.docName || '—';
+    document.getElementById('invModalApptDate').textContent = data.apptDate || '—';
+    document.getElementById('invModalApptTime').textContent = data.apptTime || '—';
+    document.getElementById('invModalPkgName').textContent = data.pkgName || 'Single Session';
+    document.getElementById('invModalDesc').textContent = data.pkgName || 'Session Fee';
+    document.getElementById('invModalFee').textContent = '₹' + data.amount;
+    document.getElementById('invModalTotal').textContent = '₹' + data.amount;
+    document.getElementById('invModalPaidAmt').textContent = '₹' + data.amount;
+    document.getElementById('invoiceOverlay').classList.remove('hidden');
+}
+
+function closeInvoice() {
+    document.getElementById('invoiceOverlay').classList.add('hidden');
+}
+
+// ── Mobile drawer ──
+function closeMobileDrawer() {
+    const drawer  = document.getElementById('pdDrawer');
+    const overlay = document.getElementById('pdDrawerOverlay');
+    if (drawer) drawer.classList.remove('open');
+    if (overlay) overlay.classList.remove('open');
+    document.body.style.overflow = '';
+}
+
 (function(){
     const toggle  = document.getElementById('pdMenuToggle');
     const drawer  = document.getElementById('pdDrawer');
     const overlay = document.getElementById('pdDrawerOverlay');
     const close   = document.getElementById('pdDrawerClose');
     function open()  { drawer.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow='hidden'; }
-    function shut()  { drawer.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow=''; }
+    function shut()  { closeMobileDrawer(); }
     if(toggle)  toggle.addEventListener('click', open);
     if(close)   close.addEventListener('click', shut);
     if(overlay) overlay.addEventListener('click', shut);

@@ -1460,13 +1460,21 @@ class AppointmentController extends BaseApiController
     {
         $patient = Auth::user();
 
-        $appointments = Appointment::with(['doctor','timeSlot','patient', 'patient.address'])
-                        ->where('patient_id', $patient->id)
-                        ->whereIn('status', ['pending', 'confirmed'])
-                        ->whereDate('appointment_date', '>=', Carbon::today())
-                        ->orderBy('appointment_date', 'asc')
-                        ->orderBy('start_time', 'asc')
-                        ->get();
+        $appointments = Appointment::with([
+            'doctor.profile.specializationdata',
+            'doctor.fee',
+            'timeSlot.availabilityDate',
+            'patient',
+            'patient.address',
+            'plan',
+            'subscription.plan'
+        ])
+        ->where('patient_id', $patient->id)
+        ->whereIn('status', ['pending', 'confirmed'])
+        ->whereDate('appointment_date', '>=', Carbon::today())
+        ->orderBy('appointment_date', 'asc')
+        ->orderBy('start_time', 'asc')
+        ->get();
 
         $formatted = $this->formatAppointments($appointments);
 
@@ -1480,11 +1488,21 @@ class AppointmentController extends BaseApiController
     {
         $patient = Auth::user();
 
-        $appointments = Appointment::with(['doctor','timeSlot','patient'])
-            ->where('patient_id', $patient->id)
-            ->where('status', 'completed')
-            ->latest()
-            ->get();
+        $appointments = Appointment::with([
+            'doctor.profile.specializationdata',
+            'doctor.fee',
+            'timeSlot.availabilityDate',
+            'patient',
+            'patient.address',
+            'plan',
+            'subscription.plan',
+            'review'
+        ])
+        ->where('patient_id', $patient->id)
+        ->where('status', 'completed')
+        ->orderBy('appointment_date', 'desc')
+        ->orderBy('start_time', 'desc')
+        ->get();
 
         $formatted = $this->formatAppointments($appointments);
 
@@ -1498,12 +1516,21 @@ class AppointmentController extends BaseApiController
     {
         $patient = Auth::user();
 
-        $appointments = Appointment::with(['doctor','timeSlot','patient'])
-            ->where('patient_id', $patient->id)
-            ->where('is_rescheduled', true)
-            ->whereHas('reschedules')
-            ->latest()
-            ->get();
+        $appointments = Appointment::with([
+            'doctor.profile.specializationdata',
+            'doctor.fee',
+            'timeSlot.availabilityDate',
+            'patient',
+            'patient.address',
+            'plan',
+            'subscription.plan',
+            'reschedules'
+        ])
+        ->where('patient_id', $patient->id)
+        ->where('is_rescheduled', true)
+        ->whereHas('reschedules')
+        ->latest()
+        ->get();
 
         $formatted = $this->formatAppointments($appointments);
 
@@ -1517,11 +1544,18 @@ class AppointmentController extends BaseApiController
     {
         $doctor = Auth::user();
 
-        $appointments = Appointment::with(['patient', 'timeSlot' , 'cancellation.reason'])
-                        ->where('doctor_id', $doctor->id)
-                        ->where('status', 'cancelled')
-                        ->latest()
-                        ->get();
+        $appointments = Appointment::with([
+            'patient',
+            'patient.address',
+            'timeSlot.availabilityDate',
+            'plan',
+            'subscription.plan',
+            'cancellation.reason'
+        ])
+        ->where('doctor_id', $doctor->id)
+        ->where('status', 'cancelled')
+        ->latest()
+        ->get();
 
         $formatted = $this->formatAppointments($appointments);
 
@@ -1535,11 +1569,20 @@ class AppointmentController extends BaseApiController
     {
         $patient = Auth::user();
 
-        $appointments = Appointment::with(['doctor', 'timeSlot', 'cancellation.reason'])
-            ->where('patient_id', $patient->id)
-            ->where('status', 'cancelled')
-            ->latest()
-            ->get();
+        $appointments = Appointment::with([
+            'doctor.profile.specializationdata',
+            'doctor.fee',
+            'timeSlot.availabilityDate',
+            'patient',
+            'patient.address',
+            'plan',
+            'subscription.plan',
+            'cancellation.reason'
+        ])
+        ->where('patient_id', $patient->id)
+        ->where('status', 'cancelled')
+        ->latest()
+        ->get();
 
         $formatted = $this->formatAppointments($appointments);
 
@@ -1550,7 +1593,12 @@ class AppointmentController extends BaseApiController
     }
 
     /**
-     * Helper to format appointments with package_name, plan_name, appointment_number (1, 2, 3...), number, session_number
+     * Helper to format appointments with package details:
+     * - total_appointments / total_package_appointments (Total appointments in package)
+     * - completed_appointments (Completed appointments in package)
+     * - remaining_appointments (Remaining appointments in package)
+     * - session_number / current_session (Current session number 1, 2, 3...)
+     * - package_name / plan_name
      */
     private function formatAppointments($appointments)
     {
@@ -1558,27 +1606,153 @@ class AppointmentController extends BaseApiController
             return $appointments;
         }
 
-        $patientIds = $appointments->pluck('patient_id')->unique()->filter()->values();
+        $subscriptionIds = $appointments->pluck('patient_plan_subscription_id')->filter()->unique()->values();
+        $uniquePlanIds   = $appointments->pluck('unique_plan_id')->filter()->unique()->values();
+        $patientIds      = $appointments->pluck('patient_id')->filter()->unique()->values();
+        $doctorIds       = $appointments->pluck('doctor_id')->filter()->unique()->values();
+        $planIds         = $appointments->pluck('patient_plan_id')->filter()->unique()->values();
 
-        $subscriptions = PatientPlanSubscription::with('plan')
+        // 1. Preload subscriptions
+        $subsById = PatientPlanSubscription::with('plan')
+            ->whereIn('id', $subscriptionIds)
+            ->get()
+            ->keyBy('id');
+
+        $subsByUniqueId = PatientPlanSubscription::with('plan')
+            ->whereIn('unique_plan_id', $uniquePlanIds)
+            ->get()
+            ->keyBy('unique_plan_id');
+
+        $subsByPatient = PatientPlanSubscription::with('plan')
             ->whereIn('patient_id', $patientIds)
             ->latest()
             ->get()
             ->groupBy('patient_id');
 
+        // 2. Preload plans
+        $plansById = PatientPlan::whereIn('id', $planIds)->get()->keyBy('id');
+
+        // 3. Preload completed appointments counts
+        $completedBySubId = Appointment::whereIn('patient_plan_subscription_id', $subscriptionIds)
+            ->where('status', 'completed')
+            ->selectRaw('patient_plan_subscription_id, count(*) as count')
+            ->groupBy('patient_plan_subscription_id')
+            ->pluck('count', 'patient_plan_subscription_id');
+
+        $completedByUniqueId = Appointment::whereIn('unique_plan_id', $uniquePlanIds)
+            ->where('status', 'completed')
+            ->selectRaw('unique_plan_id, count(*) as count')
+            ->groupBy('unique_plan_id')
+            ->pluck('count', 'unique_plan_id');
+
+        $completedByPatientDoctor = Appointment::whereIn('patient_id', $patientIds)
+            ->whereIn('doctor_id', $doctorIds)
+            ->where('status', 'completed')
+            ->selectRaw('patient_id, doctor_id, count(*) as count')
+            ->groupBy('patient_id', 'doctor_id')
+            ->get()
+            ->keyBy(function ($item) {
+                return $item->patient_id . '_' . $item->doctor_id;
+            });
+
+        // 4. Preload grouped appointments for calculating chronological session_number
+        $apptsBySubId = Appointment::whereIn('patient_plan_subscription_id', $subscriptionIds)
+            ->orderBy('appointment_date', 'asc')
+            ->orderBy('start_time', 'asc')
+            ->orderBy('id', 'asc')
+            ->get()
+            ->groupBy('patient_plan_subscription_id');
+
+        $apptsByUniqueId = Appointment::whereIn('unique_plan_id', $uniquePlanIds)
+            ->orderBy('appointment_date', 'asc')
+            ->orderBy('start_time', 'asc')
+            ->orderBy('id', 'asc')
+            ->get()
+            ->groupBy('unique_plan_id');
+
         $transactionGroups = $appointments->groupBy('transaction_id');
 
-        return $appointments->values()->map(function ($appointment, $index) use ($subscriptions, $transactionGroups) {
-            $patientSub = isset($subscriptions[$appointment->patient_id])
-                ? $subscriptions[$appointment->patient_id]->first()
-                : null;
+        return $appointments->values()->map(function ($appointment, $index) use (
+            $subsById,
+            $subsByUniqueId,
+            $subsByPatient,
+            $plansById,
+            $completedBySubId,
+            $completedByUniqueId,
+            $completedByPatientDoctor,
+            $apptsBySubId,
+            $apptsByUniqueId,
+            $transactionGroups
+        ) {
+            // Find subscription
+            $sub = null;
+            if ($appointment->patient_plan_subscription_id && isset($subsById[$appointment->patient_plan_subscription_id])) {
+                $sub = $subsById[$appointment->patient_plan_subscription_id];
+            } elseif ($appointment->unique_plan_id && isset($subsByUniqueId[$appointment->unique_plan_id])) {
+                $sub = $subsByUniqueId[$appointment->unique_plan_id];
+            } elseif (isset($subsByPatient[$appointment->patient_id])) {
+                $sub = $subsByPatient[$appointment->patient_id]->first(function ($s) use ($appointment) {
+                    return ($s->doctor_id && $s->doctor_id == $appointment->doctor_id) || ($s->patient_plan_id && $s->patient_plan_id == $appointment->patient_plan_id);
+                }) ?: $subsByPatient[$appointment->patient_id]->first();
+            }
 
-            $packageName = ($patientSub && $patientSub->plan)
-                ? $patientSub->plan->name
-                : 'Standard Package';
+            // Find plan
+            $plan = ($sub && $sub->plan) 
+                ? $sub->plan 
+                : (isset($plansById[$appointment->patient_plan_id]) ? $plansById[$appointment->patient_plan_id] : null);
 
+            // 1. Total appointments in package
+            if ($sub && $sub->package_appointments > 0) {
+                $totalPackageAppointments = (int) $sub->package_appointments;
+            } elseif ($plan && $plan->total_appointments > 0) {
+                $totalPackageAppointments = (int) $plan->total_appointments;
+            } elseif ($sub && optional($sub->plan)->total_appointments > 0) {
+                $totalPackageAppointments = (int) $sub->plan->total_appointments;
+            } else {
+                $totalPackageAppointments = 1;
+            }
+
+            // 2. Completed appointments count
+            $completedCount = 0;
+            if ($appointment->patient_plan_subscription_id && isset($completedBySubId[$appointment->patient_plan_subscription_id])) {
+                $completedCount = (int) $completedBySubId[$appointment->patient_plan_subscription_id];
+            } elseif ($appointment->unique_plan_id && isset($completedByUniqueId[$appointment->unique_plan_id])) {
+                $completedCount = (int) $completedByUniqueId[$appointment->unique_plan_id];
+            } elseif ($sub && $sub->used_appointments > 0) {
+                $completedCount = (int) $sub->used_appointments;
+            } elseif (isset($completedByPatientDoctor[$appointment->patient_id . '_' . $appointment->doctor_id])) {
+                $completedCount = (int) $completedByPatientDoctor[$appointment->patient_id . '_' . $appointment->doctor_id]->count;
+            } else {
+                $completedCount = ($appointment->status === 'completed') ? 1 : 0;
+            }
+
+            // Ensure completed count doesn't exceed total package appointments
+            if ($completedCount > $totalPackageAppointments && $totalPackageAppointments > 0) {
+                $completedCount = $totalPackageAppointments;
+            }
+
+            // 3. Remaining appointments count
+            $remainingCount = max(0, $totalPackageAppointments - $completedCount);
+
+            // 4. Session Number
             $sessionNumber = 1;
-            if ($appointment->transaction_id && isset($transactionGroups[$appointment->transaction_id])) {
+            if ($appointment->patient_plan_subscription_id && isset($apptsBySubId[$appointment->patient_plan_subscription_id])) {
+                $subAppts = $apptsBySubId[$appointment->patient_plan_subscription_id]->values();
+                foreach ($subAppts as $sIdx => $sAppt) {
+                    if ($sAppt->id == $appointment->id) {
+                        $sessionNumber = $sIdx + 1;
+                        break;
+                    }
+                }
+            } elseif ($appointment->unique_plan_id && isset($apptsByUniqueId[$appointment->unique_plan_id])) {
+                $subAppts = $apptsByUniqueId[$appointment->unique_plan_id]->values();
+                foreach ($subAppts as $sIdx => $sAppt) {
+                    if ($sAppt->id == $appointment->id) {
+                        $sessionNumber = $sIdx + 1;
+                        break;
+                    }
+                }
+            } elseif ($appointment->transaction_id && isset($transactionGroups[$appointment->transaction_id])) {
                 $group = $transactionGroups[$appointment->transaction_id]->values();
                 foreach ($group as $gIdx => $gAppt) {
                     if ($gAppt->id == $appointment->id) {
@@ -1590,14 +1764,32 @@ class AppointmentController extends BaseApiController
                 $sessionNumber = $index + 1;
             }
 
+            // Package name
+            $packageName = $plan ? $plan->name : (($sub && $sub->plan) ? $sub->plan->name : 'Standard Package');
             $appointmentNumber = $index + 1;
 
             $arr = $appointment->toArray();
-            $arr['package_name']       = $packageName;
-            $arr['plan_name']          = $packageName;
-            $arr['appointment_number'] = $appointmentNumber;
-            $arr['number']             = $appointmentNumber;
-            $arr['session_number']     = $sessionNumber;
+            $arr['package_name']                  = $packageName;
+            $arr['plan_name']                     = $packageName;
+            $arr['appointment_number']            = $appointmentNumber;
+            $arr['number']                        = $appointmentNumber;
+            $arr['session_number']                = $sessionNumber;
+            $arr['current_session']               = $sessionNumber;
+            $arr['session_index']                 = $sessionNumber;
+
+            // Package & Session tracking parameters requested by user:
+            $arr['total_appointments']            = $totalPackageAppointments;
+            $arr['total_package_appointments']    = $totalPackageAppointments;
+            $arr['package_appointments']          = $totalPackageAppointments;
+            $arr['total_appointments_in_package'] = $totalPackageAppointments;
+            $arr['total_appointment']             = $totalPackageAppointments;
+
+            $arr['completed_appointments']        = $completedCount;
+            $arr['completed_appointment']         = $completedCount;
+            $arr['used_appointments']             = $completedCount;
+
+            $arr['remaining_appointments']        = $remainingCount;
+            $arr['remaining_appointment']         = $remainingCount;
 
             return $arr;
         });

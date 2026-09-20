@@ -18,6 +18,7 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientAppointmentController;
 use App\Http\Controllers\UserAddressController;
 use App\Http\Controllers\Admin\AdminEnquiryController;
+use App\Http\Controllers\EnquiryController;
 use App\Http\Controllers\Admin\AdminAssessmentController;
 use App\Http\Controllers\Admin\AdminParameterController;
 use App\Http\Controllers\Admin\AdminPatientDocumentController;
@@ -25,6 +26,7 @@ use App\Http\Controllers\Admin\AdminPatientDocumentController;
 Route::get('/doctor/{id}', [DoctorController::class, 'show'])->name('doctor.profile');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::post('/enquiry', [EnquiryController::class, 'store'])->name('enquiry.store');
 Route::get('/search-doctors', [HomeController::class, 'searchDoctors'])->name('search.doctors');
 Route::get('/doctor/{id}', [HomeController::class, 'doctorProfile'])->name('doctor.profile');
 Route::get('/search', [HomeController::class, 'index'])->name('search');

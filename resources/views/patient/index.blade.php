@@ -1428,6 +1428,277 @@ img {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+/* ─────────────────────────────────────────────
+   ENQUIRY MODAL STYLES
+───────────────────────────────────────────── */
+.pth-enquiry-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.65);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    backdrop-filter: blur(4px);
+    opacity: 1;
+    visibility: visible;
+    transition: all .2s ease;
+}
+.pth-enquiry-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+.pth-enquiry-modal {
+    background: #ffffff;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 520px;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    position: relative;
+    animation: pthModalPop .22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes pthModalPop {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.pth-enquiry-header {
+    background: linear-gradient(135deg, #074752 0%, #0c6978 100%);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #ffffff;
+}
+.pth-enquiry-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.pth-enquiry-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #ffffff;
+    flex-shrink: 0;
+}
+.pth-enquiry-title {
+    font-size: 17.5px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.25;
+    margin: 0;
+}
+.pth-enquiry-sub {
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.82);
+    margin-top: 3px;
+    margin-bottom: 0;
+}
+.pth-enquiry-close {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: #ffffff;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s;
+    line-height: 1;
+}
+.pth-enquiry-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+.pth-enquiry-body {
+    padding: 22px 24px 16px;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.pth-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.pth-form-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e293b;
+}
+.pth-form-label .req {
+    color: #ef4444;
+}
+.pth-form-label .opt {
+    color: #94a3b8;
+    font-weight: 500;
+    font-size: 11.5px;
+}
+.pth-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.pth-input-icon {
+    position: absolute;
+    left: 14px;
+    color: #94a3b8;
+    font-size: 14px;
+    pointer-events: none;
+}
+.pth-form-input, .pth-form-select, .pth-form-textarea {
+    width: 100%;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 11px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #0f172a;
+    background: #f8fafc;
+    transition: all .18s ease;
+    outline: none;
+}
+.pth-form-input {
+    height: 44px;
+    padding: 0 14px 0 38px;
+}
+.pth-form-select {
+    height: 44px;
+    padding: 0 14px 0 38px;
+    cursor: pointer;
+}
+.pth-form-textarea {
+    padding: 10px 14px;
+    resize: vertical;
+    min-height: 65px;
+}
+.pth-form-input:focus, .pth-form-select:focus, .pth-form-textarea:focus {
+    border-color: #0c6978;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(12, 105, 120, 0.12);
+}
+.pth-enquiry-trust-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    background: #f0fdfa;
+    border: 1px solid #ccfbf1;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-top: 4px;
+}
+.pth-trust-item {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #0f766e;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: center;
+    text-align: center;
+}
+.pth-enquiry-footer {
+    padding: 14px 24px 20px;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    background: #ffffff;
+}
+.pth-btn-ghost {
+    padding: 11px 20px;
+    border-radius: 10px;
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+}
+.pth-btn-ghost:hover {
+    background: #f8fafc;
+    color: #0f172a;
+}
+.pth-btn-teal {
+    padding: 11px 24px;
+    border-radius: 10px;
+    background: #0c6978;
+    border: 1.5px solid #0c6978;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all .15s;
+    box-shadow: 0 4px 12px rgba(12, 105, 120, 0.25);
+    text-decoration: none;
+}
+.pth-btn-teal:hover {
+    background: #074752;
+    border-color: #074752;
+    color: #ffffff;
+}
+.pth-enquiry-success {
+    padding: 40px 24px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.pth-enquiry-success-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #dcfce7;
+    color: #16a34a;
+    font-size: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 6px;
+}
+.pth-enquiry-success h4 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+}
+.pth-enquiry-success p {
+    font-size: 14px;
+    color: #64748b;
+    max-width: 360px;
+    line-height: 1.5;
+    margin: 0;
+}
+.pth-enquiry-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 14px;
+    border-radius: 10px;
+}
 </style>
 
 <div class="main-wrapper">
@@ -1462,7 +1733,7 @@ img {
                         </a>
                     @else
                         <a href="#specialists" class="pth-btn-book">
-                            Book Home Session
+                            Book  Session
                         </a>
                     @endauth
 
@@ -1684,9 +1955,9 @@ img {
                             <div class="pth-banner-desc">Quality healthcare delivered directly in the safety and comfort of your home.</div>
                         </div>
                     </div>
-                    <a href="#specialists" class="pth-btn-white">
+                    <button type="button" class="pth-btn-white" onclick="openEnquiryModal()" style="border:none;cursor:pointer;">
                         Book Home Visit <i class="fa-solid fa-arrow-right"></i>
-                    </a>
+                    </button>
                 </div>
 
                 <div class="pth-banner-features">
@@ -1803,7 +2074,7 @@ img {
                         <div class="pth-doc-card-bottom">
                             <span class="pth-status-tag">Available Today</span>
                             <a href="{{ route('doctor.profile', $doctor->id) }}" class="pth-btn-book-sm">
-                                Book Home Session
+                                Book  Session
                             </a>
                         </div>
                     </div>
@@ -2385,6 +2656,224 @@ function applyDoctorFilter(conditionName) {
         });
     }
 })();
+
+// Enquiry Modal Functions
+function openEnquiryModal() {
+    const overlay = document.getElementById('enquiryModalOverlay');
+    if (overlay) {
+        overlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeEnquiryModal() {
+    const overlay = document.getElementById('enquiryModalOverlay');
+    if (overlay) {
+        overlay.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+}
+
+function toggleOtherSymptom(val) {
+    const group = document.getElementById('otherSymptomGroup');
+    const input = document.getElementById('enq_other_symptom');
+    if (val === 'Other') {
+        group.style.display = 'flex';
+        input.setAttribute('required', 'required');
+        input.focus();
+    } else {
+        group.style.display = 'none';
+        input.removeAttribute('required');
+        input.value = '';
+    }
+}
+
+function handleEnquirySubmit(e) {
+    e.preventDefault();
+    const form = document.getElementById('enquiryForm');
+    const btn = document.getElementById('enquirySubmitBtn');
+    const btnText = document.getElementById('enqBtnText');
+    const btnSpinner = document.getElementById('enqBtnSpinner');
+    const errorBox = document.getElementById('enquiryErrorBox');
+    const successBox = document.getElementById('enquirySuccessBox');
+    const successMsg = document.getElementById('enquirySuccessMsg');
+
+    errorBox.classList.add('hidden');
+    errorBox.innerHTML = '';
+    btn.disabled = true;
+    btnText.style.display = 'none';
+    btnSpinner.style.display = 'inline-block';
+
+    const formData = new FormData(form);
+
+    fetch("{{ route('enquiry.store') }}", {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    })
+    .then(async (response) => {
+        const data = await response.json();
+        btn.disabled = false;
+        btnText.style.display = 'inline-flex';
+        btnSpinner.style.display = 'none';
+
+        if (response.ok && data.success) {
+            form.style.display = 'none';
+            if (data.message) {
+                successMsg.textContent = data.message;
+            }
+            successBox.classList.remove('hidden');
+            form.reset();
+        } else {
+            let msg = data.message || 'Please fill in all required fields.';
+            if (data.errors) {
+                msg = Object.values(data.errors).flat().join('<br>');
+            }
+            errorBox.innerHTML = msg;
+            errorBox.classList.remove('hidden');
+        }
+    })
+    .catch((err) => {
+        btn.disabled = false;
+        btnText.style.display = 'inline-flex';
+        btnSpinner.style.display = 'none';
+        errorBox.innerHTML = 'An unexpected error occurred. Please try again or call support.';
+        errorBox.classList.remove('hidden');
+    });
+}
+
+// Close on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeEnquiryModal();
+    }
+});
 </script>
+
+{{-- ══════════════════════════════════════════════════
+     HOME VISIT ENQUIRY MODAL
+══════════════════════════════════════════════════ --}}
+<div class="pth-enquiry-overlay hidden" id="enquiryModalOverlay" onclick="if(event.target===this)closeEnquiryModal()">
+    <div class="pth-enquiry-modal" onclick="event.stopPropagation()">
+        
+        <!-- Header -->
+        <div class="pth-enquiry-header">
+            <div class="pth-enquiry-header-left">
+                <div class="pth-enquiry-icon">
+                    <i class="fa-solid fa-house-medical"></i>
+                </div>
+                <div>
+                    <h3 class="pth-enquiry-title">Book Home Visit Consultation</h3>
+                    <p class="pth-enquiry-sub">Get certified physiotherapist at your doorstep</p>
+                </div>
+            </div>
+            <button type="button" class="pth-enquiry-close" onclick="closeEnquiryModal()" aria-label="Close">&times;</button>
+        </div>
+
+        <!-- Success Message Box -->
+        <div id="enquirySuccessBox" class="pth-enquiry-success hidden">
+            <div class="pth-enquiry-success-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <h4>Enquiry Submitted Successfully!</h4>
+            <p id="enquirySuccessMsg">Our care coordinator will contact you shortly to confirm your home visit timing.</p>
+            <button type="button" class="pth-btn-teal" onclick="closeEnquiryModal()" style="margin-top:14px;">Done</button>
+        </div>
+
+        <!-- Form Body -->
+        <form id="enquiryForm" method="POST" action="{{ route('enquiry.store') }}" onsubmit="handleEnquirySubmit(event)">
+            @csrf
+            <div class="pth-enquiry-body">
+
+                <!-- Alert error box -->
+                <div id="enquiryErrorBox" class="pth-enquiry-error hidden"></div>
+
+                <!-- Patient Name -->
+                <div class="pth-form-group">
+                    <label class="pth-form-label" for="enq_patient_name">Patient Full Name <span class="req">*</span></label>
+                    <div class="pth-input-wrap">
+                        <i class="fa-regular fa-user pth-input-icon"></i>
+                        <input type="text" id="enq_patient_name" name="patient_name" class="pth-form-input" 
+                               value="{{ Auth::check() ? Auth::user()->name : old('patient_name') }}" 
+                               placeholder="e.g. Rahul Sharma" required>
+                    </div>
+                </div>
+
+                <!-- Contact Number -->
+                <div class="pth-form-group">
+                    <label class="pth-form-label" for="enq_contact_number">Mobile / WhatsApp Number <span class="req">*</span></label>
+                    <div class="pth-input-wrap">
+                        <i class="fa-solid fa-phone pth-input-icon"></i>
+                        <input type="tel" id="enq_contact_number" name="contact_number" class="pth-form-input" 
+                               value="{{ Auth::check() ? Auth::user()->phone : old('contact_number') }}" 
+                               placeholder="e.g. 9876543210" required>
+                    </div>
+                </div>
+
+                <!-- Condition / Reason for Visit -->
+                <div class="pth-form-group">
+                    <label class="pth-form-label" for="enq_symptoms">Condition / Reason for Home Visit <span class="req">*</span></label>
+                    <div class="pth-input-wrap">
+                        <i class="fa-solid fa-notes-medical pth-input-icon"></i>
+                        <select id="enq_symptoms" name="symptoms" class="pth-form-select" onchange="toggleOtherSymptom(this.value)">
+                            <option value="Back Pain & Sciatica">Back Pain &amp; Sciatica</option>
+                            <option value="Neck & Shoulder Pain">Neck &amp; Shoulder Pain</option>
+                            <option value="Knee & Joint Pain">Knee &amp; Joint Pain / Arthritis</option>
+                            <option value="Post Surgery Rehabilitation">Post Surgery Rehabilitation</option>
+                            <option value="Stroke / Paralysis Rehab">Stroke / Paralysis Neuro Rehab</option>
+                            <option value="Sports Injury Recovery">Sports Injury Recovery</option>
+                            <option value="Elderly Mobility & Fall Prevention">Elderly Mobility &amp; Fall Prevention</option>
+                            <option value="Spine & Posture Care">Spine &amp; Posture Care</option>
+                            <option value="General Physiotherapy">General Physiotherapy Consultation</option>
+                            <option value="Other">Other Condition…</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Other Symptom Input -->
+                <div class="pth-form-group" id="otherSymptomGroup" style="display:none;">
+                    <label class="pth-form-label" for="enq_other_symptom">Specify Condition Details</label>
+                    <input type="text" id="enq_other_symptom" name="other_symptom" class="pth-form-input" placeholder="Describe the pain or condition...">
+                </div>
+
+                <!-- Location / Address -->
+                <div class="pth-form-group">
+                    <label class="pth-form-label" for="enq_location">Home Address / Locality / City <span class="req">*</span></label>
+                    <div class="pth-input-wrap">
+                        <i class="fa-solid fa-location-dot pth-input-icon"></i>
+                        <input type="text" id="enq_location" name="location" class="pth-form-input" 
+                               value="{{ Auth::check() ? Auth::user()->address : old('location') }}" 
+                               placeholder="e.g. Flat 302, Sector 14, Gurugram" required>
+                    </div>
+                </div>
+
+                <!-- Additional Notes (Optional) -->
+                <div class="pth-form-group">
+                    <label class="pth-form-label" for="enq_notes">Additional Notes / Preferred Time <span class="opt">(Optional)</span></label>
+                    <textarea id="enq_notes" name="notes" class="pth-form-textarea" rows="2" placeholder="Any specific requirements, doctor gender preference, or convenient time..."></textarea>
+                </div>
+
+                <!-- Trust Points -->
+                <div class="pth-enquiry-trust-row">
+                    <div class="pth-trust-item"><i class="fa-solid fa-shield-halved"></i> Certified Physios</div>
+                    <div class="pth-trust-item"><i class="fa-solid fa-clock"></i> 15-Min Callback</div>
+                    <div class="pth-trust-item"><i class="fa-solid fa-house-chimney"></i> At Your Home</div>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="pth-enquiry-footer">
+                <button type="button" class="pth-btn-ghost" onclick="closeEnquiryModal()">Cancel</button>
+                <button type="submit" class="pth-btn-teal" id="enquirySubmitBtn">
+                    <span id="enqBtnText">Request Home Visit <i class="fa-solid fa-arrow-right"></i></span>
+                    <span id="enqBtnSpinner" class="spinner-border spinner-border-sm" style="display:none;width:16px;height:16px;border-width:2px;"></span>
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
 
 @endsection

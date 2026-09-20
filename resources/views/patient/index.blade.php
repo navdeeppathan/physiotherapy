@@ -1660,7 +1660,7 @@ img {
 .pth-enquiry-success {
     padding: 40px 24px;
     text-align: center;
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
     gap: 10px;
@@ -1698,6 +1698,10 @@ img {
     font-weight: 600;
     padding: 10px 14px;
     border-radius: 10px;
+    display: none;
+}
+.hidden {
+    display: none !important;
 }
 </style>
 
@@ -2660,6 +2664,23 @@ function applyDoctorFilter(conditionName) {
 // Enquiry Modal Functions
 function openEnquiryModal() {
     const overlay = document.getElementById('enquiryModalOverlay');
+    const form = document.getElementById('enquiryForm');
+    const successBox = document.getElementById('enquirySuccessBox');
+    const errorBox = document.getElementById('enquiryErrorBox');
+    const btn = document.getElementById('enquirySubmitBtn');
+    const btnText = document.getElementById('enqBtnText');
+    const btnSpinner = document.getElementById('enqBtnSpinner');
+
+    if (form) form.style.display = 'block';
+    if (successBox) successBox.style.display = 'none';
+    if (errorBox) {
+        errorBox.style.display = 'none';
+        errorBox.innerHTML = '';
+    }
+    if (btn) btn.disabled = false;
+    if (btnText) btnText.style.display = 'inline-flex';
+    if (btnSpinner) btnSpinner.style.display = 'none';
+
     if (overlay) {
         overlay.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
@@ -2698,7 +2719,7 @@ function handleEnquirySubmit(e) {
     const successBox = document.getElementById('enquirySuccessBox');
     const successMsg = document.getElementById('enquirySuccessMsg');
 
-    errorBox.classList.add('hidden');
+    errorBox.style.display = 'none';
     errorBox.innerHTML = '';
     btn.disabled = true;
     btnText.style.display = 'none';
@@ -2725,7 +2746,7 @@ function handleEnquirySubmit(e) {
             if (data.message) {
                 successMsg.textContent = data.message;
             }
-            successBox.classList.remove('hidden');
+            successBox.style.display = 'flex';
             form.reset();
         } else {
             let msg = data.message || 'Please fill in all required fields.';
@@ -2733,7 +2754,7 @@ function handleEnquirySubmit(e) {
                 msg = Object.values(data.errors).flat().join('<br>');
             }
             errorBox.innerHTML = msg;
-            errorBox.classList.remove('hidden');
+            errorBox.style.display = 'block';
         }
     })
     .catch((err) => {
@@ -2741,7 +2762,7 @@ function handleEnquirySubmit(e) {
         btnText.style.display = 'inline-flex';
         btnSpinner.style.display = 'none';
         errorBox.innerHTML = 'An unexpected error occurred. Please try again or call support.';
-        errorBox.classList.remove('hidden');
+        errorBox.style.display = 'block';
     });
 }
 
@@ -2773,8 +2794,8 @@ document.addEventListener('keydown', function(e) {
             <button type="button" class="pth-enquiry-close" onclick="closeEnquiryModal()" aria-label="Close">&times;</button>
         </div>
 
-        <!-- Success Message Box -->
-        <div id="enquirySuccessBox" class="pth-enquiry-success hidden">
+        <!-- Success Message Box (Hidden by default) -->
+        <div id="enquirySuccessBox" class="pth-enquiry-success" style="display:none;">
             <div class="pth-enquiry-success-icon"><i class="fa-solid fa-circle-check"></i></div>
             <h4>Enquiry Submitted Successfully!</h4>
             <p id="enquirySuccessMsg">Our care coordinator will contact you shortly to confirm your home visit timing.</p>
@@ -2787,7 +2808,7 @@ document.addEventListener('keydown', function(e) {
             <div class="pth-enquiry-body">
 
                 <!-- Alert error box -->
-                <div id="enquiryErrorBox" class="pth-enquiry-error hidden"></div>
+                <div id="enquiryErrorBox" class="pth-enquiry-error" style="display:none;"></div>
 
                 <!-- Patient Name -->
                 <div class="pth-form-group">

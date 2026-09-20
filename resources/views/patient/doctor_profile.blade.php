@@ -974,23 +974,104 @@ a {
 }
 
 @media (max-width: 640px) {
+    .dp-main-container {
+        padding: 12px 12px 40px;
+        gap: 16px;
+    }
+    .dp-breadcrumb {
+        font-size: 12px;
+        padding: 2px 0;
+    }
     .dp-doc-profile-card {
         flex-direction: column;
         align-items: center;
         text-align: center;
+        padding: 20px 16px;
+        border-radius: 16px;
+    }
+    .dp-doc-photo-wrap {
+        width: 100px;
+        height: 100px;
+        border-radius: 14px;
+    }
+    .dp-doc-title {
+        font-size: 20px;
     }
     .dp-doc-meta-row {
         justify-content: center;
+        gap: 10px;
+        font-size: 12px;
+    }
+    .dp-fee-box-card {
+        padding: 18px 16px;
+        border-radius: 16px;
     }
     .dp-metrics-row {
         grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    .dp-metric-card {
+        padding: 12px 8px;
+    }
+    .dp-metric-num {
+        font-size: 17px;
     }
     .dp-slots-pills-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    .dp-slot-pill {
+        padding: 9px 6px;
+        font-size: 12.5px;
+    }
+    .dp-pkg-item-card {
+        padding: 18px 16px;
+        border-radius: 16px;
+    }
+    .dp-about-card, .dp-avail-card {
+        padding: 18px 16px;
+        border-radius: 16px;
     }
     .dp-review-score-box {
         grid-template-columns: 1fr;
         gap: 14px;
+        padding: 16px;
+    }
+    .dp-rt-card {
+        padding: 16px 14px;
+    }
+    .dp-bottom-banner {
+        padding: 24px 18px;
+        border-radius: 16px;
+        text-align: center;
+        align-items: center;
+    }
+    .dp-bb-content {
+        max-width: 100%;
+        text-align: center;
+    }
+    .dp-bb-title {
+        font-size: 20px;
+    }
+    .dp-btn-white-pill {
+        width: 100%;
+        justify-content: center;
+    }
+    .dp-bb-illustration {
+        display: none;
+    }
+}
+
+@media (max-width: 440px) {
+    .dp-metrics-row {
+        grid-template-columns: 1fr;
+    }
+    .dp-dates-slider-wrap {
+        gap: 4px;
+    }
+    .dp-date-pill {
+        padding: 6px 8px;
+        min-width: 52px;
     }
 }
 

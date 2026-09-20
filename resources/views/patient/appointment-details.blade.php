@@ -870,11 +870,26 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-page);
     .ad-sidebar { position: static; }
 }
 @media (max-width: 640px) {
-    .ad-page-container { padding: 16px 14px 40px; }
-    .ad-actions-row { grid-template-columns: 1fr; }
-    .ad-doc-row { flex-direction: column; align-items: flex-start; }
+    .ad-page-container { padding: 12px 12px 40px; gap: 16px; }
+    .ad-page-title { font-size: 20px; }
+    .ad-card { padding: 16px 14px; border-radius: 14px; }
+    .ad-actions-row { grid-template-columns: 1fr; gap: 10px; }
+    .ad-btn-outline, .ad-btn-solid-teal, .ad-btn-solid-red { width: 100%; justify-content: center; padding: 12px 16px; font-size: 14px; }
+    .ad-doc-row { flex-direction: column; align-items: flex-start; gap: 12px; }
     .ad-doc-side-badge { width: 100%; text-align: left; }
-    .ad-datetime-row { flex-direction: column; align-items: flex-start; }
+    .ad-datetime-row { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .ad-status-pill { align-self: flex-start; }
+    .inv-modal { max-width: 100%; max-height: 94vh; margin: 8px; }
+    .inv-modal-head { padding: 14px 16px; font-size: 15px; }
+    .inv-modal-body { padding: 16px 14px; gap: 12px; }
+    .inv-parties-grid { grid-template-columns: 1fr; gap: 10px; padding: 12px; }
+    .inv-details-grid { grid-template-columns: 1fr; gap: 8px; }
+    .inv-modal-foot { flex-direction: column; padding: 12px 16px; gap: 8px; }
+    .inv-modal-foot button, .inv-modal-foot a { width: 100%; justify-content: center; text-align: center; }
+}
+@media (max-width: 440px) {
+    .ad-patient-row { flex-direction: column; align-items: flex-start; gap: 2px; }
+    .ad-pkg-pill-row { flex-direction: column; align-items: flex-start; gap: 6px; }
 }
 </style>
 

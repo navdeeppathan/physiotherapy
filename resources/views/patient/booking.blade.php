@@ -1221,25 +1221,272 @@ a {
         grid-template-columns: 1fr;
     }
 }
+
+@media (max-width: 768px) {
+    .bk-container {
+        padding: 14px 16px 40px;
+    }
+    .bk-main-panel {
+        padding: 22px 18px;
+        border-radius: 18px;
+    }
+    .bk-stepper-wrap {
+        margin-bottom: 24px;
+    }
+}
+
 @media (max-width: 640px) {
+    .bk-container {
+        padding: 10px 12px 36px;
+    }
+    .bk-breadcrumb {
+        margin-bottom: 16px;
+        font-size: 12px;
+    }
     .bk-stepper {
-        gap: 4px;
+        gap: 2px;
+        align-items: center;
+    }
+    .bk-step-circle {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
     }
     .bk-step-lbl {
-        display: none; /* Hide labels on very small mobile for clean circles */
+        display: none; /* Hide labels on mobile for clean circles */
+    }
+    .bk-step-line {
+        margin: 0 4px;
+        margin-top: 0;
+        align-self: center;
+    }
+    .bk-main-panel {
+        padding: 16px 14px;
+        border-radius: 16px;
+    }
+    .bk-step-title {
+        font-size: 19px;
+    }
+    .bk-step-desc {
+        font-size: 12.5px;
+        margin-bottom: 18px;
     }
     .bk-form-grid {
         grid-template-columns: 1fr;
+        gap: 12px;
     }
     .bk-form-group.full {
         grid-column: span 1;
     }
+    .bk-days-grid {
+        gap: 4px;
+        margin-bottom: 18px;
+    }
+    .bk-day-card {
+        padding: 8px 3px;
+        border-radius: 10px;
+    }
+    .bk-day-head {
+        font-size: 11px;
+        margin-bottom: 4px;
+    }
+    .bk-day-num {
+        font-size: 14px;
+    }
     .bk-slots-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    .bk-slot-btn {
+        padding: 10px 6px;
+        font-size: 12.5px;
+        border-radius: 8px;
     }
     .bk-rc-row {
         grid-template-columns: 1fr;
         gap: 2px;
+    }
+    .bk-receipt-card {
+        padding: 16px 14px;
+        border-radius: 14px;
+    }
+    .bk-success-panel {
+        padding: 24px 16px;
+        border-radius: 18px;
+    }
+    .bk-success-icon-wrap {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
+        margin-bottom: 14px;
+    }
+    .bk-success-title {
+        font-size: 20px;
+    }
+    .bk-sidebar-card {
+        padding: 18px 16px;
+        border-radius: 16px;
+    }
+}
+
+@media (max-width: 520px) {
+    /* Package cards responsiveness */
+    .bk-pkg-card {
+        padding: 12px 12px;
+        gap: 10px;
+        border-radius: 14px;
+    }
+    .bk-radio-custom {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+    }
+    .bk-radio-dot {
+        width: 10px;
+        height: 10px;
+    }
+    .bk-pkg-icon-box {
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
+        border-radius: 10px;
+        flex-shrink: 0;
+    }
+    .bk-pkg-title {
+        font-size: 14.5px;
+    }
+    .bk-pkg-badge-popular {
+        font-size: 9.5px;
+        padding: 2px 6px;
+    }
+    .bk-pkg-appt-line {
+        font-size: 12px;
+    }
+    .bk-pkg-rate-line {
+        font-size: 11.5px;
+    }
+    .bk-pkg-pricing {
+        text-align: right;
+        flex-shrink: 0;
+    }
+    .bk-pkg-price-now {
+        font-size: 16px;
+        white-space: nowrap;
+    }
+    .bk-pkg-old-price {
+        font-size: 11px;
+        margin-right: 4px;
+    }
+    .bk-pkg-disc-tag {
+        font-size: 9.5px;
+        padding: 1px 5px;
+    }
+
+    /* Address cards */
+    .bk-addr-card {
+        padding: 12px 12px;
+        gap: 10px;
+        border-radius: 12px;
+    }
+    .bk-addr-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+        border-radius: 8px;
+    }
+    .bk-addr-label {
+        font-size: 13.5px;
+    }
+    .bk-addr-text {
+        font-size: 12px;
+    }
+
+    /* Step buttons */
+    .bk-step-nav {
+        flex-direction: column-reverse;
+        gap: 10px;
+        align-items: stretch;
+    }
+    .bk-btn-continue, .bk-btn-back {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+        padding: 12px 18px;
+        font-size: 14px;
+    }
+    .bk-success-actions {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+    .bk-btn-outline, .bk-btn-filled {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+        padding: 12px 18px;
+    }
+    .bk-help-box {
+        padding: 12px 14px;
+        gap: 10px;
+    }
+    .bk-hb-icon {
+        font-size: 16px;
+    }
+    .bk-hb-title {
+        font-size: 13px;
+    }
+    .bk-hb-desc {
+        font-size: 11.5px;
+    }
+}
+
+@media (max-width: 380px) {
+    /* Ultra-compact package cards for narrow screens (<= 380px) */
+    .bk-pkg-card {
+        display: grid;
+        grid-template-columns: 18px 34px 1fr;
+        grid-template-rows: auto auto;
+        gap: 8px 10px;
+        padding: 12px 10px;
+    }
+    .bk-radio-custom {
+        grid-column: 1;
+        grid-row: 1;
+        align-self: center;
+    }
+    .bk-pkg-icon-box {
+        grid-column: 2;
+        grid-row: 1;
+        width: 34px;
+        height: 34px;
+        font-size: 14px;
+        align-self: center;
+    }
+    .bk-pkg-body {
+        grid-column: 3;
+        grid-row: 1;
+    }
+    .bk-pkg-pricing {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px dashed #e2e8f0;
+        padding-top: 8px;
+        margin-top: 2px;
+        width: 100%;
+    }
+    .bk-pkg-pricing > div:last-child {
+        order: 1;
+    }
+    .bk-pkg-price-now {
+        order: 2;
+        font-size: 16px;
+    }
+    .bk-slots-grid {
+        grid-template-columns: 1fr;
     }
 }
 </style>

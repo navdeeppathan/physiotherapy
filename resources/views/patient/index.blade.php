@@ -1721,6 +1721,50 @@ img {
 .hidden {
     display: none !important;
 }
+
+@media (max-width: 480px) {
+    .pth-enquiry-modal {
+        max-width: 100%;
+        max-height: 94vh;
+        border-radius: 16px;
+    }
+    .pth-enquiry-header {
+        padding: 14px 16px;
+    }
+    .pth-enquiry-title {
+        font-size: 15px;
+    }
+    .pth-enquiry-body {
+        padding: 14px 16px 10px;
+    }
+    .pth-enquiry-trust-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+        text-align: left;
+    }
+    .pth-trust-item {
+        justify-content: flex-start;
+    }
+    .pth-enquiry-footer {
+        padding: 12px 16px 16px;
+        flex-direction: column-reverse;
+        gap: 8px;
+    }
+    .pth-btn-ghost, .pth-btn-teal {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+    .pth-banner-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .pth-btn-enquiry-banner {
+        width: 100%;
+        justify-content: center;
+    }
+}
 </style>
 
 <div class="main-wrapper">

@@ -42,6 +42,7 @@ body {
     background: var(--bg);
     color: var(--body-c);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
 }
 a { text-decoration: none; color: inherit; }
 ul { list-style: none; }
@@ -49,7 +50,7 @@ ul { list-style: none; }
 /* ─────────────────────────────────────────────
    PAGE SHELL
 ───────────────────────────────────────────── */
-.pd-page { min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); }
+.pd-page { min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); overflow-x: hidden; width: 100%; }
 
 /* ─────────────────────────────────────────────
    MOBILE HEADER BAR (< 768px)
@@ -498,27 +499,43 @@ table.pd-table tr:hover td { background: #fbfdfd; }
 }
 .pd-appt-card:last-child { border-bottom: none; }
 
-.pd-appt-card-top { display: flex; align-items: center; gap: 12px; }
+.pd-appt-card-top { display: flex; align-items: center; gap: 10px; }
 .pd-appt-card-info { flex: 1; min-width: 0; }
-.pd-appt-card-name { font-size: 14.5px; font-weight: 800; color: var(--ink); }
-.pd-appt-card-spec { font-size: 12px; color: #64748b; margin-top: 2px; }
+.pd-appt-card-name { font-size: 14px; font-weight: 800; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pd-appt-card-spec { font-size: 11.5px; color: #64748b; margin-top: 1px; }
 
-.pd-appt-card-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.pd-appt-card-field { background: #f8fafc; border: 1px solid var(--border-light); border-radius: 10px; padding: 9px 12px; }
-.pd-appt-card-field-lbl { font-size: 10.5px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 3px; }
-.pd-appt-card-field-val { font-size: 13px; font-weight: 700; color: var(--ink); }
+.pd-appt-card-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.pd-appt-card-field { background: #f8fafc; border: 1px solid var(--border-light); border-radius: 9px; padding: 7px 10px; min-width: 0; overflow: hidden; }
+.pd-appt-card-field-lbl { font-size: 9.5px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .02em; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pd-appt-card-field-val { font-size: 12.5px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.pd-appt-card-actions { display: flex; align-items: center; justify-content: space-between; }
+.pd-appt-card-actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 
-/* Billing mobile card */
-.pd-bill-card {
-    padding: 15px 18px; border-bottom: 1px solid var(--border-light);
-    display: flex; align-items: center; gap: 12px;
+/* Billing mobile card list */
+.bp-card-list { display: none; flex-direction: column; gap: 0; }
+.bp-txn-mobile-card {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-light);
+    display: flex; flex-direction: column; gap: 10px;
 }
-.pd-bill-card:last-child { border-bottom: none; }
-.pd-bill-card-right { margin-left: auto; text-align: right; }
-.pd-bill-amount { font-size: 15.5px; font-weight: 900; color: var(--ink); }
-.pd-bill-date { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+.bp-txn-mobile-card:last-child { border-bottom: none; }
+.bp-tmc-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.bp-tmc-doc { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.bp-tmc-doc .bp-doc-name { font-size: 13.5px; font-weight: 800; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bp-tmc-doc .bp-doc-spec { font-size: 11px; color: var(--muted); }
+.bp-tmc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.bp-tmc-field { background: #f8fafc; border: 1px solid var(--border-light); border-radius: 9px; padding: 7px 10px; min-width: 0; overflow: hidden; }
+.bp-tmc-lbl { font-size: 9.5px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .02em; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bp-tmc-val { font-size: 12px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bp-tmc-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 2px; }
+.bp-btn-view-invoice {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 8px 12px; border-radius: 8px;
+    background: var(--teal-bg-soft); border: 1.5px solid var(--teal-badge-border);
+    color: var(--primary-teal); font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all 0.15s; width: 100%;
+}
+.bp-btn-view-invoice:hover { background: var(--primary-teal); color: #ffffff; border-color: var(--primary-teal); }
 
 /* ─────────────────────────────────────────────
    RESPONSIVE BREAKPOINTS
@@ -532,44 +549,50 @@ table.pd-table tr:hover td { background: #fbfdfd; }
     .pd-sidebar { display: none; }
 
     .pd-body {
-        grid-template-columns: 1fr;
-        padding: 14px 14px 44px;
-        gap: 14px;
+        grid-template-columns: 100%;
+        padding: 12px 10px 44px;
+        gap: 12px;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     /* Stats on mobile */
-    .pd-stats { grid-template-columns: repeat(3,1fr); gap: 8px; }
-    .pd-stat { padding: 14px 10px; flex-direction: column; align-items: flex-start; gap: 8px; border-radius: 16px; }
-    .pd-stat-icon { width: 38px; height: 38px; border-radius: 11px; }
-    .pd-stat-icon svg { width: 17px; height: 17px; }
-    .pd-stat-val { font-size: 20px; }
-    .pd-stat-lbl { font-size: 11px; }
+    .pd-stats { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .pd-stat { padding: 10px 6px; flex-direction: column; align-items: flex-start; gap: 4px; border-radius: 12px; min-width: 0; }
+    .pd-stat-icon { width: 32px; height: 32px; border-radius: 8px; }
+    .pd-stat-icon svg { width: 15px; height: 15px; }
+    .pd-stat-val { font-size: 17px; }
+    .pd-stat-lbl { font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     /* Page header */
-    .pd-page-title { font-size: 19px; }
+    .pd-page-title { font-size: 18px; }
     .pd-date-chip { display: none; }
 
     /* Tabs */
-    .pd-tabs-bar { padding: 10px 12px 0; }
-    .pd-tab { font-size: 12.5px; padding: 8px 12px; }
+    .pd-tabs-bar { padding: 8px 10px 0; gap: 2px; }
+    .pd-tab { font-size: 12px; padding: 7px 10px; }
 
     /* Hide table, show card list */
-    .pd-table-wrap { display: none; }
-    .pd-card-list { display: flex; }
+    .pd-table-wrap { display: none !important; }
+    .pd-card-list { display: flex !important; }
+    .bp-table-wrap { display: none !important; }
+    .bp-card-list { display: flex !important; }
 
     /* Billing stats */
-    .pd-billing-stats { grid-template-columns: 1fr 1fr; padding: 14px; gap: 10px; }
-    .pd-billing-stat { padding: 12px 14px; }
-    .pd-billing-stat-val { font-size: 18px; }
+    .pd-billing-stats { grid-template-columns: 1fr 1fr; padding: 12px; gap: 8px; }
+    .pd-billing-stat { padding: 10px 12px; }
+    .pd-billing-stat-val { font-size: 17px; }
 }
 
 @media (max-width: 480px) {
-    .pd-stats { grid-template-columns: repeat(3,1fr); gap: 6px; }
-    .pd-stat { padding: 12px 8px; }
-    .pd-stat-val { font-size: 18px; }
-    .pd-stat-lbl { font-size: 10px; }
+    .pd-stats { grid-template-columns: repeat(3, 1fr); gap: 4px; }
+    .pd-stat { padding: 8px 5px; }
+    .pd-stat-icon { width: 28px; height: 28px; border-radius: 6px; }
+    .pd-stat-icon svg { width: 13px; height: 13px; }
+    .pd-stat-val { font-size: 16px; }
+    .pd-stat-lbl { font-size: 9px; }
     .pd-billing-stats { grid-template-columns: 1fr; }
-    .pd-body { padding: 10px 10px 36px; }
+    .pd-body { padding: 8px 6px 36px; }
 }
 
 /* ─────────────────────────────────────────────
@@ -1369,6 +1392,85 @@ table.bp-table{width:100%;border-collapse:collapse;}
                                         </tbody>
                                     </table>
                                 </div>
+
+                                {{-- Mobile Card List for Transactions --}}
+                                <div class="bp-card-list" id="bpCardList">
+                                    @foreach($payments as $pay)
+                                        @php
+                                            $doc      = $pay->doctor;
+                                            $rawName  = $doc->name ?? 'Doctor';
+                                            $clean    = preg_replace('/^(dr\.?|doctor)\s+/i', '', trim($rawName));
+                                            $docName  = 'Dr. ' . $clean;
+                                            $specName = optional(optional(optional($doc)->profile)->specializationdata)->name ?? 'Physiotherapy';
+                                            $docInit  = strtoupper(substr($clean, 0, 1) ?: 'D');
+                                            $payDate  = $pay->paid_at ?? $pay->created_at;
+                                            $method   = strtoupper($pay->payment_method ?? 'UPI');
+                                            $statusCls = match(strtolower($pay->status ?? 'pending')) {
+                                                'success','paid','completed' => 'paid',
+                                                'failed','refunded'          => 'failed',
+                                                default                      => 'pending',
+                                            };
+                                            $statusLabel = match($statusCls) { 'paid'=>'Paid','failed'=>'Failed',default=>'Pending' };
+                                            $txnId = $pay->transaction_id ?? ('TXN'.str_pad($pay->id, 10,'0',STR_PAD_LEFT));
+                                            $invNo = '#INV-' . date('Y') . '-' . str_pad($pay->id, 5, '0', STR_PAD_LEFT);
+                                            $planName = optional($pay->appointment)->plan->name ?? 'Single Session';
+                                            $apptDate = optional(optional($pay->appointment)->appointment_date)->format('d M Y') ?? ($payDate?->format('d M Y') ?? '—');
+                                            $apptTime = $pay->appointment && $pay->appointment->start_time ? \Carbon\Carbon::parse($pay->appointment->start_time)->format('h:i A') : ($payDate?->format('h:i A') ?? '—');
+                                        @endphp
+                                        <div class="bp-txn-mobile-card">
+                                            <div class="bp-tmc-top">
+                                                <div class="bp-tmc-doc">
+                                                    <div class="bp-doc-avatar">{{ $docInit }}</div>
+                                                    <div style="min-width:0;">
+                                                        <div class="bp-doc-name">{{ $docName }}</div>
+                                                        <div class="bp-doc-spec">{{ $specName }}</div>
+                                                    </div>
+                                                </div>
+                                                <span class="bp-status-pill {{ $statusCls }}">{{ $statusLabel }}</span>
+                                            </div>
+                                            <div class="bp-tmc-grid">
+                                                <div class="bp-tmc-field">
+                                                    <div class="bp-tmc-lbl">Date &amp; Time</div>
+                                                    <div class="bp-tmc-val">{{ $payDate?->format('d M Y') }} • {{ $payDate?->format('h:i A') }}</div>
+                                                </div>
+                                                <div class="bp-tmc-field">
+                                                    <div class="bp-tmc-lbl">Amount</div>
+                                                    <div class="bp-tmc-val" style="font-size:13.5px;font-weight:900;color:var(--primary-teal);">₹{{ number_format($pay->amount, 0) }}</div>
+                                                </div>
+                                                <div class="bp-tmc-field">
+                                                    <div class="bp-tmc-lbl">Txn ID</div>
+                                                    <div class="bp-tmc-val" style="font-family:monospace;font-size:11px;">{{ $txnId }}</div>
+                                                </div>
+                                                <div class="bp-tmc-field">
+                                                    <div class="bp-tmc-lbl">Payment Method</div>
+                                                    <div class="bp-tmc-val">
+                                                        <span class="bp-method-pill" style="padding:2px 7px;font-size:10.5px;">
+                                                            <i class="fa-solid fa-mobile-screen-button" style="font-size:10px;color:var(--primary-teal);"></i>
+                                                            {{ $method }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="bp-tmc-footer">
+                                                <button type="button" class="bp-btn-view-invoice"
+                                                        onclick="openInvoiceModal({
+                                                            invNo: '{{ $invNo }}',
+                                                            billTo: '{{ addslashes($patient->name) }}',
+                                                            billAddress: '{{ addslashes(trim(implode(', ', array_filter([$patient->address ?? null, $patient->city ?? null, $patient->state ?? null])))) }}',
+                                                            invDate: '{{ $payDate?->format('d M Y') ?? '—' }}',
+                                                            payDate: '{{ $payDate?->format('d M Y • h:i A') ?? '—' }}',
+                                                            docName: '{{ addslashes($docName) }}',
+                                                            apptDate: '{{ $apptDate }}',
+                                                            apptTime: '{{ $apptTime }}',
+                                                            pkgName: '{{ addslashes($planName) }}',
+                                                            amount: '{{ number_format($pay->amount, 0) }}'
+                                                        })">
+                                                    <i class="fa-solid fa-file-invoice" style="margin-right:4px;"></i> View &amp; Download Invoice
+                                                </button>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
                                 <div class="bp-tbl-footer" id="bpPaginationFooter">
                                     <div class="bp-page-info" id="bpPageInfo">Showing 1–6 of {{ $payments->count() }} transactions</div>
                                     <div class="bp-pagination" id="bpPaginationBtns"></div>
@@ -1562,10 +1664,11 @@ let bpCurrentPage = 1;
 
 function renderBpPagination() {
     const rows = document.querySelectorAll('#bpTableBody tr.bp-txn-row');
-    const totalRows = rows.length;
-    if (totalRows === 0) return;
+    const cards = document.querySelectorAll('#bpCardList .bp-txn-mobile-card');
+    const totalItems = Math.max(rows.length, cards.length);
+    if (totalItems === 0) return;
 
-    const totalPages = Math.ceil(totalRows / BP_PER_PAGE);
+    const totalPages = Math.ceil(totalItems / BP_PER_PAGE);
     if (bpCurrentPage > totalPages) bpCurrentPage = totalPages;
     if (bpCurrentPage < 1) bpCurrentPage = 1;
 
@@ -1576,11 +1679,15 @@ function renderBpPagination() {
         row.style.display = (idx >= start && idx < end) ? '' : 'none';
     });
 
+    cards.forEach((card, idx) => {
+        card.style.display = (idx >= start && idx < end) ? 'flex' : 'none';
+    });
+
     const infoEl = document.getElementById('bpPageInfo');
     if (infoEl) {
-        const showingStart = totalRows > 0 ? start + 1 : 0;
-        const showingEnd = Math.min(end, totalRows);
-        infoEl.textContent = `Showing ${showingStart}–${showingEnd} of ${totalRows} transactions`;
+        const showingStart = totalItems > 0 ? start + 1 : 0;
+        const showingEnd = Math.min(end, totalItems);
+        infoEl.textContent = `Showing ${showingStart}–${showingEnd} of ${totalItems} transactions`;
     }
 
     const btnsEl = document.getElementById('bpPaginationBtns');

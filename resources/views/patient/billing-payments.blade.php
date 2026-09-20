@@ -128,41 +128,54 @@ table.bp-table{width:100%;border-collapse:collapse;}
 .bp-empty p{font-size:13px;color:var(--muted);}
 
 /* Modal */
-.bp-modal-overlay{position:fixed;inset:0;z-index:9000;background:rgba(15,23,42,0.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;}
+.bp-modal-overlay{position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.6);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:20px;}
 .bp-modal-overlay.hidden{display:none;}
-.bp-modal{background:var(--card);border-radius:18px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,0.22);animation:modalIn .22s ease;}
-@keyframes modalIn{from{transform:scale(.95);opacity:0;}to{transform:scale(1);opacity:1;}}
-.bp-modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border);font-size:16px;font-weight:800;color:var(--ink);}
+.bp-modal{background:var(--card);border-radius:20px;width:100%;max-width:640px;max-height:92vh;overflow-y:auto;box-shadow:0 25px 70px rgba(0,0,0,0.25);animation:modalIn .22s cubic-bezier(0.16, 1, 0.3, 1);scrollbar-width:thin;scrollbar-color:#cbd5e1 transparent;}
+.bp-modal::-webkit-scrollbar{width:6px;}
+.bp-modal::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:10px;}
+@keyframes modalIn{from{transform:scale(.95) translateY(10px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
+.bp-modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid var(--border);font-size:16px;font-weight:800;color:var(--ink);}
 .bp-modal-close{width:32px;height:32px;border-radius:8px;background:#f1f5f9;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--muted);transition:all .15s;}
 .bp-modal-close:hover{background:var(--red);color:#fff;}
-.bp-modal-body{padding:22px 20px;}
-.bp-inv-brand{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
-.bp-inv-logo{height:36px;}
-.bp-inv-num{font-size:11px;font-weight:700;color:var(--muted);text-align:right;}
-.bp-inv-num span{display:block;font-size:13px;color:var(--ink);font-weight:800;}
-.bp-inv-parties{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
-.bp-inv-label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;}
-.bp-inv-val{font-size:13px;font-weight:700;color:var(--ink);margin-top:2px;}
-.bp-inv-sub-val{font-size:11.5px;color:var(--muted);margin-top:1px;}
-.bp-inv-section-title{font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:6px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
-.bp-inv-row{display:flex;justify-content:space-between;padding:8px 0;font-size:13px;}
-.bp-inv-row+.bp-inv-row{border-top:1px solid #f1f5f9;}
-.bp-inv-row .lbl{color:var(--muted);}
-.bp-inv-row .val{font-weight:600;color:var(--ink);}
-.bp-inv-total{display:flex;justify-content:space-between;padding:12px 0;margin-top:8px;border-top:2px solid var(--border);font-size:15px;font-weight:800;color:var(--ink);}
-.bp-inv-paid-box{background:var(--pt-soft);border:1px solid var(--pt-border);border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;margin:14px 0;}
-.bp-inv-paid-lbl{font-size:13px;font-weight:700;color:var(--pt);}
-.bp-inv-paid-sub{font-size:11px;color:var(--muted);margin-top:2px;}
-.bp-inv-paid-amt{font-size:20px;font-weight:800;color:var(--pt);}
-.bp-inv-note{display:flex;align-items:flex-start;gap:8px;background:#f8fafc;border-radius:9px;padding:11px 13px;font-size:11.5px;color:var(--muted);line-height:1.5;margin-bottom:16px;}
-.bp-modal-footer{display:flex;gap:10px;padding:0 20px 20px;}
-.bp-modal-btn{flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;border:1.5px solid var(--border);color:var(--body);background:var(--card);transition:all .15s;text-decoration:none;}
+.bp-modal-body{padding:24px 28px;}
+.bp-inv-brand{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #f1f5f9;}
+.bp-inv-logo{height:40px;}
+.bp-inv-num{font-size:11.5px;font-weight:700;color:var(--muted);text-align:right;}
+.bp-inv-num span{display:block;font-size:14.5px;color:var(--ink);font-weight:800;letter-spacing:-0.2px;margin-top:2px;}
+.bp-inv-parties{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;background:#f8fafc;border:1px solid #edf2f7;border-radius:12px;padding:14px 16px;}
+.bp-inv-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;}
+.bp-inv-val{font-size:13.5px;font-weight:700;color:var(--ink);margin-top:2px;}
+.bp-inv-sub-val{font-size:12px;color:var(--muted);margin-top:1px;}
+.bp-inv-section-title{font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:7px;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.bp-inv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;margin-bottom:18px;}
+.bp-inv-item{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f8fafc;font-size:13px;}
+.bp-inv-item .lbl{color:var(--muted);font-size:12.5px;}
+.bp-inv-item .val{font-weight:700;color:var(--ink);text-align:right;}
+.bp-inv-table{width:100%;border-collapse:collapse;margin-bottom:14px;}
+.bp-inv-table th{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;padding:8px 0;border-bottom:1.5px solid var(--border);text-align:left;}
+.bp-inv-table td{padding:10px 0;font-size:13px;color:var(--ink);border-bottom:1px solid #f1f5f9;}
+.bp-inv-total{display:flex;justify-content:space-between;padding:12px 0 6px;font-size:15px;font-weight:800;color:var(--ink);}
+.bp-inv-paid-box{background:var(--pt-soft);border:1px solid var(--pt-border);border-radius:12px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin:16px 0;}
+.bp-inv-paid-lbl{font-size:13.5px;font-weight:700;color:var(--pt);}
+.bp-inv-paid-sub{font-size:11.5px;color:var(--muted);margin-top:2px;}
+.bp-inv-paid-amt{font-size:22px;font-weight:800;color:var(--pt);}
+.bp-inv-note{display:flex;align-items:flex-start;gap:8px;background:#f8fafc;border-radius:10px;padding:10px 14px;font-size:11.5px;color:var(--muted);line-height:1.5;margin-bottom:6px;}
+.bp-modal-footer{display:flex;gap:12px;padding:14px 28px 24px;}
+.bp-modal-btn{flex:1;padding:11px;border-radius:11px;font-size:13.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;border:1.5px solid var(--border);color:var(--body);background:var(--card);transition:all .15s;text-decoration:none;}
 .bp-modal-btn:hover{border-color:var(--pt);color:var(--pt);background:var(--pt-soft);}
 .bp-modal-btn.primary{background:var(--pt);color:#fff;border-color:var(--pt);}
 .bp-modal-btn.primary:hover{background:var(--pt-dark);}
 
 @media(max-width:900px){.bp-wrap{grid-template-columns:1fr;}.bp-sidebar{position:static;}.bp-grid-2{grid-template-columns:1fr;}}
-@media(max-width:640px){.bp-overview-grid{grid-template-columns:1fr;}.bp-actions-row{grid-template-columns:1fr;}.bp-tbl-footer{flex-direction:column;align-items:flex-start;}}
+@media(max-width:640px){
+    .bp-overview-grid{grid-template-columns:1fr;}
+    .bp-actions-row{grid-template-columns:1fr;}
+    .bp-tbl-footer{flex-direction:column;align-items:flex-start;}
+    .bp-inv-parties{grid-template-columns:1fr;}
+    .bp-inv-grid{grid-template-columns:1fr;}
+    .bp-modal-body{padding:18px 16px;}
+    .bp-modal-footer{padding:12px 16px 20px;}
+}
 </style>
 
 @include('layouts.header')
@@ -460,15 +473,33 @@ table.bp-table{width:100%;border-collapse:collapse;}
                     </div>
                 </div>
                 <div class="bp-inv-section-title"><i class="fa-solid fa-file-lines" style="color:var(--pt);"></i> Invoice Details</div>
-                <div class="bp-inv-row"><span class="lbl">Doctor Name</span><span class="val">{{ $iDName }}</span></div>
-                <div class="bp-inv-row"><span class="lbl">Appointment Date</span><span class="val">{{ $iAppt?->appointment_date?->format('d M Y') ?? ($iPaidAt?->format('d M Y') ?? '—') }}</span></div>
-                <div class="bp-inv-row"><span class="lbl">Start Time</span><span class="val">{{ $iAppt && $iAppt->start_time ? \Carbon\Carbon::parse($iAppt->start_time)->format('h:i A') : ($iPaidAt?->format('h:i A') ?? '—') }}</span></div>
-                <div class="bp-inv-row"><span class="lbl">Package</span><span class="val">{{ $iPlan->name ?? 'Single Session' }}</span></div>
-                <div style="margin-top:16px;"></div>
+                <div class="bp-inv-grid">
+                    <div class="bp-inv-item"><span class="lbl">Doctor Name</span><span class="val">{{ $iDName }}</span></div>
+                    <div class="bp-inv-item"><span class="lbl">Package</span><span class="val">{{ $iPlan->name ?? 'Single Session' }}</span></div>
+                    <div class="bp-inv-item"><span class="lbl">Appointment Date</span><span class="val">{{ $iAppt?->appointment_date?->format('d M Y') ?? ($iPaidAt?->format('d M Y') ?? '—') }}</span></div>
+                    <div class="bp-inv-item"><span class="lbl">Start Time</span><span class="val">{{ $iAppt && $iAppt->start_time ? \Carbon\Carbon::parse($iAppt->start_time)->format('h:i A') : ($iPaidAt?->format('h:i A') ?? '—') }}</span></div>
+                </div>
+
                 <div class="bp-inv-section-title"><i class="fa-solid fa-list" style="color:var(--pt);"></i> Description &amp; Amount</div>
-                <div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);font-weight:700;padding-bottom:6px;border-bottom:1px solid var(--border);"><span>Description</span><span>Amount (₹)</span></div>
-                <div class="bp-inv-row"><span class="lbl">{{ $iPlan->name ?? 'Session Fee' }}</span><span class="val">₹{{ number_format($iTotal, 0) }}</span></div>
-                <div class="bp-inv-row"><span class="lbl">Convenience Fee</span><span class="val">₹0</span></div>
+                <table class="bp-inv-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th style="text-align:right;">Amount (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ $iPlan->name ?? 'Session Fee' }}</td>
+                            <td style="text-align:right;font-weight:700;">₹{{ number_format($iTotal, 0) }}</td>
+                        </tr>
+                        <tr>
+                            <td>Convenience Fee</td>
+                            <td style="text-align:right;font-weight:700;">₹0</td>
+                        </tr>
+                    </tbody>
+                </table>
+
                 <div class="bp-inv-total"><span>Total Amount</span><span>₹{{ number_format($iTotal, 0) }}</span></div>
                 <div class="bp-inv-paid-box">
                     <div>

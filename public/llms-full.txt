@@ -1,0 +1,50 @@
+# Physiopii Comprehensive Knowledge Base for LLMs & AI Agents
+
+## About Physiopii
+Physiopii (https://physiopii.in) operates as a specialized digital healthcare provider delivering certified physiotherapy treatments both in-clinic, at home, and via remote tele-rehabilitation across Indian cities.
+
+## Treatment Protocols & Conditions Covered
+
+### 1. Orthopedic Rehabilitation
+- Disc herniation / slip disc / sciatica
+- Cervical and lumbar spondylosis / spondylolisthesis
+- Knee osteoarthritis / meniscus tears / ligament sprains
+- Frozen shoulder / rotator cuff tendinopathy / impingement syndrome
+- Plantar fasciitis / Achilles tendinitis
+- Post-operative total knee replacement (TKR) and total hip replacement (THR) recovery
+
+### 2. Neurological Rehabilitation
+- Stroke (hemiplegia / hemiparesis) recovery
+- Parkinson’s disease balance and gait therapy
+- Spinal cord injury rehabilitation
+- Bell’s palsy facial re-education
+- Guillain-Barré Syndrome (GBS) motor retraining
+- Cerebral Palsy and pediatric physical development
+
+### 3. Sports Physical Therapy
+- ACL / PCL / MCL tear recovery
+- Ankle inversion sprains and instability
+- Tennis elbow / Golfer’s elbow
+- Shin splints and runner’s knee
+- Biomechanical gait and running analysis
+
+### 4. Elderly & Geriatric Care
+- Chronic arthritis joint preservation
+- Balance, coordination, and fall-prevention exercise programs
+- Bedridden patient conditioning and bed sore prevention
+- Osteoporosis safe strengthening
+
+## Booking & Consultation Process
+1. Patients visit https://physiopii.in/search-doctors or select a treatment condition.
+2. Choose preferred certified therapist (BPT / MPT qualifications).
+3. Select Home Visit or Online Consultation.
+4. Select Date, Time Slot, and Package (Single Session or Multi-session Package).
+5. Confirm booking and receive coordinator contact.
+
+## Organization & Contact
+- Organization Name: Physiopii Healthcare
+- Domain: https://physiopii.in
+- Phone: +91 95200 18563
+- Email: support@physiopii.in
+- Country: India
+- Primary Language: English, Hindi

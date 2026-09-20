@@ -1,4 +1,9 @@
 @extends('layouts.app')
+
+@section('title', 'Physiopii — Expert Physiotherapy Care at Home & Online Consultation')
+@section('meta_description', 'Book certified physiotherapists for home visits & online consultations across India. Specialized treatment for Back Pain, Knee Pain, Stroke Rehab, Cervical Spondylosis & Sports Injuries.')
+@section('meta_keywords', 'physiotherapy at home, online physiotherapy consultation, best physiotherapist near me, home physio India, back pain physiotherapist, knee pain therapy, stroke rehabilitation home visit, cervical spondylosis physio, sports injury rehabilitation')
+
 @section('content')
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">

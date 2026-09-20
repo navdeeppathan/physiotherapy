@@ -23,6 +23,74 @@ use App\Http\Controllers\Admin\AdminAssessmentController;
 use App\Http\Controllers\Admin\AdminParameterController;
 use App\Http\Controllers\Admin\AdminPatientDocumentController;
 
+Route::get('/sitemap.xml', function () {
+    try {
+        $doctors = \App\Models\User::where('role', 'doctor')->get(['id', 'updated_at']);
+    } catch (\Throwable $e) {
+        $doctors = collect();
+    }
+
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+    $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">' . "\n";
+    
+    // Homepage
+    $xml .= '    <url>' . "\n";
+    $xml .= '        <loc>https://physiopii.in/</loc>' . "\n";
+    $xml .= '        <lastmod>' . date('Y-m-d') . '</lastmod>' . "\n";
+    $xml .= '        <changefreq>daily</changefreq>' . "\n";
+    $xml .= '        <priority>1.0</priority>' . "\n";
+    $xml .= '        <image:image>' . "\n";
+    $xml .= '            <image:loc>https://physiopii.in/assets/img/og-preview.png</image:loc>' . "\n";
+    $xml .= '            <image:title>Physiopii - Expert Physiotherapy at Home and Online</image:title>' . "\n";
+    $xml .= '        </image:image>' . "\n";
+    $xml .= '    </url>' . "\n";
+    
+    // Search Doctors
+    $xml .= '    <url>' . "\n";
+    $xml .= '        <loc>https://physiopii.in/search-doctors</loc>' . "\n";
+    $xml .= '        <lastmod>' . date('Y-m-d') . '</lastmod>' . "\n";
+    $xml .= '        <changefreq>daily</changefreq>' . "\n";
+    $xml .= '        <priority>0.9</priority>' . "\n";
+    $xml .= '    </url>' . "\n";
+
+    $xml .= '    <url>' . "\n";
+    $xml .= '        <loc>https://physiopii.in/search</loc>' . "\n";
+    $xml .= '        <lastmod>' . date('Y-m-d') . '</lastmod>' . "\n";
+    $xml .= '        <changefreq>daily</changefreq>' . "\n";
+    $xml .= '        <priority>0.8</priority>' . "\n";
+    $xml .= '    </url>' . "\n";
+
+    // Dynamic Doctor profile pages
+    foreach ($doctors as $doc) {
+        $lastmod = $doc->updated_at ? $doc->updated_at->format('Y-m-d') : date('Y-m-d');
+        $xml .= '    <url>' . "\n";
+        $xml .= '        <loc>https://physiopii.in/doctor/' . $doc->id . '</loc>' . "\n";
+        $xml .= '        <lastmod>' . $lastmod . '</lastmod>' . "\n";
+        $xml .= '        <changefreq>weekly</changefreq>' . "\n";
+        $xml .= '        <priority>0.85</priority>' . "\n";
+        $xml .= '    </url>' . "\n";
+    }
+
+    // Static pages
+    $xml .= '    <url>' . "\n";
+    $xml .= '        <loc>https://physiopii.in/login</loc>' . "\n";
+    $xml .= '        <lastmod>' . date('Y-m-d') . '</lastmod>' . "\n";
+    $xml .= '        <changefreq>monthly</changefreq>' . "\n";
+    $xml .= '        <priority>0.5</priority>' . "\n";
+    $xml .= '    </url>' . "\n";
+
+    $xml .= '    <url>' . "\n";
+    $xml .= '        <loc>https://physiopii.in/patient-register</loc>' . "\n";
+    $xml .= '        <lastmod>' . date('Y-m-d') . '</lastmod>' . "\n";
+    $xml .= '        <changefreq>monthly</changefreq>' . "\n";
+    $xml .= '        <priority>0.5</priority>' . "\n";
+    $xml .= '    </url>' . "\n";
+
+    $xml .= '</urlset>';
+
+    return response($xml, 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
+});
+
 Route::get('/doctor/{id}', [DoctorController::class, 'show'])->name('doctor.profile');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');

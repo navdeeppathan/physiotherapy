@@ -1,0 +1,34 @@
+# Physiopii - Modern Physiotherapy & Rehabilitation Platform
+
+> Physiopii (https://physiopii.in) is India’s premier digital healthcare platform connecting patients with certified, experienced physiotherapists for personalized home visits and online consultations.
+
+## Core Services & Treatment Specializations
+
+- **Back Pain & Sciatica Relief**: Specialized manual therapy, core strengthening, lumbar stabilization, posture correction, and sciatica nerve decompression.
+- **Knee Pain & Osteoarthritis Rehab**: Non-invasive pain management, joint mobilization, quad strengthening, pre/post-knee replacement rehabilitation.
+- **Stroke & Neurological Rehabilitation**: Neurodevelopmental therapy (NDT), gait training, balance retraining, hemiplegia recovery, and fine motor restoration at home.
+- **Cervical Spondylosis & Neck Pain**: Ergonomic assessment, cervical traction, neck muscle strengthening, and tension headache relief.
+- **Sports Injury & Athletic Rehabilitation**: ACL/MCL recovery, ankle sprains, rotator cuff tear rehab, muscle strain recovery, and return-to-sport conditioning.
+- **Post-Surgical & Orthopedic Recovery**: Fracture recovery, joint replacement rehab, post-operative mobilization, and scar tissue management.
+- **Geriatric & Elderly Care**: Fall prevention, mobility enhancement, arthritis management, and gentle strengthening for seniors.
+
+## Modes of Delivery
+
+1. **In-Home Physiotherapy Visits**: Certified physiotherapists visit patients directly at their home with portable therapeutic equipment.
+2. **Online Video Consultation**: 1-on-1 virtual consultations, exercise prescription, posture correction, and guided remote rehabilitation.
+
+## Key Features & Platform Benefits
+
+- **Verified Doctors**: Every physiotherapist is vetted with degree verification (BPT/MPT), specialization credentials, and background checks.
+- **Flexible Packages**: Single session, 3-session, 5-session, and 10-session discounted care plans.
+- **Progress Tracking & Digital Records**: Digital assessments, prescription tracking, and appointment management.
+- **Online Booking**: Real-time slot selection, instant booking confirmation, and multiple payment methods.
+
+## Key Links & Endpoints
+
+- **Website**: https://physiopii.in
+- **Find Doctors**: https://physiopii.in/search-doctors
+- **Patient Login**: https://physiopii.in/login
+- **Patient Register**: https://physiopii.in/patient-register
+- **Contact Support**: +91 95200 18563 / support@physiopii.in
+- **Sitemap**: https://physiopii.in/sitemap.xml

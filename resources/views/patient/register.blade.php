@@ -1,11 +1,9 @@
 @extends('layouts.app')
 
+@section('title', 'Patient Sign Up Free — Physiopii')
+@section('meta_description', 'Create your free Physiopii patient account. Book verified physiotherapists for home visits & online consultations across India.')
+
 @section('content')
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Patient Register — Physiopii</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

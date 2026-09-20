@@ -1,4 +1,13 @@
 @extends('layouts.app')
+
+@php
+    $cleanDoctorName = preg_replace('/^(dr\.?|doctor)\s+/i', '', trim($doctor->name));
+    $specName = optional(optional($doctor->profile)->specializationdata)->name ?? 'Back Pain';
+@endphp
+
+@section('title', "Book Appointment with Dr. {$cleanDoctorName} — Physiopii")
+@section('meta_description', "Book a home visit or online consultation slot with Dr. {$cleanDoctorName} ({$specName} Specialist) on Physiopii. Instant confirmation & certified physiotherapist care.")
+
 @section('content')
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">

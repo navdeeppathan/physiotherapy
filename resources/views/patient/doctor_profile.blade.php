@@ -1,4 +1,47 @@
 @extends('layouts.app')
+
+@php
+    $cleanDoctorName = preg_replace('/^(dr\.?|doctor)\s+/i', '', trim($doctor->name));
+    $specName = optional(optional($doctor->profile)->specializationdata)->name ?? 'Back Pain';
+    $qualification = optional($doctor->profile)->qualification ?? ('MPT (' . $specName . ')');
+    $expYears = optional($doctor->profile)->experience_years ?? 10;
+    $displayRating = ($avgRating ?? 0) > 0 ? number_format($avgRating, 1) : '4.8';
+    $reviewsCount = ($totalReviews ?? 0) > 0 ? $totalReviews : 120;
+    $docImgUrl = $doctor->profile_img ? (str_contains($doctor->profile_img, '/') ? asset($doctor->profile_img) : asset('uploads/profile/'.$doctor->profile_img)) : asset('assets/img/og-preview.png');
+    $doctorBio = optional($doctor->profile)->bio ?: "Dr. {$cleanDoctorName} is a certified physiotherapist specializing in {$specName} management and personalized rehabilitation.";
+@endphp
+
+@section('title', "Dr. {$cleanDoctorName} — {$specName} Specialist Physiotherapist | Physiopii")
+@section('meta_description', "Book a home visit or online consultation with Dr. {$cleanDoctorName} ({$qualification}, {$expYears}+ yrs exp), certified {$specName} specialist on Physiopii.")
+@section('meta_keywords', "Dr {$cleanDoctorName}, {$specName} physiotherapist, book physiotherapist, home physio India, Physiopii")
+@section('og_image', $docImgUrl)
+@section('twitter_image', $docImgUrl)
+
+@section('extra_json_ld')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": ["Physician", "Person"],
+  "name": "Dr. {{ $cleanDoctorName }}",
+  "url": "{{ url()->current() }}",
+  "image": "{{ $docImgUrl }}",
+  "jobTitle": "Physiotherapist",
+  "medicalSpecialty": "{{ $specName }}",
+  "description": "{{ addslashes($doctorBio) }}",
+  "worksFor": {
+    "@type": "MedicalBusiness",
+    "name": "Physiopii",
+    "url": "https://physiopii.in"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "{{ $displayRating }}",
+    "reviewCount": "{{ $reviewsCount }}"
+  }
+}
+</script>
+@endsection
+
 @section('content')
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -10,19 +53,6 @@
     $totalFee  = (float) (optional($doctor->fee)->total_fee ?? ($doctorFee + $adminFee));
     if ($totalFee <= 0) {
         $totalFee = 1100;
-    }
-
-    $cleanDoctorName = preg_replace('/^(dr\.?|doctor)\s+/i', '', trim($doctor->name));
-    $specName = optional(optional($doctor->profile)->specializationdata)->name ?? 'Back Pain';
-    $qualification = optional($doctor->profile)->qualification ?? ('MPT (' . $specName . ')');
-    $expYears = optional($doctor->profile)->experience_years ?? 10;
-    $displayRating = ($avgRating ?? 0) > 0 ? number_format($avgRating, 1) : '4.8';
-    $reviewsCount = ($totalReviews ?? 0) > 0 ? $totalReviews : 120;
-
-    // Doctor Bio
-    $doctorBio = optional($doctor->profile)->bio;
-    if (!$doctorBio) {
-        $doctorBio = "Dr. {$cleanDoctorName} is a highly experienced physiotherapist specializing in {$specName} management and musculoskeletal rehabilitation. He focuses on evidence-based treatment and personalized care to help you move better and live pain-free.";
     }
 
     $aboutDoctor = "Dr. {$cleanDoctorName} specializes in treating " . strtolower($specName) . ", neck pain, sports injuries, and posture-related issues. With {$expYears}+ years of experience, he believes in a holistic and patient-centered approach, combining manual therapy, exercise therapy, and lifestyle guidance to achieve long-lasting results in the comfort of your home.";

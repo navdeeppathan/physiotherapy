@@ -1,2 +1,64 @@
+# ==============================================================================
+# Robots.txt for Physiopii (https://physiopii.in)
+# Expert Physiotherapy Care at Home & Online Consultation
+# ==============================================================================
+
 User-agent: *
-Disallow:
+Allow: /
+Allow: /doctor/
+Allow: /search
+Allow: /search-doctors
+Allow: /assets/
+Allow: /uploads/
+Allow: /logo.png
+Allow: /sitemap.xml
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /robots.txt
+
+# Disallow administrative, patient-private, and backend API routes
+Disallow: /admin/
+Disallow: /admin/*
+Disallow: /patient-dashboard
+Disallow: /patient-dashboard/*
+Disallow: /patient/appointments/*
+Disallow: /patient/profile/*
+Disallow: /patient/billing-payments*
+Disallow: /change-password
+Disallow: /logout-patient
+Disallow: /admin-login
+Disallow: /api/
+Disallow: /user/addresses
+Disallow: /user/address/*
+
+# AI Search & LLM Crawlers Directives
+User-agent: GPTBot
+Allow: /
+Allow: /doctor/
+Allow: /search
+Allow: /llms.txt
+Disallow: /admin/
+Disallow: /patient-dashboard
+Disallow: /api/
+
+User-agent: ChatGPT-User
+Allow: /
+Allow: /llms.txt
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /llms.txt
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+# Sitemap & Host
+Sitemap: https://physiopii.in/sitemap.xml
+Host: https://physiopii.in

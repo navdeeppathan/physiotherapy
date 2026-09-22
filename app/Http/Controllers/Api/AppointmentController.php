@@ -1611,6 +1611,7 @@ class AppointmentController extends BaseApiController
         $patientIds      = $appointments->pluck('patient_id')->filter()->unique()->values();
         $doctorIds       = $appointments->pluck('doctor_id')->filter()->unique()->values();
         $planIds         = $appointments->pluck('patient_plan_id')->filter()->unique()->values();
+        $transactionIds  = $appointments->pluck('transaction_id')->filter()->unique()->values();
 
         // 1. Preload subscriptions
         $subsById = PatientPlanSubscription::with('plan')
@@ -1623,16 +1624,10 @@ class AppointmentController extends BaseApiController
             ->get()
             ->keyBy('unique_plan_id');
 
-        $subsByPatient = PatientPlanSubscription::with('plan')
-            ->whereIn('patient_id', $patientIds)
-            ->latest()
-            ->get()
-            ->groupBy('patient_id');
-
         // 2. Preload plans
         $plansById = PatientPlan::whereIn('id', $planIds)->get()->keyBy('id');
 
-        // 3. Preload completed appointments counts
+        // 3. Preload completed appointments counts strictly for linked subscriptions or unique plan IDs
         $completedBySubId = Appointment::whereIn('patient_plan_subscription_id', $subscriptionIds)
             ->where('status', 'completed')
             ->selectRaw('patient_plan_subscription_id, count(*) as count')
@@ -1645,15 +1640,11 @@ class AppointmentController extends BaseApiController
             ->groupBy('unique_plan_id')
             ->pluck('count', 'unique_plan_id');
 
-        $completedByPatientDoctor = Appointment::whereIn('patient_id', $patientIds)
-            ->whereIn('doctor_id', $doctorIds)
+        $completedByTxnId = Appointment::whereIn('transaction_id', $transactionIds)
             ->where('status', 'completed')
-            ->selectRaw('patient_id, doctor_id, count(*) as count')
-            ->groupBy('patient_id', 'doctor_id')
-            ->get()
-            ->keyBy(function ($item) {
-                return $item->patient_id . '_' . $item->doctor_id;
-            });
+            ->selectRaw('transaction_id, count(*) as count')
+            ->groupBy('transaction_id')
+            ->pluck('count', 'transaction_id');
 
         // 4. Preload grouped appointments for calculating chronological session_number
         $apptsBySubId = Appointment::whereIn('patient_plan_subscription_id', $subscriptionIds)
@@ -1675,11 +1666,10 @@ class AppointmentController extends BaseApiController
         return $appointments->values()->map(function ($appointment, $index) use (
             $subsById,
             $subsByUniqueId,
-            $subsByPatient,
             $plansById,
             $completedBySubId,
             $completedByUniqueId,
-            $completedByPatientDoctor,
+            $completedByTxnId,
             $apptsBySubId,
             $apptsByUniqueId,
             $transactionGroups
@@ -1690,10 +1680,6 @@ class AppointmentController extends BaseApiController
                 $sub = $subsById[$appointment->patient_plan_subscription_id];
             } elseif ($appointment->unique_plan_id && isset($subsByUniqueId[$appointment->unique_plan_id])) {
                 $sub = $subsByUniqueId[$appointment->unique_plan_id];
-            } elseif (isset($subsByPatient[$appointment->patient_id])) {
-                $sub = $subsByPatient[$appointment->patient_id]->first(function ($s) use ($appointment) {
-                    return ($s->doctor_id && $s->doctor_id == $appointment->doctor_id) || ($s->patient_plan_id && $s->patient_plan_id == $appointment->patient_plan_id);
-                }) ?: $subsByPatient[$appointment->patient_id]->first();
             }
 
             // Find plan
@@ -1708,33 +1694,39 @@ class AppointmentController extends BaseApiController
                 $totalPackageAppointments = (int) $plan->total_appointments;
             } elseif ($sub && optional($sub->plan)->total_appointments > 0) {
                 $totalPackageAppointments = (int) $sub->plan->total_appointments;
+            } elseif ($appointment->patient_plan_subscription_id && isset($apptsBySubId[$appointment->patient_plan_subscription_id])) {
+                $totalPackageAppointments = max(1, $apptsBySubId[$appointment->patient_plan_subscription_id]->count());
+            } elseif ($appointment->unique_plan_id && isset($apptsByUniqueId[$appointment->unique_plan_id])) {
+                $totalPackageAppointments = max(1, $apptsByUniqueId[$appointment->unique_plan_id]->count());
+            } elseif ($appointment->transaction_id && isset($transactionGroups[$appointment->transaction_id])) {
+                $totalPackageAppointments = max(1, $transactionGroups[$appointment->transaction_id]->count());
             } else {
                 $totalPackageAppointments = 1;
             }
 
-            // 2. Completed appointments count
+            // 2. Completed appointments count (strictly completed appointments in this package/subscription)
             $completedCount = 0;
-            if ($appointment->patient_plan_subscription_id && isset($completedBySubId[$appointment->patient_plan_subscription_id])) {
-                $completedCount = (int) $completedBySubId[$appointment->patient_plan_subscription_id];
-            } elseif ($appointment->unique_plan_id && isset($completedByUniqueId[$appointment->unique_plan_id])) {
-                $completedCount = (int) $completedByUniqueId[$appointment->unique_plan_id];
-            } elseif ($sub && $sub->used_appointments > 0) {
-                $completedCount = (int) $sub->used_appointments;
-            } elseif (isset($completedByPatientDoctor[$appointment->patient_id . '_' . $appointment->doctor_id])) {
-                $completedCount = (int) $completedByPatientDoctor[$appointment->patient_id . '_' . $appointment->doctor_id]->count;
+            if ($appointment->patient_plan_subscription_id) {
+                $completedCount = (int) ($completedBySubId[$appointment->patient_plan_subscription_id] ?? 0);
+            } elseif ($appointment->unique_plan_id) {
+                $completedCount = (int) ($completedByUniqueId[$appointment->unique_plan_id] ?? 0);
+            } elseif ($sub) {
+                $completedCount = (int) ($completedBySubId[$sub->id] ?? ($completedByUniqueId[$sub->unique_plan_id] ?? 0));
+            } elseif ($appointment->transaction_id && isset($completedByTxnId[$appointment->transaction_id])) {
+                $completedCount = (int) $completedByTxnId[$appointment->transaction_id];
             } else {
                 $completedCount = ($appointment->status === 'completed') ? 1 : 0;
             }
 
             // Ensure completed count doesn't exceed total package appointments
-            if ($completedCount > $totalPackageAppointments && $totalPackageAppointments > 0) {
+            if ($totalPackageAppointments > 0 && $completedCount > $totalPackageAppointments) {
                 $completedCount = $totalPackageAppointments;
             }
 
             // 3. Remaining appointments count
             $remainingCount = max(0, $totalPackageAppointments - $completedCount);
 
-            // 4. Session Number
+            // 4. Session Number (chronological order in package/booking)
             $sessionNumber = 1;
             if ($appointment->patient_plan_subscription_id && isset($apptsBySubId[$appointment->patient_plan_subscription_id])) {
                 $subAppts = $apptsBySubId[$appointment->patient_plan_subscription_id]->values();

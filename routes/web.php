@@ -84,6 +84,12 @@ Route::get('/sitemap.xml', function () {
     $xml .= '        <lastmod>' . date('Y-m-d') . '</lastmod>' . "\n";
     $xml .= '        <changefreq>monthly</changefreq>' . "\n";
     $xml .= '        <priority>0.5</priority>' . "\n";
+    // Privacy Policy
+    $xml .= '    <url>' . "\n";
+    $xml .= '        <loc>https://physiopii.in/privacy-policy</loc>' . "\n";
+    $xml .= '        <lastmod>' . date('Y-m-d') . '</lastmod>' . "\n";
+    $xml .= '        <changefreq>monthly</changefreq>' . "\n";
+    $xml .= '        <priority>0.5</priority>' . "\n";
     $xml .= '    </url>' . "\n";
 
     $xml .= '</urlset>';
@@ -94,6 +100,8 @@ Route::get('/sitemap.xml', function () {
 Route::get('/doctor/{id}', [DoctorController::class, 'show'])->name('doctor.profile');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy.policy');
+Route::get('/privacy', [HomeController::class, 'privacyPolicy']);
 Route::post('/enquiry', [EnquiryController::class, 'store'])->name('enquiry.store');
 Route::get('/search-doctors', [HomeController::class, 'searchDoctors'])->name('search.doctors');
 Route::get('/doctor/{id}', [HomeController::class, 'doctorProfile'])->name('doctor.profile');

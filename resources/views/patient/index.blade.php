@@ -2464,22 +2464,22 @@ img {
                         <li><a href="{{ route('login') }}">Become a Partner Doctor</a></li>
                         <li><a href="#specialists">Verified Patient Reviews</a></li>
                         <li><a href="#how-it-works">Help &amp; FAQs</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="{{ route('privacy.policy') }}">Privacy Policy</a></li>
                     </ul>
                 </div>
 
                 <div>
                     <div class="pth-footer-heading">Contact</div>
                     <ul class="pth-footer-links">
-                        <li><a href="mailto:support@physiopii.com">support@physiopii.com</a></li>
-                        <li><a href="tel:+919513211470">1-800-PHYSIO-HOME</a></li>
-                        <li><span style="font-size:13.5px;color:#94a3b8;">Western Pearl Building, Central</span></li>
+                        <li><a href="mailto:contact@physiopii.in">contact@physiopii.in</a></li>
+                        <li><a href="tel:+918855088426">+91 8855088426</a></li>
+                        <li><span style="font-size:13.5px;color:#94a3b8;">PhysioPii Healthcare, India</span></li>
                     </ul>
                 </div>
             </div>
 
             <div class="pth-footer-bottom">
-                <div>&copy; {{ date('Y') }} Physiopii Inc. All rights reserved.</div>
+                <div>&copy; {{ date('Y') }} PhysioPii. All rights reserved.</div>
                 <div class="pth-social-row">
                     <a href="#" class="pth-social-link"><i class="fa-brands fa-facebook-f"></i></a>
                     <a href="#" class="pth-social-link"><i class="fa-brands fa-twitter"></i></a>

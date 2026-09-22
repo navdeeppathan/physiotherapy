@@ -113,15 +113,15 @@
 									<div class="footer-contact-info">
 										<div class="footer-address">
 											<span><i class="fas fa-map-marker-alt"></i></span>
-											<p> 3556  Beech Street, San Francisco,<br> California, CA 94108 </p>
+											<p> PhysioPii Healthcare<br> India </p>
 										</div>
 										<p>
 											<i class="fas fa-phone-alt"></i>
-											+1 315 369 5943
+											<a href="tel:+918855088426" style="color: inherit; text-decoration: none;">+91 8855088426</a>
 										</p>
 										<p class="mb-0">
 											<i class="fas fa-envelope"></i>
-											physician@example.com
+											<a href="mailto:contact@physiopii.in" style="color: inherit; text-decoration: none;">contact@physiopii.in</a>
 										</p>
 									</div>
 								</div>
@@ -140,19 +140,18 @@
 					
 						<!-- Copyright -->
 						<div class="copyright">
-							<div class="row">
-								{{-- <div class="col-md-6 col-lg-6">
+							<div class="row align-items-center">
+								<div class="col-md-6 col-lg-6">
 									<div class="copyright-text">
-										<p class="mb-0"><a href="templateshub.net">Templates Hub</a></p>
+										<p class="mb-0">&copy; {{ date('Y') }} PhysioPii. All rights reserved.</p>
 									</div>
-								</div> --}}
-								<div class="col-md-12 col-lg-12 text-right">
+								</div>
+								<div class="col-md-6 col-lg-6 text-md-right text-center mt-2 mt-md-0">
 								
 									<!-- Copyright Menu -->
 									<div class="copyright-menu">
 										<ul class="policy-menu">
-											<li><a href="term-condition.html">Terms and Conditions</a></li>
-											<li><a href="privacy-policy.html">Policy</a></li>
+											<li><a href="{{ route('privacy.policy') }}">Privacy Policy</a></li>
 										</ul>
 									</div>
 									<!-- /Copyright Menu -->

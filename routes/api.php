@@ -28,6 +28,9 @@ Route::post('/login', [UserController::class, 'login']);
 Route::post('/login-patient', [UserController::class, 'loginPatient']);
 Route::post('/verify-otp', [UserController::class, 'verifyOtp']);
 Route::post('/register-patient', [UserController::class, 'registerPatient']);
+Route::post('/register-doctor', [UserController::class, 'registerDoctor']);
+Route::post('/doctor/register', [UserController::class, 'registerDoctor']);
+Route::post('/doctor-register', [UserController::class, 'registerDoctor']);
 
 // Patient Enquiry API
 Route::post('/enquiry', [EnquiryController::class, 'store']);

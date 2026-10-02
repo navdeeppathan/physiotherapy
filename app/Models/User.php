@@ -62,6 +62,97 @@ class User extends Authenticatable
         'updated_at' => 'datetime',
     ];
 
+    /**
+     * Always lowercase and trim email before storing
+     */
+    public function setEmailAttribute($value)
+    {
+        $this->attributes['email'] = !empty($value) ? strtolower(trim((string) $value)) : null;
+    }
+
+    /**
+     * Always normalize phone numbers to standard format before storing
+     */
+    public function setPhoneAttribute($value)
+    {
+        if (empty($value)) {
+            $this->attributes['phone'] = null;
+            return;
+        }
+
+        $this->attributes['phone'] = self::normalizePhone($value);
+    }
+
+    /**
+     * Standardize email string: lowercase and trimmed
+     */
+    public static function normalizeEmail($email): string
+    {
+        return strtolower(trim((string) $email));
+    }
+
+    /**
+     * Standardize phone string to 10-digit number when possible
+     */
+    public static function normalizePhone($phone): string
+    {
+        $digits = preg_replace('/\D+/', '', (string) $phone);
+
+        if (strlen($digits) === 12 && str_starts_with($digits, '91')) {
+            return substr($digits, 2);
+        }
+
+        if (strlen($digits) === 11 && str_starts_with($digits, '0')) {
+            return substr($digits, 1);
+        }
+
+        return $digits ?: trim((string) $phone);
+    }
+
+    /**
+     * Get all common variations of a phone number for comprehensive lookup
+     */
+    public static function getPhoneVariations($phone): array
+    {
+        $raw = trim((string) $phone);
+        $normalized = self::normalizePhone($phone);
+        $digits = preg_replace('/\D+/', '', (string) $phone);
+
+        return array_values(array_unique(array_filter([
+            $raw,
+            $digits,
+            $normalized,
+            '91' . $normalized,
+            '+91' . $normalized,
+            '+91 ' . $normalized,
+            '0' . $normalized,
+        ])));
+    }
+
+    /**
+     * Find user by case-insensitive trimmed email
+     */
+    public static function findByEmail($email): ?self
+    {
+        if (empty($email)) {
+            return null;
+        }
+        $clean = self::normalizeEmail($email);
+        return self::whereRaw('LOWER(TRIM(email)) = ?', [$clean])->first();
+    }
+
+    /**
+     * Find user by any variation of phone number
+     */
+    public static function findByPhone($phone): ?self
+    {
+        if (empty($phone)) {
+            return null;
+        }
+        $variations = self::getPhoneVariations($phone);
+        return self::whereIn('phone', $variations)->first();
+    }
+
     public function documents()
     {
         return $this->hasMany(DoctorDocument::class, 'user_id');

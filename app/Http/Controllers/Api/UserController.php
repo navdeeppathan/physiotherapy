@@ -51,90 +51,91 @@ class UserController extends BaseApiController
     public function registerPatient(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
+            $email = User::normalizeEmail($request->email);
+            $phone = User::normalizePhone($request->phone);
 
+            // Merge normalized values into request so standard validators receive clean input
+            $request->merge([
+                'email' => $email,
+                'phone' => $phone,
+            ]);
+
+            // Strict uniqueness check across all roles (Doctor, Patient, Admin)
+            if (!empty($email) && ($existingByEmail = User::findByEmail($email))) {
+                $role = ucfirst($existingByEmail->role ?? 'existing');
+                return response()->json([
+                    'status' => false,
+                    'message' => "This email address is already registered with a {$role} account. Please use a different email or log in.",
+                    'errors' => [
+                        'email' => ["This email address is already registered with a {$role} account."]
+                    ]
+                ], 422);
+            }
+
+            if (!empty($phone) && ($existingByPhone = User::findByPhone($phone))) {
+                $role = ucfirst($existingByPhone->role ?? 'existing');
+                return response()->json([
+                    'status' => false,
+                    'message' => "This mobile number is already registered with a {$role} account. Please use a different mobile number or log in.",
+                    'errors' => [
+                        'phone' => ["This mobile number is already registered with a {$role} account."]
+                    ]
+                ], 422);
+            }
+
+            $validator = Validator::make($request->all(), [
                 'name' => 'required|max:150',
                 'email' => 'required|email|unique:users,email',
                 'phone' => 'required|unique:users,phone',
                 'password' => 'nullable|min:6',
                 'dob' => 'required|date',
                 'gender' => 'required|in:male,female,other',
-
             ],[
-
                 'name.required' => 'Name is required.',
                 'name.max' => 'Name should not be greater than 150 characters.',
-
                 'email.required' => 'Email address is required.',
                 'email.email' => 'Please enter valid email address.',
                 'email.unique' => 'This email address is already registered.',
-
                 'phone.required' => 'Phone number is required.',
                 'phone.unique' => 'This phone number is already registered.',
-
                 'password.min' => 'Password must be minimum 6 characters.',
-
                 'dob.required' => 'Date of birth is required.',
                 'dob.date' => 'Please enter valid date of birth.',
-
                 'gender.required' => 'Gender is required.',
                 'gender.in' => 'Please select valid gender.',
-
             ]);
 
-
-            if($validator->fails()){
-
+            if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
                     'message' => $validator->errors()->first(),
                     'errors' => $validator->errors()
-                ],422);
-
+                ], 422);
             }
-
 
             $token = Str::random(60);
 
             $user = User::create([
-
                 'role' => 'patient',
-
                 'name' => $request->name,
-
-                'email' => $request->email,
-
-                'phone' => $request->phone,
-
+                'email' => $email,
+                'phone' => $phone,
                 'password' => $request->password
                     ? Hash::make($request->password)
                     : null,
-
                 'dob' => $request->dob,
-
                 'gender' => $request->gender,
-
                 'status' => 'active',
-
                 'api_token' => hash('sha256', $token),
-
             ]);
 
-
             return response()->json([
-
                 'status' => true,
-
                 'message' => 'Patient registered successfully',
-
                 'token' => $token,
-
                 'token_type' => 'Bearer',
-
                 'role' => 'patient',
-
                 'data' => $user
-
             ], 201);
 
 
@@ -169,6 +170,21 @@ class UserController extends BaseApiController
 
                 'profile_img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             ]);
+
+            if ($request->filled('phone')) {
+                $cleanPhone = User::normalizePhone($request->phone);
+                $existingPhone = User::findByPhone($cleanPhone);
+                if ($existingPhone && $existingPhone->id !== $user->id) {
+                    $role = ucfirst($existingPhone->role ?? 'existing');
+                    return response()->json([
+                        'status' => false,
+                        'message' => "This mobile number is already registered with a {$role} account.",
+                        'errors' => [
+                            'phone' => ["This mobile number is already registered with a {$role} account."]
+                        ]
+                    ], 422);
+                }
+            }
 
             // ✅ File upload helper
             $uploadFile = function ($file, $prefix) {
@@ -232,9 +248,9 @@ class UserController extends BaseApiController
                 'email' => 'required|email',
             ]);
 
-            $inputEmail = strtolower(trim($request->email));
+            $inputEmail = User::normalizeEmail($request->email);
 
-            $user = User::whereRaw('LOWER(TRIM(email)) = ?', [$inputEmail])->first();
+            $user = User::findByEmail($inputEmail);
             if (!$user) {
                 if ($inputEmail === 'chauhanronak40@gmail.com') {
                     $user = User::create([
@@ -255,13 +271,14 @@ class UserController extends BaseApiController
                 }
             }
 
-            // if ($user->status !== 'active') {
-            //     \Log::info('active');
-            //     return response()->json([
-            //         'status' => false,
-            //         'message' => 'Your account is inactive'
-            //     ], 500);
-            // }
+            // Role verification: Doctor login only allows doctor accounts
+            if ($user->role !== 'doctor') {
+                return response()->json([
+                    'status' => false,
+                    'message' => "This email is registered as a " . ucfirst($user->role) . " account, not a Doctor account. Please use the Patient app to log in.",
+                    'role' => $user->role
+                ], 403);
+            }
 
             // ✅ Generate OTP: Static 123456 for chauhanronak40@gmail.com only, random for all others
             if ($inputEmail === 'chauhanronak40@gmail.com') {
@@ -315,14 +332,23 @@ class UserController extends BaseApiController
                 'password' => 'required',
             ]);
 
-            // ✅ Find user by phone
-            $user = User::where('phone', $request->phone)->first();
+            // ✅ Find user by phone (checking variations with/without +91, 10-digit)
+            $user = User::findByPhone($request->phone);
 
             if (!$user) {
                 return response()->json([
                     'status' => false,
                     'message' => 'User not found'
                 ], 404);
+            }
+
+            // ✅ Role verification: Only patients allowed on loginPatient
+            if ($user->role !== 'patient') {
+                return response()->json([
+                    'status' => false,
+                    'message' => "This mobile number is registered as a " . ucfirst($user->role) . " account. Please use the Doctor app to log in.",
+                    'role' => $user->role
+                ], 403);
             }
 
             // ✅ Check user status
@@ -381,8 +407,8 @@ class UserController extends BaseApiController
                 'otp' => 'required'
             ]);
 
-            $inputEmail = strtolower(trim($request->email));
-            $user = User::whereRaw('LOWER(TRIM(email)) = ?', [$inputEmail])->first();
+            $inputEmail = User::normalizeEmail($request->email);
+            $user = User::findByEmail($inputEmail);
 
             if (!$user) {
                 if ($inputEmail === 'chauhanronak40@gmail.com') {
@@ -402,6 +428,15 @@ class UserController extends BaseApiController
                         'message' => 'User not found'
                     ], 404);
                 }
+            }
+
+            // Role verification: Doctor OTP verify only allows doctor accounts
+            if ($user->role !== 'doctor') {
+                return response()->json([
+                    'status' => false,
+                    'message' => "This account is registered as a " . ucfirst($user->role) . " account, not a Doctor account. Please use the Patient app to log in.",
+                    'role' => $user->role
+                ], 403);
             }
 
             $isStaticDoctorEmail = ($inputEmail === 'chauhanronak40@gmail.com');
@@ -621,9 +656,49 @@ class UserController extends BaseApiController
         }
     }
 
+    /**
+     * Dedicated Doctor registration endpoint
+     */
+    public function registerDoctor(Request $request)
+    {
+        $request->merge(['role' => 'doctor']);
+        return $this->store($request);
+    }
+
     public function store(Request $request)
     {
         try {
+            $email = User::normalizeEmail($request->email);
+            $phone = User::normalizePhone($request->phone);
+
+            // Merge normalized values into request so standard validators receive clean input
+            $request->merge([
+                'email' => $email,
+                'phone' => $phone,
+            ]);
+
+            // Strict uniqueness check across all roles (Doctor, Patient, Admin)
+            if (!empty($email) && ($existingByEmail = User::findByEmail($email))) {
+                $role = ucfirst($existingByEmail->role ?? 'existing');
+                return response()->json([
+                    'status' => false,
+                    'message' => "This email address is already registered with a {$role} account. Please use a different email or log in.",
+                    'errors' => [
+                        'email' => ["This email address is already registered with a {$role} account."]
+                    ]
+                ], 422);
+            }
+
+            if (!empty($phone) && ($existingByPhone = User::findByPhone($phone))) {
+                $role = ucfirst($existingByPhone->role ?? 'existing');
+                return response()->json([
+                    'status' => false,
+                    'message' => "This mobile number is already registered with a {$role} account. Please use a different mobile number or log in.",
+                    'errors' => [
+                        'phone' => ["This mobile number is already registered with a {$role} account."]
+                    ]
+                ], 422);
+            }
 
             $validator = Validator::make($request->all(), [
                 'role' => 'required|in:admin,doctor,patient',
@@ -732,12 +807,13 @@ class UserController extends BaseApiController
                 );
             }
 
+            $token = Str::random(60);
 
             $user = User::create([
                 'role' => $request->role,
                 'name' => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone,
+                'email' => $email,
+                'phone' => $phone,
 
                 'password' => Hash::make($request->password),
 
@@ -754,6 +830,8 @@ class UserController extends BaseApiController
 
                 'default_start_time' => $startTime,
                 'default_end_time' => $endTime,
+                'status' => 'active',
+                'api_token' => hash('sha256', $token),
             ]);
 
 
@@ -799,7 +877,10 @@ class UserController extends BaseApiController
 
             return response()->json([
                 'status'=>true,
-                'message'=>'User registered successfully',
+                'message'=>ucfirst($request->role) . ' registered successfully',
+                'token' => $token,
+                'token_type' => 'Bearer',
+                'role' => $user->role,
                 'data'=>$user->load('documents')
             ],201);
 
@@ -950,6 +1031,21 @@ class UserController extends BaseApiController
                 'documents'       => 'nullable|array',
                 'documents.*'     => 'file|mimes:jpg,jpeg,png,pdf|max:4096',
             ]);
+
+            if ($request->filled('phone')) {
+                $cleanPhone = User::normalizePhone($request->phone);
+                $existingPhone = User::findByPhone($cleanPhone);
+                if ($existingPhone && $existingPhone->id !== $user->id) {
+                    $role = ucfirst($existingPhone->role ?? 'existing');
+                    return response()->json([
+                        'status' => false,
+                        'message' => "This mobile number is already registered with a {$role} account.",
+                        'errors' => [
+                            'phone' => ["This mobile number is already registered with a {$role} account."]
+                        ]
+                    ], 422);
+                }
+            }
 
             $startTime = $request->default_start_time
                 ? \Carbon\Carbon::createFromFormat('h:i A', $request->default_start_time)->format('H:i:s')

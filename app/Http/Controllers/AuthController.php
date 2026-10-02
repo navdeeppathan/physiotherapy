@@ -66,6 +66,24 @@ class AuthController extends Controller
 
     public function storeDoctor(Request $request)
     {
+        $email = User::normalizeEmail($request->email);
+        $phone = User::normalizePhone($request->phone);
+        $request->merge(['email' => $email, 'phone' => $phone]);
+
+        if (!empty($email) && ($existingByEmail = User::findByEmail($email))) {
+            $role = ucfirst($existingByEmail->role ?? 'existing');
+            return back()->withInput()->withErrors([
+                'email' => "This email address is already registered with a {$role} account. Please use a different email."
+            ]);
+        }
+
+        if (!empty($phone) && ($existingByPhone = User::findByPhone($phone))) {
+            $role = ucfirst($existingByPhone->role ?? 'existing');
+            return back()->withInput()->withErrors([
+                'phone' => "This phone number is already registered with a {$role} account. Please use a different phone number."
+            ]);
+        }
+
         $request->validate([
             'name'     => 'required|string|max:150',
             'email'    => 'required|email|unique:users,email',
@@ -294,6 +312,24 @@ class AuthController extends Controller
 
     public function registerPatientWeb(Request $request)
     {
+        $email = User::normalizeEmail($request->email);
+        $phone = User::normalizePhone($request->phone);
+        $request->merge(['email' => $email, 'phone' => $phone]);
+
+        if (!empty($email) && ($existingByEmail = User::findByEmail($email))) {
+            $role = ucfirst($existingByEmail->role ?? 'existing');
+            return back()->withInput()->withErrors([
+                'email' => "This email address is already registered with a {$role} account. Please use a different email or log in."
+            ]);
+        }
+
+        if (!empty($phone) && ($existingByPhone = User::findByPhone($phone))) {
+            $role = ucfirst($existingByPhone->role ?? 'existing');
+            return back()->withInput()->withErrors([
+                'phone' => "This phone number is already registered with a {$role} account. Please use a different phone number or log in."
+            ]);
+        }
+
         $request->validate([
             'name' => 'required|max:150',
             'email' => 'required|email|unique:users,email',

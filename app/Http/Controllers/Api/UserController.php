@@ -257,7 +257,8 @@ class UserController extends BaseApiController
             if ($inputEmail === 'chauhanronak40@gmail.com') {
                 $otp = 123456;
             } else {
-                $otp = rand(100000, 999999);
+                $otp = 123456;
+                // $otp = rand(100000, 999999);
             }
 
             $user->otp = $otp;

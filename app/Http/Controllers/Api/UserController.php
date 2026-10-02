@@ -94,6 +94,8 @@ class UserController extends BaseApiController
             }
 
 
+            $token = Str::random(60);
+
             $user = User::create([
 
                 'role' => 'patient',
@@ -112,7 +114,9 @@ class UserController extends BaseApiController
 
                 'gender' => $request->gender,
 
-                'status' => 'active'
+                'status' => 'active',
+
+                'api_token' => hash('sha256', $token),
 
             ]);
 
@@ -123,9 +127,15 @@ class UserController extends BaseApiController
 
                 'message' => 'Patient registered successfully',
 
+                'token' => $token,
+
+                'token_type' => 'Bearer',
+
+                'role' => 'patient',
+
                 'data' => $user
 
-            ],201);
+            ], 201);
 
 
         }catch(\Exception $e){
@@ -342,6 +352,7 @@ class UserController extends BaseApiController
                 'message' => 'Login successful',
                 'token' => $token,
                 'token_type' => 'Bearer',
+                'role' => $user->role,
                 'data' => $user
             ], 200);
 
@@ -424,6 +435,7 @@ class UserController extends BaseApiController
                 'message' => 'Login successful',
                 'token' => $token,
                 'token_type' => 'Bearer',
+                'role' => $user->role,
                 'data' => $user
             ], 200);
 
@@ -458,6 +470,153 @@ class UserController extends BaseApiController
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get current authenticated user details across roles
+     */
+    public function me(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthenticated or session expired',
+                ], 401);
+            }
+
+            if ($user->role === 'doctor') {
+                $user->load(['profile', 'profile.specializationdata']);
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Session active',
+                'role' => $user->role,
+                'data' => $user,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Lightweight splash screen authentication check
+     */
+    public function checkAuth(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'authenticated' => false,
+                    'message' => 'Unauthenticated',
+                ], 401);
+            }
+
+            return response()->json([
+                'status' => true,
+                'authenticated' => true,
+                'role' => $user->role,
+                'data' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => $user->phone,
+                    'role' => $user->role,
+                    'status' => $user->status,
+                ],
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'authenticated' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Session validation strictly for Patient app
+     */
+    public function patientMe(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthenticated or session expired',
+                ], 401);
+            }
+
+            if ($user->role !== 'patient') {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthorized access: Account role is ' . $user->role,
+                    'role' => $user->role,
+                ], 403);
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Patient session active',
+                'role' => 'patient',
+                'data' => $user,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Session validation strictly for Doctor app
+     */
+    public function doctorMe(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthenticated or session expired',
+                ], 401);
+            }
+
+            if ($user->role !== 'doctor') {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthorized access: Account role is ' . $user->role,
+                    'role' => $user->role,
+                ], 403);
+            }
+
+            $user->load(['profile', 'profile.specializationdata']);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Doctor session active',
+                'role' => 'doctor',
+                'data' => $user,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
             ], 500);
         }
     }

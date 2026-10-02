@@ -27,4 +27,24 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    /**
+     * Convert an authentication exception into a response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Auth\AuthenticationException  $exception
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    protected function unauthenticated($request, \Illuminate\Auth\AuthenticationException $exception)
+    {
+        if ($request->is('api/*') || $request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthenticated or session expired. Please log in again.',
+                'error' => 'unauthenticated'
+            ], 401);
+        }
+
+        return redirect()->guest($exception->redirectTo($request) ?? '/');
+    }
 }

@@ -49,6 +49,9 @@ Route::get('/patient/plans', [PatientPlanController::class, 'index']);
 
 Route::middleware('auth:api')->group(function () {
 
+    Route::get('/me', [UserController::class, 'me']);
+    Route::get('/user', [UserController::class, 'me']);
+    Route::get('/check-auth', [UserController::class, 'checkAuth']);
     Route::post('/logout', [UserController::class, 'logout']);
 
     // Users
@@ -106,6 +109,8 @@ Route::middleware('auth:api')->group(function () {
 });
 
 Route::middleware(['auth:api', 'role:doctor'])->group(function () {
+
+    Route::get('/doctor/me', [UserController::class, 'doctorMe']);
 
     // ── Doctor Reports & Progress Parameter Track ─────────────────
     Route::get('/doctor/reports/patients', [DoctorReportController::class, 'patientsList']);
@@ -199,6 +204,7 @@ Route::middleware('auth:api')->get(
 
 Route::middleware(['auth:api', 'role:patient'])->group(function () {
 
+    Route::get('/patient/me', [UserController::class, 'patientMe']);
     Route::post('/appointment/book', [AppointmentController::class, 'book']);
     Route::get('/patient/appointments', [AppointmentController::class, 'patientAppointments']);
 

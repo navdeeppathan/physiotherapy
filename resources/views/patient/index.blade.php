@@ -1,44 +1,53 @@
 @extends('layouts.app')
 
-@section('title', 'Physiopii — Expert Physiotherapy Care at Home & Online Consultation')
-@section('meta_description', 'Book certified physiotherapists for home visits & online consultations across India. Specialized treatment for Back Pain, Knee Pain, Stroke Rehab, Cervical Spondylosis & Sports Injuries.')
-@section('meta_keywords', 'physiotherapy at home, online physiotherapy consultation, best physiotherapist near me, home physio India, back pain physiotherapist, knee pain therapy, stroke rehabilitation home visit, cervical spondylosis physio, sports injury rehabilitation')
+@section('title', 'Kinora & PhysioPii — Expert Physiotherapy Care at Home & In-Clinic')
+@section('meta_description', 'Book certified & experienced physiotherapists for home visits and clinic appointments. Personalized care for Back Pain, Knee Rehab, Sports Injuries, and Neurological Recovery.')
+@section('meta_keywords', 'physiotherapy, home physiotherapy, physiotherapist near me, back pain relief, knee pain therapy, sports injury rehab, stroke recovery, best physio India')
 
 @section('content')
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   THEME VARIABLES & BASE
+   THEME PALETTE & CSS VARIABLES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 :root {
-    --primary-teal:      #0c6978;
-    --primary-teal-dark: #074752;
-    --primary-teal-deep: #083c45;
-    --primary-teal-sub:  #108598;
-    --teal-bg-soft:      #eef8f9;
-    --teal-badge-bg:     #e2f4f6;
-    --teal-badge-border: #bce5ea;
-    --accent-mint:       #2dd4bf;
-    --accent-green:      #10b981;
-    --gold:              #f59e0b;
-    --gold-light:        #fef3c7;
-    --ink:               #0f172a;
-    --ink-light:         #1e293b;
-    --body-text:         #475569;
-    --muted-text:        #64748b;
-    --light-border:      #e2e8f0;
-    --card-bg:           #ffffff;
-    --page-bg:           #ffffff;
-    --footer-bg:         #09121f;
-    --radius-sm:         8px;
-    --radius-md:         12px;
-    --radius-lg:         18px;
-    --radius-xl:         24px;
-    --shadow-soft:       0 8px 30px rgba(12, 105, 120, 0.06);
-    --shadow-card:       0 4px 20px rgba(15, 23, 42, 0.05);
-    --shadow-hover:      0 14px 40px rgba(12, 105, 120, 0.12);
+    --brand-teal:       #0c6978;
+    --brand-teal-hover: #08535f;
+    --brand-teal-light: #e8f4f5;
+    --brand-teal-soft:  #f0f8f8;
+    --brand-mint-badge: #d8f0f0;
+    --brand-dark-teal:  #0a3d46;
+    --brand-forest-dark:#082d33;
+    --brand-slate-deep: #09282e;
+    
+    --text-primary:     #09282e;
+    --text-secondary:   #475569;
+    --text-muted:       #64748b;
+    --text-subtle:      #94a3b8;
+    
+    --card-border:      #e2ebec;
+    --card-border-subtle:#edf2f4;
+    --card-bg:          #ffffff;
+    --page-bg:          #ffffff;
+    --input-border:     #d7e6e8;
+    
+    --gold-star:        #f59e0b;
+    --accent-emerald:   #10b981;
+    
+    --radius-sm:        8px;
+    --radius-md:        12px;
+    --radius-lg:        18px;
+    --radius-xl:        24px;
+    --radius-2xl:       32px;
+    
+    --shadow-subtle:    0 4px 18px rgba(9, 40, 46, 0.04);
+    --shadow-card:      0 8px 30px rgba(9, 40, 46, 0.06);
+    --shadow-elevated:  0 18px 45px rgba(12, 105, 120, 0.12);
+    --shadow-floating:  0 20px 50px rgba(9, 40, 46, 0.14);
 }
 
 *, *::before, *::after {
@@ -49,2919 +58,3256 @@
 
 body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    color: var(--body-text);
+    color: var(--text-primary);
     background-color: var(--page-bg);
-    line-height: 1.6;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
 }
 
 a {
     text-decoration: none;
     color: inherit;
-    transition: all 0.2s ease;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-img {
-    max-width: 100%;
-    height: auto;
-    display: block;
+/* Container */
+.kn-container {
+    width: 100%;
+    max-width: 1260px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 24px;
+    padding-right: 24px;
 }
 
-.home-container {
-    max-width: 1220px;
-    margin: 0 auto;
-    padding: 0 24px;
+/* Badge / Pills */
+.kn-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--brand-teal);
+    margin-bottom: 12px;
+}
+.kn-eyebrow-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--brand-teal);
+    display: inline-block;
+}
+
+.kn-pill-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--brand-mint-badge);
+    color: var(--brand-teal);
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+/* Typography Headings */
+.kn-section-header {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 52px;
+}
+.kn-section-title {
+    font-size: clamp(28px, 3.2vw, 38px);
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.22;
+    letter-spacing: -0.03em;
+    margin-bottom: 12px;
+}
+.kn-section-subtitle {
+    font-size: 15.5px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Buttons */
+.kn-btn-primary {
+    background: var(--brand-teal);
+    color: #ffffff !important;
+    padding: 13px 26px;
+    border-radius: 10px;
+    font-size: 14.5px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    border: 1.5px solid var(--brand-teal);
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(12, 105, 120, 0.22);
+    transition: all 0.22s ease;
+}
+.kn-btn-primary:hover {
+    background: var(--brand-teal-hover);
+    border-color: var(--brand-teal-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(12, 105, 120, 0.32);
+}
+
+.kn-btn-secondary {
+    background: #ffffff;
+    color: var(--text-primary) !important;
+    padding: 13px 24px;
+    border-radius: 10px;
+    font-size: 14.5px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1.5px solid var(--card-border);
+    cursor: pointer;
+    box-shadow: var(--shadow-subtle);
+    transition: all 0.22s ease;
+}
+.kn-btn-secondary:hover {
+    background: var(--brand-teal-soft);
+    border-color: var(--brand-teal);
+    color: var(--brand-teal) !important;
+    transform: translateY(-2px);
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   HEADER / NAVBAR
+   1. NAVBAR
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.pth-navbar {
+.kn-navbar-wrapper {
     position: sticky;
     top: 0;
-    z-index: 999;
+    z-index: 1000;
     background: #ffffff;
-    border-bottom: 1px solid #edf2f7;
-    padding: 14px 0;
-    transition: box-shadow 0.2s;
+    border-bottom: 1px solid #edf2f5;
+    transition: box-shadow 0.25s ease;
 }
-
-.pth-navbar.scrolled {
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+.kn-navbar-wrapper.scrolled {
+    box-shadow: 0 4px 24px rgba(9, 40, 46, 0.08);
 }
-
-.pth-nav-inner {
+.kn-nav-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
+    height: 74px;
 }
-
-.pth-brand {
+.kn-brand-link {
     display: flex;
     align-items: center;
     gap: 10px;
     text-decoration: none;
 }
-
-.pth-brand-icon {
-    width: 38px;
-    height: 38px;
-    background: var(--primary-teal);
-    border-radius: 10px;
+.kn-brand-icon-box {
+    width: 36px;
+    height: 36px;
+    background: var(--brand-teal);
+    border-radius: 9px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
-    font-size: 18px;
-    box-shadow: 0 4px 12px rgba(12, 105, 120, 0.25);
+    color: #ffffff;
+    font-size: 17px;
+    box-shadow: 0 4px 12px rgba(12, 105, 120, 0.28);
 }
-
-.pth-brand-name {
-    font-size: 21px;
-    font-weight: 800;
-    color: var(--ink);
-    letter-spacing: -0.03em;
-}
-.pth-brand-name span {
-    color: var(--primary-teal);
-}
-
-.pth-nav-links {
+.kn-brand-text {
+    font-size: 23px;
+    font-weight: 900;
+    color: var(--brand-teal);
+    letter-spacing: -0.04em;
     display: flex;
     align-items: center;
-    gap: 28px;
+}
+.kn-brand-text span {
+    color: #1e293b;
+    font-weight: 800;
+}
+
+.kn-nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 32px;
     list-style: none;
 }
-
-.pth-nav-link {
-    font-size: 14px;
+.kn-nav-item a {
+    font-size: 14.5px;
     font-weight: 600;
-    color: #475569;
-    transition: color 0.18s;
+    color: #334155;
+    position: relative;
+    padding: 6px 0;
+}
+.kn-nav-item a:hover,
+.kn-nav-item a.active {
+    color: var(--brand-teal);
+}
+.kn-nav-item a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2.5px;
+    background: var(--brand-teal);
+    border-radius: 2px;
 }
 
-.pth-nav-link:hover,
-.pth-nav-link.active {
-    color: var(--primary-teal);
-}
-
-.pth-nav-right {
+.kn-nav-actions {
     display: flex;
     align-items: center;
     gap: 20px;
 }
-
-.pth-call-pill {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13.5px;
+.kn-login-link {
+    font-size: 14.5px;
     font-weight: 700;
-    color: var(--ink);
+    color: var(--text-primary);
+    padding: 6px 10px;
 }
-.pth-call-pill i {
-    color: var(--primary-teal);
-    font-size: 13px;
+.kn-login-link:hover {
+    color: var(--brand-teal);
 }
-.pth-call-pill span {
-    color: #64748b;
-    font-weight: 500;
-}
-
-.pth-btn-book {
-    background: var(--primary-teal);
+.kn-btn-nav-book {
+    background: var(--brand-teal);
     color: #ffffff !important;
     padding: 10px 22px;
     border-radius: 8px;
-    font-size: 13.5px;
+    font-size: 14px;
     font-weight: 700;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    transition: all 0.2s;
+    gap: 7px;
     box-shadow: 0 4px 14px rgba(12, 105, 120, 0.2);
 }
-
-.pth-btn-book:hover {
-    background: var(--primary-teal-dark);
+.kn-btn-nav-book:hover {
+    background: var(--brand-teal-hover);
     transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(12, 105, 120, 0.3);
 }
 
-/* Mobile Toggle */
-.pth-menu-toggle {
+.kn-mobile-toggle {
     display: none;
-    background: none;
-    border: none;
-    font-size: 22px;
-    color: var(--ink);
-    cursor: pointer;
-}
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   HERO SECTION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.pth-hero-section {
-    padding: 60px 0 50px;
-    background: radial-gradient(circle at 10% 20%, rgba(226, 244, 246, 0.65) 0%, rgba(255, 255, 255, 0) 50%);
-    position: relative;
-}
-
-.pth-hero-grid {
-    display: grid;
-    grid-template-columns: 1.18fr 0.82fr;
-    gap: 48px;
-    align-items: center;
-}
-
-/* Hero Left */
-.pth-hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--teal-badge-bg);
-    border: 1px solid var(--teal-badge-border);
-    padding: 5px 14px;
-    border-radius: 50px;
-    font-size: 11px;
-    font-weight: 800;
-    color: var(--primary-teal);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-bottom: 18px;
-}
-.pth-badge-dot {
-    width: 6px;
-    height: 6px;
-    background: var(--primary-teal);
-    border-radius: 50%;
-}
-
-.pth-hero-title {
-    font-size: clamp(34px, 4.4vw, 52px);
-    font-weight: 900;
-    color: var(--ink);
-    line-height: 1.15;
-    letter-spacing: -0.04em;
-    margin-bottom: 16px;
-}
-
-.pth-hero-sub {
-    font-size: 15.5px;
-    color: var(--body-text);
-    line-height: 1.65;
-    max-width: 550px;
-    margin-bottom: 26px;
-}
-
-/* Search Box */
-.pth-search-container {
-    position: relative;
-    max-width: 580px;
-    margin-bottom: 16px;
-}
-
-.pth-search-box {
-    display: flex;
-    align-items: center;
-    background: #ffffff;
-    border: 1.5px solid #d1e9ec;
-    border-radius: 12px;
-    padding: 6px 6px 6px 18px;
-    box-shadow: 0 10px 30px rgba(12, 105, 120, 0.08);
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.pth-search-box:focus-within {
-    border-color: var(--primary-teal);
-    box-shadow: 0 12px 34px rgba(12, 105, 120, 0.16);
-}
-
-.pth-search-icon {
-    color: #94a3b8;
-    font-size: 16px;
-    margin-right: 12px;
-    flex-shrink: 0;
-}
-
-.pth-search-input {
-    flex: 1;
-    border: none;
-    outline: none;
-    font-size: 14.5px;
-    font-family: inherit;
-    color: var(--ink);
-    font-weight: 500;
     background: transparent;
-}
-
-.pth-search-input::placeholder {
-    color: #94a3b8;
-    font-weight: 400;
-}
-
-.pth-search-btn {
-    background: var(--primary-teal);
-    color: #ffffff;
     border: none;
-    padding: 12px 24px;
-    border-radius: 9px;
-    font-size: 14px;
-    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 22px;
     cursor: pointer;
-    transition: background 0.18s;
-    white-space: nowrap;
+    padding: 6px;
 }
 
-.pth-search-btn:hover {
-    background: var(--primary-teal-dark);
-}
-
-/* Autocomplete Dropdown */
-#hp-doctor-dropdown {
-    position: absolute;
-    top: calc(100% + 8px);
+/* Mobile Drawer */
+.kn-mobile-drawer {
+    display: none;
+    position: fixed;
+    top: 74px;
     left: 0;
     right: 0;
+    bottom: 0;
     background: #ffffff;
-    border-radius: 14px;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
-    border: 1px solid #e2e8f0;
-    overflow: hidden;
-    z-index: 99;
-    display: none;
+    z-index: 999;
+    padding: 24px;
+    border-top: 1px solid #eef2f5;
+    overflow-y: auto;
 }
-#hp-doctor-dropdown.open { display: block; }
-#hp-doctor-dropdown a {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 18px;
-    border-bottom: 1px solid #f1f5f9;
-    color: var(--ink) !important;
+.kn-mobile-drawer.open {
+    display: block;
 }
-#hp-doctor-dropdown a:hover {
-    background: #f0fdfa;
-}
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   POPULAR CONDITIONS GRID CARDS (Direct Filter)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.pth-popular-conditions {
-    margin-top: 22px;
-    max-width: 580px;
-}
-
-.pth-pop-cond-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-.pth-pop-cond-title {
-    font-size: 14.5px;
-    font-weight: 800;
-    color: var(--ink);
-    letter-spacing: -0.01em;
-}
-
-.pth-pop-clear-btn {
-    background: none;
-    border: none;
-    font-size: 12px;
-    font-weight: 700;
-    color: #ef4444;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 2px 8px;
-    border-radius: 4px;
-}
-.pth-pop-clear-btn:hover {
-    background: #fee2e2;
-}
-
-.pth-pop-cond-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-}
-
-.pth-cond-card {
-    background: #ffffff;
-    border: 1.5px solid #d1e9ec;
-    border-radius: 14px;
-    padding: 12px 6px 10px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+.kn-mobile-menu-list {
+    list-style: none;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 88px;
-    user-select: none;
-    box-shadow: 0 2px 8px rgba(12, 105, 120, 0.04);
+    gap: 18px;
+    margin-bottom: 28px;
 }
-
-.pth-cond-card:hover {
-    border-color: var(--primary-teal);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(12, 105, 120, 0.12);
-    background: var(--teal-bg-soft);
-}
-
-.pth-cond-card.active {
-    border-color: var(--primary-teal);
-    background: #eef8f9;
-    box-shadow: 0 4px 16px rgba(12, 105, 120, 0.22);
-    outline: 2px solid rgba(12, 105, 120, 0.15);
-}
-
-.pth-cond-card.active .pth-cond-name {
-    color: var(--primary-teal-dark);
-    font-weight: 900;
-}
-
-.pth-cond-icon-svg {
-    width: 38px;
-    height: 38px;
-    margin-bottom: 6px;
-    color: var(--primary-teal);
-    flex-shrink: 0;
-}
-
-.pth-cond-name {
-    font-size: 12px;
+.kn-mobile-menu-list a {
+    font-size: 17px;
     font-weight: 700;
-    color: var(--primary-teal);
-    line-height: 1.25;
+    color: var(--text-primary);
+    display: block;
+    padding: 8px 0;
 }
 
-/* Hero Right: Sleek App Mockup Frame */
-.pth-mockup-wrapper {
-    display: flex;
-    justify-content: center;
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   2. HERO SECTION & CAROUSEL (3 SLIDES)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.kn-hero-wrapper {
+    background: #eef6f5;
+    padding: 40px 0 35px;
     position: relative;
-}
-
-.pth-phone-mockup {
-    width: 100%;
-    max-width: 360px;
-    background: #ffffff;
-    border-radius: 36px;
-    box-shadow: 0 24px 60px rgba(12, 105, 120, 0.15), 0 0 0 10px #f1f5f9, 0 0 0 12px #e2e8f0;
     overflow: hidden;
+}
+
+.kn-hero-carousel-container {
     position: relative;
-    padding: 20px 18px;
-    border: 1px solid #edf2f7;
+    min-height: 480px;
 }
 
-.pth-mock-header {
-    display: flex;
+.kn-hero-slide {
+    display: none;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 40px;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #f1f5f9;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    transform: translateX(15px);
 }
-.pth-mock-notch {
-    width: 60px;
-    height: 4px;
-    background: #cbd5e1;
-    border-radius: 4px;
-    margin: 0 auto;
+.kn-hero-slide.active {
+    display: grid;
+    opacity: 1;
+    transform: translateX(0);
 }
 
-.pth-mock-categories {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-bottom: 14px;
-    text-align: center;
+/* Left Hero Content */
+.kn-hero-content {
+    padding-right: 15px;
 }
-.pth-mock-cat-item {
-    background: #f8fafc;
-    border: 1px solid #f1f5f9;
-    border-radius: 10px;
-    padding: 8px 4px;
+.kn-hero-heading {
+    font-size: clamp(34px, 4.3vw, 54px);
+    font-weight: 900;
+    color: var(--text-primary);
+    line-height: 1.14;
+    letter-spacing: -0.04em;
+    margin-bottom: 18px;
 }
-.pth-mock-cat-icon {
+.kn-hero-desc {
     font-size: 16px;
-    color: var(--primary-teal);
-    margin-bottom: 4px;
+    color: var(--text-secondary);
+    line-height: 1.62;
+    margin-bottom: 28px;
+    max-width: 530px;
 }
-.pth-mock-cat-text {
-    font-size: 9.5px;
-    font-weight: 700;
-    color: #475569;
+.kn-hero-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 26px;
+}
+.kn-hero-guarantee {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--brand-teal);
+}
+.kn-hero-guarantee i {
+    font-size: 14px;
 }
 
-.pth-mock-card-primary {
-    background: linear-gradient(135deg, var(--primary-teal) 0%, var(--primary-teal-dark) 100%);
-    border-radius: 16px;
-    padding: 16px;
-    color: #ffffff;
-    margin-bottom: 16px;
-    box-shadow: 0 8px 20px rgba(12, 105, 120, 0.25);
+/* Right Hero Visual & Badges */
+.kn-hero-visual {
+    position: relative;
+    border-radius: var(--radius-2xl);
+    overflow: visible;
 }
-.pth-mock-card-top {
+.kn-hero-image-box {
+    position: relative;
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+    height: 420px;
+    background: #cbd5e1;
+    box-shadow: 0 20px 45px rgba(9, 40, 46, 0.12);
+}
+.kn-hero-image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform 1.2s ease;
+}
+.kn-hero-slide.active .kn-hero-image-box img {
+    transform: scale(1.02);
+}
+
+/* Top-Left Floating Badge */
+.kn-floating-top-badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(8px);
+    padding: 7px 16px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    z-index: 2;
+}
+.kn-floating-top-badge i {
+    color: var(--brand-teal);
+    font-size: 13px;
+}
+
+/* Bottom Floating Stats Overlay Card */
+.kn-hero-stats-card {
+    position: absolute;
+    bottom: 18px;
+    left: 18px;
+    right: 18px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-lg);
+    padding: 16px 22px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
+    box-shadow: 0 10px 30px rgba(9, 40, 46, 0.14);
+    z-index: 2;
+    border: 1px solid rgba(255, 255, 255, 0.6);
 }
-.pth-mock-card-title {
-    font-size: 14px;
+.kn-hero-stats-left h5 {
+    font-size: 14.5px;
     font-weight: 800;
-    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 2px;
 }
-.pth-mock-card-pill {
-    background: rgba(255, 255, 255, 0.2);
-    font-size: 10px;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 50px;
+.kn-hero-stats-left p {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin: 0;
 }
-.pth-mock-card-desc {
+.kn-hero-stats-right {
+    text-align: right;
+    border-left: 1px solid #e2e8f0;
+    padding-left: 20px;
+}
+.kn-hero-stats-num {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--brand-teal);
+    line-height: 1.1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+}
+.kn-hero-stats-sub {
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.85);
-    margin-bottom: 12px;
-    line-height: 1.4;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
-.pth-mock-stats-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
+/* Hero Controls at Bottom */
+.kn-hero-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 25px;
     padding-top: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
-    text-align: center;
 }
-.pth-mock-stat-val {
-    font-size: 13px;
+.kn-carousel-progress {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.kn-dots-track {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.kn-dot-btn {
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+    background: #bcdbdc;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.kn-dot-btn.active {
+    width: 26px;
+    border-radius: 8px;
+    background: var(--brand-teal);
+}
+.kn-counter-text {
+    font-size: 12.5px;
     font-weight: 800;
-}
-.pth-mock-stat-lbl {
-    font-size: 9px;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--brand-teal);
+    letter-spacing: 0.05em;
 }
 
-.pth-mock-doc-box {
-    background: #ffffff;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 14px;
-    padding: 12px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
-}
-.pth-mock-doc-header {
+.kn-carousel-arrows {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 8px;
 }
-.pth-mock-doc-avatar {
-    width: 44px;
-    height: 44px;
+.kn-arrow-btn {
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #38bdf8, var(--primary-teal));
-    color: #ffffff;
-    font-weight: 800;
-    font-size: 16px;
+    background: #ffffff;
+    border: 1.5px solid #d0e4e5;
+    color: var(--brand-teal);
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
 }
-.pth-mock-doc-name {
-    font-size: 13px;
-    font-weight: 800;
-    color: var(--ink);
-}
-.pth-mock-doc-badge {
-    font-size: 10px;
-    font-weight: 700;
-    color: #d97706;
-    background: #fef3c7;
-    padding: 1px 6px;
-    border-radius: 4px;
-    margin-left: 4px;
-}
-.pth-mock-doc-sub {
-    font-size: 10.5px;
-    color: #64748b;
-}
-
-.pth-mock-doc-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: 8px;
-    border-top: 1px dashed #e2e8f0;
-    margin-top: 8px;
-}
-.pth-mock-doc-status {
-    font-size: 11px;
-    color: var(--accent-green);
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-.pth-mock-doc-price {
-    font-size: 13px;
-    font-weight: 800;
-    color: var(--primary-teal);
+.kn-arrow-btn:hover {
+    background: var(--brand-teal);
+    border-color: var(--brand-teal);
+    color: #ffffff;
+    transform: translateY(-1px);
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   VALUE / TREATMENT BANNER (Dark Teal Box)
+   3. FLOATING SEARCH CARD & STATS ROW
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.pth-value-banner-wrap {
-    padding: 10px 0 60px;
+.kn-search-outer {
+    position: relative;
+    margin-top: -30px;
+    z-index: 10;
+}
+.kn-search-card {
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--shadow-floating);
+    padding: 24px 28px 22px;
+}
+.kn-search-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+.kn-search-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+.kn-search-tag {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--brand-teal);
+    background: var(--brand-teal-light);
+    padding: 4px 12px;
+    border-radius: 50px;
 }
 
-.pth-value-banner {
-    background: var(--primary-teal);
-    border-radius: var(--radius-xl);
-    padding: 40px 48px 36px;
+.kn-search-form {
+    display: grid;
+    grid-template-columns: 1.2fr 1.2fr 1.1fr 1fr auto;
+    gap: 14px;
+    align-items: flex-end;
+}
+.kn-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.kn-form-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+}
+.kn-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #f8fafb;
+    border: 1.5px solid var(--input-border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    transition: border-color 0.2s, background 0.2s;
+}
+.kn-input-wrap:focus-within {
+    border-color: var(--brand-teal);
+    background: #ffffff;
+}
+.kn-input-wrap i {
+    color: #94a3b8;
+    font-size: 14px;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+.kn-input-wrap input,
+.kn-input-wrap select {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: inherit;
+}
+.kn-input-wrap select {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+.kn-input-wrap input::placeholder {
+    color: #94a3b8;
+    font-weight: 500;
+}
+.kn-btn-search {
+    background: var(--brand-teal);
     color: #ffffff;
-    box-shadow: 0 16px 40px rgba(12, 105, 120, 0.22);
+    border: none;
+    border-radius: 10px;
+    height: 44px;
+    padding: 0 28px;
+    font-size: 14.5px;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(12, 105, 120, 0.25);
+}
+.kn-btn-search:hover {
+    background: var(--brand-teal-hover);
+    transform: translateY(-1px);
+}
+
+/* Stats Counter Row */
+.kn-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    padding: 48px 0 60px;
+    text-align: center;
+}
+.kn-stat-item {
+    border-right: 1px solid #edf2f5;
+    padding: 0 16px;
+}
+.kn-stat-item:last-child {
+    border-right: none;
+}
+.kn-stat-number {
+    font-size: clamp(30px, 3.5vw, 42px);
+    font-weight: 900;
+    color: var(--brand-teal);
+    line-height: 1.1;
+    margin-bottom: 6px;
+    letter-spacing: -0.03em;
+}
+.kn-stat-label {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   4. SPECIALITIES SECTION ("The right expertise...")
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.kn-specialities-section {
+    padding: 30px 0 80px;
+    background: #ffffff;
+}
+.kn-spec-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+.kn-spec-card {
+    background: #ffffff;
+    border: 1.5px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    padding: 24px 22px;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     overflow: hidden;
 }
-
-.pth-banner-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    padding-bottom: 30px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-    flex-wrap: wrap;
+.kn-spec-card:hover {
+    border-color: var(--brand-teal);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(12, 105, 120, 0.08);
 }
-
-.pth-banner-left {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-}
-
-.pth-banner-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+.kn-spec-icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--brand-teal-light);
+    color: var(--brand-teal);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    color: #ffffff;
-    flex-shrink: 0;
+    font-size: 20px;
+    margin-bottom: 18px;
+    transition: all 0.2s ease;
 }
-
-.pth-banner-title {
-    font-size: 24px;
-    font-weight: 900;
-    letter-spacing: -0.03em;
+.kn-spec-card:hover .kn-spec-icon-box {
+    background: var(--brand-teal);
     color: #ffffff;
 }
-
-.pth-banner-desc {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.85);
-    margin-top: 2px;
-}
-
-.pth-btn-white {
-    background: #ffffff;
-    color: var(--primary-teal) !important;
-    padding: 12px 28px;
-    border-radius: 50px;
-    font-size: 14px;
+.kn-spec-title {
+    font-size: 17px;
     font-weight: 800;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    color: var(--text-primary);
+    margin-bottom: 6px;
 }
-
-.pth-btn-white:hover {
-    background: #f0fdfa;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
-}
-
-.pth-banner-features {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 36px;
-    padding-top: 30px;
-}
-
-.pth-feat-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-}
-
-.pth-feat-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1.5px solid rgba(255, 255, 255, 0.28);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 15px;
-    color: #ffffff;
-    flex-shrink: 0;
-    margin-top: 2px;
-}
-
-.pth-feat-title {
-    font-size: 15px;
-    font-weight: 800;
-    color: #ffffff;
-    margin-bottom: 4px;
-}
-
-.pth-feat-desc {
+.kn-spec-desc {
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.8);
-    line-height: 1.55;
+    color: var(--text-secondary);
+    line-height: 1.5;
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   AVAILABLE NEARBY PHYSIOS
+   5. FEATURED DOCTORS ("Meet your recovery partners")
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.pth-doctors-section {
-    padding: 40px 0 80px;
+.kn-doctors-section {
+    padding: 80px 0;
+    background: #fbfdfd;
+    border-top: 1px solid #f0f5f6;
+    border-bottom: 1px solid #f0f5f6;
 }
-
-.pth-section-header {
+.kn-section-header-flex {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    gap: 16px;
+    margin-bottom: 40px;
 }
-
-.pth-sec-title {
-    font-size: 28px;
-    font-weight: 900;
-    color: var(--ink);
-    letter-spacing: -0.03em;
-}
-
-.pth-sec-sub {
+.kn-view-all-link {
     font-size: 14.5px;
-    color: var(--muted-text);
-    margin-top: 4px;
-}
-
-.pth-see-all-link {
-    font-size: 14px;
     font-weight: 700;
-    color: var(--primary-teal);
+    color: var(--brand-teal);
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    cursor: pointer;
+    gap: 7px;
+    padding-bottom: 6px;
 }
-.pth-see-all-link:hover {
-    color: var(--primary-teal-dark);
-    gap: 9px;
-}
-
-/* Filter active status banner */
-#pth-filter-banner {
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-    background: #eef8f9;
-    border: 1.5px solid #bce5ea;
-    border-radius: 12px;
-    padding: 12px 20px;
-    margin-bottom: 24px;
-}
-.pth-filter-banner-text {
-    font-size: 14px;
-    color: #074752;
-    font-weight: 700;
-}
-.pth-filter-banner-text strong {
-    color: var(--primary-teal);
-    font-weight: 800;
-}
-.pth-filter-badge-btn {
-    background: #ffffff;
-    border: 1px solid #bce5ea;
-    color: #0c6978;
-    border-radius: 6px;
-    padding: 5px 14px;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.18s;
-}
-.pth-filter-badge-btn:hover {
-    background: #fee2e2;
-    border-color: #fca5a5;
-    color: #b91c1c;
+.kn-view-all-link:hover {
+    color: var(--brand-teal-hover);
+    transform: translateX(3px);
 }
 
-.pth-doctors-grid {
+.kn-doctors-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    gap: 28px;
 }
-
-.pth-doctor-card {
+.kn-doctor-card {
     background: #ffffff;
-    border: 1.5px solid #edf2f7;
-    border-radius: 18px;
-    padding: 24px;
-    box-shadow: var(--shadow-card);
-    transition: all 0.22s ease;
+    border: 1.5px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-subtle);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.kn-doctor-card:hover {
+    border-color: #bcdadc;
+    transform: translateY(-5px);
+    box-shadow: 0 16px 40px rgba(9, 40, 46, 0.1);
 }
 
-.pth-doctor-card:hover {
-    border-color: #bce5ea;
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-hover);
+.kn-doctor-media {
+    position: relative;
+    height: 250px;
+    background: #e2e8f0;
+    overflow: hidden;
 }
-
-.pth-doc-header {
+.kn-doctor-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    transition: transform 0.8s ease;
+}
+.kn-doctor-card:hover .kn-doctor-media img {
+    transform: scale(1.04);
+}
+.kn-doctor-rating-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(8px);
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text-primary);
     display: flex;
-    gap: 16px;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+.kn-doctor-rating-badge i {
+    color: var(--gold-star);
+    font-size: 11px;
+}
+
+.kn-doctor-body {
+    padding: 22px 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+.kn-doctor-name {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+.kn-doctor-exp {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 14px;
+    font-weight: 500;
+}
+.kn-doctor-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+.kn-doctor-pill {
+    background: var(--brand-teal-light);
+    color: var(--brand-teal);
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+.kn-doctor-availabilities {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 10px;
+}
+.kn-doctor-availabilities span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.kn-doctor-availabilities i {
+    color: var(--brand-teal);
+    font-size: 12px;
+}
+.kn-doctor-location {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
     margin-bottom: 18px;
 }
 
-.pth-doc-avatar {
-    width: 62px;
-    height: 62px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #e2e8f0;
-    flex-shrink: 0;
-}
-
-.pth-doc-avatar-ph {
-    width: 62px;
-    height: 62px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--teal-badge-bg), #bce5ea);
-    color: var(--primary-teal);
-    font-size: 22px;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    border: 2px solid #e2e8f0;
-}
-
-.pth-doc-details {
-    flex: 1;
-    min-width: 0;
-}
-
-.pth-doc-name-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 4px;
-}
-
-.pth-doc-name {
-    font-size: 16.5px;
-    font-weight: 800;
-    color: var(--ink);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.pth-badge-verified {
-    background: #fef3c7;
-    color: #b45309;
-    font-size: 10.5px;
-    font-weight: 800;
-    padding: 2px 7px;
-    border-radius: 4px;
-    white-space: nowrap;
-}
-
-.pth-doc-spec {
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--primary-teal);
-    margin-bottom: 6px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.pth-doc-stats-mini {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 12px;
-    color: #64748b;
-}
-
-.pth-doc-rating {
-    color: #b45309;
-    font-weight: 700;
-}
-
-.pth-doc-card-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: 18px;
-    border-top: 1px solid #f1f5f9;
+.kn-doctor-divider {
+    height: 1px;
+    background: #edf2f5;
     margin-top: auto;
-    gap: 12px;
+    margin-bottom: 16px;
 }
 
-.pth-status-tag {
-    font-size: 12px;
-    font-weight: 700;
-    color: #059669;
+.kn-doctor-footer {
     display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: space-between;
+    gap: 12px;
 }
-.pth-status-tag::before {
-    content: '';
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #10b981;
+.kn-doctor-fee-box {
+    display: flex;
+    flex-direction: column;
 }
-
-.pth-btn-book-sm {
-    background: var(--primary-teal);
-    color: #ffffff !important;
-    padding: 9px 18px;
+.kn-doctor-fee-amount {
+    font-size: 19px;
+    font-weight: 900;
+    color: var(--text-primary);
+    line-height: 1.1;
+}
+.kn-doctor-fee-period {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+.kn-doctor-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.kn-btn-doc-profile {
+    padding: 9px 14px;
     border-radius: 8px;
     font-size: 12.5px;
     font-weight: 700;
-    transition: all 0.18s;
-    white-space: nowrap;
+    background: #ffffff;
+    color: var(--text-primary) !important;
+    border: 1.5px solid #cbd5e1;
+    transition: all 0.2s;
 }
-
-.pth-btn-book-sm:hover {
-    background: var(--primary-teal-dark);
+.kn-btn-doc-profile:hover {
+    border-color: var(--brand-teal);
+    color: var(--brand-teal) !important;
+}
+.kn-btn-doc-book {
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 800;
+    background: var(--brand-teal);
+    color: #ffffff !important;
+    border: 1.5px solid var(--brand-teal);
+    transition: all 0.2s;
+}
+.kn-btn-doc-book:hover {
+    background: var(--brand-teal-hover);
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   WHY CHOOSE US
+   6. VALUE PROPOSITION ("Expert care, without the extra steps")
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.pth-why-section {
-    padding: 70px 0;
-    background: #f8fafc;
+.kn-values-section {
+    padding: 90px 0;
+    background: #ffffff;
 }
-
-.pth-center-head {
-    text-align: center;
-    max-width: 640px;
-    margin: 0 auto 48px;
-}
-
-.pth-center-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--teal-badge-bg);
-    border: 1px solid var(--teal-badge-border);
-    padding: 4px 12px;
-    border-radius: 50px;
-    font-size: 11px;
-    font-weight: 800;
-    color: var(--primary-teal);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 14px;
-}
-
-.pth-center-title {
-    font-size: clamp(26px, 3.5vw, 36px);
-    font-weight: 900;
-    color: var(--ink);
-    letter-spacing: -0.03em;
-    margin-bottom: 12px;
-}
-
-.pth-center-sub {
-    font-size: 15px;
-    color: var(--muted-text);
-    line-height: 1.65;
-}
-
-.pth-why-grid {
+.kn-values-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
 }
-
-.pth-why-card {
+.kn-value-card {
     background: #ffffff;
-    border: 1.5px solid #edf2f7;
-    border-radius: 16px;
-    padding: 28px 24px;
-    transition: all 0.2s;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.02);
+    border: 1.5px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    padding: 30px 26px;
+    transition: all 0.25s ease;
 }
-
-.pth-why-card:hover {
-    border-color: #bce5ea;
+.kn-value-card:hover {
+    border-color: var(--brand-teal);
     transform: translateY(-3px);
-    box-shadow: var(--shadow-soft);
+    box-shadow: 0 12px 30px rgba(12, 105, 120, 0.08);
 }
-
-.pth-why-icon-wrap {
-    width: 46px;
-    height: 46px;
+.kn-value-icon {
+    width: 48px;
+    height: 48px;
     border-radius: 12px;
-    background: var(--teal-bg-soft);
+    background: var(--brand-teal-light);
+    color: var(--brand-teal);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--primary-teal);
     font-size: 20px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
-
-.pth-why-title {
-    font-size: 16px;
+.kn-value-title {
+    font-size: 18px;
     font-weight: 800;
-    color: var(--ink);
+    color: var(--text-primary);
     margin-bottom: 8px;
 }
-
-.pth-why-desc {
-    font-size: 13.5px;
-    color: var(--body-text);
+.kn-value-desc {
+    font-size: 14px;
+    color: var(--text-secondary);
     line-height: 1.6;
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   HOW IT WORKS (5 Steps)
+   7. HOW IT WORKS ("Your appointment, in four easy steps")
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.pth-how-section {
-    padding: 80px 0;
-    background: #ffffff;
+.kn-steps-section {
+    padding: 85px 0 95px;
+    background: #eef6f5;
 }
-
-.pth-steps-grid {
+.kn-steps-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 20px;
-}
-
-.pth-step-card {
-    background: #ffffff;
-    border: 1px solid #edf2f7;
-    border-radius: 16px;
-    padding: 24px 20px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
     position: relative;
-    transition: all 0.2s;
 }
-
-.pth-step-card:hover {
-    border-color: var(--teal-badge-border);
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-soft);
+.kn-step-card {
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
-
-.pth-step-num {
-    width: 38px;
-    height: 38px;
+.kn-step-icon-wrap {
+    position: relative;
+    width: 58px;
+    height: 58px;
     border-radius: 50%;
-    background: var(--teal-bg-soft);
-    color: var(--primary-teal);
-    border: 1.5px solid var(--teal-badge-border);
+    background: #ffffff;
+    border: 2px solid #bce2e5;
+    color: var(--brand-teal);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 15px;
-    font-weight: 900;
-    margin-bottom: 18px;
+    font-size: 22px;
+    margin-bottom: 22px;
+    box-shadow: 0 6px 18px rgba(12, 105, 120, 0.1);
 }
-
-.pth-step-title {
-    font-size: 15px;
+.kn-step-number-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--brand-teal);
+    color: #ffffff;
+    font-size: 11px;
     font-weight: 800;
-    color: var(--ink);
-    margin-bottom: 8px;
-    line-height: 1.35;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffffff;
 }
-
-.pth-step-desc {
-    font-size: 13px;
-    color: #64748b;
-    line-height: 1.55;
+.kn-step-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+.kn-step-desc {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.58;
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   SUPPORT & FAQ BANNER (Dark Teal Box)
+   8. SPLIT FEATURE ("Because moving well changes everything")
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.pth-support-section {
-    padding: 20px 0 80px;
+.kn-split-section {
+    padding: 90px 0;
+    background: #ffffff;
 }
-
-.pth-support-banner {
-    background: var(--primary-teal);
-    border-radius: var(--radius-xl);
-    padding: 48px;
-    color: #ffffff;
-    box-shadow: 0 20px 50px rgba(12, 105, 120, 0.25);
-}
-
-.pth-support-grid {
+.kn-split-grid {
     display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
-    gap: 48px;
+    grid-template-columns: 1fr 1.05fr;
+    gap: 60px;
     align-items: center;
 }
-
-.pth-support-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    padding: 5px 14px;
-    border-radius: 50px;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-bottom: 18px;
-    color: #ffffff;
+.kn-split-visual {
+    position: relative;
 }
-
-.pth-support-title {
-    font-size: clamp(28px, 3.2vw, 38px);
-    font-weight: 900;
-    color: #ffffff;
-    letter-spacing: -0.03em;
-    margin-bottom: 14px;
+.kn-split-img-box {
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+    height: 460px;
+    box-shadow: var(--shadow-elevated);
 }
-
-.pth-support-desc {
-    font-size: 14.5px;
-    color: rgba(255, 255, 255, 0.85);
-    line-height: 1.65;
-    margin-bottom: 28px;
+.kn-split-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
-
-.pth-support-actions {
+.kn-split-badge-card {
+    position: absolute;
+    bottom: 22px;
+    left: 22px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-md);
+    padding: 14px 20px;
+    box-shadow: var(--shadow-card);
     display: flex;
     align-items: center;
     gap: 14px;
-    flex-wrap: wrap;
+    border: 1px solid rgba(255, 255, 255, 0.6);
 }
-
-.pth-btn-call {
-    background: #ffffff;
-    color: var(--primary-teal) !important;
-    padding: 12px 24px;
-    border-radius: 50px;
-    font-size: 14px;
+.kn-split-badge-card i {
+    font-size: 26px;
+    color: var(--gold-star);
+}
+.kn-split-badge-card h6 {
+    font-size: 15px;
     font-weight: 800;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    color: var(--text-primary);
+    margin: 0;
 }
-.pth-btn-call:hover {
-    background: #f0fdfa;
-    transform: translateY(-2px);
-}
-
-.pth-btn-chat {
-    background: rgba(255, 255, 255, 0.12);
-    border: 1.5px solid rgba(255, 255, 255, 0.35);
-    color: #ffffff !important;
-    padding: 12px 24px;
-    border-radius: 50px;
-    font-size: 14px;
-    font-weight: 700;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s;
-}
-.pth-btn-chat:hover {
-    background: rgba(255, 255, 255, 0.22);
-}
-
-/* FAQ Box */
-.pth-faq-box {
-    background: rgba(0, 0, 0, 0.16);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: 20px;
-    padding: 28px;
-}
-
-.pth-faq-title {
-    font-size: 16px;
-    font-weight: 800;
-    color: #ffffff;
-    margin-bottom: 18px;
-}
-
-.pth-faq-item {
-    padding-bottom: 14px;
-    margin-bottom: 14px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-}
-.pth-faq-item:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-
-.pth-faq-q {
-    font-size: 13.5px;
-    font-weight: 800;
-    color: #ffffff;
-    margin-bottom: 4px;
-}
-
-.pth-faq-a {
+.kn-split-badge-card p {
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.8);
-    line-height: 1.55;
+    color: var(--text-muted);
+    margin: 0;
 }
 
-.pth-btn-support-email {
-    margin-top: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    border-radius: 8px;
-    padding: 10px;
-    font-size: 12.5px;
-    font-weight: 700;
-    color: #ffffff !important;
-    transition: all 0.18s;
+.kn-split-content {
+    padding-left: 10px;
 }
-.pth-btn-support-email:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   FOOTER (Dark Navy)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.pth-footer {
-    background: var(--footer-bg);
-    color: #94a3b8;
-    padding: 64px 0 28px;
-}
-
-.pth-footer-grid {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr 1fr 1.1fr;
-    gap: 40px;
-    margin-bottom: 48px;
-}
-
-.pth-footer-brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 16px;
-    text-decoration: none;
-}
-.pth-footer-brand-name {
-    font-size: 20px;
-    font-weight: 900;
-    color: #ffffff;
-    letter-spacing: -0.03em;
-}
-.pth-footer-brand-name span {
-    color: var(--accent-mint);
-}
-
-.pth-footer-about {
-    font-size: 13.5px;
-    line-height: 1.7;
-    color: #94a3b8;
-    max-width: 320px;
-}
-
-.pth-footer-heading {
-    font-size: 13px;
+.kn-split-title {
+    font-size: clamp(28px, 3.2vw, 40px);
     font-weight: 800;
-    color: #ffffff;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    margin-bottom: 18px;
+    color: var(--text-primary);
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+    margin-bottom: 16px;
 }
-
-.pth-footer-links {
+.kn-split-desc {
+    font-size: 15.5px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-bottom: 24px;
+}
+.kn-split-bullets {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-}
-
-.pth-footer-links a {
-    font-size: 13.5px;
-    color: #94a3b8;
-    transition: color 0.18s;
-}
-
-.pth-footer-links a:hover {
-    color: #ffffff;
-}
-
-.pth-footer-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: 24px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    font-size: 12.5px;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-
-.pth-social-row {
-    display: flex;
-    align-items: center;
     gap: 16px;
+    margin-bottom: 32px;
 }
-
-.pth-social-link {
-    color: #94a3b8;
-    font-size: 15px;
-    transition: color 0.18s;
+.kn-split-bullet-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--text-primary);
 }
-
-.pth-social-link:hover {
-    color: #ffffff;
+.kn-split-bullet-item i {
+    color: var(--brand-teal);
+    font-size: 17px;
+    margin-top: 2px;
+    flex-shrink: 0;
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   RESPONSIVE DESIGN
+   9. PRACTITIONER BANNER (Dark Teal Container)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-@media (max-width: 1024px) {
-    .pth-hero-grid {
-        grid-template-columns: 1fr;
-        gap: 40px;
-    }
-    .pth-mockup-wrapper {
-        order: -1;
-    }
-    .pth-phone-mockup {
-        max-width: 380px;
-    }
-    .pth-banner-features {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    .pth-doctors-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    .pth-why-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    .pth-steps-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    .pth-support-grid {
-        grid-template-columns: 1fr;
-    }
-    .pth-footer-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+.kn-banner-wrap {
+    padding: 30px 0 90px;
 }
-
-@media (max-width: 768px) {
-    .pth-nav-links, .pth-call-pill {
-        display: none;
-    }
-    .pth-menu-toggle {
-        display: block;
-    }
-    .pth-value-banner {
-        padding: 30px 24px;
-    }
-    .pth-doctors-grid {
-        grid-template-columns: 1fr;
-    }
-    .pth-why-grid {
-        grid-template-columns: 1fr;
-    }
-    .pth-steps-grid {
-        grid-template-columns: 1fr;
-    }
-    .pth-support-banner {
-        padding: 32px 24px;
-    }
-    .pth-footer-grid {
-        grid-template-columns: 1fr;
-    }
-    .pth-pop-cond-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 440px) {
-    .pth-pop-cond-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-/* ─────────────────────────────────────────────
-   ENQUIRY MODAL STYLES
-───────────────────────────────────────────── */
-.pth-enquiry-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.65);
-    z-index: 99999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    backdrop-filter: blur(4px);
-    opacity: 1;
-    visibility: visible;
-    transition: all .2s ease;
-}
-.pth-enquiry-overlay.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-.pth-enquiry-modal {
-    background: #ffffff;
-    border-radius: 20px;
-    width: 100%;
-    max-width: 520px;
-    max-height: 90vh;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
-    overflow: hidden;
-    position: relative;
-    animation: pthModalPop .22s cubic-bezier(0.16, 1, 0.3, 1);
-}
-@keyframes pthModalPop {
-    from { opacity: 0; transform: scale(0.95) translateY(10px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
-}
-#enquiryForm {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-    margin: 0;
-}
-.pth-enquiry-header {
-    background: linear-gradient(135deg, #074752 0%, #0c6978 100%);
-    padding: 18px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    color: #ffffff;
-    flex-shrink: 0;
-}
-.pth-enquiry-header-left {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-.pth-enquiry-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.18);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 19px;
-    color: #ffffff;
-    flex-shrink: 0;
-}
-.pth-enquiry-title {
-    font-size: 17px;
-    font-weight: 800;
-    color: #ffffff;
-    line-height: 1.25;
-    margin: 0;
-}
-.pth-enquiry-sub {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.82);
-    margin-top: 2px;
-    margin-bottom: 0;
-}
-.pth-enquiry-close {
-    background: rgba(255, 255, 255, 0.15);
-    border: none;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    color: #ffffff;
-    font-size: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background .15s;
-    line-height: 1;
-}
-.pth-enquiry-close:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-.pth-enquiry-body {
-    padding: 18px 24px 14px;
-    overflow-y: auto;
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 13px;
-    -webkit-overflow-scrolling: touch;
-}
-.pth-enquiry-body::-webkit-scrollbar {
-    width: 5px;
-}
-.pth-enquiry-body::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 4px;
-}
-.pth-form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-.pth-form-label {
-    font-size: 13px;
-    font-weight: 700;
-    color: #1e293b;
-}
-.pth-form-label .req {
-    color: #ef4444;
-}
-.pth-form-label .opt {
-    color: #94a3b8;
-    font-weight: 500;
-    font-size: 11.5px;
-}
-.pth-input-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-.pth-input-icon {
-    position: absolute;
-    left: 14px;
-    color: #94a3b8;
-    font-size: 14px;
-    pointer-events: none;
-}
-.pth-form-input, .pth-form-select, .pth-form-textarea {
-    width: 100%;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 11px;
-    font-size: 14px;
-    font-family: inherit;
-    color: #0f172a;
-    background: #f8fafc;
-    transition: all .18s ease;
-    outline: none;
-}
-.pth-form-input {
-    height: 44px;
-    padding: 0 14px 0 38px;
-}
-.pth-form-select {
-    height: 44px;
-    padding: 0 14px 0 38px;
-    cursor: pointer;
-}
-.pth-form-textarea {
-    padding: 10px 14px;
-    resize: vertical;
-    min-height: 65px;
-}
-.pth-form-input:focus, .pth-form-select:focus, .pth-form-textarea:focus {
-    border-color: #0c6978;
-    background: #ffffff;
-    box-shadow: 0 0 0 3px rgba(12, 105, 120, 0.12);
-}
-.pth-enquiry-trust-row {
+.kn-practitioner-box {
+    background: #08353d;
+    border-radius: var(--radius-2xl);
+    padding: 56px 60px;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    background: #f0fdfa;
-    border: 1px solid #ccfbf1;
-    border-radius: 10px;
-    padding: 10px 12px;
-    margin-top: 4px;
-}
-.pth-trust-item {
-    font-size: 11.5px;
-    font-weight: 700;
-    color: #0f766e;
-    display: flex;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 40px;
     align-items: center;
-    gap: 5px;
-    justify-content: center;
-    text-align: center;
-}
-.pth-enquiry-footer {
-    padding: 14px 24px 20px;
-    border-top: 1px solid #f1f5f9;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 12px;
-    background: #ffffff;
-}
-.pth-btn-ghost {
-    padding: 11px 20px;
-    border-radius: 10px;
-    border: 1.5px solid #e2e8f0;
-    background: #ffffff;
-    color: #475569;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all .15s;
-}
-.pth-btn-ghost:hover {
-    background: #f8fafc;
-    color: #0f172a;
-}
-.pth-btn-teal {
-    padding: 11px 24px;
-    border-radius: 10px;
-    background: #0c6978;
-    border: 1.5px solid #0c6978;
     color: #ffffff;
+    box-shadow: var(--shadow-floating);
+    position: relative;
+    overflow: hidden;
+}
+.kn-banner-eyebrow {
+    color: #5ce1e6;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+.kn-banner-title {
+    font-size: clamp(26px, 2.9vw, 36px);
+    font-weight: 800;
+    line-height: 1.22;
+    margin-bottom: 16px;
+    letter-spacing: -0.03em;
+}
+.kn-banner-desc {
+    font-size: 15px;
+    color: #cfdfe2;
+    line-height: 1.65;
+    margin-bottom: 28px;
+    max-width: 520px;
+}
+.kn-btn-white {
+    background: #ffffff;
+    color: #08353d !important;
+    padding: 13px 26px;
+    border-radius: 10px;
     font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
+    font-weight: 800;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    transition: all .15s;
-    box-shadow: 0 4px 12px rgba(12, 105, 120, 0.25);
-    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
-.pth-btn-teal:hover {
-    background: #074752;
-    border-color: #074752;
-    color: #ffffff;
+.kn-btn-white:hover {
+    background: #eef8f8;
+    transform: translateY(-2px);
 }
-.pth-enquiry-success {
-    padding: 40px 24px;
-    text-align: center;
-    display: none;
-    flex-direction: column;
+.kn-banner-img-box {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    height: 290px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+.kn-banner-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   10. TESTIMONIALS SECTION ("Life feels better...")
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.kn-testimonials-section {
+    padding: 85px 0 95px;
+    background: #fbfdfd;
+    border-top: 1px solid #f0f5f6;
+    border-bottom: 1px solid #f0f5f6;
+}
+.kn-overall-rating-badge {
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
+    background: var(--brand-teal-light);
+    color: var(--brand-teal);
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 800;
+    margin-top: 12px;
 }
-.pth-enquiry-success-icon {
-    width: 60px;
-    height: 60px;
+.kn-overall-rating-badge i {
+    color: var(--gold-star);
+}
+
+.kn-reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    margin-top: 40px;
+}
+.kn-review-card {
+    background: #ffffff;
+    border: 1.5px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    padding: 30px 26px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-subtle);
+    transition: all 0.24s ease;
+}
+.kn-review-card:hover {
+    border-color: var(--brand-teal);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(12, 105, 120, 0.08);
+}
+.kn-review-stars {
+    display: flex;
+    gap: 4px;
+    color: var(--gold-star);
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+.kn-review-quote {
+    font-size: 14.5px;
+    color: var(--text-primary);
+    line-height: 1.62;
+    margin-bottom: 24px;
+    flex: 1;
+}
+.kn-reviewer-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 16px;
+}
+.kn-reviewer-avatar {
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: #dcfce7;
-    color: #16a34a;
-    font-size: 32px;
+    object-fit: cover;
+    background: #e2e8f0;
+}
+.kn-reviewer-info h6 {
+    font-size: 14.5px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+}
+.kn-reviewer-info p {
+    font-size: 12px;
+    color: var(--brand-teal);
+    font-weight: 600;
+    margin: 0;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   11. FAQ ACCORDION + SUPPORT CARD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.kn-faq-section {
+    padding: 90px 0;
+    background: #ffffff;
+}
+.kn-faq-layout {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 60px;
+    align-items: flex-start;
+}
+.kn-support-box {
+    background: #eef6f5;
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    margin-top: 32px;
+    border: 1px solid #dceceb;
+}
+.kn-support-box-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: var(--brand-teal);
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 6px;
+    font-size: 18px;
+    margin-bottom: 16px;
 }
-.pth-enquiry-success h4 {
-    font-size: 20px;
+.kn-support-box h5 {
+    font-size: 17px;
     font-weight: 800;
-    color: #0f172a;
-    margin: 0;
+    color: var(--text-primary);
+    margin-bottom: 8px;
 }
-.pth-enquiry-success p {
-    font-size: 14px;
-    color: #64748b;
-    max-width: 360px;
-    line-height: 1.5;
-    margin: 0;
-}
-.pth-enquiry-error {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    color: #b91c1c;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 10px 14px;
-    border-radius: 10px;
-    display: none;
-}
-.hidden {
-    display: none !important;
+.kn-support-box p {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    margin-bottom: 18px;
 }
 
-@media (max-width: 480px) {
-    .pth-enquiry-modal {
-        max-width: 100%;
-        max-height: 94vh;
-        border-radius: 16px;
+/* Accordion */
+.kn-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.kn-faq-item {
+    border: 1.5px solid var(--card-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+.kn-faq-item.active {
+    border-color: var(--brand-teal);
+}
+.kn-faq-trigger {
+    width: 100%;
+    padding: 20px 22px;
+    background: #ffffff;
+    border: none;
+    outline: none;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    transition: color 0.2s;
+}
+.kn-faq-trigger:hover {
+    color: var(--brand-teal);
+}
+.kn-faq-icon {
+    font-size: 14px;
+    color: var(--brand-teal);
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+}
+.kn-faq-item.active .kn-faq-icon {
+    transform: rotate(45deg);
+}
+.kn-faq-panel {
+    display: none;
+    padding: 0 22px 20px;
+    font-size: 14.5px;
+    color: var(--text-secondary);
+    line-height: 1.62;
+    background: #ffffff;
+}
+.kn-faq-item.active .kn-faq-panel {
+    display: block;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   12. HEALTH ARTICLES / BLOG SECTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.kn-articles-section {
+    padding: 85px 0 95px;
+    background: #fbfdfd;
+    border-top: 1px solid #f0f5f6;
+}
+.kn-articles-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+.kn-article-card {
+    background: #ffffff;
+    border: 1.5px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.25s ease;
+}
+.kn-article-card:hover {
+    border-color: var(--brand-teal);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(12, 105, 120, 0.08);
+}
+.kn-article-img {
+    height: 180px;
+    background: #e2e8f0;
+    overflow: hidden;
+}
+.kn-article-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s ease;
+}
+.kn-article-card:hover .kn-article-img img {
+    transform: scale(1.05);
+}
+.kn-article-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+.kn-article-tag {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--brand-teal);
+    margin-bottom: 8px;
+}
+.kn-article-title {
+    font-size: 15.5px;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.35;
+    margin-bottom: 16px;
+    flex: 1;
+}
+.kn-article-link {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--brand-teal);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: auto;
+}
+.kn-article-card:hover .kn-article-link {
+    transform: translateX(3px);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   13. PRE-FOOTER CTA SECTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.kn-prefooter-cta-wrap {
+    padding: 30px 0 90px;
+    background: #ffffff;
+}
+.kn-prefooter-cta {
+    background: #eef6f5;
+    border-radius: var(--radius-2xl);
+    padding: 56px 30px;
+    text-align: center;
+    border: 1px solid #dceceb;
+}
+.kn-cta-top-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: var(--brand-teal);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 4px 14px rgba(12, 105, 120, 0.12);
+    margin-bottom: 18px;
+}
+.kn-cta-title {
+    font-size: clamp(28px, 3.4vw, 42px);
+    font-weight: 900;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    letter-spacing: -0.03em;
+}
+.kn-cta-subtitle {
+    font-size: 16px;
+    color: var(--text-secondary);
+    max-width: 580px;
+    margin: 0 auto 28px;
+}
+.kn-cta-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+.kn-cta-note {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   14. MODERN DARK FOOTER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.kn-footer {
+    background: var(--brand-slate-deep);
+    color: #e2e8f0;
+    padding: 70px 0 35px;
+    font-size: 14px;
+}
+.kn-footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr 1.2fr;
+    gap: 40px;
+    margin-bottom: 50px;
+}
+.kn-footer-brand-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 24px;
+    font-weight: 900;
+    color: #ffffff;
+    margin-bottom: 16px;
+}
+.kn-footer-brand-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: #0c6978;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+.kn-footer-desc {
+    color: #94a3b8;
+    line-height: 1.65;
+    font-size: 13.5px;
+    max-width: 320px;
+}
+
+.kn-footer-col h6 {
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 18px;
+    letter-spacing: 0.02em;
+}
+.kn-footer-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+}
+.kn-footer-links a {
+    color: #94a3b8;
+    font-size: 13.5px;
+}
+.kn-footer-links a:hover {
+    color: #5ce1e6;
+    transform: translateX(2px);
+}
+
+.kn-footer-contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: #94a3b8;
+    font-size: 13.5px;
+    margin-bottom: 12px;
+}
+.kn-footer-contact-item i {
+    color: #5ce1e6;
+    margin-top: 3px;
+}
+
+.kn-footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 13px;
+    color: #64748b;
+}
+.kn-footer-legal-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.kn-footer-legal-links a {
+    color: #64748b;
+}
+.kn-footer-legal-links a:hover {
+    color: #cbd5e1;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   RESPONSIVE MEDIA QUERIES (Pixel-Perfect Matching)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media (max-width: 1024px) {
+    .kn-nav-menu {
+        display: none;
     }
-    .pth-enquiry-header {
-        padding: 14px 16px;
+    .kn-mobile-toggle {
+        display: block;
     }
-    .pth-enquiry-title {
-        font-size: 15px;
-    }
-    .pth-enquiry-body {
-        padding: 14px 16px 10px;
-    }
-    .pth-enquiry-trust-row {
+    .kn-hero-slide {
         grid-template-columns: 1fr;
-        gap: 6px;
-        text-align: left;
+        gap: 32px;
     }
-    .pth-trust-item {
-        justify-content: flex-start;
+    .kn-hero-content {
+        padding-right: 0;
     }
-    .pth-enquiry-footer {
-        padding: 12px 16px 16px;
-        flex-direction: column-reverse;
-        gap: 8px;
+    .kn-search-form {
+        grid-template-columns: 1fr 1fr;
     }
-    .pth-btn-ghost, .pth-btn-teal {
-        width: 100%;
-        justify-content: center;
-        text-align: center;
+    .kn-search-form .kn-btn-search {
+        grid-column: span 2;
     }
-    .pth-banner-header {
+    .kn-spec-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .kn-doctors-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .kn-values-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .kn-steps-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .kn-split-grid {
+        grid-template-columns: 1fr;
+    }
+    .kn-practitioner-box {
+        grid-template-columns: 1fr;
+        padding: 40px 30px;
+    }
+    .kn-reviews-grid {
+        grid-template-columns: 1fr;
+    }
+    .kn-faq-layout {
+        grid-template-columns: 1fr;
+    }
+    .kn-articles-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .kn-footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .kn-container {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+    .kn-hero-heading {
+        font-size: 32px;
+    }
+    .kn-hero-image-box {
+        height: 320px;
+    }
+    .kn-hero-stats-card {
         flex-direction: column;
         align-items: flex-start;
+        gap: 8px;
+    }
+    .kn-hero-stats-right {
+        border-left: none;
+        padding-left: 0;
+        text-align: left;
+    }
+    .kn-search-card {
+        padding: 18px 16px;
+    }
+    .kn-search-form {
+        grid-template-columns: 1fr;
+    }
+    .kn-search-form .kn-btn-search {
+        grid-column: span 1;
+    }
+    .kn-stats-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    .kn-stat-item:nth-child(2) {
+        border-right: none;
+    }
+    .kn-spec-grid {
+        grid-template-columns: 1fr 1fr;
         gap: 12px;
     }
-    .pth-btn-enquiry-banner {
-        width: 100%;
-        justify-content: center;
+    .kn-spec-card {
+        padding: 16px;
+    }
+    .kn-doctors-grid {
+        grid-template-columns: 1fr;
+    }
+    .kn-values-grid {
+        grid-template-columns: 1fr;
+    }
+    .kn-steps-grid {
+        grid-template-columns: 1fr;
+    }
+    .kn-articles-grid {
+        grid-template-columns: 1fr;
+    }
+    .kn-footer-grid {
+        grid-template-columns: 1fr;
+    }
+    .kn-footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
 </style>
 
-<div class="main-wrapper">
+<div class="kn-main-wrapper">
 
     {{-- ══════════════════════════════════════════════════
-         NAVBAR
+         1. TOP STICKY NAVBAR
     ══════════════════════════════════════════════════ --}}
-    <nav class="pth-navbar">
-        <div class="home-container">
-            <div class="pth-nav-inner">
-                <a href="{{ route('home') }}" class="pth-brand">
-                    <img src="{{ asset('logo.png') }}" alt="PhysioPii" style="height:44px;width:auto;object-fit:contain;display:block;">
+    <header class="kn-navbar-wrapper" id="navbar">
+        <div class="kn-container">
+            <div class="kn-nav-inner">
+                
+                {{-- Brand Logo --}}
+                <a href="{{ route('home') }}" class="kn-brand-link">
+                    <div class="kn-brand-icon-box">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                    <span class="kn-brand-text">kinora</span>
                 </a>
 
-                <ul class="pth-nav-links">
-                    <li><a href="{{ route('home') }}" class="pth-nav-link active">Home</a></li>
-                    <li><a href="#specialists" class="pth-nav-link">Our Specialists</a></li>
-                    <li><a href="#conditions" class="pth-nav-link">Conditions Treated</a></li>
-                    <li><a href="#how-it-works" class="pth-nav-link">How It Works</a></li>
-                    <li><a href="#pricing" class="pth-nav-link">Pricing</a></li>
+                {{-- Desktop Nav Links --}}
+                <ul class="kn-nav-menu">
+                    <li class="kn-nav-item"><a href="{{ route('home') }}" class="active">Home</a></li>
+                    <li class="kn-nav-item"><a href="{{ route('search.doctors') }}">Find Doctors</a></li>
+                    <li class="kn-nav-item"><a href="#specialities">Specialities</a></li>
+                    <li class="kn-nav-item"><a href="#how-it-works">How It Works</a></li>
+                    <li class="kn-nav-item"><a href="#about">About Us</a></li>
+                    <li class="kn-nav-item"><a href="#faq">FAQ</a></li>
                 </ul>
 
-                <div class="pth-nav-right">
-                    <a href="tel:+919513211470" class="pth-call-pill">
-                        <i class="fa-solid fa-phone"></i>
-                        <span>Call Us:</span> (555) 492-1008
-                    </a>
-
+                {{-- Right Nav Actions --}}
+                <div class="kn-nav-actions">
                     @auth
-                        <a href="{{ route('patient.dashboard') }}" class="pth-btn-book">
-                            <i class="fa-solid fa-user"></i> Dashboard
-                        </a>
+                        @if(Auth::user()->role === 'patient')
+                            <a href="{{ route('patient.dashboard') }}" class="kn-login-link">Dashboard</a>
+                        @elseif(Auth::user()->role === 'admin')
+                            <a href="{{ route('admin.appointments.index') }}" class="kn-login-link">Admin</a>
+                        @else
+                            <a href="{{ route('login') }}" class="kn-login-link">Portal</a>
+                        @endif
                     @else
-                        <a href="#specialists" class="pth-btn-book">
-                            Book  Session
-                        </a>
+                        <a href="{{ route('login') }}" class="kn-login-link">Login</a>
                     @endauth
 
-                    <button class="pth-menu-toggle" id="mobileMenuBtn" aria-label="Toggle menu">
+                    <a href="{{ route('search.doctors') }}" class="kn-btn-nav-book">
+                        Book Appointment
+                    </a>
+
+                    {{-- Mobile Hamburger --}}
+                    <button class="kn-mobile-toggle" id="knMobileToggle" aria-label="Toggle navigation">
                         <i class="fa-solid fa-bars"></i>
                     </button>
                 </div>
+
             </div>
         </div>
-    </nav>
+    </header>
+
+    {{-- Mobile Menu Drawer --}}
+    <div class="kn-mobile-drawer" id="knMobileDrawer">
+        <ul class="kn-mobile-menu-list">
+            <li><a href="{{ route('home') }}">Home</a></li>
+            <li><a href="{{ route('search.doctors') }}">Find Doctors</a></li>
+            <li><a href="#specialities">Specialities</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            @auth
+                <li><a href="{{ route('patient.dashboard') }}">My Dashboard</a></li>
+                <li><a href="{{ route('patient.logout') }}">Logout</a></li>
+            @else
+                <li><a href="{{ route('login') }}">Login</a></li>
+                <li><a href="{{ route('patient.register') }}">Register as Patient</a></li>
+            @endauth
+        </ul>
+        <a href="{{ route('search.doctors') }}" class="kn-btn-primary" style="width: 100%;">
+            Book Appointment
+        </a>
+    </div>
 
     {{-- ══════════════════════════════════════════════════
-         HERO SECTION
+         2. HERO SECTION CAROUSEL (3 SLIDES)
     ══════════════════════════════════════════════════ --}}
-    <section class="pth-hero-section">
-        <div class="home-container">
-            <div class="pth-hero-grid">
+    <section class="kn-hero-wrapper">
+        <div class="kn-container">
 
-                {{-- Left Content --}}
-                <div class="pth-hero-left">
-                    <div class="pth-hero-badge">
-                        <span class="pth-badge-dot"></span>
-                        EXPERT CARE IN YOUR COMFORT ZONE
-                    </div>
+            <div class="kn-hero-carousel-container" id="knHeroCarousel">
 
-                    <h1 class="pth-hero-title">
-                        Professional Physiotherapy,<br>
-                        Right in Your Living Room
-                    </h1>
-
-                    <p class="pth-hero-sub">
-                        Skip the stressful commute and clinical waiting rooms. Receive certified, trusted home-visit physiotherapists specialized in pain recovery, injury rehabilitation, and personalized mobility care.
-                    </p>
-
-                    {{-- Search condition bar --}}
-                    <div class="pth-search-container" id="conditions">
-                        <div class="pth-search-box">
-                            <i class="fa-solid fa-magnifying-glass pth-search-icon"></i>
-                            <input
-                                type="text"
-                                id="doctorSearch"
-                                class="pth-search-input"
-                                placeholder="Search your condition (e.g. Back pain, Stroke rehab, Knee injury)..."
-                                autocomplete="off"
-                            >
-                            <button type="button" class="pth-search-btn" id="searchSubmitBtn">
-                                Find Doctors
-                            </button>
+                {{-- SLIDE 1: Live pain-free, live better --}}
+                <div class="kn-hero-slide active" data-slide-index="0">
+                    <div class="kn-hero-content">
+                        <div class="kn-eyebrow">
+                            <span class="kn-eyebrow-dot"></span> Live pain-free, live better
                         </div>
-                        <div id="hp-doctor-dropdown"></div>
-                    </div>
-
-                    {{-- ── Popular Conditions Grid Cards (Click & Filter Directly) ── --}}
-                    <div class="pth-popular-conditions">
-                        <div class="pth-pop-cond-header">
-                            <span class="pth-pop-cond-title">Popular Conditions</span>
-                            <button type="button" class="pth-pop-clear-btn" id="clearPopCondBtn" style="display:none;" onclick="clearConditionFilter()">
-                                <i class="fa-solid fa-xmark"></i> Clear Filter
-                            </button>
+                        <h1 class="kn-hero-heading">
+                            Your next chapter starts with better movement.
+                        </h1>
+                        <p class="kn-hero-desc">
+                            Find verified physiotherapists for in-clinic and online sessions. Personalised care, zero guesswork, recovery that actually lasts.
+                        </p>
+                        <div class="kn-hero-actions">
+                            <a href="{{ route('search.doctors') }}" class="kn-btn-primary">
+                                Find Physiotherapist <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 13px;"></i>
+                            </a>
+                            <a href="#search-bar" class="kn-btn-secondary">
+                                Book Appointment
+                            </a>
                         </div>
-
-                        <div class="pth-pop-cond-grid">
-                            {{-- Back Pain --}}
-                            <div class="pth-cond-card" data-condition="Back Pain" onclick="toggleConditionFilter('Back Pain', this)">
-                                <svg class="pth-cond-icon-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M16 10 C16 6, 32 6, 32 10 C32 14, 28 16, 28 20 C28 26, 34 32, 34 40 L14 40 C14 32, 20 26, 20 20 C20 16, 16 14, 16 10 Z" stroke="#0c6978" fill="#f0fdfa"/>
-                                    <circle cx="24" cy="14" r="1.5" fill="#0c6978"/>
-                                    <circle cx="24" cy="20" r="1.8" fill="#0c6978"/>
-                                    <circle cx="24" cy="26" r="2.2" fill="#ef4444"/>
-                                    <circle cx="24" cy="32" r="2.2" fill="#ef4444"/>
-                                    <path d="M19 28 L17 29 M29 28 L31 29 M19 31 L17 32 M29 31 L31 32" stroke="#ef4444" stroke-width="2"/>
-                                </svg>
-                                <span class="pth-cond-name">Back Pain</span>
-                            </div>
-
-                            {{-- Neck Pain --}}
-                            <div class="pth-cond-card" data-condition="Neck Pain" onclick="toggleConditionFilter('Neck Pain', this)">
-                                <svg class="pth-cond-icon-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="24" cy="14" r="7" stroke="#0c6978" fill="#f0fdfa"/>
-                                    <path d="M21 21 L21 27 C16 28, 12 32, 10 38 L38 38 C36 32, 32 28, 27 27 L27 21" stroke="#0c6978"/>
-                                    <path d="M17 23 L14 22 M17 26 L14 27 M31 23 L34 22 M31 26 L34 27" stroke="#ef4444" stroke-width="2"/>
-                                    <circle cx="24" cy="25" r="2" fill="#ef4444"/>
-                                </svg>
-                                <span class="pth-cond-name">Neck Pain</span>
-                            </div>
-
-                            {{-- Knee Pain --}}
-                            <div class="pth-cond-card" data-condition="Knee Pain" onclick="toggleConditionFilter('Knee Pain', this)">
-                                <svg class="pth-cond-icon-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M16 10 L28 22 L20 38" stroke="#0c6978" stroke-width="3" fill="none"/>
-                                    <circle cx="28" cy="22" r="4" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
-                                    <path d="M34 18 L37 16 M35 22 L39 22 M34 26 L37 28" stroke="#ef4444" stroke-width="2"/>
-                                </svg>
-                                <span class="pth-cond-name">Knee Pain</span>
-                            </div>
-
-                            {{-- Shoulder Pain --}}
-                            <div class="pth-cond-card" data-condition="Shoulder Pain" onclick="toggleConditionFilter('Shoulder Pain', this)">
-                                <svg class="pth-cond-icon-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="20" cy="14" r="6" stroke="#0c6978" fill="#f0fdfa"/>
-                                    <path d="M17 20 C12 24, 12 34, 12 40 L28 40" stroke="#0c6978"/>
-                                    <path d="M24 20 C32 20, 36 26, 34 34 L26 28" stroke="#0c6978"/>
-                                    <circle cx="30" cy="23" r="3" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
-                                    <path d="M35 18 L38 16 M36 24 L40 24" stroke="#ef4444" stroke-width="2"/>
-                                </svg>
-                                <span class="pth-cond-name">Shoulder Pain</span>
-                            </div>
-
-                            {{-- Hip Pain --}}
-                            <div class="pth-cond-card" data-condition="Hip Pain" onclick="toggleConditionFilter('Hip Pain', this)">
-                                <svg class="pth-cond-icon-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="24" cy="11" r="5" stroke="#0c6978" fill="#f0fdfa"/>
-                                    <path d="M24 16 L24 27 M24 27 L18 39 M24 27 L30 39" stroke="#0c6978" stroke-width="2.5"/>
-                                    <circle cx="27" cy="27" r="3.5" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
-                                    <path d="M32 24 L35 23 M33 29 L36 31" stroke="#ef4444" stroke-width="2"/>
-                                </svg>
-                                <span class="pth-cond-name">Hip Pain</span>
-                            </div>
+                        <div class="kn-hero-guarantee">
+                            <i class="fa-regular fa-circle-check"></i>
+                            <span>Verified experts · No booking fees · Your care, your choice</span>
                         </div>
                     </div>
 
+                    <div class="kn-hero-visual">
+                        <div class="kn-floating-top-badge">
+                            <i class="fa-regular fa-heart"></i> Top rated care
+                        </div>
+                        <div class="kn-hero-image-box">
+                            <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80" alt="Physiotherapist guiding patient arm recovery">
+                        </div>
+                        <div class="kn-hero-stats-card">
+                            <div class="kn-hero-stats-left">
+                                <h5>Recovery built around your goals</h5>
+                                <p>Real people. Expert hands.</p>
+                            </div>
+                            <div class="kn-hero-stats-right">
+                                <div class="kn-hero-stats-num">
+                                    <span>4.9</span> <i class="fa-solid fa-star" style="color: #f59e0b; font-size: 14px;"></i>
+                                </div>
+                                <div class="kn-hero-stats-sub">20k+ reviews</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                {{-- Right Visual: Sleek Interactive App Mockup --}}
-                <div class="pth-mockup-wrapper">
-                    <div class="pth-phone-mockup">
-                        <div class="pth-mock-header">
-                            <span style="font-size:11px;font-weight:700;color:#0c6978;">Physiopii Mobile</span>
-                            <div class="pth-mock-notch"></div>
-                            <i class="fa-solid fa-wifi" style="font-size:10px;color:#94a3b8;"></i>
+                {{-- SLIDE 2: Get back to what you love --}}
+                <div class="kn-hero-slide" data-slide-index="1">
+                    <div class="kn-hero-content">
+                        <div class="kn-eyebrow">
+                            <span class="kn-eyebrow-dot"></span> Get back to what you love
                         </div>
-
-                        <div class="pth-mock-categories">
-                            <div class="pth-mock-cat-item" style="cursor:pointer" onclick="toggleConditionFilter('Back Pain')">
-                                <div class="pth-mock-cat-icon"><i class="fa-solid fa-bone"></i></div>
-                                <div class="pth-mock-cat-text">Spine</div>
-                            </div>
-                            <div class="pth-mock-cat-item" style="cursor:pointer" onclick="toggleConditionFilter('Knee Pain')">
-                                <div class="pth-mock-cat-icon"><i class="fa-solid fa-person-walking"></i></div>
-                                <div class="pth-mock-cat-text">Knee</div>
-                            </div>
-                            <div class="pth-mock-cat-item" style="cursor:pointer" onclick="toggleConditionFilter('Shoulder Pain')">
-                                <div class="pth-mock-cat-icon"><i class="fa-solid fa-hand-dots"></i></div>
-                                <div class="pth-mock-cat-text">Joints</div>
-                            </div>
-                            <div class="pth-mock-cat-item" style="cursor:pointer" onclick="toggleConditionFilter('Neck Pain')">
-                                <div class="pth-mock-cat-icon"><i class="fa-solid fa-brain"></i></div>
-                                <div class="pth-mock-cat-text">Neuro</div>
-                            </div>
+                        <h2 class="kn-hero-heading">
+                            A stronger comeback. One step at a time.
+                        </h2>
+                        <p class="kn-hero-desc">
+                            From your first pain-free walk to your next finish line, connect with sports and orthopedic specialists who put your goals first.
+                        </p>
+                        <div class="kn-hero-actions">
+                            <a href="{{ route('search.doctors') }}" class="kn-btn-primary">
+                                Find Physiotherapist <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 13px;"></i>
+                            </a>
+                            <a href="#search-bar" class="kn-btn-secondary">
+                                Book Appointment
+                            </a>
                         </div>
+                        <div class="kn-hero-guarantee">
+                            <i class="fa-regular fa-circle-check"></i>
+                            <span>Verified experts · No booking fees · Your care, your choice</span>
+                        </div>
+                    </div>
 
-                        {{-- Mock Primary Card --}}
-                        <div class="pth-mock-card-primary">
-                            <div class="pth-mock-card-top">
-                                <div class="pth-mock-card-title"><i class="fa-solid fa-house-medical"></i> Book a Session</div>
-                                <span class="pth-mock-card-pill">Active</span>
+                    <div class="kn-hero-visual">
+                        <div class="kn-floating-top-badge">
+                            <i class="fa-regular fa-heart"></i> Made for your comeback
+                        </div>
+                        <div class="kn-hero-image-box">
+                            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1200&q=80" alt="Athletic rehabilitation resistance training">
+                        </div>
+                        <div class="kn-hero-stats-card">
+                            <div class="kn-hero-stats-left">
+                                <h5>Recovery built around your goals</h5>
+                                <p>Real people. Expert hands.</p>
                             </div>
-                            <div class="pth-mock-card-desc">
-                                Quality home care delivered with verified therapist background checks.
-                            </div>
-                            <div class="pth-mock-stats-row">
-                                <div>
-                                    <div class="pth-mock-stat-val">100+</div>
-                                    <div class="pth-mock-stat-lbl">Physios</div>
+                            <div class="kn-hero-stats-right">
+                                <div class="kn-hero-stats-num">
+                                    <span>500+</span>
                                 </div>
-                                <div>
-                                    <div class="pth-mock-stat-val">4.9★</div>
-                                    <div class="pth-mock-stat-lbl">Rating</div>
-                                </div>
-                                <div>
-                                    <div class="pth-mock-stat-val">10k+</div>
-                                    <div class="pth-mock-stat-lbl">Sessions</div>
-                                </div>
+                                <div class="kn-hero-stats-sub">verified specialists</div>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        {{-- Mock Doctor Preview Box --}}
-                        <div class="pth-mock-doc-box">
-                            <div class="pth-mock-doc-header">
-                                <div class="pth-mock-doc-avatar">DJ</div>
-                                <div>
-                                    <div class="pth-mock-doc-name">
-                                        Dr. John
-                                        <span class="pth-mock-doc-badge">★ Verified</span>
-                                    </div>
-                                    <div class="pth-mock-doc-sub">MPT (Neuro Rehab) &middot; 10 Years Exp.</div>
-                                    <div style="font-size:10px;color:#d97706;margin-top:2px;">★ 4.9 (152 Reviews)</div>
-                                </div>
+                {{-- SLIDE 3: Expert care, wherever you are --}}
+                <div class="kn-hero-slide" data-slide-index="2">
+                    <div class="kn-hero-content">
+                        <div class="kn-eyebrow">
+                            <span class="kn-eyebrow-dot"></span> Expert care, wherever you are
+                        </div>
+                        <h2 class="kn-hero-heading">
+                            Feel better. Without going out of your way.
+                        </h2>
+                        <p class="kn-hero-desc">
+                            Choose in-clinic or online physiotherapy that fits your life. Book a verified specialist and start your personalised recovery from home.
+                        </p>
+                        <div class="kn-hero-actions">
+                            <a href="{{ route('search.doctors') }}" class="kn-btn-primary">
+                                Book Appointment <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 13px;"></i>
+                            </a>
+                            <a href="{{ route('search.doctors') }}" class="kn-btn-secondary">
+                                Find Physiotherapist
+                            </a>
+                        </div>
+                        <div class="kn-hero-guarantee">
+                            <i class="fa-regular fa-circle-check"></i>
+                            <span>Verified experts · No booking fees · Your care, your choice</span>
+                        </div>
+                    </div>
+
+                    <div class="kn-hero-visual">
+                        <div class="kn-floating-top-badge">
+                            <i class="fa-regular fa-heart"></i> Care that fits your life
+                        </div>
+                        <div class="kn-hero-image-box">
+                            <img src="https://images.unsplash.com/photo-1584432810601-6c7f27d2362b?auto=format&fit=crop&w=1200&q=80" alt="Home virtual video physiotherapy session">
+                        </div>
+                        <div class="kn-hero-stats-card">
+                            <div class="kn-hero-stats-left">
+                                <h5>Personalised support, at home</h5>
+                                <p>Real people. Expert hands.</p>
                             </div>
-                            <div class="pth-mock-doc-footer">
-                                <span class="pth-mock-doc-status">
-                                    <i class="fa-solid fa-circle" style="font-size:6px;"></i> Available Today
-                                </span>
-                                <span class="pth-mock-doc-price">₹1,100 / session</span>
+                            <div class="kn-hero-stats-right">
+                                <div class="kn-hero-stats-num">
+                                    <span>24/7</span>
+                                </div>
+                                <div class="kn-hero-stats-sub">easy online booking</div>
                             </div>
                         </div>
-
                     </div>
                 </div>
 
             </div>
-        </div>
-    </section>
 
-    {{-- ══════════════════════════════════════════════════
-         VALUE / TREATMENT BANNER (Dark Teal Box)
-    ══════════════════════════════════════════════════ --}}
-    <section class="pth-value-banner-wrap" id="pricing">
-        <div class="home-container">
-            <div class="pth-value-banner">
-
-                <div class="pth-banner-top">
-                    <div class="pth-banner-left">
-                        <div class="pth-banner-icon">
-                            <i class="fa-regular fa-calendar-check"></i>
-                        </div>
-                        <div>
-                            <div class="pth-banner-title">Book a Treatment Session</div>
-                            <div class="pth-banner-desc">Quality healthcare delivered directly in the safety and comfort of your home.</div>
-                        </div>
+            {{-- Hero Slider Navigation Controls --}}
+            <div class="kn-hero-controls">
+                <div class="kn-carousel-progress">
+                    <div class="kn-dots-track">
+                        <button class="kn-dot-btn active" data-slide-to="0" aria-label="Slide 1"></button>
+                        <button class="kn-dot-btn" data-slide-to="1" aria-label="Slide 2"></button>
+                        <button class="kn-dot-btn" data-slide-to="2" aria-label="Slide 3"></button>
                     </div>
-                    <button type="button" class="pth-btn-white" onclick="openEnquiryModal()" style="border:none;cursor:pointer;">
-                        Book Home Visit <i class="fa-solid fa-arrow-right"></i>
+                    <div class="kn-counter-text" id="knSlideCounter">01 / 03</div>
+                </div>
+
+                <div class="kn-carousel-arrows">
+                    <button class="kn-arrow-btn" id="knPrevBtn" aria-label="Previous slide">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <button class="kn-arrow-btn" id="knNextBtn" aria-label="Next slide">
+                        <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
-
-                <div class="pth-banner-features">
-                    <div class="pth-feat-item">
-                        <div class="pth-feat-icon">
-                            <i class="fa-solid fa-shield-halved"></i>
-                        </div>
-                        <div>
-                            <div class="pth-feat-title">Verified Experts</div>
-                            <div class="pth-feat-desc">Receive certified, vetted and background-checked physios.</div>
-                        </div>
-                    </div>
-
-                    <div class="pth-feat-item">
-                        <div class="pth-feat-icon">
-                            <i class="fa-solid fa-tags"></i>
-                        </div>
-                        <div>
-                            <div class="pth-feat-title">Affordable Care</div>
-                            <div class="pth-feat-desc">Transparent session packages with no hidden consultation fees.</div>
-                        </div>
-                    </div>
-
-                    <div class="pth-feat-item">
-                        <div class="pth-feat-icon">
-                            <i class="fa-solid fa-house-chimney-user"></i>
-                        </div>
-                        <div>
-                            <div class="pth-feat-title">At Your Home</div>
-                            <div class="pth-feat-desc">Convenient treatment in the familiar, stress-free comfort of your living space.</div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    {{-- ══════════════════════════════════════════════════
-         AVAILABLE NEARBY PHYSIOS
-    ══════════════════════════════════════════════════ --}}
-    <section class="pth-doctors-section" id="specialists">
-        <div class="home-container">
-
-            <div class="pth-section-header">
-                <div>
-                    <h2 class="pth-sec-title">Available Nearby Physios</h2>
-                    <p class="pth-sec-sub">Certified, home-visit physiotherapists active in your immediate locality</p>
-                </div>
-                <a href="javascript:void(0)" onclick="clearConditionFilter()" class="pth-see-all-link">
-                    See All Specialists <i class="fa-solid fa-chevron-right"></i>
-                </a>
-            </div>
-
-            {{-- Filter Status Alert Bar --}}
-            <div id="pth-filter-banner">
-                <div class="pth-filter-banner-text">
-                    <i class="fa-solid fa-filter" style="margin-right:6px;color:var(--primary-teal);"></i>
-                    Filtered by: <strong id="pth-active-filter-text">Back Pain</strong>
-                    <span id="pth-filter-count" style="font-size:12.5px;color:#64748b;margin-left:8px;"></span>
-                </div>
-                <button type="button" class="pth-filter-badge-btn" onclick="clearConditionFilter()">
-                    <i class="fa-solid fa-xmark"></i> Clear Filter
-                </button>
-            </div>
-
-            {{-- Doctors Grid --}}
-            <div class="pth-doctors-grid" id="pthDoctorsGrid">
-                @forelse($doctors as $doctor)
-                    @php
-                        $rating = round(optional($doctor->profile)->rating ?? 4.9, 1);
-                        if ($rating < 4.5) $rating = 4.9;
-                        $expYears = optional($doctor->profile)->experience_years ?? 8;
-                        $qualification = optional($doctor->profile)->qualification ?? 'MPT';
-                        $specName = optional(optional($doctor->profile)->specializationdata)->name ?? 'Pain & Mobility Rehab';
-                        $hasImg = !empty($doctor->profile_img);
-                        $reviewsCount = rand(90, 210);
-
-                        $searchKeywords = strtolower($doctor->name . ' ' . $qualification . ' ' . $specName . ' ' . ($doctor->address ?? ''));
-                    @endphp
-                    <div class="pth-doctor-card"
-                         data-name="{{ strtolower($doctor->name) }}"
-                         data-spec="{{ strtolower($specName) }}"
-                         data-qual="{{ strtolower($qualification) }}"
-                         data-keywords="{{ $searchKeywords }}">
-                        <div>
-                            <a href="{{ route('doctor.profile', $doctor->id) }}" class="pth-doc-header" style="text-decoration:none;color:inherit;">
-                                @if($hasImg)
-                                    <img
-                                        src="{{ str_contains($doctor->profile_img, '/') ? asset($doctor->profile_img) : asset('uploads/profile/'.$doctor->profile_img) }}"
-                                        alt="{{ $doctor->name }}"
-                                        class="pth-doc-avatar"
-                                    >
-                                @else
-                                    <div class="pth-doc-avatar-ph">
-                                        {{ strtoupper(substr($doctor->name, 0, 1)) }}
-                                    </div>
-                                @endif
-
-                                <div class="pth-doc-details">
-                                    <div class="pth-doc-name-row">
-                                        <div class="pth-doc-name">Dr. {{ $doctor->name }}</div>
-                                        <span class="pth-badge-verified">★ Verified</span>
-                                    </div>
-                                    <div class="pth-doc-spec">{{ $qualification }} ({{ $specName }})</div>
-                                    <div class="pth-doc-stats-mini">
-                                        <span class="pth-doc-rating">★ {{ $rating }} ({{ $reviewsCount }} Reviews)</span>
-                                        <span>&middot; {{ $expYears }} Years Exp.</span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-
-                        <div class="pth-doc-card-bottom">
-                            <span class="pth-status-tag">Available Today</span>
-                            <a href="{{ route('doctor.profile', $doctor->id) }}" class="pth-btn-book-sm">
-                                Book  Session
-                            </a>
-                        </div>
-                    </div>
-                @empty
-                    {{-- Default fallback doctor cards if empty database --}}
-                    <div class="pth-doctor-card" data-keywords="back spine neuro ortho john">
-                        <div>
-                            <div class="pth-doc-header">
-                                <div class="pth-doc-avatar-ph">J</div>
-                                <div class="pth-doc-details">
-                                    <div class="pth-doc-name-row">
-                                        <div class="pth-doc-name">Dr. John</div>
-                                        <span class="pth-badge-verified">★ Verified</span>
-                                    </div>
-                                    <div class="pth-doc-spec">MPT (Neuro &amp; Spine Rehab)</div>
-                                    <div class="pth-doc-stats-mini">
-                                        <span class="pth-doc-rating">★ 4.9 (152 Reviews)</span>
-                                        <span>&middot; 10 Years Exp.</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="pth-doc-card-bottom">
-                            <span class="pth-status-tag">Available Today</span>
-                            <a href="{{ route('login') }}" class="pth-btn-book-sm">Book Home Session</a>
-                        </div>
-                    </div>
-
-                    <div class="pth-doctor-card" data-keywords="knee joint ortho arthritis millward">
-                        <div>
-                            <div class="pth-doc-header">
-                                <div class="pth-doc-avatar-ph">K</div>
-                                <div class="pth-doc-details">
-                                    <div class="pth-doc-name-row">
-                                        <div class="pth-doc-name">Dr. Karen Millward</div>
-                                        <span class="pth-badge-verified">★ Verified</span>
-                                    </div>
-                                    <div class="pth-doc-spec">MPT (Orthopaedic &amp; Knee Care)</div>
-                                    <div class="pth-doc-stats-mini">
-                                        <span class="pth-doc-rating">★ 4.9 (142 Reviews)</span>
-                                        <span>&middot; 8 Years Exp.</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="pth-doc-card-bottom">
-                            <span class="pth-status-tag">Available Today</span>
-                            <a href="{{ route('login') }}" class="pth-btn-book-sm">Book Home Session</a>
-                        </div>
-                    </div>
-
-                    <div class="pth-doctor-card" data-keywords="shoulder neck sports patel">
-                        <div>
-                            <div class="pth-doc-header">
-                                <div class="pth-doc-avatar-ph">A</div>
-                                <div class="pth-doc-details">
-                                    <div class="pth-doc-name-row">
-                                        <div class="pth-doc-name">Dr. Avis Patel</div>
-                                        <span class="pth-badge-verified">★ Verified</span>
-                                    </div>
-                                    <div class="pth-doc-spec">MPT (Sports &amp; Shoulder Rehabilitation)</div>
-                                    <div class="pth-doc-stats-mini">
-                                        <span class="pth-doc-rating">★ 4.9 (196 Reviews)</span>
-                                        <span>&middot; 12 Years Exp.</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="pth-doc-card-bottom">
-                            <span class="pth-status-tag">Available Today</span>
-                            <a href="{{ route('login') }}" class="pth-btn-book-sm">Book Home Session</a>
-                        </div>
-                    </div>
-                @endforelse
-            </div>
-
-            {{-- Zero results message --}}
-            <div id="pthNoDoctors" style="display:none;text-align:center;padding:48px 24px;background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:18px;margin-top:20px;">
-                <div style="font-size:36px;color:#0c6978;margin-bottom:10px;"><i class="fa-solid fa-user-doctor"></i></div>
-                <h3 style="font-size:18px;font-weight:800;color:#0f172a;margin-bottom:6px;">No specific specialists found for this category</h3>
-                <p style="font-size:14px;color:#64748b;margin-bottom:18px;">All our licensed home physiotherapists are certified across multiple rehabilitation categories.</p>
-                <button type="button" class="pth-btn-book" onclick="clearConditionFilter()" style="margin:0 auto;">
-                    View All Available Physios
-                </button>
             </div>
 
         </div>
     </section>
 
     {{-- ══════════════════════════════════════════════════
-         WHY CHOOSE US
+         3. FLOATING APPOINTMENT SEARCH BAR & STATS ROW
     ══════════════════════════════════════════════════ --}}
-    <section class="pth-why-section">
-        <div class="home-container">
-
-            <div class="pth-center-head">
-                <div class="pth-center-badge">
-                    WHY CHOOSE US
+    <section class="kn-search-outer" id="search-bar">
+        <div class="kn-container">
+            
+            <div class="kn-search-card">
+                <div class="kn-search-header-row">
+                    <div class="kn-search-title">Find care that fits your schedule</div>
+                    <div class="kn-search-tag">Instant appointment booking</div>
                 </div>
-                <h2 class="pth-center-title">Why Choose PhysioAtHome</h2>
-                <p class="pth-center-sub">
-                    We combine clinical expertise with the comfort of your home for a truly personalized recovery experience.
+
+                <form action="{{ route('search.doctors') }}" method="GET" class="kn-search-form">
+                    {{-- 1. Location --}}
+                    <div class="kn-form-group">
+                        <label class="kn-form-label">Location</label>
+                        <div class="kn-input-wrap">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <input type="text" name="location" placeholder="e.g. London or postcode" value="{{ request('location') }}">
+                        </div>
+                    </div>
+
+                    {{-- 2. Speciality (Dynamic from database) --}}
+                    <div class="kn-form-group">
+                        <label class="kn-form-label">Speciality</label>
+                        <div class="kn-input-wrap">
+                            <i class="fa-solid fa-stethoscope"></i>
+                            <select name="specialization">
+                                <option value="">All Specialities</option>
+                                @foreach($specializations as $spec)
+                                    <option value="{{ $spec->id }}" {{ request('specialization') == $spec->id ? 'selected' : '' }}>
+                                        {{ $spec->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- 3. Visit Type --}}
+                    <div class="kn-form-group">
+                        <label class="kn-form-label">Visit type</label>
+                        <div class="kn-input-wrap">
+                            <i class="fa-solid fa-building"></i>
+                            <select name="visit_type">
+                                <option value="all">Clinic &amp; Home Visit</option>
+                                <option value="clinic">In-Clinic Visit</option>
+                                <option value="home">Home Visit</option>
+                                <option value="online">Online Video Consult</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- 4. Date --}}
+                    <div class="kn-form-group">
+                        <label class="kn-form-label">Date</label>
+                        <div class="kn-input-wrap">
+                            <i class="fa-regular fa-calendar-days"></i>
+                            <input type="date" name="date" value="{{ request('date') ?? date('Y-m-d') }}">
+                        </div>
+                    </div>
+
+                    {{-- Search Submit Button --}}
+                    <button type="submit" class="kn-btn-search">
+                        Search
+                    </button>
+                </form>
+            </div>
+
+            {{-- 4 Metric Stats Strip --}}
+            <div class="kn-stats-row">
+                <div class="kn-stat-item">
+                    <div class="kn-stat-number">150+</div>
+                    <div class="kn-stat-label">Verified Specialists</div>
+                </div>
+                <div class="kn-stat-item">
+                    <div class="kn-stat-number">20,000+</div>
+                    <div class="kn-stat-label">Patients Treated</div>
+                </div>
+                <div class="kn-stat-item">
+                    <div class="kn-stat-number">4.9/5</div>
+                    <div class="kn-stat-label">Average Patient Rating</div>
+                </div>
+                <div class="kn-stat-item">
+                    <div class="kn-stat-number">40+</div>
+                    <div class="kn-stat-label">Specialised Conditions</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    {{-- ══════════════════════════════════════════════════
+         4. SPECIALITIES SECTION ("The right expertise...")
+    ══════════════════════════════════════════════════ --}}
+    <section class="kn-specialities-section" id="specialities">
+        <div class="kn-container">
+
+            <div class="kn-section-header">
+                <div class="kn-eyebrow">
+                    <span class="kn-eyebrow-dot"></span> Explore by condition
+                </div>
+                <h2 class="kn-section-title">
+                    The right expertise. For your recovery.
+                </h2>
+                <p class="kn-section-subtitle">
+                    Find clinicians specialized in your specific needs, from joint pain to neurological rehabilitation.
                 </p>
             </div>
 
-            <div class="pth-why-grid">
-                <div class="pth-why-card">
-                    <div class="pth-why-icon-wrap">
-                        <i class="fa-solid fa-shield-heart"></i>
-                    </div>
-                    <div class="pth-why-title">Verified &amp; Experienced Physiotherapists</div>
-                    <div class="pth-why-desc">
-                        All our therapists undergo rigorous background checks, qualification vetting, and carry proven clinical track records.
-                    </div>
-                </div>
+            <div class="kn-spec-grid">
+                @php
+                    // Pre-defined condition metadata matching the 8 mockup items
+                    $specDefaults = [
+                        [
+                            'name' => 'Back Pain',
+                            'icon' => 'fa-solid fa-bone',
+                            'desc' => 'Lower back, sciatica & disc issues'
+                        ],
+                        [
+                            'name' => 'Neck & Shoulder',
+                            'icon' => 'fa-solid fa-person-arrow-up-from-line',
+                            'desc' => 'Stiffness, frozen shoulder & rotator cuff'
+                        ],
+                        [
+                            'name' => 'Knee & Hip',
+                            'icon' => 'fa-solid fa-person-walking',
+                            'desc' => 'Arthritis, meniscus & ligament rehab'
+                        ],
+                        [
+                            'name' => 'Sports Injuries',
+                            'icon' => 'fa-solid fa-person-running',
+                            'desc' => 'Sprains, strains & return-to-sport'
+                        ],
+                        [
+                            'name' => 'Post-Surgery',
+                            'icon' => 'fa-solid fa-hospital-user',
+                            'desc' => 'Joint replacement & surgical rehab'
+                        ],
+                        [
+                            'name' => 'Neuro Rehab',
+                            'icon' => 'fa-solid fa-brain',
+                            'desc' => "Stroke, Parkinson's & nerve conditions"
+                        ],
+                        [
+                            'name' => "Women's Health",
+                            'icon' => 'fa-solid fa-venus',
+                            'desc' => 'Prenatal, postpartum & pelvic floor'
+                        ],
+                        [
+                            'name' => 'Geriatric Care',
+                            'icon' => 'fa-solid fa-hands-holding-child',
+                            'desc' => 'Mobility, balance & fall prevention'
+                        ],
+                    ];
+                @endphp
 
-                <div class="pth-why-card">
-                    <div class="pth-why-icon-wrap">
-                        <i class="fa-solid fa-user-doctor"></i>
-                    </div>
-                    <div class="pth-why-title">Personalized Treatment</div>
-                    <div class="pth-why-desc">
-                        Every session is crafted around your unique condition, lifestyle, and recovery goals — no generic exercises.
-                    </div>
-                </div>
+                @if($specializations && $specializations->count() > 0)
+                    {{-- Render dynamically from DB with fallback icons --}}
+                    @foreach($specializations->take(8) as $index => $spec)
+                        @php
+                            $defaultItem = $specDefaults[$index % count($specDefaults)];
+                            $iconClass = $defaultItem['icon'];
+                            $desc = !empty($spec->description) ? Str::limit($spec->description, 45) : $defaultItem['desc'];
+                        @endphp
+                        <a href="{{ route('search.doctors', ['specialization' => $spec->id]) }}" class="kn-spec-card">
+                            <div class="kn-spec-icon-box">
+                                <i class="{{ $iconClass }}"></i>
+                            </div>
+                            <h3 class="kn-spec-title">{{ $spec->name }}</h3>
+                            <p class="kn-spec-desc">{{ $desc }}</p>
+                        </a>
+                    @endforeach
 
-                <div class="pth-why-card">
-                    <div class="pth-why-icon-wrap">
-                        <i class="fa-solid fa-house-user"></i>
-                    </div>
-                    <div class="pth-why-title">Home Visit Convenience</div>
-                    <div class="pth-why-desc">
-                        No more stressful clinic commutes. Your therapist comes equipped directly to your doorstep at your chosen time.
-                    </div>
-                </div>
-
-                <div class="pth-why-card">
-                    <div class="pth-why-icon-wrap">
-                        <i class="fa-solid fa-chart-line"></i>
-                    </div>
-                    <div class="pth-why-title">Track Progress Digitally</div>
-                    <div class="pth-why-desc">
-                        Monitor your recovery milestones, session notes, and therapist feedback through our intuitive mobile/web app.
-                    </div>
-                </div>
-
-                <div class="pth-why-card">
-                    <div class="pth-why-icon-wrap">
-                        <i class="fa-solid fa-hands-holding-child"></i>
-                    </div>
-                    <div class="pth-why-title">Safe, Hygienic &amp; Comfortable</div>
-                    <div class="pth-why-desc">
-                        Our therapists follow strict hygiene protocols and assist your family in rehabilitation exercises safely.
-                    </div>
-                </div>
-
-                <div class="pth-why-card">
-                    <div class="pth-why-icon-wrap">
-                        <i class="fa-regular fa-clock"></i>
-                    </div>
-                    <div class="pth-why-title">Flexible Scheduling</div>
-                    <div class="pth-why-desc">
-                        Early morning, afternoon, or evening slots fit with ease in your routine — including weekend appointments.
-                    </div>
-                </div>
+                    {{-- If fewer than 8 in DB, render remaining default slots --}}
+                    @for($i = $specializations->count(); $i < 8; $i++)
+                        @php $item = $specDefaults[$i]; @endphp
+                        <a href="{{ route('search.doctors', ['keyword' => $item['name']]) }}" class="kn-spec-card">
+                            <div class="kn-spec-icon-box">
+                                <i class="{{ $item['icon'] }}"></i>
+                            </div>
+                            <h3 class="kn-spec-title">{{ $item['name'] }}</h3>
+                            <p class="kn-spec-desc">{{ $item['desc'] }}</p>
+                        </a>
+                    @endfor
+                @else
+                    {{-- Fallback matching exact mockup --}}
+                    @foreach($specDefaults as $item)
+                        <a href="{{ route('search.doctors', ['keyword' => $item['name']]) }}" class="kn-spec-card">
+                            <div class="kn-spec-icon-box">
+                                <i class="{{ $item['icon'] }}"></i>
+                            </div>
+                            <h3 class="kn-spec-title">{{ $item['name'] }}</h3>
+                            <p class="kn-spec-desc">{{ $item['desc'] }}</p>
+                        </a>
+                    @endforeach
+                @endif
             </div>
 
         </div>
     </section>
 
     {{-- ══════════════════════════════════════════════════
-         HOW TO BOOK YOUR HOME SESSION (5 Steps)
+         5. FEATURED DOCTORS ("Meet your recovery partners")
     ══════════════════════════════════════════════════ --}}
-    <section class="pth-how-section" id="how-it-works">
-        <div class="home-container">
+    <section class="kn-doctors-section" id="specialists">
+        <div class="kn-container">
 
-            <div class="pth-center-head">
-                <div class="pth-center-badge">
-                    SIMPLE RECOVERY PROCESS
-                </div>
-                <h2 class="pth-center-title">How to Book Your Home Session</h2>
-            </div>
-
-            <div class="pth-steps-grid">
-                <div class="pth-step-card">
-                    <div class="pth-step-num">1</div>
-                    <div class="pth-step-title">Select Condition &amp; Address</div>
-                    <div class="pth-step-desc">
-                        Identify your primary symptoms or need and pin your location to view nearby available specialists.
-                    </div>
-                </div>
-
-                <div class="pth-step-card">
-                    <div class="pth-step-num">2</div>
-                    <div class="pth-step-title">Choose Doctor &amp; Slot</div>
-                    <div class="pth-step-desc">
-                        Review verified specialist profiles, read real patient ratings, and pick a slot that fits your schedule.
-                    </div>
-                </div>
-
-                <div class="pth-step-card">
-                    <div class="pth-step-num">3</div>
-                    <div class="pth-step-title">Comfortable At-Home Treatment</div>
-                    <div class="pth-step-desc">
-                        Your assigned physiotherapist arrives fully equipped for evaluation, exercise guidance, and therapy.
-                    </div>
-                </div>
-
-                <div class="pth-step-card">
-                    <div class="pth-step-num">4</div>
-                    <div class="pth-step-title">Receive Your Recovery Plan</div>
-                    <div class="pth-step-desc">
-                        After each session, receive customized digital notes, exercise videos, and target milestones.
-                    </div>
-                </div>
-
-                <div class="pth-step-card">
-                    <div class="pth-step-num">5</div>
-                    <div class="pth-step-title">Track &amp; Follow Up</div>
-                    <div class="pth-step-desc">
-                        Measure improvements in session logs, book follow-ups effortlessly, and stay connected with your therapist.
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    {{-- ══════════════════════════════════════════════════
-         NEED HELP BOOKING? & FAQ (Dark Teal Box)
-    ══════════════════════════════════════════════════ --}}
-    <section class="pth-support-section">
-        <div class="home-container">
-            <div class="pth-support-banner">
-
-                <div class="pth-support-grid">
-                    <div>
-                        <div class="pth-support-badge">
-                            <i class="fa-solid fa-headset"></i> 24/7 Support Available
-                        </div>
-                        <h2 class="pth-support-title">Need Help Booking?</h2>
-                        <p class="pth-support-desc">
-                            Our dedicated care coordination team is ready to assist you every step of the way. Find the right specialist, navigate your options, and schedule your first home session with ease.
-                        </p>
-
-                        <div class="pth-support-actions">
-                            <a href="tel:+919513211470" class="pth-btn-call">
-                                <i class="fa-solid fa-phone"></i> Call (555) 492-1008
-                            </a>
-                            <a href="https://wa.me/919513211470" target="_blank" class="pth-btn-chat">
-                                <i class="fa-solid fa-comment-dots"></i> Live Chat
-                            </a>
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="pth-faq-box">
-                            <div class="pth-faq-title">Frequently Asked Questions</div>
-
-                            <div class="pth-faq-item">
-                                <div class="pth-faq-q">How quickly can a physio arrive?</div>
-                                <div class="pth-faq-a">Same-day appointments are available based on doctor availability in your locality.</div>
-                            </div>
-
-                            <div class="pth-faq-item">
-                                <div class="pth-faq-q">Is home physiotherapy as effective?</div>
-                                <div class="pth-faq-a">Yes, tailored one-on-one sessions at home often lead to faster, more sustainable recovery in familiar surroundings.</div>
-                            </div>
-
-                            <div class="pth-faq-item">
-                                <div class="pth-faq-q">What gear/tools are required?</div>
-                                <div class="pth-faq-a">Our physiotherapists arrive equipped with necessary portable therapy equipment.</div>
-                            </div>
-
-                            <a href="mailto:support@physiopii.com" class="pth-btn-support-email">
-                                <i class="fa-regular fa-envelope"></i> support@physiopii.com
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    {{-- ══════════════════════════════════════════════════
-         FOOTER (Dark Navy)
-    ══════════════════════════════════════════════════ --}}
-    <footer class="pth-footer">
-        <div class="home-container">
-
-            <div class="pth-footer-grid">
+            <div class="kn-section-header-flex">
                 <div>
-                    <a href="{{ route('home') }}" class="pth-footer-brand">
-                        <img src="{{ asset('logo.png') }}" alt="PhysioPii" style="height:40px;width:auto;object-fit:contain;display:block;filter:brightness(0) invert(1);">
-                    </a>
-                    <p class="pth-footer-about">
-                        Bringing professional, trusted physical therapy directly to your doorstep. Experience personalized pain recovery and health comfort.
+                    <div class="kn-eyebrow">
+                        <span class="kn-eyebrow-dot"></span> Our specialists
+                    </div>
+                    <h2 class="kn-section-title" style="margin-bottom: 0;">
+                        Meet your recovery partners
+                    </h2>
+                    <p class="kn-section-subtitle" style="margin-top: 8px;">
+                        Trusted, qualified physiotherapists dedicated to getting you back to what you love.
+                    </p>
+                </div>
+                <a href="{{ route('search.doctors') }}" class="kn-view-all-link">
+                    View all specialists <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="kn-doctors-grid">
+                @php
+                    // Fallback doctor mockup details matching the screenshots
+                    $defaultDoctorProfiles = [
+                        [
+                            'name' => 'Dr. Sarah Miller',
+                            'role' => 'Lead Musculoskeletal Physiotherapist',
+                            'exp' => '12 yrs exp',
+                            'speciality' => 'Back Pain',
+                            'tags' => ['Back Pain', 'Sports Injuries', 'Manual Therapy'],
+                            'rating' => '4.9',
+                            'reviews' => '124',
+                            'fee' => '₹800',
+                            'location' => 'Central Clinic & Home Visits',
+                            'img' => 'https://images.unsplash.com/photo-1594824813637-2708307c0892?auto=format&fit=crop&w=600&q=80'
+                        ],
+                        [
+                            'name' => 'Dr. James Wilson',
+                            'role' => 'Senior Sports Rehabilitation Specialist',
+                            'exp' => '9 yrs exp',
+                            'speciality' => 'Sports Rehab',
+                            'tags' => ['Knee Rehab', 'Post-Surgery', 'Return to Sport'],
+                            'rating' => '4.9',
+                            'reviews' => '98',
+                            'fee' => '₹950',
+                            'location' => 'West End Clinic & Home Visits',
+                            'img' => 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=600&q=80'
+                        ],
+                        [
+                            'name' => 'Dr. Priya Patel',
+                            'role' => 'Neurological & Geriatric Rehabilitation',
+                            'exp' => '11 yrs exp',
+                            'speciality' => 'Neuro Rehab',
+                            'tags' => ['Stroke Rehab', 'Balance & Gait', 'Home Visits'],
+                            'rating' => '4.8',
+                            'reviews' => '86',
+                            'fee' => '₹900',
+                            'location' => 'North Clinic & Home Visits',
+                            'img' => 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=600&q=80'
+                        ]
+                    ];
+                @endphp
+
+                @if($doctors && $doctors->count() > 0)
+                    {{-- 1. Render Real Database Doctors --}}
+                    @foreach($doctors->take(3) as $idx => $doc)
+                        @php
+                            $docName = $doc->name ?? 'Specialist Doctor';
+                            if (!str_starts_with(strtolower($docName), 'dr.')) {
+                                $docName = 'Dr. ' . $docName;
+                            }
+
+                            // Image determination
+                            $docImg = $defaultDoctorProfiles[$idx % 3]['img'];
+                            if (!empty($doc->profile_img)) {
+                                $docImg = asset($doc->profile_img);
+                            } elseif (!empty($doc->profile->profile_img)) {
+                                $docImg = asset($doc->profile->profile_img);
+                            }
+
+                            // Qualifications & Experience
+                            $qual = $doc->profile->qualification ?? 'MPT - Physiotherapy';
+                            $exp = ($doc->profile->experience_years ?? 8) . ' yrs exp';
+                            $specName = $doc->profile->specializationdata->name ?? ($defaultDoctorProfiles[$idx % 3]['speciality']);
+
+                            // Fee
+                            $feeVal = '₹800';
+                            if (!empty($doc->fee->doctor_fee)) {
+                                $feeVal = '₹' . number_format($doc->fee->doctor_fee);
+                            } elseif (!empty($doc->profile->consultation_fee)) {
+                                $feeVal = '₹' . number_format($doc->profile->consultation_fee);
+                            }
+
+                            $locText = $doc->profile->clinic_address ?? ($doc->address ?? 'Central Clinic & Home Visits');
+                            $cleanLoc = Str::limit($locText, 30);
+                        @endphp
+
+                        <div class="kn-doctor-card">
+                            <div class="kn-doctor-media">
+                                <img src="{{ $docImg }}" alt="{{ $docName }}" onerror="this.src='{{ $defaultDoctorProfiles[$idx % 3]['img'] }}';">
+                                <div class="kn-doctor-rating-badge">
+                                    <i class="fa-solid fa-star"></i> 4.9 ({{ 45 + ($doc->id * 7) }} reviews)
+                                </div>
+                            </div>
+                            <div class="kn-doctor-body">
+                                <h3 class="kn-doctor-name">{{ $docName }}</h3>
+                                <div class="kn-doctor-exp">{{ $qual }} · {{ $exp }}</div>
+                                
+                                <div class="kn-doctor-tags">
+                                    <span class="kn-doctor-pill">{{ $specName }}</span>
+                                    <span class="kn-doctor-pill">Rehabilitation</span>
+                                </div>
+
+                                <div class="kn-doctor-availabilities">
+                                    <span><i class="fa-solid fa-check"></i> In-Clinic</span>
+                                    <span><i class="fa-solid fa-check"></i> Home Visit</span>
+                                </div>
+
+                                <div class="kn-doctor-location">
+                                    <i class="fa-solid fa-location-dot"></i> {{ $cleanLoc }}
+                                </div>
+
+                                <div class="kn-doctor-divider"></div>
+
+                                <div class="kn-doctor-footer">
+                                    <div class="kn-doctor-fee-box">
+                                        <div class="kn-doctor-fee-amount">{{ $feeVal }}</div>
+                                        <div class="kn-doctor-fee-period">per session</div>
+                                    </div>
+                                    <div class="kn-doctor-actions">
+                                        <a href="{{ route('doctor.profile', $doc->id) }}" class="kn-btn-doc-profile">
+                                            View Profile
+                                        </a>
+                                        <a href="{{ route('doctor.booking', $doc->id) }}" class="kn-btn-doc-book">
+                                            Book Appointment
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+
+                    {{-- Fill up to 3 cards if fewer in DB --}}
+                    @for($i = $doctors->count(); $i < 3; $i++)
+                        @php $docDef = $defaultDoctorProfiles[$i]; @endphp
+                        <div class="kn-doctor-card">
+                            <div class="kn-doctor-media">
+                                <img src="{{ $docDef['img'] }}" alt="{{ $docDef['name'] }}">
+                                <div class="kn-doctor-rating-badge">
+                                    <i class="fa-solid fa-star"></i> {{ $docDef['rating'] }} ({{ $docDef['reviews'] }} reviews)
+                                </div>
+                            </div>
+                            <div class="kn-doctor-body">
+                                <h3 class="kn-doctor-name">{{ $docDef['name'] }}</h3>
+                                <div class="kn-doctor-exp">{{ $docDef['role'] }} · {{ $docDef['exp'] }}</div>
+                                
+                                <div class="kn-doctor-tags">
+                                    @foreach($docDef['tags'] as $tag)
+                                        <span class="kn-doctor-pill">{{ $tag }}</span>
+                                    @endforeach
+                                </div>
+
+                                <div class="kn-doctor-availabilities">
+                                    <span><i class="fa-solid fa-check"></i> In-Clinic</span>
+                                    <span><i class="fa-solid fa-check"></i> Home Visit</span>
+                                </div>
+
+                                <div class="kn-doctor-location">
+                                    <i class="fa-solid fa-location-dot"></i> {{ $docDef['location'] }}
+                                </div>
+
+                                <div class="kn-doctor-divider"></div>
+
+                                <div class="kn-doctor-footer">
+                                    <div class="kn-doctor-fee-box">
+                                        <div class="kn-doctor-fee-amount">{{ $docDef['fee'] }}</div>
+                                        <div class="kn-doctor-fee-period">per session</div>
+                                    </div>
+                                    <div class="kn-doctor-actions">
+                                        <a href="{{ route('search.doctors') }}" class="kn-btn-doc-profile">
+                                            View Profile
+                                        </a>
+                                        <a href="{{ route('search.doctors') }}" class="kn-btn-doc-book">
+                                            Book Appointment
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endfor
+
+                @else
+                    {{-- 2. Fallback Cards matching Mockup --}}
+                    @foreach($defaultDoctorProfiles as $docDef)
+                        <div class="kn-doctor-card">
+                            <div class="kn-doctor-media">
+                                <img src="{{ $docDef['img'] }}" alt="{{ $docDef['name'] }}">
+                                <div class="kn-doctor-rating-badge">
+                                    <i class="fa-solid fa-star"></i> {{ $docDef['rating'] }} ({{ $docDef['reviews'] }} reviews)
+                                </div>
+                            </div>
+                            <div class="kn-doctor-body">
+                                <h3 class="kn-doctor-name">{{ $docDef['name'] }}</h3>
+                                <div class="kn-doctor-exp">{{ $docDef['role'] }} · {{ $docDef['exp'] }}</div>
+                                
+                                <div class="kn-doctor-tags">
+                                    @foreach($docDef['tags'] as $tag)
+                                        <span class="kn-doctor-pill">{{ $tag }}</span>
+                                    @endforeach
+                                </div>
+
+                                <div class="kn-doctor-availabilities">
+                                    <span><i class="fa-solid fa-check"></i> In-Clinic</span>
+                                    <span><i class="fa-solid fa-check"></i> Home Visit</span>
+                                </div>
+
+                                <div class="kn-doctor-location">
+                                    <i class="fa-solid fa-location-dot"></i> {{ $docDef['location'] }}
+                                </div>
+
+                                <div class="kn-doctor-divider"></div>
+
+                                <div class="kn-doctor-footer">
+                                    <div class="kn-doctor-fee-box">
+                                        <div class="kn-doctor-fee-amount">{{ $docDef['fee'] }}</div>
+                                        <div class="kn-doctor-fee-period">per session</div>
+                                    </div>
+                                    <div class="kn-doctor-actions">
+                                        <a href="{{ route('search.doctors') }}" class="kn-btn-doc-profile">
+                                            View Profile
+                                        </a>
+                                        <a href="{{ route('search.doctors') }}" class="kn-btn-doc-book">
+                                            Book Appointment
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                @endif
+            </div>
+
+        </div>
+    </section>
+
+    {{-- ══════════════════════════════════════════════════
+         6. VALUE PROPOSITION ("Expert care, without the extra steps")
+    ══════════════════════════════════════════════════ --}}
+    <section class="kn-values-section">
+        <div class="kn-container">
+
+            <div class="kn-section-header">
+                <div class="kn-eyebrow">
+                    <span class="kn-eyebrow-dot"></span> Why choose us
+                </div>
+                <h2 class="kn-section-title">
+                    Expert care, without the extra steps
+                </h2>
+                <p class="kn-section-subtitle">
+                    We've removed the friction from finding and booking great physiotherapy care.
+                </p>
+            </div>
+
+            <div class="kn-values-grid">
+                {{-- Feature 1 --}}
+                <div class="kn-value-card">
+                    <div class="kn-value-icon">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h3 class="kn-value-title">Vetted &amp; Verified Specialists</h3>
+                    <p class="kn-value-desc">
+                        Every physiotherapist is thoroughly screened, certified, and background checked before joining our network.
                     </p>
                 </div>
 
-                <div>
-                    <div class="pth-footer-heading">Our Services</div>
-                    <ul class="pth-footer-links">
-                        <li><a href="#specialists">Back Pain Relief</a></li>
-                        <li><a href="#specialists">Joint Rehabilitation</a></li>
-                        <li><a href="#specialists">Stroke Recovery Programs</a></li>
-                        <li><a href="#specialists">Post-Operative Training</a></li>
-                    </ul>
+                {{-- Feature 2 --}}
+                <div class="kn-value-card">
+                    <div class="kn-value-icon">
+                        <i class="fa-regular fa-clock"></i>
+                    </div>
+                    <h3 class="kn-value-title">Zero Wait Times</h3>
+                    <p class="kn-value-desc">
+                        Book in minutes. Same-day and next-day appointments are frequently available to start your recovery immediately.
+                    </p>
                 </div>
 
-                <div>
-                    <div class="pth-footer-heading">Quick Links</div>
-                    <ul class="pth-footer-links">
-                        <li><a href="#how-it-works">About Us</a></li>
-                        <li><a href="{{ route('login') }}">Become a Partner Doctor</a></li>
-                        <li><a href="#specialists">Verified Patient Reviews</a></li>
-                        <li><a href="#how-it-works">Help &amp; FAQs</a></li>
-                        <li><a href="{{ route('privacy.policy') }}">Privacy Policy</a></li>
-                    </ul>
+                {{-- Feature 3 --}}
+                <div class="kn-value-card">
+                    <div class="kn-value-icon">
+                        <i class="fa-solid fa-house-medical"></i>
+                    </div>
+                    <h3 class="kn-value-title">In-Clinic or at Home</h3>
+                    <p class="kn-value-desc">
+                        Choose between visiting a modern clinic or having an expert clinician come directly to your living room.
+                    </p>
                 </div>
 
-                <div>
-                    <div class="pth-footer-heading">Contact</div>
-                    <ul class="pth-footer-links">
-                        <li><a href="mailto:contact@physiopii.in">contact@physiopii.in</a></li>
-                        <li><a href="tel:+918855088426">+91 8855088426</a></li>
-                        <li><span style="font-size:13.5px;color:#94a3b8;">PhysioPii Healthcare, India</span></li>
-                    </ul>
+                {{-- Feature 4 --}}
+                <div class="kn-value-card">
+                    <div class="kn-value-icon">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                    </div>
+                    <h3 class="kn-value-title">Personalised Recovery Plans</h3>
+                    <p class="kn-value-desc">
+                        Tailored exercise and therapy programs built around your specific recovery goals, routine, and lifestyle.
+                    </p>
+                </div>
+
+                {{-- Feature 5 --}}
+                <div class="kn-value-card">
+                    <div class="kn-value-icon">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
+                    <h3 class="kn-value-title">Transparent Pricing</h3>
+                    <p class="kn-value-desc">
+                        Clear upfront session fees with no surprise costs, hidden platform fees, or confusing medical billing.
+                    </p>
+                </div>
+
+                {{-- Feature 6 --}}
+                <div class="kn-value-card">
+                    <div class="kn-value-icon">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <h3 class="kn-value-title">Continuous Progress Tracking</h3>
+                    <p class="kn-value-desc">
+                        Digital outcome tracking so you and your clinician see measurable results session after session.
+                    </p>
                 </div>
             </div>
 
-            <div class="pth-footer-bottom">
-                <div>&copy; {{ date('Y') }} PhysioPii. All rights reserved.</div>
-                <div class="pth-social-row">
-                    <a href="#" class="pth-social-link"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" class="pth-social-link"><i class="fa-brands fa-twitter"></i></a>
-                    <a href="#" class="pth-social-link"><i class="fa-brands fa-linkedin-in"></i></a>
-                    <a href="#" class="pth-social-link"><i class="fa-brands fa-instagram"></i></a>
+        </div>
+    </section>
+
+    {{-- ══════════════════════════════════════════════════
+         7. HOW IT WORKS ("Your appointment, in four easy steps")
+    ══════════════════════════════════════════════════ --}}
+    <section class="kn-steps-section" id="how-it-works">
+        <div class="kn-container">
+
+            <div class="kn-section-header">
+                <div class="kn-eyebrow">
+                    <span class="kn-eyebrow-dot"></span> Simple process
+                </div>
+                <h2 class="kn-section-title">
+                    Your appointment, in four easy steps
+                </h2>
+                <p class="kn-section-subtitle">
+                    Getting back to full strength has never been this straightforward.
+                </p>
+            </div>
+
+            <div class="kn-steps-grid">
+                {{-- Step 1 --}}
+                <div class="kn-step-card">
+                    <div class="kn-step-icon-wrap">
+                        <span class="kn-step-number-badge">1</span>
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    <h3 class="kn-step-title">Search</h3>
+                    <p class="kn-step-desc">
+                        Find specialists by condition, location, or preferred treatment type.
+                    </p>
+                </div>
+
+                {{-- Step 2 --}}
+                <div class="kn-step-card">
+                    <div class="kn-step-icon-wrap">
+                        <span class="kn-step-number-badge">2</span>
+                        <i class="fa-solid fa-user-doctor"></i>
+                    </div>
+                    <h3 class="kn-step-title">Select Clinician</h3>
+                    <p class="kn-step-desc">
+                        Compare profiles, reviews, qualifications, and upfront pricing.
+                    </p>
+                </div>
+
+                {{-- Step 3 --}}
+                <div class="kn-step-card">
+                    <div class="kn-step-icon-wrap">
+                        <span class="kn-step-number-badge">3</span>
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+                    <h3 class="kn-step-title">Book Online</h3>
+                    <p class="kn-step-desc">
+                        Choose a time slot that fits your schedule with instant confirmation.
+                    </p>
+                </div>
+
+                {{-- Step 4 --}}
+                <div class="kn-step-card">
+                    <div class="kn-step-icon-wrap">
+                        <span class="kn-step-number-badge">4</span>
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                    <h3 class="kn-step-title">Begin Recovery</h3>
+                    <p class="kn-step-desc">
+                        Meet your physiotherapist in-clinic or at home and start feeling better.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    {{-- ══════════════════════════════════════════════════
+         8. SPLIT FEATURE ("Because moving well changes everything")
+    ══════════════════════════════════════════════════ --}}
+    <section class="kn-split-section" id="about">
+        <div class="kn-container">
+            <div class="kn-split-grid">
+                
+                {{-- Left Image with Badge --}}
+                <div class="kn-split-visual">
+                    <div class="kn-split-img-box">
+                        <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1000&q=80" alt="Physiotherapist consulting with patient">
+                    </div>
+                    <div class="kn-split-badge-card">
+                        <i class="fa-solid fa-award"></i>
+                        <div>
+                            <h6>98% Patient Satisfaction</h6>
+                            <p>Based on verified post-treatment reviews</p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Right Mission Content --}}
+                <div class="kn-split-content">
+                    <div class="kn-eyebrow">
+                        <span class="kn-eyebrow-dot"></span> Our mission
+                    </div>
+                    <h2 class="kn-split-title">
+                        Because moving well changes everything
+                    </h2>
+                    <p class="kn-split-desc">
+                        Pain doesn't just limit your movement — it shrinks your world. Our mission is to connect you with care that restores your freedom, independence, and joy in daily life.
+                    </p>
+                    
+                    <ul class="kn-split-bullets">
+                        <li class="kn-split-bullet-item">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Evidence-based clinical treatments that target the root cause, not just symptoms</span>
+                        </li>
+                        <li class="kn-split-bullet-item">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Dedicated one-on-one attention throughout your entire recovery journey</span>
+                        </li>
+                        <li class="kn-split-bullet-item">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Continuous guidance with tailored home exercises to prevent re-injury</span>
+                        </li>
+                    </ul>
+
+                    <a href="{{ route('search.doctors') }}" class="kn-btn-primary">
+                        Find Your Specialist <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    {{-- ══════════════════════════════════════════════════
+         9. PRACTITIONER BANNER (Dark Teal Box)
+    ══════════════════════════════════════════════════ --}}
+    <section class="kn-banner-wrap">
+        <div class="kn-container">
+            <div class="kn-practitioner-box">
+                <div>
+                    <div class="kn-banner-eyebrow">For Practitioners</div>
+                    <h2 class="kn-banner-title">
+                        More time for your patients. More room for your practice.
+                    </h2>
+                    <p class="kn-banner-desc">
+                        Join our network of elite physiotherapists. Grow your client base, manage appointments effortlessly, and keep 100% control over your schedule and rates.
+                    </p>
+                    <a href="{{ route('login') }}" class="kn-btn-white">
+                        Join as a Physiotherapist <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="kn-banner-img-box">
+                    <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=800&q=80" alt="Team of verified physiotherapists">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ══════════════════════════════════════════════════
+         10. TESTIMONIALS SECTION ("Life feels better...")
+    ══════════════════════════════════════════════════ --}}
+    <section class="kn-testimonials-section">
+        <div class="kn-container">
+
+            <div class="kn-section-header">
+                <div class="kn-eyebrow">
+                    <span class="kn-eyebrow-dot"></span> Patient stories
+                </div>
+                <h2 class="kn-section-title">
+                    Life feels better when you move better
+                </h2>
+                <p class="kn-section-subtitle">
+                    See how personalised physiotherapy transformed everyday life for our patients.
+                </p>
+                <div class="kn-overall-rating-badge">
+                    <i class="fa-solid fa-star"></i>
+                    <span>4.9 / 5 Overall Patient Rating</span>
+                </div>
+            </div>
+
+            <div class="kn-reviews-grid">
+                {{-- Review 1 --}}
+                <div class="kn-review-card">
+                    <div class="kn-review-stars">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="kn-review-quote">
+                        "After months of persistent lower back pain, my therapist identified the root cause in session one. Within 4 weeks, I was back to running 5k completely pain-free."
+                    </p>
+                    <div class="kn-reviewer-row">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80" alt="Marcus Thorne" class="kn-reviewer-avatar">
+                        <div class="kn-reviewer-info">
+                            <h6>Marcus Thorne</h6>
+                            <p>Recovered from Lumbar Disc Herniation</p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Review 2 --}}
+                <div class="kn-review-card">
+                    <div class="kn-review-stars">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="kn-review-quote">
+                        "The convenience of home visits made all the difference for my post-knee surgery rehab. The exercises were clear and the progress tracking kept me motivated every day."
+                    </p>
+                    <div class="kn-reviewer-row">
+                        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&q=80" alt="Eleanor Vance" class="kn-reviewer-avatar">
+                        <div class="kn-reviewer-info">
+                            <h6>Eleanor Vance</h6>
+                            <p>Total Knee Replacement Rehab</p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Review 3 --}}
+                <div class="kn-review-card">
+                    <div class="kn-review-stars">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="kn-review-quote">
+                        "Booking was effortless and my therapist was exceptionally thorough. She explained every exercise and tailored everything to my busy work schedule."
+                    </p>
+                    <div class="kn-reviewer-row">
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80" alt="David Chen" class="kn-reviewer-avatar">
+                        <div class="kn-reviewer-info">
+                            <h6>David Chen</h6>
+                            <p>Shoulder Impingement Recovery</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    {{-- ══════════════════════════════════════════════════
+         11. FAQ ACCORDION + SUPPORT CARD
+    ══════════════════════════════════════════════════ --}}
+    <section class="kn-faq-section" id="faq">
+        <div class="kn-container">
+            <div class="kn-faq-layout">
+                
+                {{-- Left Text & Support Box --}}
+                <div>
+                    <div class="kn-eyebrow">
+                        <span class="kn-eyebrow-dot"></span> FAQS
+                    </div>
+                    <h2 class="kn-section-title" style="text-align: left;">
+                        A little clarity, a lot of confidence
+                    </h2>
+                    <p class="kn-section-subtitle" style="text-align: left;">
+                        Got questions? We've got answers. If you can't find what you need, our care team is always here to help.
+                    </p>
+
+                    <div class="kn-support-box">
+                        <div class="kn-support-box-icon">
+                            <i class="fa-solid fa-headset"></i>
+                        </div>
+                        <h5>Need help deciding?</h5>
+                        <p>Our clinical care coordinators can help match you with the right specialist for your situation.</p>
+                        <a href="tel:+918855088426" class="kn-btn-secondary" style="background: #ffffff; width: 100%;">
+                            Contact Care Team
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Right Interactive Accordion --}}
+                <div class="kn-accordion">
+                    {{-- FAQ 1 --}}
+                    <div class="kn-faq-item active">
+                        <button class="kn-faq-trigger" type="button">
+                            <span>What should I expect during my first session?</span>
+                            <i class="fa-solid fa-plus kn-faq-icon"></i>
+                        </button>
+                        <div class="kn-faq-panel">
+                            Your physiotherapist will conduct a comprehensive clinical assessment of your movement, posture, pain triggers, and medical history. Together, you will design a personalized recovery roadmap and begin initial treatment or gentle corrective exercises.
+                        </div>
+                    </div>
+
+                    {{-- FAQ 2 --}}
+                    <div class="kn-faq-item">
+                        <button class="kn-faq-trigger" type="button">
+                            <span>Do I need a doctor's referral to book?</span>
+                            <i class="fa-solid fa-plus kn-faq-icon"></i>
+                        </button>
+                        <div class="kn-faq-panel">
+                            No referral is needed! You can self-refer and schedule an appointment directly with any licensed physiotherapist on our platform.
+                        </div>
+                    </div>
+
+                    {{-- FAQ 3 --}}
+                    <div class="kn-faq-item">
+                        <button class="kn-faq-trigger" type="button">
+                            <span>How do home visit appointments work?</span>
+                            <i class="fa-solid fa-plus kn-faq-icon"></i>
+                        </button>
+                        <div class="kn-faq-panel">
+                            Your physiotherapist will travel directly to your home with all required therapeutic equipment. All you need is a comfortable, well-lit space where you can comfortably move and sit or lie down.
+                        </div>
+                    </div>
+
+                    {{-- FAQ 4 --}}
+                    <div class="kn-faq-item">
+                        <button class="kn-faq-trigger" type="button">
+                            <span>Can I reschedule or cancel my appointment?</span>
+                            <i class="fa-solid fa-plus kn-faq-icon"></i>
+                        </button>
+                        <div class="kn-faq-panel">
+                            Yes. You can easily reschedule or cancel your session with full flexibility up to 24 hours prior to the scheduled appointment without any penalty.
+                        </div>
+                    </div>
+
+                    {{-- FAQ 5 --}}
+                    <div class="kn-faq-item">
+                        <button class="kn-faq-trigger" type="button">
+                            <span>Is physiotherapy covered by insurance?</span>
+                            <i class="fa-solid fa-plus kn-faq-icon"></i>
+                        </button>
+                        <div class="kn-faq-panel">
+                            Most private health insurance providers and medical reimbursement policies cover consultations and physical therapy provided by registered practitioners. An itemized invoice is provided instantly after each session.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    {{-- ══════════════════════════════════════════════════
+         12. HEALTH ARTICLES ("Good advice for a healthier you")
+    ══════════════════════════════════════════════════ --}}
+    <section class="kn-articles-section">
+        <div class="kn-container">
+
+            <div class="kn-section-header-flex">
+                <div>
+                    <div class="kn-eyebrow">
+                        <span class="kn-eyebrow-dot"></span> Health resources
+                    </div>
+                    <h2 class="kn-section-title" style="margin-bottom: 0;">
+                        Good advice for a healthier you
+                    </h2>
+                    <p class="kn-section-subtitle" style="margin-top: 8px;">
+                        Evidence-based guides, recovery tips, and wellness insights from our clinical experts.
+                    </p>
+                </div>
+                <a href="{{ route('search.doctors') }}" class="kn-view-all-link">
+                    Explore all articles <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="kn-articles-grid">
+                {{-- Article 1 --}}
+                <div class="kn-article-card">
+                    <div class="kn-article-img">
+                        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80" alt="Ergonomic desk workspace">
+                    </div>
+                    <div class="kn-article-body">
+                        <div class="kn-article-tag">Ergonomics · 4 min read</div>
+                        <h4 class="kn-article-title">Desk Posture and Neck Pain: 5 Simple Changes You Can Make Today</h4>
+                        <a href="{{ route('search.doctors') }}" class="kn-article-link">
+                            Read more <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Article 2 --}}
+                <div class="kn-article-card">
+                    <div class="kn-article-img">
+                        <img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=600&q=80" alt="Runner stretching hamstring">
+                    </div>
+                    <div class="kn-article-body">
+                        <div class="kn-article-tag">Sports Rehab · 5 min read</div>
+                        <h4 class="kn-article-title">When to Ice vs. Heat: The Complete Injury Recovery Guide</h4>
+                        <a href="{{ route('search.doctors') }}" class="kn-article-link">
+                            Read more <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Article 3 --}}
+                <div class="kn-article-card">
+                    <div class="kn-article-img">
+                        <img src="https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=600&q=80" alt="Physiotherapist assisting senior">
+                    </div>
+                    <div class="kn-article-body">
+                        <div class="kn-article-tag">Joint Health · 6 min read</div>
+                        <h4 class="kn-article-title">Managing Knee Osteoarthritis: Exercises That Actually Help</h4>
+                        <a href="{{ route('search.doctors') }}" class="kn-article-link">
+                            Read more <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Article 4 --}}
+                <div class="kn-article-card">
+                    <div class="kn-article-img">
+                        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80" alt="Two people walking outside">
+                    </div>
+                    <div class="kn-article-body">
+                        <div class="kn-article-tag">Recovery · 4 min read</div>
+                        <h4 class="kn-article-title">Walking for Spinal Health: Why Movement Is the Best Medicine</h4>
+                        <a href="{{ route('search.doctors') }}" class="kn-article-link">
+                            Read more <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    {{-- ══════════════════════════════════════════════════
+         13. PRE-FOOTER CTA SECTION
+    ══════════════════════════════════════════════════ --}}
+    <section class="kn-prefooter-cta-wrap">
+        <div class="kn-container">
+            <div class="kn-prefooter-cta">
+                <div class="kn-cta-top-icon">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                <h2 class="kn-cta-title">Start Your Recovery Journey Today</h2>
+                <p class="kn-cta-subtitle">
+                    Connect with certified physiotherapists for in-clinic or at-home appointments.
+                </p>
+                <div class="kn-cta-buttons">
+                    <a href="{{ route('search.doctors') }}" class="kn-btn-primary">
+                        Book Appointment <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 13px;"></i>
+                    </a>
+                    <a href="{{ route('search.doctors') }}" class="kn-btn-secondary">
+                        Find Specialists
+                    </a>
+                </div>
+                <div class="kn-cta-note">
+                    No referral needed · Free cancellation up to 24h before
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ══════════════════════════════════════════════════
+         14. MODERN DARK FOOTER
+    ══════════════════════════════════════════════════ --}}
+    <footer class="kn-footer">
+        <div class="kn-container">
+
+            <div class="kn-footer-grid">
+                {{-- Col 1: Brand --}}
+                <div>
+                    <div class="kn-footer-brand-title">
+                        <div class="kn-footer-brand-icon">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                        </div>
+                        <span>kinora</span>
+                    </div>
+                    <p class="kn-footer-desc">
+                        Connecting you with certified physiotherapy specialists for comprehensive in-clinic and at-home rehabilitation.
+                    </p>
+                </div>
+
+                {{-- Col 2: Specialties --}}
+                <div class="kn-footer-col">
+                    <h6>Specialities</h6>
+                    <ul class="kn-footer-links">
+                        <li><a href="{{ route('search.doctors', ['keyword' => 'Back Pain']) }}">Back Pain</a></li>
+                        <li><a href="{{ route('search.doctors', ['keyword' => 'Knee']) }}">Knee Rehab</a></li>
+                        <li><a href="{{ route('search.doctors', ['keyword' => 'Sports']) }}">Sports Injury</a></li>
+                        <li><a href="{{ route('search.doctors', ['keyword' => 'Post-Surgery']) }}">Post-Surgery</a></li>
+                        <li><a href="{{ route('search.doctors', ['keyword' => 'Neuro']) }}">Neuro Rehab</a></li>
+                    </ul>
+                </div>
+
+                {{-- Col 3: Company --}}
+                <div class="kn-footer-col">
+                    <h6>Company</h6>
+                    <ul class="kn-footer-links">
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="{{ route('search.doctors') }}">Specialists</a></li>
+                        <li><a href="{{ route('login') }}">Careers</a></li>
+                        <li><a href="mailto:contact@physiopii.in">Contact</a></li>
+                    </ul>
+                </div>
+
+                {{-- Col 4: Patients --}}
+                <div class="kn-footer-col">
+                    <h6>Patients</h6>
+                    <ul class="kn-footer-links">
+                        <li><a href="{{ route('search.doctors') }}">Book Appointment</a></li>
+                        <li><a href="{{ route('search.doctors', ['visit_type' => 'home']) }}">Home Visits</a></li>
+                        <li><a href="{{ route('search.doctors', ['visit_type' => 'online']) }}">Online Consult</a></li>
+                        <li><a href="#specialists">Patient Reviews</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                    </ul>
+                </div>
+
+                {{-- Col 5: Contact --}}
+                <div class="kn-footer-col">
+                    <h6>Contact</h6>
+                    <div class="kn-footer-contact-item">
+                        <i class="fa-regular fa-envelope"></i>
+                        <a href="mailto:contact@physiopii.in" style="color: #94a3b8;">contact@physiopii.in</a>
+                    </div>
+                    <div class="kn-footer-contact-item">
+                        <i class="fa-solid fa-phone"></i>
+                        <a href="tel:+918855088426" style="color: #94a3b8;">+91 8855088426</a>
+                    </div>
+                    <div class="kn-footer-contact-item">
+                        <i class="fa-regular fa-clock"></i>
+                        <span>Mon - Sun: 8:00 AM - 8:00 PM</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="kn-footer-bottom">
+                <div>&copy; {{ date('Y') }} Kinora / PhysioPii Healthcare. All rights reserved.</div>
+                <div class="kn-footer-legal-links">
+                    <a href="{{ route('privacy.policy') }}">Privacy Policy</a>
+                    <a href="{{ route('privacy.policy') }}">Terms of Service</a>
+                    <a href="{{ route('privacy.policy') }}">Cookie Policy</a>
+                    <a href="{{ url('/sitemap.xml') }}">Sitemap</a>
                 </div>
             </div>
 
         </div>
     </footer>
 
-</div>{{-- /main-wrapper --}}
+</div>{{-- /kn-main-wrapper --}}
 
+{{-- ══════════════════════════════════════════════════
+     INTERACTIVE JAVASCRIPT: HERO CAROUSEL & ACCORDION
+══════════════════════════════════════════════════ --}}
 <script>
-// Dictionary mapping popular conditions to doctor keywords
-const conditionKeywords = {
-    'Back Pain': ['back', 'spine', 'lumbar', 'sciatica', 'posture', 'disc', 'ortho', 'pain', 'rehab', 'physio'],
-    'Neck Pain': ['neck', 'cervical', 'spine', 'shoulder', 'posture', 'ortho', 'pain', 'rehab', 'physio'],
-    'Knee Pain': ['knee', 'joint', 'acl', 'arthritis', 'osteoarthritis', 'cartilage', 'ortho', 'sports', 'physio'],
-    'Shoulder Pain': ['shoulder', 'frozen', 'rotator', 'joint', 'arm', 'ortho', 'sports', 'physio'],
-    'Hip Pain': ['hip', 'joint', 'pelvic', 'pelvis', 'arthritis', 'groin', 'mobility', 'ortho', 'physio']
-};
-
-let activeCondition = null;
-
-function toggleConditionFilter(conditionName, cardElement) {
-    const input = document.getElementById('doctorSearch');
-    const allCards = document.querySelectorAll('.pth-cond-card');
-    const clearBtn = document.getElementById('clearPopCondBtn');
-
-    // If clicking the currently active card, toggle off (reset)
-    if (activeCondition === conditionName) {
-        clearConditionFilter();
-        return;
-    }
-
-    activeCondition = conditionName;
-
-    // Highlight card
-    allCards.forEach(c => {
-        if (c.getAttribute('data-condition') === conditionName) {
-            c.classList.add('active');
+document.addEventListener('DOMContentLoaded', function () {
+    // 1. Sticky Navbar shadow on scroll
+    var navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', function () {
+        if (window.scrollY > 20) {
+            navbar.classList.add('scrolled');
         } else {
-            c.classList.remove('active');
+            navbar.classList.remove('scrolled');
         }
     });
 
-    if (clearBtn) clearBtn.style.display = 'inline-flex';
-
-    // Update search box
-    if (input) {
-        input.value = conditionName;
-    }
-
-    // Filter doctor cards on page
-    applyDoctorFilter(conditionName);
-
-    // Smooth scroll down to doctors list
-    const docSection = document.getElementById('specialists');
-    if (docSection) {
-        docSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-}
-
-function clearConditionFilter() {
-    activeCondition = null;
-    const input = document.getElementById('doctorSearch');
-    const allCards = document.querySelectorAll('.pth-cond-card');
-    const clearBtn = document.getElementById('clearPopCondBtn');
-    const filterBanner = document.getElementById('pth-filter-banner');
-    const noDocsBanner = document.getElementById('pthNoDoctors');
-
-    allCards.forEach(c => c.classList.remove('active'));
-    if (clearBtn) clearBtn.style.display = 'none';
-    if (filterBanner) filterBanner.style.display = 'none';
-    if (noDocsBanner) noDocsBanner.style.display = 'none';
-
-    if (input) input.value = '';
-
-    // Show all doctor cards
-    const docCards = document.querySelectorAll('.pth-doctor-card');
-    docCards.forEach(card => card.style.display = 'flex');
-}
-
-function applyDoctorFilter(conditionName) {
-    const filterBanner = document.getElementById('pth-filter-banner');
-    const activeText = document.getElementById('pth-active-filter-text');
-    const filterCount = document.getElementById('pth-filter-count');
-    const noDocsBanner = document.getElementById('pthNoDoctors');
-    const docCards = document.querySelectorAll('.pth-doctor-card');
-
-    if (!docCards.length) return;
-
-    const keywords = conditionKeywords[conditionName] || [conditionName.toLowerCase()];
-    let visibleCount = 0;
-
-    docCards.forEach(card => {
-        const text = (card.getAttribute('data-keywords') || '') + ' ' + 
-                     (card.getAttribute('data-spec') || '') + ' ' +
-                     (card.getAttribute('data-qual') || '') + ' ' +
-                     (card.getAttribute('data-name') || '');
-
-        const matches = keywords.some(k => text.includes(k.toLowerCase()));
-
-        if (matches) {
-            card.style.display = 'flex';
-            visibleCount++;
-        } else {
-            card.style.display = 'none';
-        }
-    });
-
-    // If none matched specific keywords, show all with note
-    if (visibleCount === 0) {
-        docCards.forEach(card => card.style.display = 'flex');
-        visibleCount = docCards.length;
-        if (noDocsBanner) noDocsBanner.style.display = 'block';
-    } else {
-        if (noDocsBanner) noDocsBanner.style.display = 'none';
-    }
-
-    if (filterBanner && activeText) {
-        activeText.textContent = conditionName;
-        if (filterCount) {
-            filterCount.textContent = `(${visibleCount} specialist${visibleCount === 1 ? '' : 's'} available)`;
-        }
-        filterBanner.style.display = 'flex';
-    }
-}
-
-// Live Autocomplete Search + Direct filter on input
-(function() {
-    const input = document.getElementById('doctorSearch');
-    const dropdown = document.getElementById('hp-doctor-dropdown');
-    const searchSubmitBtn = document.getElementById('searchSubmitBtn');
-    if (!input) return;
-
-    let debounceTimer;
-
-    input.addEventListener('input', function() {
-        clearTimeout(debounceTimer);
-        const q = this.value.trim();
-
-        // If emptied, reset filters
-        if (!q) {
-            clearConditionFilter();
-            if (dropdown) {
-                dropdown.innerHTML = '';
-                dropdown.classList.remove('open');
+    // 2. Mobile Drawer Toggle
+    var mobileToggle = document.getElementById('knMobileToggle');
+    var mobileDrawer = document.getElementById('knMobileDrawer');
+    if (mobileToggle && mobileDrawer) {
+        mobileToggle.addEventListener('click', function () {
+            mobileDrawer.classList.toggle('open');
+            var icon = mobileToggle.querySelector('i');
+            if (mobileDrawer.classList.contains('open')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-xmark');
+            } else {
+                icon.classList.remove('fa-xmark');
+                icon.classList.add('fa-bars');
             }
-            return;
-        }
+        });
 
-        debounceTimer = setTimeout(() => {
-            // Live Autocomplete
-            if (dropdown && q.length >= 2) {
-                fetch(`/search-doctors?q=${encodeURIComponent(q)}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (!data || !data.length) {
-                            dropdown.innerHTML = `
-                                <div style="padding:14px 18px;color:#64748b;font-size:13px;">
-                                    No direct doctor matches found. Showing nearby physiotherapists.
-                                </div>
-                            `;
-                            dropdown.classList.add('open');
-                            return;
-                        }
-
-                        dropdown.innerHTML = data.slice(0, 6).map(doc => {
-                            const spec = (doc.profile && doc.profile.specializationdata && doc.profile.specializationdata.name)
-                                ? doc.profile.specializationdata.name
-                                : 'Physiotherapist';
-                            const initial = doc.name ? doc.name.charAt(0).toUpperCase() : 'D';
-
-                            return `
-                                <a href="/doctor/${doc.id}">
-                                    <div style="display:flex;align-items:center;gap:12px">
-                                        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0c6978,#2dd4bf);color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                                            ${initial}
-                                        </div>
-                                        <div>
-                                            <div style="font-size:14px;font-weight:800;color:#0f172a">Dr. ${doc.name}</div>
-                                            <div style="font-size:12px;color:#64748b;margin-top:1px">${spec}</div>
-                                        </div>
-                                    </div>
-                                    <span style="font-size:12px;font-weight:700;color:#0c6978;">View Profile &rarr;</span>
-                                </a>
-                            `;
-                        }).join('');
-                        dropdown.classList.add('open');
-                    })
-                    .catch(() => {});
-            }
-
-            // Also filter doctor cards dynamically
-            const query = q.toLowerCase();
-            const docCards = document.querySelectorAll('.pth-doctor-card');
-            docCards.forEach(card => {
-                const text = (card.getAttribute('data-keywords') || '') + ' ' + 
-                             (card.getAttribute('data-spec') || '') + ' ' +
-                             (card.getAttribute('data-qual') || '') + ' ' +
-                             (card.getAttribute('data-name') || '');
-                card.style.display = text.includes(query) ? 'flex' : 'none';
+        // Close drawer on link click
+        mobileDrawer.querySelectorAll('a').forEach(function (link) {
+            link.addEventListener('click', function () {
+                mobileDrawer.classList.remove('open');
+                var icon = mobileToggle.querySelector('i');
+                if (icon) {
+                    icon.classList.remove('fa-xmark');
+                    icon.classList.add('fa-bars');
+                }
             });
-        }, 220);
+        });
+    }
+
+    // 3. Hero Carousel Logic (3 Slides)
+    var slides = document.querySelectorAll('.kn-hero-slide');
+    var dotBtns = document.querySelectorAll('.kn-dot-btn');
+    var counterText = document.getElementById('knSlideCounter');
+    var prevBtn = document.getElementById('knPrevBtn');
+    var nextBtn = document.getElementById('knNextBtn');
+    var currentSlide = 0;
+    var totalSlides = slides.length;
+    var slideInterval = null;
+
+    function showSlide(index) {
+        if (index < 0) {
+            currentSlide = totalSlides - 1;
+        } else if (index >= totalSlides) {
+            currentSlide = 0;
+        } else {
+            currentSlide = index;
+        }
+
+        slides.forEach(function (slide, i) {
+            if (i === currentSlide) {
+                slide.classList.add('active');
+            } else {
+                slide.classList.remove('active');
+            }
+        });
+
+        dotBtns.forEach(function (btn, i) {
+            if (i === currentSlide) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        if (counterText) {
+            var num = currentSlide + 1;
+            counterText.textContent = (num < 10 ? '0' + num : num) + ' / 0' + totalSlides;
+        }
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    function startAutoSlide() {
+        stopAutoSlide();
+        slideInterval = setInterval(nextSlide, 6000);
+    }
+
+    function stopAutoSlide() {
+        if (slideInterval) {
+            clearInterval(slideInterval);
+            slideInterval = null;
+        }
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', function () {
+            nextSlide();
+            startAutoSlide();
+        });
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', function () {
+            prevSlide();
+            startAutoSlide();
+        });
+    }
+
+    dotBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var targetIndex = parseInt(this.getAttribute('data-slide-to'), 10);
+            showSlide(targetIndex);
+            startAutoSlide();
+        });
     });
 
-    if (searchSubmitBtn) {
-        searchSubmitBtn.addEventListener('click', function() {
-            const q = input.value.trim();
-            if (q) {
-                const docSection = document.getElementById('specialists');
-                if (docSection) {
-                    docSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    var carouselBox = document.getElementById('knHeroCarousel');
+    if (carouselBox) {
+        carouselBox.addEventListener('mouseenter', stopAutoSlide);
+        carouselBox.addEventListener('mouseleave', startAutoSlide);
+
+        // Touch Swipe Support
+        var touchStartX = 0;
+        var touchEndX = 0;
+        carouselBox.addEventListener('touchstart', function (e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        carouselBox.addEventListener('touchend', function (e) {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchStartX - touchEndX > 50) {
+                nextSlide();
+                startAutoSlide();
+            } else if (touchEndX - touchStartX > 50) {
+                prevSlide();
+                startAutoSlide();
+            }
+        }, { passive: true });
+    }
+
+    startAutoSlide();
+
+    // 4. FAQ Accordion Toggle
+    var faqItems = document.querySelectorAll('.kn-faq-item');
+    faqItems.forEach(function (item) {
+        var trigger = item.querySelector('.kn-faq-trigger');
+        if (trigger) {
+            trigger.addEventListener('click', function () {
+                var wasActive = item.classList.contains('active');
+                faqItems.forEach(function (other) {
+                    other.classList.remove('active');
+                });
+                if (!wasActive) {
+                    item.classList.add('active');
+                }
+            });
+        }
+    });
+
+    // 5. Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+        anchor.addEventListener('click', function (e) {
+            var targetId = this.getAttribute('href');
+            if (targetId && targetId !== '#') {
+                var targetElem = document.querySelector(targetId);
+                if (targetElem) {
+                    e.preventDefault();
+                    targetElem.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
                 }
             }
         });
-    }
-
-    document.addEventListener('click', function(e) {
-        if (dropdown && !input.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.remove('open');
-        }
     });
-
-    // Mobile nav toggle
-    const mobileBtn = document.getElementById('mobileMenuBtn');
-    const navLinks = document.querySelector('.pth-nav-links');
-    if (mobileBtn && navLinks) {
-        mobileBtn.addEventListener('click', function() {
-            if (navLinks.style.display === 'flex') {
-                navLinks.style.display = 'none';
-            } else {
-                navLinks.style.display = 'flex';
-                navLinks.style.flexDirection = 'column';
-                navLinks.style.position = 'absolute';
-                navLinks.style.top = '100%';
-                navLinks.style.left = '0';
-                navLinks.style.right = '0';
-                navLinks.style.background = '#ffffff';
-                navLinks.style.padding = '20px';
-                navLinks.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
-            }
-        });
-    }
-})();
-
-// Enquiry Modal Functions
-function openEnquiryModal() {
-    const overlay = document.getElementById('enquiryModalOverlay');
-    const form = document.getElementById('enquiryForm');
-    const successBox = document.getElementById('enquirySuccessBox');
-    const errorBox = document.getElementById('enquiryErrorBox');
-    const btn = document.getElementById('enquirySubmitBtn');
-    const btnText = document.getElementById('enqBtnText');
-    const btnSpinner = document.getElementById('enqBtnSpinner');
-
-    if (form) form.style.display = 'flex';
-    if (successBox) successBox.style.display = 'none';
-    if (errorBox) {
-        errorBox.style.display = 'none';
-        errorBox.innerHTML = '';
-    }
-    if (btn) btn.disabled = false;
-    if (btnText) btnText.style.display = 'inline-flex';
-    if (btnSpinner) btnSpinner.style.display = 'none';
-
-    if (overlay) {
-        overlay.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
-}
-
-function closeEnquiryModal() {
-    const overlay = document.getElementById('enquiryModalOverlay');
-    if (overlay) {
-        overlay.classList.add('hidden');
-        document.body.style.overflow = '';
-    }
-}
-
-function toggleOtherSymptom(val) {
-    const group = document.getElementById('otherSymptomGroup');
-    const input = document.getElementById('enq_other_symptom');
-    if (val === 'Other') {
-        group.style.display = 'flex';
-        input.setAttribute('required', 'required');
-        input.focus();
-    } else {
-        group.style.display = 'none';
-        input.removeAttribute('required');
-        input.value = '';
-    }
-}
-
-function handleEnquirySubmit(e) {
-    e.preventDefault();
-    const form = document.getElementById('enquiryForm');
-    const btn = document.getElementById('enquirySubmitBtn');
-    const btnText = document.getElementById('enqBtnText');
-    const btnSpinner = document.getElementById('enqBtnSpinner');
-    const errorBox = document.getElementById('enquiryErrorBox');
-    const successBox = document.getElementById('enquirySuccessBox');
-    const successMsg = document.getElementById('enquirySuccessMsg');
-
-    errorBox.style.display = 'none';
-    errorBox.innerHTML = '';
-    btn.disabled = true;
-    btnText.style.display = 'none';
-    btnSpinner.style.display = 'inline-block';
-
-    const formData = new FormData(form);
-
-    fetch("{{ route('enquiry.store') }}", {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'Accept': 'application/json'
-        }
-    })
-    .then(async (response) => {
-        const data = await response.json();
-        btn.disabled = false;
-        btnText.style.display = 'inline-flex';
-        btnSpinner.style.display = 'none';
-
-        if (response.ok && data.success) {
-            form.style.display = 'none';
-            if (data.message) {
-                successMsg.textContent = data.message;
-            }
-            successBox.style.display = 'flex';
-            form.reset();
-        } else {
-            let msg = data.message || 'Please fill in all required fields.';
-            if (data.errors) {
-                msg = Object.values(data.errors).flat().join('<br>');
-            }
-            errorBox.innerHTML = msg;
-            errorBox.style.display = 'block';
-        }
-    })
-    .catch((err) => {
-        btn.disabled = false;
-        btnText.style.display = 'inline-flex';
-        btnSpinner.style.display = 'none';
-        errorBox.innerHTML = 'An unexpected error occurred. Please try again or call support.';
-        errorBox.style.display = 'block';
-    });
-}
-
-// Close on Escape key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeEnquiryModal();
-    }
 });
 </script>
-
-{{-- ══════════════════════════════════════════════════
-     HOME VISIT ENQUIRY MODAL
-══════════════════════════════════════════════════ --}}
-<div class="pth-enquiry-overlay hidden" id="enquiryModalOverlay" onclick="if(event.target===this)closeEnquiryModal()">
-    <div class="pth-enquiry-modal" onclick="event.stopPropagation()">
-        
-        <!-- Header -->
-        <div class="pth-enquiry-header">
-            <div class="pth-enquiry-header-left">
-                <div class="pth-enquiry-icon">
-                    <i class="fa-solid fa-house-medical"></i>
-                </div>
-                <div>
-                    <h3 class="pth-enquiry-title">Book Home Visit Consultation</h3>
-                    <p class="pth-enquiry-sub">Get certified physiotherapist at your doorstep</p>
-                </div>
-            </div>
-            <button type="button" class="pth-enquiry-close" onclick="closeEnquiryModal()" aria-label="Close">&times;</button>
-        </div>
-
-        <!-- Success Message Box (Hidden by default) -->
-        <div id="enquirySuccessBox" class="pth-enquiry-success" style="display:none;">
-            <div class="pth-enquiry-success-icon"><i class="fa-solid fa-circle-check"></i></div>
-            <h4>Enquiry Submitted Successfully!</h4>
-            <p id="enquirySuccessMsg">Our care coordinator will contact you shortly to confirm your home visit timing.</p>
-            <button type="button" class="pth-btn-teal" onclick="closeEnquiryModal()" style="margin-top:14px;">Done</button>
-        </div>
-
-        <!-- Form Body -->
-        <form id="enquiryForm" method="POST" action="{{ route('enquiry.store') }}" onsubmit="handleEnquirySubmit(event)">
-            @csrf
-            <div class="pth-enquiry-body">
-
-                <!-- Alert error box -->
-                <div id="enquiryErrorBox" class="pth-enquiry-error" style="display:none;"></div>
-
-                <!-- Patient Name -->
-                <div class="pth-form-group">
-                    <label class="pth-form-label" for="enq_patient_name">Patient Full Name <span class="req">*</span></label>
-                    <div class="pth-input-wrap">
-                        <i class="fa-regular fa-user pth-input-icon"></i>
-                        <input type="text" id="enq_patient_name" name="patient_name" class="pth-form-input" 
-                               value="{{ Auth::check() ? Auth::user()->name : old('patient_name') }}" 
-                               placeholder="e.g. Rahul Sharma" required>
-                    </div>
-                </div>
-
-                <!-- Contact Number -->
-                <div class="pth-form-group">
-                    <label class="pth-form-label" for="enq_contact_number">Mobile / WhatsApp Number <span class="req">*</span></label>
-                    <div class="pth-input-wrap">
-                        <i class="fa-solid fa-phone pth-input-icon"></i>
-                        <input type="tel" id="enq_contact_number" name="contact_number" class="pth-form-input" 
-                               value="{{ Auth::check() ? Auth::user()->phone : old('contact_number') }}" 
-                               placeholder="e.g. 9876543210" required>
-                    </div>
-                </div>
-
-                <!-- Condition / Reason for Visit -->
-                <div class="pth-form-group">
-                    <label class="pth-form-label" for="enq_symptoms">Condition / Reason for Home Visit <span class="req">*</span></label>
-                    <div class="pth-input-wrap">
-                        <i class="fa-solid fa-notes-medical pth-input-icon"></i>
-                        <select id="enq_symptoms" name="symptoms" class="pth-form-select" onchange="toggleOtherSymptom(this.value)">
-                            <option value="Back Pain & Sciatica">Back Pain &amp; Sciatica</option>
-                            <option value="Neck & Shoulder Pain">Neck &amp; Shoulder Pain</option>
-                            <option value="Knee & Joint Pain">Knee &amp; Joint Pain / Arthritis</option>
-                            <option value="Post Surgery Rehabilitation">Post Surgery Rehabilitation</option>
-                            <option value="Stroke / Paralysis Rehab">Stroke / Paralysis Neuro Rehab</option>
-                            <option value="Sports Injury Recovery">Sports Injury Recovery</option>
-                            <option value="Elderly Mobility & Fall Prevention">Elderly Mobility &amp; Fall Prevention</option>
-                            <option value="Spine & Posture Care">Spine &amp; Posture Care</option>
-                            <option value="General Physiotherapy">General Physiotherapy Consultation</option>
-                            <option value="Other">Other Condition…</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Other Symptom Input -->
-                <div class="pth-form-group" id="otherSymptomGroup" style="display:none;">
-                    <label class="pth-form-label" for="enq_other_symptom">Specify Condition Details</label>
-                    <input type="text" id="enq_other_symptom" name="other_symptom" class="pth-form-input" placeholder="Describe the pain or condition...">
-                </div>
-
-                <!-- Location / Address -->
-                <div class="pth-form-group">
-                    <label class="pth-form-label" for="enq_location">Home Address / Locality / City <span class="req">*</span></label>
-                    <div class="pth-input-wrap">
-                        <i class="fa-solid fa-location-dot pth-input-icon"></i>
-                        <input type="text" id="enq_location" name="location" class="pth-form-input" 
-                               value="{{ Auth::check() ? Auth::user()->address : old('location') }}" 
-                               placeholder="e.g. Flat 302, Sector 14, Gurugram" required>
-                    </div>
-                </div>
-
-                <!-- Additional Notes (Optional) -->
-                <div class="pth-form-group">
-                    <label class="pth-form-label" for="enq_notes">Additional Notes / Preferred Time <span class="opt">(Optional)</span></label>
-                    <textarea id="enq_notes" name="notes" class="pth-form-textarea" rows="2" placeholder="Any specific requirements, doctor gender preference, or convenient time..."></textarea>
-                </div>
-
-                <!-- Trust Points -->
-                <div class="pth-enquiry-trust-row">
-                    <div class="pth-trust-item"><i class="fa-solid fa-shield-halved"></i> Certified Physios</div>
-                    <div class="pth-trust-item"><i class="fa-solid fa-clock"></i> 15-Min Callback</div>
-                    <div class="pth-trust-item"><i class="fa-solid fa-house-chimney"></i> At Your Home</div>
-                </div>
-
-            </div>
-
-            <!-- Footer -->
-            <div class="pth-enquiry-footer">
-                <button type="button" class="pth-btn-ghost" onclick="closeEnquiryModal()">Cancel</button>
-                <button type="submit" class="pth-btn-teal" id="enquirySubmitBtn">
-                    <span id="enqBtnText">Request Home Visit <i class="fa-solid fa-arrow-right"></i></span>
-                    <span id="enqBtnSpinner" class="spinner-border spinner-border-sm" style="display:none;width:16px;height:16px;border-width:2px;"></span>
-                </button>
-            </div>
-        </form>
-
-    </div>
-</div>
-
 @endsection

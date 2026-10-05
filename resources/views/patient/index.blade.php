@@ -5,9 +5,6 @@
 @section('meta_keywords', 'physiotherapy, home physiotherapy, physiotherapist near me, back pain relief, knee pain therapy, sports injury rehab, stroke recovery, best physio India')
 
 @section('content')
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
@@ -56,8 +53,12 @@
     padding: 0;
 }
 
+body, input, button, select, textarea, .kn-main-wrapper, h1, h2, h3, h4, h5, h6, p, a, span {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
 body {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     color: var(--text-primary);
     background-color: var(--page-bg);
     line-height: 1.55;

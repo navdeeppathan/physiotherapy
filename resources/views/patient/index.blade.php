@@ -5,7 +5,6 @@
 @section('meta_keywords', 'physiotherapy, home physiotherapy, physiotherapist near me, back pain relief, knee pain therapy, sports injury rehab, stroke recovery, best physio India')
 
 @section('content')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -745,6 +744,27 @@ a {
     background: var(--brand-teal);
     color: #ffffff;
 }
+.kn-spec-card.active-filter {
+    border-color: var(--brand-teal);
+    background: var(--brand-teal-soft);
+    box-shadow: 0 10px 28px rgba(12, 105, 120, 0.12);
+}
+.kn-spec-card.active-filter .kn-spec-icon-box {
+    background: var(--brand-teal);
+    color: #ffffff;
+}
+.kn-spec-uploaded-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    border-radius: 4px;
+    transition: filter 0.2s ease, transform 0.2s ease;
+}
+.kn-spec-card:hover .kn-spec-uploaded-icon,
+.kn-spec-card.active-filter .kn-spec-uploaded-icon {
+    filter: brightness(0) invert(1);
+    transform: scale(1.08);
+}
 .kn-spec-title {
     font-size: 17px;
     font-weight: 800;
@@ -755,6 +775,31 @@ a {
     font-size: 13px;
     color: var(--text-secondary);
     line-height: 1.5;
+}
+.kn-active-filter-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--brand-teal-light);
+    color: var(--brand-teal);
+    border: 1px solid var(--brand-teal);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+.kn-active-filter-clear {
+    cursor: pointer;
+    color: var(--brand-teal);
+    font-weight: 800;
+    margin-left: 6px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: background 0.15s, color 0.15s;
+}
+.kn-active-filter-clear:hover {
+    background: #e74c3c;
+    color: #ffffff;
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1795,7 +1840,7 @@ a {
                 {{-- Desktop Nav Links --}}
                 <ul class="kn-nav-menu">
                     <li class="kn-nav-item"><a href="{{ route('home') }}" class="active">Home</a></li>
-                    <li class="kn-nav-item"><a href="{{ route('search.doctors') }}">Find Doctors</a></li>
+                    <li class="kn-nav-item"><a href="#specialists">Find Doctors</a></li>
                     <li class="kn-nav-item"><a href="#specialities">Specialities</a></li>
                     <li class="kn-nav-item"><a href="#how-it-works">How It Works</a></li>
                     <li class="kn-nav-item"><a href="#about">About Us</a></li>
@@ -1816,7 +1861,7 @@ a {
                         <a href="{{ route('login') }}" class="kn-login-link">Login</a>
                     @endauth
 
-                    <a href="{{ route('search.doctors') }}" class="kn-btn-nav-book">
+                    <a href="#search-bar" class="kn-btn-nav-book">
                         Book Appointment
                     </a>
 
@@ -1834,7 +1879,7 @@ a {
     <div class="kn-mobile-drawer" id="knMobileDrawer">
         <ul class="kn-mobile-menu-list">
             <li><a href="{{ route('home') }}">Home</a></li>
-            <li><a href="{{ route('search.doctors') }}">Find Doctors</a></li>
+            <li><a href="#specialists">Find Doctors</a></li>
             <li><a href="#specialities">Specialities</a></li>
             <li><a href="#how-it-works">How It Works</a></li>
             <li><a href="#about">About Us</a></li>
@@ -1847,7 +1892,7 @@ a {
                 <li><a href="{{ route('patient.register') }}">Register as Patient</a></li>
             @endauth
         </ul>
-        <a href="{{ route('search.doctors') }}" class="kn-btn-primary" style="width: 100%;">
+        <a href="#search-bar" class="kn-btn-primary" style="width: 100%;">
             Book Appointment
         </a>
     </div>
@@ -1873,7 +1918,7 @@ a {
                             Find verified physiotherapists for in-clinic and online sessions. Personalised care, zero guesswork, recovery that actually lasts.
                         </p>
                         <div class="kn-hero-actions">
-                            <a href="{{ route('search.doctors') }}" class="kn-btn-primary">
+                            <a href="#specialists" class="kn-btn-primary">
                                 Find Physiotherapist <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 13px;"></i>
                             </a>
                             <a href="#search-bar" class="kn-btn-secondary">
@@ -1891,7 +1936,7 @@ a {
                             <i class="fa-regular fa-heart"></i> Top rated care
                         </div>
                         <div class="kn-hero-image-box">
-                            <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80" alt="Physiotherapist guiding patient arm recovery">
+                            <img src="{{ asset('assets/img/hero/hero-1.jpg') }}" alt="Physiotherapist guiding patient arm recovery">
                         </div>
                         <div class="kn-hero-stats-card">
                             <div class="kn-hero-stats-left">
@@ -1921,7 +1966,7 @@ a {
                             From your first pain-free walk to your next finish line, connect with sports and orthopedic specialists who put your goals first.
                         </p>
                         <div class="kn-hero-actions">
-                            <a href="{{ route('search.doctors') }}" class="kn-btn-primary">
+                            <a href="#specialists" class="kn-btn-primary">
                                 Find Physiotherapist <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 13px;"></i>
                             </a>
                             <a href="#search-bar" class="kn-btn-secondary">
@@ -1939,7 +1984,7 @@ a {
                             <i class="fa-regular fa-heart"></i> Made for your comeback
                         </div>
                         <div class="kn-hero-image-box">
-                            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1200&q=80" alt="Athletic rehabilitation resistance training">
+                            <img src="{{ asset('assets/img/hero/hero-2.jpg') }}" alt="Athletic rehabilitation resistance training">
                         </div>
                         <div class="kn-hero-stats-card">
                             <div class="kn-hero-stats-left">
@@ -1969,10 +2014,10 @@ a {
                             Choose in-clinic or online physiotherapy that fits your life. Book a verified specialist and start your personalised recovery from home.
                         </p>
                         <div class="kn-hero-actions">
-                            <a href="{{ route('search.doctors') }}" class="kn-btn-primary">
+                            <a href="#search-bar" class="kn-btn-primary">
                                 Book Appointment <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 13px;"></i>
                             </a>
-                            <a href="{{ route('search.doctors') }}" class="kn-btn-secondary">
+                            <a href="#specialists" class="kn-btn-secondary">
                                 Find Physiotherapist
                             </a>
                         </div>
@@ -1987,7 +2032,7 @@ a {
                             <i class="fa-regular fa-heart"></i> Care that fits your life
                         </div>
                         <div class="kn-hero-image-box">
-                            <img src="https://images.unsplash.com/photo-1584432810601-6c7f27d2362b?auto=format&fit=crop&w=1200&q=80" alt="Home virtual video physiotherapy session">
+                            <img src="{{ asset('assets/img/hero/hero-3.jpg') }}" alt="Home virtual video physiotherapy session">
                         </div>
                         <div class="kn-hero-stats-card">
                             <div class="kn-hero-stats-left">
@@ -2042,13 +2087,13 @@ a {
                     <div class="kn-search-tag">Instant appointment booking</div>
                 </div>
 
-                <form action="{{ route('search.doctors') }}" method="GET" class="kn-search-form">
+                <form action="{{ route('home') }}#specialists" method="GET" class="kn-search-form" id="homeDoctorSearchForm">
                     {{-- 1. Location --}}
                     <div class="kn-form-group">
                         <label class="kn-form-label">Location</label>
                         <div class="kn-input-wrap">
                             <i class="fa-solid fa-location-dot"></i>
-                            <input type="text" name="location" placeholder="e.g. London or postcode" value="{{ request('location') }}">
+                            <input type="text" name="location" id="homeSearchLocation" placeholder="e.g. London or postcode" value="{{ request('location') }}">
                         </div>
                     </div>
 
@@ -2057,7 +2102,7 @@ a {
                         <label class="kn-form-label">Speciality</label>
                         <div class="kn-input-wrap">
                             <i class="fa-solid fa-stethoscope"></i>
-                            <select name="specialization">
+                            <select name="specialization" id="homeSearchSpecialization">
                                 <option value="">All Specialities</option>
                                 @foreach($specializations as $spec)
                                     <option value="{{ $spec->id }}" {{ request('specialization') == $spec->id ? 'selected' : '' }}>
@@ -2073,7 +2118,7 @@ a {
                         <label class="kn-form-label">Visit type</label>
                         <div class="kn-input-wrap">
                             <i class="fa-solid fa-building"></i>
-                            <select name="visit_type">
+                            <select name="visit_type" id="homeSearchVisitType">
                                 <option value="all">Clinic &amp; Home Visit</option>
                                 <option value="clinic">In-Clinic Visit</option>
                                 <option value="home">Home Visit</option>
@@ -2187,16 +2232,28 @@ a {
                 @endphp
 
                 @if($specializations && $specializations->count() > 0)
-                    {{-- Render dynamically from DB with fallback icons --}}
+                    {{-- Render dynamically from DB with admin uploaded icons --}}
                     @foreach($specializations->take(8) as $index => $spec)
                         @php
                             $defaultItem = $specDefaults[$index % count($specDefaults)];
                             $iconClass = $defaultItem['icon'];
-                            $desc = !empty($spec->description) ? Str::limit($spec->description, 45) : $defaultItem['desc'];
+                            $desc = !empty($spec->description) ? Str::limit($spec->description, 50) : $defaultItem['desc'];
                         @endphp
-                        <a href="{{ route('search.doctors', ['specialization' => $spec->id]) }}" class="kn-spec-card">
+                        <a href="#specialists" 
+                           class="kn-spec-card kn-spec-filter-trigger"
+                           data-spec-id="{{ $spec->id }}"
+                           data-spec-name="{{ $spec->name }}"
+                           onclick="filterByCondition('{{ addslashes($spec->name) }}', '{{ $spec->id }}', this); return false;">
                             <div class="kn-spec-icon-box">
-                                <i class="{{ $iconClass }}"></i>
+                                @if(!empty($spec->icon))
+                                    <img src="{{ asset('images/specializations/' . $spec->icon) }}"
+                                         alt="{{ $spec->name }}"
+                                         class="kn-spec-uploaded-icon"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                                    <i class="{{ $iconClass }}" style="display: none;"></i>
+                                @else
+                                    <i class="{{ $iconClass }}"></i>
+                                @endif
                             </div>
                             <h3 class="kn-spec-title">{{ $spec->name }}</h3>
                             <p class="kn-spec-desc">{{ $desc }}</p>
@@ -2206,7 +2263,11 @@ a {
                     {{-- If fewer than 8 in DB, render remaining default slots --}}
                     @for($i = $specializations->count(); $i < 8; $i++)
                         @php $item = $specDefaults[$i]; @endphp
-                        <a href="{{ route('search.doctors', ['keyword' => $item['name']]) }}" class="kn-spec-card">
+                        <a href="#specialists" 
+                           class="kn-spec-card kn-spec-filter-trigger"
+                           data-spec-id=""
+                           data-spec-name="{{ $item['name'] }}"
+                           onclick="filterByCondition('{{ addslashes($item['name']) }}', null, this); return false;">
                             <div class="kn-spec-icon-box">
                                 <i class="{{ $item['icon'] }}"></i>
                             </div>
@@ -2217,7 +2278,11 @@ a {
                 @else
                     {{-- Fallback matching exact mockup --}}
                     @foreach($specDefaults as $item)
-                        <a href="{{ route('search.doctors', ['keyword' => $item['name']]) }}" class="kn-spec-card">
+                        <a href="#specialists" 
+                           class="kn-spec-card kn-spec-filter-trigger"
+                           data-spec-id=""
+                           data-spec-name="{{ $item['name'] }}"
+                           onclick="filterByCondition('{{ addslashes($item['name']) }}', null, this); return false;">
                             <div class="kn-spec-icon-box">
                                 <i class="{{ $item['icon'] }}"></i>
                             </div>
@@ -2248,13 +2313,19 @@ a {
                     <p class="kn-section-subtitle" style="margin-top: 8px;">
                         Trusted, qualified physiotherapists dedicated to getting you back to what you love.
                     </p>
+                    <div id="doctorFilterStatus" style="display: none; margin-top: 14px;">
+                        <span class="kn-active-filter-badge">
+                            Filtered by: <strong id="currentFilterText"></strong>
+                            <span class="kn-active-filter-clear" onclick="clearDoctorFilter()" title="Clear filter">&times; Clear</span>
+                        </span>
+                    </div>
                 </div>
-                <a href="{{ route('search.doctors') }}" class="kn-view-all-link">
+                <a href="#specialists" class="kn-view-all-link" onclick="clearDoctorFilter()">
                     View all specialists <i class="fa-solid fa-arrow-right"></i>
                 </a>
             </div>
 
-            <div class="kn-doctors-grid">
+            <div class="kn-doctors-grid" id="knDoctorsGrid">
                 @php
                     // Fallback doctor mockup details matching the screenshots
                     $defaultDoctorProfiles = [
@@ -2263,43 +2334,46 @@ a {
                             'role' => 'Lead Musculoskeletal Physiotherapist',
                             'exp' => '12 yrs exp',
                             'speciality' => 'Back Pain',
+                            'spec_id' => '1',
                             'tags' => ['Back Pain', 'Sports Injuries', 'Manual Therapy'],
                             'rating' => '4.9',
                             'reviews' => '124',
                             'fee' => '₹800',
                             'location' => 'Central Clinic & Home Visits',
-                            'img' => 'https://images.unsplash.com/photo-1594824813637-2708307c0892?auto=format&fit=crop&w=600&q=80'
+                            'img' => asset('assets/img/doctors/doctor-01.jpg')
                         ],
                         [
                             'name' => 'Dr. James Wilson',
                             'role' => 'Senior Sports Rehabilitation Specialist',
                             'exp' => '9 yrs exp',
-                            'speciality' => 'Sports Rehab',
-                            'tags' => ['Knee Rehab', 'Post-Surgery', 'Return to Sport'],
+                            'speciality' => 'Sports Injuries',
+                            'spec_id' => '4',
+                            'tags' => ['Knee Rehab', 'Post-Surgery', 'Return to Sport', 'Sports Injuries'],
                             'rating' => '4.9',
                             'reviews' => '98',
                             'fee' => '₹950',
                             'location' => 'West End Clinic & Home Visits',
-                            'img' => 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=600&q=80'
+                            'img' => asset('assets/img/doctors/doctor-02.jpg')
                         ],
                         [
                             'name' => 'Dr. Priya Patel',
                             'role' => 'Neurological & Geriatric Rehabilitation',
                             'exp' => '11 yrs exp',
                             'speciality' => 'Neuro Rehab',
-                            'tags' => ['Stroke Rehab', 'Balance & Gait', 'Home Visits'],
+                            'spec_id' => '6',
+                            'tags' => ['Stroke Rehab', 'Balance & Gait', 'Home Visits', 'Neuro Rehab', 'Geriatric Care'],
                             'rating' => '4.8',
                             'reviews' => '86',
                             'fee' => '₹900',
                             'location' => 'North Clinic & Home Visits',
-                            'img' => 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=600&q=80'
+                            'img' => asset('assets/img/doctors/doctor-03.jpg')
                         ]
                     ];
                 @endphp
 
                 @if($doctors && $doctors->count() > 0)
                     {{-- 1. Render Real Database Doctors --}}
-                    @foreach($doctors->take(3) as $idx => $doc)
+                    @foreach($doctors->take(6) as $idx => $doc)
                         @php
                             $docName = $doc->name ?? 'Specialist Doctor';
                             if (!str_starts_with(strtolower($docName), 'dr.')) {
@@ -2317,6 +2391,7 @@ a {
                             // Qualifications & Experience
                             $qual = $doc->profile->qualification ?? 'MPT - Physiotherapy';
                             $exp = ($doc->profile->experience_years ?? 8) . ' yrs exp';
+                            $specId = $doc->profile->specialization ?? '';
                             $specName = $doc->profile->specializationdata->name ?? ($defaultDoctorProfiles[$idx % 3]['speciality']);
 
                             // Fee
@@ -2331,9 +2406,14 @@ a {
                             $cleanLoc = Str::limit($locText, 30);
                         @endphp
 
-                        <div class="kn-doctor-card">
+                        <div class="kn-doctor-card"
+                             data-doctor-id="{{ $doc->id }}"
+                             data-spec-id="{{ $specId }}"
+                             data-spec-name="{{ strtolower($specName) }}"
+                             data-location="{{ strtolower($locText) }}"
+                             data-tags="{{ strtolower($specName . ' ' . $qual) }}">
                             <div class="kn-doctor-media">
-                                <img src="{{ $docImg }}" alt="{{ $docName }}" onerror="this.src='{{ $defaultDoctorProfiles[$idx % 3]['img'] }}';">
+                                <img src="{{ $docImg }}" alt="{{ $docName }}" loading="lazy" onerror="this.src='{{ $defaultDoctorProfiles[$idx % 3]['img'] }}';">
                                 <div class="kn-doctor-rating-badge">
                                     <i class="fa-solid fa-star"></i> 4.9 ({{ 45 + ($doc->id * 7) }} reviews)
                                 </div>
@@ -2379,9 +2459,14 @@ a {
                     {{-- Fill up to 3 cards if fewer in DB --}}
                     @for($i = $doctors->count(); $i < 3; $i++)
                         @php $docDef = $defaultDoctorProfiles[$i]; @endphp
-                        <div class="kn-doctor-card">
+                        <div class="kn-doctor-card"
+                             data-doctor-id=""
+                             data-spec-id="{{ $docDef['spec_id'] ?? '' }}"
+                             data-spec-name="{{ strtolower($docDef['speciality'] ?? '') }}"
+                             data-location="{{ strtolower($docDef['location'] ?? '') }}"
+                             data-tags="{{ strtolower(implode(' ', $docDef['tags'] ?? [])) }}">
                             <div class="kn-doctor-media">
-                                <img src="{{ $docDef['img'] }}" alt="{{ $docDef['name'] }}">
+                                <img src="{{ $docDef['img'] }}" alt="{{ $docDef['name'] }}" loading="lazy">
                                 <div class="kn-doctor-rating-badge">
                                     <i class="fa-solid fa-star"></i> {{ $docDef['rating'] }} ({{ $docDef['reviews'] }} reviews)
                                 </div>
@@ -2413,10 +2498,10 @@ a {
                                         <div class="kn-doctor-fee-period">per session</div>
                                     </div>
                                     <div class="kn-doctor-actions">
-                                        <a href="{{ route('search.doctors') }}" class="kn-btn-doc-profile">
+                                        <a href="#search-bar" class="kn-btn-doc-profile">
                                             View Profile
                                         </a>
-                                        <a href="{{ route('search.doctors') }}" class="kn-btn-doc-book">
+                                        <a href="#search-bar" class="kn-btn-doc-book">
                                             Book Appointment
                                         </a>
                                     </div>
@@ -2428,9 +2513,14 @@ a {
                 @else
                     {{-- 2. Fallback Cards matching Mockup --}}
                     @foreach($defaultDoctorProfiles as $docDef)
-                        <div class="kn-doctor-card">
+                        <div class="kn-doctor-card"
+                             data-doctor-id=""
+                             data-spec-id="{{ $docDef['spec_id'] ?? '' }}"
+                             data-spec-name="{{ strtolower($docDef['speciality'] ?? '') }}"
+                             data-location="{{ strtolower($docDef['location'] ?? '') }}"
+                             data-tags="{{ strtolower(implode(' ', $docDef['tags'] ?? [])) }}">
                             <div class="kn-doctor-media">
-                                <img src="{{ $docDef['img'] }}" alt="{{ $docDef['name'] }}">
+                                <img src="{{ $docDef['img'] }}" alt="{{ $docDef['name'] }}" loading="lazy">
                                 <div class="kn-doctor-rating-badge">
                                     <i class="fa-solid fa-star"></i> {{ $docDef['rating'] }} ({{ $docDef['reviews'] }} reviews)
                                 </div>
@@ -2462,10 +2552,10 @@ a {
                                         <div class="kn-doctor-fee-period">per session</div>
                                     </div>
                                     <div class="kn-doctor-actions">
-                                        <a href="{{ route('search.doctors') }}" class="kn-btn-doc-profile">
+                                        <a href="#search-bar" class="kn-btn-doc-profile">
                                             View Profile
                                         </a>
-                                        <a href="{{ route('search.doctors') }}" class="kn-btn-doc-book">
+                                        <a href="#search-bar" class="kn-btn-doc-book">
                                             Book Appointment
                                         </a>
                                     </div>
@@ -2474,6 +2564,18 @@ a {
                         </div>
                     @endforeach
                 @endif
+
+                {{-- Empty state when zero doctors match filter --}}
+                <div id="noDoctorsFound" style="display: none; grid-column: 1 / -1; text-align: center; padding: 48px 20px; background: #ffffff; border: 1.5px dashed var(--card-border); border-radius: var(--radius-lg); margin-top: 10px;">
+                    <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--brand-teal-light); color: var(--brand-teal); display: inline-flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 14px;">
+                        <i class="fa-solid fa-user-doctor"></i>
+                    </div>
+                    <h3 style="font-size: 19px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">No specialists match this filter</h3>
+                    <p style="font-size: 14px; color: var(--text-muted); max-width: 480px; margin: 0 auto 18px;">Try clearing your filter or searching for another condition or location.</p>
+                    <button type="button" class="kn-btn-primary" onclick="clearDoctorFilter()" style="cursor: pointer; border: none; padding: 10px 24px;">
+                        View All Specialists
+                    </button>
+                </div>
             </div>
 
         </div>
@@ -2649,7 +2751,7 @@ a {
                 {{-- Left Image with Badge --}}
                 <div class="kn-split-visual">
                     <div class="kn-split-img-box">
-                        <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1000&q=80" alt="Physiotherapist consulting with patient">
+                        <img src="{{ asset('assets/img/hero/split-feature.jpg') }}" alt="Physiotherapist consulting with patient" loading="lazy">
                     </div>
                     <div class="kn-split-badge-card">
                         <i class="fa-solid fa-award"></i>
@@ -2687,7 +2789,7 @@ a {
                         </li>
                     </ul>
 
-                    <a href="{{ route('search.doctors') }}" class="kn-btn-primary">
+                    <a href="#specialists" class="kn-btn-primary">
                         Find Your Specialist <i class="fa-solid fa-arrow-right"></i>
                     </a>
                 </div>
@@ -2716,7 +2818,7 @@ a {
                 </div>
 
                 <div class="kn-banner-img-box">
-                    <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=800&q=80" alt="Team of verified physiotherapists">
+                    <img src="{{ asset('assets/img/hero/practitioners.jpg') }}" alt="Team of verified physiotherapists" loading="lazy">
                 </div>
             </div>
         </div>
@@ -2758,7 +2860,7 @@ a {
                         "After months of persistent lower back pain, my therapist identified the root cause in session one. Within 4 weeks, I was back to running 5k completely pain-free."
                     </p>
                     <div class="kn-reviewer-row">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80" alt="Marcus Thorne" class="kn-reviewer-avatar">
+                        <img src="{{ asset('assets/img/patients/patient1.jpg') }}" alt="Marcus Thorne" class="kn-reviewer-avatar" loading="lazy">
                         <div class="kn-reviewer-info">
                             <h6>Marcus Thorne</h6>
                             <p>Recovered from Lumbar Disc Herniation</p>
@@ -2779,7 +2881,7 @@ a {
                         "The convenience of home visits made all the difference for my post-knee surgery rehab. The exercises were clear and the progress tracking kept me motivated every day."
                     </p>
                     <div class="kn-reviewer-row">
-                        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&q=80" alt="Eleanor Vance" class="kn-reviewer-avatar">
+                        <img src="{{ asset('assets/img/patients/patient2.jpg') }}" alt="Eleanor Vance" class="kn-reviewer-avatar" loading="lazy">
                         <div class="kn-reviewer-info">
                             <h6>Eleanor Vance</h6>
                             <p>Total Knee Replacement Rehab</p>
@@ -2800,7 +2902,7 @@ a {
                         "Booking was effortless and my therapist was exceptionally thorough. She explained every exercise and tailored everything to my busy work schedule."
                     </p>
                     <div class="kn-reviewer-row">
-                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80" alt="David Chen" class="kn-reviewer-avatar">
+                        <img src="{{ asset('assets/img/patients/patient3.jpg') }}" alt="David Chen" class="kn-reviewer-avatar" loading="lazy">
                         <div class="kn-reviewer-info">
                             <h6>David Chen</h6>
                             <p>Shoulder Impingement Recovery</p>
@@ -2923,7 +3025,7 @@ a {
                         Evidence-based guides, recovery tips, and wellness insights from our clinical experts.
                     </p>
                 </div>
-                <a href="{{ route('search.doctors') }}" class="kn-view-all-link">
+                <a href="#specialists" class="kn-view-all-link">
                     Explore all articles <i class="fa-solid fa-arrow-right"></i>
                 </a>
             </div>
@@ -2932,12 +3034,12 @@ a {
                 {{-- Article 1 --}}
                 <div class="kn-article-card">
                     <div class="kn-article-img">
-                        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80" alt="Ergonomic desk workspace">
+                        <img src="{{ asset('assets/img/features/feature-01.jpg') }}" alt="Desk Posture and Neck Pain" loading="lazy">
                     </div>
                     <div class="kn-article-body">
                         <div class="kn-article-tag">Ergonomics · 4 min read</div>
                         <h4 class="kn-article-title">Desk Posture and Neck Pain: 5 Simple Changes You Can Make Today</h4>
-                        <a href="{{ route('search.doctors') }}" class="kn-article-link">
+                        <a href="#specialists" class="kn-article-link">
                             Read more <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
                         </a>
                     </div>
@@ -2946,12 +3048,12 @@ a {
                 {{-- Article 2 --}}
                 <div class="kn-article-card">
                     <div class="kn-article-img">
-                        <img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=600&q=80" alt="Runner stretching hamstring">
+                        <img src="{{ asset('assets/img/features/feature-02.jpg') }}" alt="Runner stretching hamstring" loading="lazy">
                     </div>
                     <div class="kn-article-body">
                         <div class="kn-article-tag">Sports Rehab · 5 min read</div>
                         <h4 class="kn-article-title">When to Ice vs. Heat: The Complete Injury Recovery Guide</h4>
-                        <a href="{{ route('search.doctors') }}" class="kn-article-link">
+                        <a href="#specialists" class="kn-article-link">
                             Read more <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
                         </a>
                     </div>
@@ -2960,12 +3062,12 @@ a {
                 {{-- Article 3 --}}
                 <div class="kn-article-card">
                     <div class="kn-article-img">
-                        <img src="https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=600&q=80" alt="Physiotherapist assisting senior">
+                        <img src="{{ asset('assets/img/features/feature-03.jpg') }}" alt="Physiotherapist assisting senior" loading="lazy">
                     </div>
                     <div class="kn-article-body">
                         <div class="kn-article-tag">Joint Health · 6 min read</div>
                         <h4 class="kn-article-title">Managing Knee Osteoarthritis: Exercises That Actually Help</h4>
-                        <a href="{{ route('search.doctors') }}" class="kn-article-link">
+                        <a href="#specialists" class="kn-article-link">
                             Read more <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
                         </a>
                     </div>
@@ -2974,12 +3076,12 @@ a {
                 {{-- Article 4 --}}
                 <div class="kn-article-card">
                     <div class="kn-article-img">
-                        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80" alt="Two people walking outside">
+                        <img src="{{ asset('assets/img/features/feature-04.jpg') }}" alt="Two people walking outside" loading="lazy">
                     </div>
                     <div class="kn-article-body">
                         <div class="kn-article-tag">Recovery · 4 min read</div>
                         <h4 class="kn-article-title">Walking for Spinal Health: Why Movement Is the Best Medicine</h4>
-                        <a href="{{ route('search.doctors') }}" class="kn-article-link">
+                        <a href="#specialists" class="kn-article-link">
                             Read more <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
                         </a>
                     </div>
@@ -3003,10 +3105,10 @@ a {
                     Connect with certified physiotherapists for in-clinic or at-home appointments.
                 </p>
                 <div class="kn-cta-buttons">
-                    <a href="{{ route('search.doctors') }}" class="kn-btn-primary">
+                    <a href="#search-bar" class="kn-btn-primary">
                         Book Appointment <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 13px;"></i>
                     </a>
-                    <a href="{{ route('search.doctors') }}" class="kn-btn-secondary">
+                    <a href="#specialists" class="kn-btn-secondary">
                         Find Specialists
                     </a>
                 </div>
@@ -3038,11 +3140,11 @@ a {
                 <div class="kn-footer-col">
                     <h6>Specialities</h6>
                     <ul class="kn-footer-links">
-                        <li><a href="{{ route('search.doctors', ['keyword' => 'Back Pain']) }}">Back Pain</a></li>
-                        <li><a href="{{ route('search.doctors', ['keyword' => 'Knee']) }}">Knee Rehab</a></li>
-                        <li><a href="{{ route('search.doctors', ['keyword' => 'Sports']) }}">Sports Injury</a></li>
-                        <li><a href="{{ route('search.doctors', ['keyword' => 'Post-Surgery']) }}">Post-Surgery</a></li>
-                        <li><a href="{{ route('search.doctors', ['keyword' => 'Neuro']) }}">Neuro Rehab</a></li>
+                        <li><a href="#specialists" onclick="filterByCondition('Back Pain', null, this); return false;">Back Pain</a></li>
+                        <li><a href="#specialists" onclick="filterByCondition('Knee', null, this); return false;">Knee Rehab</a></li>
+                        <li><a href="#specialists" onclick="filterByCondition('Sports', null, this); return false;">Sports Injury</a></li>
+                        <li><a href="#specialists" onclick="filterByCondition('Post-Surgery', null, this); return false;">Post-Surgery</a></li>
+                        <li><a href="#specialists" onclick="filterByCondition('Neuro', null, this); return false;">Neuro Rehab</a></li>
                     </ul>
                 </div>
 
@@ -3052,7 +3154,7 @@ a {
                     <ul class="kn-footer-links">
                         <li><a href="#about">About Us</a></li>
                         <li><a href="#how-it-works">How It Works</a></li>
-                        <li><a href="{{ route('search.doctors') }}">Specialists</a></li>
+                        <li><a href="#specialists">Specialists</a></li>
                         <li><a href="{{ route('login') }}">Careers</a></li>
                         <li><a href="mailto:contact@physiopii.in">Contact</a></li>
                     </ul>
@@ -3062,9 +3164,9 @@ a {
                 <div class="kn-footer-col">
                     <h6>Patients</h6>
                     <ul class="kn-footer-links">
-                        <li><a href="{{ route('search.doctors') }}">Book Appointment</a></li>
-                        <li><a href="{{ route('search.doctors', ['visit_type' => 'home']) }}">Home Visits</a></li>
-                        <li><a href="{{ route('search.doctors', ['visit_type' => 'online']) }}">Online Consult</a></li>
+                        <li><a href="#search-bar">Book Appointment</a></li>
+                        <li><a href="#search-bar">Home Visits</a></li>
+                        <li><a href="#search-bar">Online Consult</a></li>
                         <li><a href="#specialists">Patient Reviews</a></li>
                         <li><a href="#faq">FAQ</a></li>
                     </ul>
@@ -3289,6 +3391,171 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
+
+    // 6. Global Doctor Filtering by Condition / Speciality
+    window.filterByCondition = function (conditionName, specId, element) {
+        if (element) {
+            document.querySelectorAll('.kn-spec-card').forEach(function(c) {
+                c.classList.remove('active-filter');
+            });
+            element.classList.add('active-filter');
+        }
+
+        var filterStatus = document.getElementById('doctorFilterStatus');
+        var filterText = document.getElementById('currentFilterText');
+        var cards = document.querySelectorAll('.kn-doctor-card');
+        var noDocs = document.getElementById('noDoctorsFound');
+        var visibleCount = 0;
+
+        var cleanName = (conditionName || '').toLowerCase().trim();
+        var targetSpecId = specId ? String(specId).trim() : '';
+
+        // Also sync the search dropdown if matched
+        var specSelect = document.getElementById('homeSearchSpecialization');
+        if (specSelect && targetSpecId) {
+            specSelect.value = targetSpecId;
+        }
+
+        cards.forEach(function (card) {
+            var cardSpecId = (card.getAttribute('data-spec-id') || '').trim();
+            var cardSpecName = (card.getAttribute('data-spec-name') || '').toLowerCase();
+            var cardTags = (card.getAttribute('data-tags') || '').toLowerCase();
+            var cardDoctorName = (card.querySelector('.kn-doctor-name')?.textContent || '').toLowerCase();
+
+            var match = false;
+            if (targetSpecId && cardSpecId && cardSpecId === targetSpecId) {
+                match = true;
+            } else if (cleanName && (cardSpecName.includes(cleanName) || cardTags.includes(cleanName) || cardDoctorName.includes(cleanName))) {
+                match = true;
+            } else if (!cleanName && !targetSpecId) {
+                match = true;
+            }
+
+            if (match) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        if (filterStatus && filterText) {
+            filterText.textContent = conditionName || 'Selected Condition';
+            filterStatus.style.display = 'inline-block';
+        }
+
+        if (noDocs) {
+            noDocs.style.display = (visibleCount === 0) ? 'block' : 'none';
+        }
+
+        // Smoothly scroll down to specialists section
+        var specialistsElem = document.getElementById('specialists');
+        if (specialistsElem) {
+            specialistsElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
+
+    window.clearDoctorFilter = function () {
+        document.querySelectorAll('.kn-spec-card').forEach(function(c) {
+            c.classList.remove('active-filter');
+        });
+        document.querySelectorAll('.kn-doctor-card').forEach(function(card) {
+            card.style.display = '';
+        });
+        var filterStatus = document.getElementById('doctorFilterStatus');
+        if (filterStatus) filterStatus.style.display = 'none';
+        var noDocs = document.getElementById('noDoctorsFound');
+        if (noDocs) noDocs.style.display = 'none';
+
+        var specSelect = document.getElementById('homeSearchSpecialization');
+        if (specSelect) specSelect.value = '';
+        var locInput = document.getElementById('homeSearchLocation');
+        if (locInput) locInput.value = '';
+    };
+
+    // 7. Interactive Floating Search Form Handler
+    var searchForm = document.getElementById('homeDoctorSearchForm');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var specSelect = document.getElementById('homeSearchSpecialization');
+            var locInput = document.getElementById('homeSearchLocation');
+            var selectedSpecId = specSelect ? specSelect.value : '';
+            var selectedSpecName = (specSelect && specSelect.selectedIndex > 0) ? specSelect.options[specSelect.selectedIndex].text.trim() : '';
+            var locVal = locInput ? locInput.value.trim().toLowerCase() : '';
+
+            var cards = document.querySelectorAll('.kn-doctor-card');
+            var noDocs = document.getElementById('noDoctorsFound');
+            var visibleCount = 0;
+
+            cards.forEach(function (card) {
+                var cardSpecId = (card.getAttribute('data-spec-id') || '').trim();
+                var cardSpecName = (card.getAttribute('data-spec-name') || '').toLowerCase();
+                var cardLocation = (card.getAttribute('data-location') || '').toLowerCase();
+                var cardTags = (card.getAttribute('data-tags') || '').toLowerCase();
+
+                var specMatch = true;
+                if (selectedSpecId) {
+                    specMatch = (cardSpecId === selectedSpecId || cardSpecName.includes(selectedSpecName.toLowerCase()) || cardTags.includes(selectedSpecName.toLowerCase()));
+                }
+
+                var locMatch = true;
+                if (locVal) {
+                    locMatch = (cardLocation.includes(locVal) || cardTags.includes(locVal));
+                }
+
+                if (specMatch && locMatch) {
+                    card.style.display = '';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            var filterStatus = document.getElementById('doctorFilterStatus');
+            var filterText = document.getElementById('currentFilterText');
+            if (filterStatus && filterText) {
+                var label = [];
+                if (selectedSpecName) label.push(selectedSpecName);
+                if (locVal) label.push('in ' + locVal);
+                if (label.length > 0) {
+                    filterText.textContent = label.join(' ');
+                    filterStatus.style.display = 'inline-block';
+                } else {
+                    filterStatus.style.display = 'none';
+                }
+            }
+
+            if (noDocs) {
+                noDocs.style.display = (visibleCount === 0) ? 'block' : 'none';
+            }
+
+            var specialistsElem = document.getElementById('specialists');
+            if (specialistsElem) {
+                specialistsElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    }
+
+    // 8. Auto-apply URL query filters if present on page load
+    try {
+        var urlParams = new URLSearchParams(window.location.search);
+        var qSpec = urlParams.get('specialization');
+        var qKey = urlParams.get('keyword');
+        if (qSpec) {
+            var selectElem = document.getElementById('homeSearchSpecialization');
+            var specName = '';
+            if (selectElem) {
+                selectElem.value = qSpec;
+                if (selectElem.selectedIndex > 0) {
+                    specName = selectElem.options[selectElem.selectedIndex].text.trim();
+                }
+            }
+            window.filterByCondition(specName, qSpec);
+        } else if (qKey) {
+            window.filterByCondition(qKey, null);
+        }
+    } catch (err) {}
 });
 </script>
 @endsection

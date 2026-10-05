@@ -31,6 +31,11 @@ class HomeController extends Controller
 
     public function searchDoctors(Request $request)
     {
+        // If accessed directly from browser without AJAX/JSON headers, redirect to specialists section on homepage
+        if (!$request->expectsJson() && !$request->ajax()) {
+            return redirect()->to(route('home', $request->query()) . '#specialists');
+        }
+
         $keyword = trim($request->keyword ?? $request->q);
 
         if (!$keyword) {

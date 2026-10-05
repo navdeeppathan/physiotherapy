@@ -219,7 +219,7 @@ body { font-family: 'Newsreader', Georgia, serif; background: var(--bg-page); co
 
 .ad-page-title {
     font-size: 24px;
-    font-weight: 900;
+    font-weight: 700;
     color: #0d1b2a;
     letter-spacing: -0.02em;
 }
@@ -334,7 +334,7 @@ body { font-family: 'Newsreader', Georgia, serif; background: var(--bg-page); co
     background: linear-gradient(135deg, var(--primary-teal), var(--primary-teal-sub));
     color: #fff;
     font-size: 22px;
-    font-weight: 900;
+    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -412,7 +412,7 @@ body { font-family: 'Newsreader', Georgia, serif; background: var(--bg-page); co
 
 .ad-date-box-day {
     font-size: 22px;
-    font-weight: 900;
+    font-weight: 700;
     color: var(--ink);
     line-height: 1;
 }
@@ -447,7 +447,7 @@ body { font-family: 'Newsreader', Georgia, serif; background: var(--bg-page); co
 
 .ad-time-val {
     font-size: 20px;
-    font-weight: 900;
+    font-weight: 700;
     color: var(--ink);
     letter-spacing: -0.01em;
 }
@@ -756,7 +756,7 @@ body { font-family: 'Newsreader', Georgia, serif; background: var(--bg-page); co
     display: block;
     font-size: 15px;
     color: var(--ink);
-    font-weight: 900;
+    font-weight: 700;
     margin-top: 2px;
 }
 
@@ -830,7 +830,7 @@ body { font-family: 'Newsreader', Georgia, serif; background: var(--bg-page); co
 
 .inv-paid-amt {
     font-size: 20px;
-    font-weight: 900;
+    font-weight: 700;
     color: #15803d;
 }
 

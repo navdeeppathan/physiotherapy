@@ -401,7 +401,7 @@ a {
 }
 .bk-pkg-price-now {
     font-size: 20px;
-    font-weight: 900;
+    font-weight: 700;
     color: var(--ink);
     letter-spacing: -0.02em;
 }

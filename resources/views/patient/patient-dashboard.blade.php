@@ -147,7 +147,7 @@ ul { list-style: none; }
     width: 70px; height: 70px; border-radius: 50%;
     background: rgba(255,255,255,.2);
     border: 3px solid rgba(255,255,255,.5);
-    color: #fff; font-size: 24px; font-weight: 900;
+    color: #fff; font-size: 24px; font-weight: 700;
     display: flex; align-items: center; justify-content: center;
     margin-bottom: 12px; position: relative; z-index: 1;
 }
@@ -232,7 +232,7 @@ ul { list-style: none; }
     width: 74px; height: 74px; border-radius: 50%;
     border: 3.5px solid rgba(255,255,255,.5);
     background: rgba(255,255,255,.18);
-    color: #fff; font-size: 24px; font-weight: 900;
+    color: #fff; font-size: 24px; font-weight: 700;
     display: flex; align-items: center; justify-content: center;
     margin-bottom: 14px; position: relative; z-index: 1;
     box-shadow: 0 4px 14px rgba(0,0,0,0.15);
@@ -291,7 +291,7 @@ ul { list-style: none; }
     display: flex; align-items: center; justify-content: space-between;
     flex-wrap: wrap; gap: 12px;
 }
-.pd-page-title { font-size: 23px; font-weight: 900; color: var(--ink); letter-spacing: -.03em; }
+.pd-page-title { font-size: 23px; font-weight: 700; color: var(--ink); letter-spacing: -.03em; }
 .pd-page-sub { font-size: 13.5px; color: var(--muted); margin-top: 3px; font-weight: 500; }
 .pd-date-chip {
     display: flex; align-items: center; gap: 8px;
@@ -335,7 +335,7 @@ ul { list-style: none; }
 .pd-stat-icon.green { background: #ecfdf5; color: #10b981; border: 1px solid #a7f3d0; }
 .pd-stat-icon.amber { background: #fffbeb; color: #f59e0b; border: 1px solid #fde68a; }
 .pd-stat-icon svg { width: 21px; height: 21px; }
-.pd-stat-val { font-size: 26px; font-weight: 900; color: var(--ink); letter-spacing: -.04em; line-height: 1; }
+.pd-stat-val { font-size: 26px; font-weight: 700; color: var(--ink); letter-spacing: -.04em; line-height: 1; }
 .pd-stat-lbl { font-size: 12.5px; color: var(--muted); margin-top: 4px; font-weight: 600; }
 
 /* ─────────────────────────────────────────────
@@ -488,7 +488,7 @@ table.pd-table tr:hover td { background: #fbfdfd; }
 .pd-billing-stat-icon.green { background: #ecfdf5; color: #10b981; border: 1px solid #a7f3d0; }
 .pd-billing-stat-icon.teal  { background: var(--teal-bg-soft); color: var(--primary-teal); border: 1px solid var(--teal-badge-border); }
 .pd-billing-stat-icon svg { width: 19px; height: 19px; }
-.pd-billing-stat-val { font-size: 22px; font-weight: 900; color: var(--ink); letter-spacing: -.03em; }
+.pd-billing-stat-val { font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -.03em; }
 .pd-billing-stat-lbl { font-size: 12px; color: var(--muted); margin-top: 3px; font-weight: 600; }
 
 /* ─────────────────────────────────────────────

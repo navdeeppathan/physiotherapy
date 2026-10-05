@@ -63,7 +63,7 @@ body { font-family: 'Newsreader', Georgia, serif; background: #f1f5f9; color: #3
     text-transform: uppercase; letter-spacing: .05em;
 }
 .co-plan-name { font-size: 20px; font-weight: 800; color: #0c4a6e; margin-top: 6px; }
-.co-plan-price { font-size: 24px; font-weight: 900; color: #0284c7; text-align: right; }
+.co-plan-price { font-size: 24px; font-weight: 700; color: #0284c7; text-align: right; }
 .co-plan-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; padding-top: 10px; border-top: 1px dashed #7dd3fc; }
 .co-plan-detail-item { font-size: 12.5px; color: #0369a1; font-weight: 600; display: flex; align-items: center; gap: 6px; }
 
@@ -126,7 +126,7 @@ body { font-family: 'Newsreader', Georgia, serif; background: #f1f5f9; color: #3
 /* Doctor Summary Header */
 .co-doc-summary { display: flex; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9; }
 .co-doc-av { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid #e0f2fe; flex-shrink: 0; }
-.co-doc-ph { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg,#0ea5e9,#38bdf8); color:#fff; font-size: 20px; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.co-doc-ph { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg,#0ea5e9,#38bdf8); color:#fff; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .co-doc-name { font-size: 15px; font-weight: 800; color: #0f172a; }
 .co-doc-loc { font-size: 12px; color: #64748b; margin-top: 2px; display: flex; align-items: center; gap: 4px; }
 
@@ -139,7 +139,7 @@ body { font-family: 'Newsreader', Georgia, serif; background: #f1f5f9; color: #3
 /* Total Breakdown */
 .co-total-box { background: #f0f9ff; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
 .co-total-row { display: flex; justify-content: space-between; font-size: 13px; color: #475569; }
-.co-total-row.grand { font-size: 16px; font-weight: 900; color: #0c4a6e; border-top: 1px solid #bae6fd; padding-top: 8px; margin-top: 4px; }
+.co-total-row.grand { font-size: 16px; font-weight: 700; color: #0c4a6e; border-top: 1px solid #bae6fd; padding-top: 8px; margin-top: 4px; }
 
 /* Security Badge */
 .co-sec-box { display: flex; align-items: center; justify-content: center; gap: 16px; color: #94a3b8; font-size: 12px; padding-top: 4px; }

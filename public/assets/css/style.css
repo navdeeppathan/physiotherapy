@@ -1775,7 +1775,7 @@ button.bg-danger:hover {
 .main-nav > li .submenu > li.has-submenu > a::after {
     content: "\f054";
     font-family: "Font Awesome 5 Free";
-    font-weight: 900;
+    font-weight: 700;
     position: absolute;
     right: 15px;
     top: 12px;
@@ -3843,7 +3843,7 @@ html.menu-opened body {
 .custom_check .checkmark::after {
     content: "\f00c";
     font-family: "Font Awesome 5 Free";
-    font-weight: 900;
+    font-weight: 700;
     position: absolute;
     display: none;
     left: 4px;
@@ -4251,7 +4251,7 @@ html.menu-opened body {
     color: #ccc;
     content: "\f30b";
     font-family: "Font Awesome 5 Free";
-    font-weight: 900;
+    font-weight: 700;
     left: 0;
     position: absolute;
 }
@@ -4594,7 +4594,7 @@ html.menu-opened body {
     content: "\f00c";
     font-family: "Font Awesome 5 Free";
     font-size: 12px;
-    font-weight: 900;
+    font-weight: 700;
     position: absolute;
     right: 6px;
     top: 6px;

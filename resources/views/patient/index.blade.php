@@ -222,7 +222,7 @@ a {
 }
 .kn-brand-text {
     font-size: 23px;
-    font-weight: 900;
+    font-weight: 700;
     color: var(--brand-teal);
     letter-spacing: -0.04em;
     display: flex;
@@ -370,7 +370,7 @@ a {
 }
 .kn-hero-heading {
     font-size: clamp(34px, 4.3vw, 54px);
-    font-weight: 900;
+    font-weight: 700;
     color: var(--text-primary);
     line-height: 1.14;
     letter-spacing: -0.04em;
@@ -486,7 +486,7 @@ a {
 }
 .kn-hero-stats-num {
     font-size: 20px;
-    font-weight: 900;
+    font-weight: 700;
     color: var(--brand-teal);
     line-height: 1.1;
     display: flex;
@@ -700,7 +700,7 @@ a {
 }
 .kn-stat-number {
     font-size: clamp(30px, 3.5vw, 42px);
-    font-weight: 900;
+    font-weight: 700;
     color: var(--brand-teal);
     line-height: 1.1;
     margin-bottom: 6px;
@@ -936,7 +936,7 @@ a {
 }
 .kn-doctor-fee-amount {
     font-size: 19px;
-    font-weight: 900;
+    font-weight: 700;
     color: var(--text-primary);
     line-height: 1.1;
 }
@@ -1545,7 +1545,7 @@ a {
 }
 .kn-cta-title {
     font-size: clamp(28px, 3.4vw, 42px);
-    font-weight: 900;
+    font-weight: 700;
     color: var(--text-primary);
     margin-bottom: 12px;
     letter-spacing: -0.03em;
@@ -1590,7 +1590,7 @@ a {
     align-items: center;
     gap: 10px;
     font-size: 24px;
-    font-weight: 900;
+    font-weight: 700;
     color: #ffffff;
     margin-bottom: 16px;
 }

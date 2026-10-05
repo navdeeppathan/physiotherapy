@@ -289,7 +289,7 @@ a {
 }
 .dp-fee-large-val {
     font-size: 32px;
-    font-weight: 900;
+    font-weight: 700;
     color: var(--primary-teal-dark);
     letter-spacing: -0.03em;
     margin: 2px 0 16px;
@@ -548,7 +548,7 @@ a {
 }
 .dp-pkg-price-text {
     font-size: 20px;
-    font-weight: 900;
+    font-weight: 700;
     color: var(--primary-teal-dark);
     letter-spacing: -0.02em;
     margin-bottom: 14px;
@@ -812,7 +812,7 @@ a {
 }
 .dp-rs-big {
     font-size: 34px;
-    font-weight: 900;
+    font-weight: 700;
     color: var(--ink);
     line-height: 1;
 }

@@ -1,8 +1,113 @@
 @extends('layouts.app')
 
 @section('title', 'PhysioPii — Expert Physiotherapy Care at Home & In-Clinic')
-@section('meta_description', 'Book certified & experienced physiotherapists for home visits and clinic appointments. Personalized care for Back Pain, Knee Rehab, Sports Injuries, and Neurological Recovery.')
-@section('meta_keywords', 'physiotherapy, home physiotherapy, physiotherapist near me, back pain relief, knee pain therapy, sports injury rehab, stroke recovery, best physio India')
+@section('meta_description', 'Book certified & experienced physiotherapists for home visits and clinic appointments across India. Personalized care for Back Pain, Knee Rehab, Sports Injuries, and Neurological Recovery.')
+@section('meta_keywords', 'physiotherapy, home physiotherapy, physiotherapist near me, back pain relief, knee pain therapy, sports injury rehab, stroke recovery, best physio India, physio home visit')
+@section('canonical', url('/'))
+@section('og_type', 'website')
+@section('og_title', 'PhysioPii — Expert Physiotherapy Care at Home & In-Clinic')
+@section('og_description', 'Book certified & experienced physiotherapists for home visits and clinic appointments across India. Evidence-based care for fast, lasting recovery.')
+
+@section('extra_json_ld')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "MedicalWebPage",
+      "@id": "{{ url('/') }}#webpage",
+      "url": "{{ url('/') }}",
+      "name": "PhysioPii — Expert Physiotherapy Care at Home & In-Clinic",
+      "description": "Book certified & experienced physiotherapists for home visits and clinic appointments across India. Personalized care for Back Pain, Knee Rehab, Sports Injuries, and Neurological Recovery.",
+      "about": [
+        {
+          "@type": "MedicalSpecialty",
+          "name": "Physiotherapy"
+        },
+        {
+          "@type": "MedicalCondition",
+          "name": "Back Pain"
+        },
+        {
+          "@type": "MedicalCondition",
+          "name": "Knee Osteoarthritis"
+        },
+        {
+          "@type": "MedicalCondition",
+          "name": "Sports Injuries"
+        },
+        {
+          "@type": "MedicalCondition",
+          "name": "Stroke Rehabilitation"
+        }
+      ],
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "{{ asset('assets/img/og-preview.png') }}"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "{{ url('/') }}#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What should I expect during my first session?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Your physiotherapist will conduct a comprehensive clinical assessment of your movement, posture, pain triggers, and medical history. Together, you will design a personalized recovery roadmap and begin initial treatment or gentle corrective exercises."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need a doctor's referral to book?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No referral is needed! You can self-refer and schedule an appointment directly with any licensed physiotherapist on our platform."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do home visit appointments work?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Your physiotherapist will travel directly to your home with all required therapeutic equipment. All you need is a comfortable, well-lit space where you can comfortably move and sit or lie down."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I reschedule or cancel my appointment?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. You can easily reschedule or cancel your session with full flexibility up to 24 hours prior to the scheduled appointment without any penalty."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is physiotherapy covered by insurance?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most private health insurance providers and medical reimbursement policies cover consultations and physical therapy provided by registered practitioners. An itemized invoice is provided instantly after each session."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "{{ url('/') }}#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "{{ url('/') }}"
+        }
+      ]
+    }
+  ]
+}
+</script>
+@endsection
 
 @section('content')
 

@@ -15,17 +15,17 @@ Physiopii (https://physiopii.in) operates as a specialized digital healthcare pr
 
 ### 2. Neurological Rehabilitation
 - Stroke (hemiplegia / hemiparesis) recovery
-- Parkinson’s disease balance and gait therapy
+- Parkinsonâ€™s disease balance and gait therapy
 - Spinal cord injury rehabilitation
-- Bell’s palsy facial re-education
-- Guillain-Barré Syndrome (GBS) motor retraining
+- Bellâ€™s palsy facial re-education
+- Guillain-BarrÃ© Syndrome (GBS) motor retraining
 - Cerebral Palsy and pediatric physical development
 
 ### 3. Sports Physical Therapy
 - ACL / PCL / MCL tear recovery
 - Ankle inversion sprains and instability
-- Tennis elbow / Golfer’s elbow
-- Shin splints and runner’s knee
+- Tennis elbow / Golferâ€™s elbow
+- Shin splints and runnerâ€™s knee
 - Biomechanical gait and running analysis
 
 ### 4. Elderly & Geriatric Care
@@ -37,14 +37,24 @@ Physiopii (https://physiopii.in) operates as a specialized digital healthcare pr
 ## Booking & Consultation Process
 1. Patients visit https://physiopii.in/search-doctors or select a treatment condition.
 2. Choose preferred certified therapist (BPT / MPT qualifications).
-3. Select Home Visit or Online Consultation.
+3. Select Home Visit, In-Clinic, or Online Consultation.
 4. Select Date, Time Slot, and Package (Single Session or Multi-session Package).
-5. Confirm booking and receive coordinator contact.
+5. Confirm booking and receive clinician confirmation.
+
+## Key URLs & Resources
+- Website: https://physiopii.in
+- Specialities & Conditions: https://physiopii.in/specialities
+- Find Doctors: https://physiopii.in/search-doctors
+- Patient Login: https://physiopii.in/login
+- Patient Registration: https://physiopii.in/patient-register
+- Privacy Policy: https://physiopii.in/privacy-policy
+- Terms & Conditions: https://physiopii.in/terms-and-conditions
+- Sitemap: https://physiopii.in/sitemap.xml
 
 ## Organization & Contact
 - Organization Name: Physiopii Healthcare
 - Domain: https://physiopii.in
-- Phone: +91 95200 18563
-- Email: support@physiopii.in
-- Country: India
-- Primary Language: English, Hindi
+- Phone: +91 8855088426
+- Email: contact@physiopii.in
+- Operating Region: India
+- Primary Languages: English, Hindi

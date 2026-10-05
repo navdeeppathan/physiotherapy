@@ -130,13 +130,23 @@
           },
           "image": "{{ asset('assets/img/og-preview.png') }}",
           "description": "Physiopii connects patients with certified, experienced physiotherapists for personalized home visits and online consultations across India.",
-          "telephone": "+91-9520018563",
-          "email": "support@physiopii.in",
+          "telephone": "+91-8855088426",
+          "email": "contact@physiopii.in",
           "priceRange": "₹₹",
           "areaServed": {
             "@type": "Country",
             "name": "India"
           },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "reviewCount": "480",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "sameAs": [
+            "https://physiopii.in"
+          ],
           "medicalSpecialty": [
             "Physiotherapy",
             "Musculoskeletal",

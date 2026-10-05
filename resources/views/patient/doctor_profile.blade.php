@@ -14,6 +14,10 @@
 @section('title', "Dr. {$cleanDoctorName} — {$specName} Specialist Physiotherapist | Physiopii")
 @section('meta_description', "Book a home visit or online consultation with Dr. {$cleanDoctorName} ({$qualification}, {$expYears}+ yrs exp), certified {$specName} specialist on Physiopii.")
 @section('meta_keywords', "Dr {$cleanDoctorName}, {$specName} physiotherapist, book physiotherapist, home physio India, Physiopii")
+@section('canonical', url()->current())
+@section('og_type', 'profile')
+@section('og_title', "Dr. {$cleanDoctorName} — {$specName} Specialist Physiotherapist | Physiopii")
+@section('og_description', "Book a home visit or online consultation with Dr. {$cleanDoctorName} ({$qualification}, {$expYears}+ yrs exp), certified {$specName} specialist on Physiopii.")
 @section('og_image', $docImgUrl)
 @section('twitter_image', $docImgUrl)
 
@@ -21,23 +25,63 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": ["Physician", "Person"],
-  "name": "Dr. {{ $cleanDoctorName }}",
-  "url": "{{ url()->current() }}",
-  "image": "{{ $docImgUrl }}",
-  "jobTitle": "Physiotherapist",
-  "medicalSpecialty": "{{ $specName }}",
-  "description": "{{ addslashes($doctorBio) }}",
-  "worksFor": {
-    "@type": "MedicalBusiness",
-    "name": "Physiopii",
-    "url": "https://physiopii.in"
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "{{ $displayRating }}",
-    "reviewCount": "{{ $reviewsCount }}"
-  }
+  "@graph": [
+    {
+      "@type": ["Physician", "Person"],
+      "@id": "{{ url()->current() }}#physician",
+      "name": "Dr. {{ $cleanDoctorName }}",
+      "url": "{{ url()->current() }}",
+      "image": "{{ $docImgUrl }}",
+      "jobTitle": "Physiotherapist",
+      "medicalSpecialty": "{{ $specName }}",
+      "description": "{{ addslashes($doctorBio) }}",
+      "telephone": "+91-8855088426",
+      "priceRange": "₹₹",
+      "knowsAbout": [
+        "{{ $specName }}",
+        "Physiotherapy",
+        "Physical Rehabilitation",
+        "Pain Management"
+      ],
+      "worksFor": {
+        "@type": "MedicalBusiness",
+        "@id": "https://physiopii.in/#organization",
+        "name": "Physiopii Healthcare",
+        "url": "https://physiopii.in"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "{{ $displayRating }}",
+        "reviewCount": "{{ $reviewsCount }}",
+        "bestRating": "5",
+        "worstRating": "1"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "{{ url()->current() }}#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "{{ url('/') }}"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Specialities",
+          "item": "{{ url('/specialities') }}"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Dr. {{ $cleanDoctorName }}",
+          "item": "{{ url()->current() }}"
+        }
+      ]
+    }
+  ]
 }
 </script>
 @endsection

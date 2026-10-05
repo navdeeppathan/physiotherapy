@@ -1,7 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Patient Sign Up Free — Physiopii')
-@section('meta_description', 'Create your free Physiopii patient account. Book verified physiotherapists for home visits & online consultations across India.')
+@section('title', 'Patient Sign Up Free — PhysioPii')
+@section('meta_description', 'Create your free PhysioPii patient account. Book verified physiotherapists for home visits & online consultations across India.')
+@section('canonical', url('/patient-register'))
+@section('og_type', 'website')
+@section('og_title', 'Patient Sign Up Free — PhysioPii')
+@section('og_description', 'Create your free PhysioPii patient account. Book verified physiotherapists for home visits & online consultations across India.')
 
 @section('content')
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">

@@ -1,8 +1,54 @@
 @extends('layouts.app')
 
-@section('title', 'Privacy Policy — PhysioPii Go | Personal & Medical Data Protection')
-@section('meta_description', 'Official Privacy Policy for PhysioPii Go (com.patient.physiopii). Learn how we collect, store, secure, and manage your personal health information.')
+@section('title', 'Privacy Policy — PhysioPii | Personal & Medical Data Protection')
+@section('meta_description', 'Official Privacy Policy for PhysioPii Healthcare & PhysioPii Go. Learn how we collect, store, secure, and manage your personal health information and privacy rights.')
 @section('meta_keywords', 'PhysioPii privacy policy, healthcare data protection, patient privacy, PhysioPii Go, com.patient.physiopii, account deletion, medical data security')
+@section('canonical', url('/privacy-policy'))
+@section('og_type', 'article')
+@section('og_title', 'Privacy Policy — PhysioPii Healthcare | Personal & Medical Data Protection')
+@section('og_description', 'Official Privacy Policy for PhysioPii Healthcare & PhysioPii Go. Transparent, secure, and responsible health data privacy.')
+
+@section('extra_json_ld')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "{{ url('/privacy-policy') }}#webpage",
+      "url": "{{ url('/privacy-policy') }}",
+      "name": "Privacy Policy — PhysioPii Healthcare",
+      "description": "Official Privacy Policy for PhysioPii Healthcare & PhysioPii Go.",
+      "datePublished": "2026-09-22",
+      "dateModified": "2026-09-22",
+      "publisher": {
+        "@type": "MedicalBusiness",
+        "@id": "https://physiopii.in/#organization",
+        "name": "Physiopii Healthcare",
+        "url": "https://physiopii.in"
+      },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "{{ url('/') }}"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Privacy Policy",
+            "item": "{{ url('/privacy-policy') }}"
+          }
+        ]
+      }
+    }
+  ]
+}
+</script>
+@endsection
 
 @section('content')
 <div class="main-wrapper">

@@ -5,9 +5,13 @@
 
 User-agent: *
 Allow: /
-Allow: /doctor/
+Allow: /specialities
+Allow: /conditions
 Allow: /search
 Allow: /search-doctors
+Allow: /doctor/
+Allow: /privacy-policy
+Allow: /terms-and-conditions
 Allow: /assets/
 Allow: /uploads/
 Allow: /logo.png
@@ -34,23 +38,36 @@ Disallow: /user/address/*
 # AI Search & LLM Crawlers Directives
 User-agent: GPTBot
 Allow: /
+Allow: /specialities
+Allow: /conditions
 Allow: /doctor/
 Allow: /search
+Allow: /privacy-policy
+Allow: /terms-and-conditions
 Allow: /llms.txt
+Allow: /llms-full.txt
 Disallow: /admin/
 Disallow: /patient-dashboard
 Disallow: /api/
 
 User-agent: ChatGPT-User
 Allow: /
+Allow: /specialities
+Allow: /conditions
 Allow: /llms.txt
 
 User-agent: PerplexityBot
 Allow: /
+Allow: /specialities
+Allow: /conditions
+Allow: /doctor/
 Allow: /llms.txt
 
 User-agent: ClaudeBot
 Allow: /
+Allow: /specialities
+Allow: /conditions
+Allow: /doctor/
 Allow: /llms.txt
 
 User-agent: Google-Extended

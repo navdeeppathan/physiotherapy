@@ -1,6 +1,6 @@
 # Physiopii - Modern Physiotherapy & Rehabilitation Platform
 
-> Physiopii (https://physiopii.in) is India’s premier digital healthcare platform connecting patients with certified, experienced physiotherapists for personalized home visits and online consultations.
+> Physiopii (https://physiopii.in) is Indiaâ€™s premier digital healthcare platform connecting patients with certified, experienced physiotherapists for personalized home visits, in-clinic consultations, and online tele-rehabilitation.
 
 ## Core Services & Treatment Specializations
 
@@ -15,20 +15,26 @@
 ## Modes of Delivery
 
 1. **In-Home Physiotherapy Visits**: Certified physiotherapists visit patients directly at their home with portable therapeutic equipment.
-2. **Online Video Consultation**: 1-on-1 virtual consultations, exercise prescription, posture correction, and guided remote rehabilitation.
+2. **In-Clinic Consultations**: In-person clinical assessment and hands-on therapy at verified partner clinics.
+3. **Online Video Consultation**: 1-on-1 virtual consultations, exercise prescription, posture correction, and guided remote rehabilitation.
 
 ## Key Features & Platform Benefits
 
 - **Verified Doctors**: Every physiotherapist is vetted with degree verification (BPT/MPT), specialization credentials, and background checks.
+- **Transparent Pricing**: Clear per-session rates with zero hidden charges.
 - **Flexible Packages**: Single session, 3-session, 5-session, and 10-session discounted care plans.
 - **Progress Tracking & Digital Records**: Digital assessments, prescription tracking, and appointment management.
 - **Online Booking**: Real-time slot selection, instant booking confirmation, and multiple payment methods.
+- **24-Hour Free Cancellation**: Reschedule or cancel appointments with zero penalty up to 24 hours in advance.
 
 ## Key Links & Endpoints
 
 - **Website**: https://physiopii.in
+- **Specialities & Conditions**: https://physiopii.in/specialities
 - **Find Doctors**: https://physiopii.in/search-doctors
 - **Patient Login**: https://physiopii.in/login
 - **Patient Register**: https://physiopii.in/patient-register
-- **Contact Support**: +91 95200 18563 / support@physiopii.in
+- **Privacy Policy**: https://physiopii.in/privacy-policy
+- **Terms & Conditions**: https://physiopii.in/terms-and-conditions
+- **Contact Support**: +91 8855088426 / contact@physiopii.in
 - **Sitemap**: https://physiopii.in/sitemap.xml

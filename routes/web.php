@@ -25,9 +25,15 @@ use App\Http\Controllers\Admin\AdminPatientDocumentController;
 
 Route::get('/sitemap.xml', function () {
     try {
-        $doctors = \App\Models\User::where('role', 'doctor')->get(['id', 'updated_at']);
+        $doctors = \App\Models\User::where('role', 'doctor')->where('status', 'active')->get(['id', 'name', 'profile_img', 'updated_at']);
     } catch (\Throwable $e) {
         $doctors = collect();
+    }
+
+    try {
+        $specializations = \App\Models\Specializations::where('status', 'active')->get(['id', 'name', 'updated_at']);
+    } catch (\Throwable $e) {
+        $specializations = collect();
     }
 
     $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
@@ -45,20 +51,46 @@ Route::get('/sitemap.xml', function () {
     $xml .= '        </image:image>' . "\n";
     $xml .= '    </url>' . "\n";
     
+    // Specialities & Conditions Hub
+    $xml .= '    <url>' . "\n";
+    $xml .= '        <loc>https://physiopii.in/specialities</loc>' . "\n";
+    $xml .= '        <lastmod>' . date('Y-m-d') . '</lastmod>' . "\n";
+    $xml .= '        <changefreq>weekly</changefreq>' . "\n";
+    $xml .= '        <priority>0.95</priority>' . "\n";
+    $xml .= '    </url>' . "\n";
+
+    $xml .= '    <url>' . "\n";
+    $xml .= '        <loc>https://physiopii.in/conditions</loc>' . "\n";
+    $xml .= '        <lastmod>' . date('Y-m-d') . '</lastmod>' . "\n";
+    $xml .= '        <changefreq>weekly</changefreq>' . "\n";
+    $xml .= '        <priority>0.90</priority>' . "\n";
+    $xml .= '    </url>' . "\n";
+    
     // Search Doctors
     $xml .= '    <url>' . "\n";
     $xml .= '        <loc>https://physiopii.in/search-doctors</loc>' . "\n";
     $xml .= '        <lastmod>' . date('Y-m-d') . '</lastmod>' . "\n";
     $xml .= '        <changefreq>daily</changefreq>' . "\n";
-    $xml .= '        <priority>0.9</priority>' . "\n";
+    $xml .= '        <priority>0.90</priority>' . "\n";
     $xml .= '    </url>' . "\n";
 
     $xml .= '    <url>' . "\n";
     $xml .= '        <loc>https://physiopii.in/search</loc>' . "\n";
     $xml .= '        <lastmod>' . date('Y-m-d') . '</lastmod>' . "\n";
     $xml .= '        <changefreq>daily</changefreq>' . "\n";
-    $xml .= '        <priority>0.8</priority>' . "\n";
+    $xml .= '        <priority>0.80</priority>' . "\n";
     $xml .= '    </url>' . "\n";
+
+    // Dynamic Speciality Conditions
+    foreach ($specializations as $spec) {
+        $specMod = $spec->updated_at ? $spec->updated_at->format('Y-m-d') : date('Y-m-d');
+        $xml .= '    <url>' . "\n";
+        $xml .= '        <loc>https://physiopii.in/specialities?specialization=' . $spec->id . '</loc>' . "\n";
+        $xml .= '        <lastmod>' . $specMod . '</lastmod>' . "\n";
+        $xml .= '        <changefreq>weekly</changefreq>' . "\n";
+        $xml .= '        <priority>0.85</priority>' . "\n";
+        $xml .= '    </url>' . "\n";
+    }
 
     // Dynamic Doctor profile pages
     foreach ($doctors as $doc) {
@@ -68,6 +100,13 @@ Route::get('/sitemap.xml', function () {
         $xml .= '        <lastmod>' . $lastmod . '</lastmod>' . "\n";
         $xml .= '        <changefreq>weekly</changefreq>' . "\n";
         $xml .= '        <priority>0.85</priority>' . "\n";
+        if (!empty($doc->profile_img)) {
+            $docImg = str_starts_with($doc->profile_img, 'http') ? $doc->profile_img : 'https://physiopii.in/' . ltrim($doc->profile_img, '/');
+            $xml .= '        <image:image>' . "\n";
+            $xml .= '            <image:loc>' . htmlspecialchars($docImg) . '</image:loc>' . "\n";
+            $xml .= '            <image:title>' . htmlspecialchars($doc->name ?? 'Doctor') . '</image:title>' . "\n";
+            $xml .= '        </image:image>' . "\n";
+        }
         $xml .= '    </url>' . "\n";
     }
 

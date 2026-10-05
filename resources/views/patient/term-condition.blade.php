@@ -3,6 +3,52 @@
 @section('title', 'Terms and Conditions — PhysioPii Healthcare | Platform Terms & Service Agreement')
 @section('meta_description', 'Official Terms and Conditions for PhysioPii Healthcare. Read our terms of service, appointment booking policies, payment, cancellation, and user agreements.')
 @section('meta_keywords', 'PhysioPii terms and conditions, terms of service, patient agreement, physiotherapy booking policy, cancellation policy, medical disclaimer, physiopii.in')
+@section('canonical', url('/terms-and-conditions'))
+@section('og_type', 'article')
+@section('og_title', 'Terms and Conditions — PhysioPii Healthcare | Platform Terms & Service Agreement')
+@section('og_description', 'Official Terms and Conditions for PhysioPii Healthcare. Read our terms of service, appointment booking policies, payment, cancellation, and user agreements.')
+
+@section('extra_json_ld')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "{{ url('/terms-and-conditions') }}#webpage",
+      "url": "{{ url('/terms-and-conditions') }}",
+      "name": "Terms and Conditions — PhysioPii Healthcare",
+      "description": "Official Terms and Conditions for PhysioPii Healthcare.",
+      "datePublished": "2026-09-22",
+      "dateModified": "2026-09-22",
+      "publisher": {
+        "@type": "MedicalBusiness",
+        "@id": "https://physiopii.in/#organization",
+        "name": "Physiopii Healthcare",
+        "url": "https://physiopii.in"
+      },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "{{ url('/') }}"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Terms and Conditions",
+            "item": "{{ url('/terms-and-conditions') }}"
+          }
+        ]
+      }
+    }
+  ]
+}
+</script>
+@endsection
 
 @section('content')
 <div class="main-wrapper">

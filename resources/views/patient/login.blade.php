@@ -1,7 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Patient Login — Physiopii')
-@section('meta_description', 'Log in to your Physiopii patient account to manage upcoming physiotherapy appointments, invoices, and recovery plans.')
+@section('title', 'Patient Login — PhysioPii')
+@section('meta_description', 'Log in to your PhysioPii patient account to manage upcoming physiotherapy appointments, invoices, and recovery plans.')
+@section('canonical', url('/login'))
+@section('og_type', 'website')
+@section('og_title', 'Patient Login — PhysioPii')
+@section('og_description', 'Log in to your PhysioPii patient account to manage upcoming physiotherapy appointments, invoices, and recovery plans.')
 
 @section('content')
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">

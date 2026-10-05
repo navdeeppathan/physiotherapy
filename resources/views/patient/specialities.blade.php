@@ -3,6 +3,59 @@
 @section('title', 'Specialities & Physiotherapists — PhysioPii Healthcare')
 @section('meta_description', 'Explore all physiotherapy specialities, conditions, and certified specialist doctors at PhysioPii. Back pain, knee rehab, sports injuries, post-surgery, and neurological recovery.')
 @section('meta_keywords', 'physiotherapy specialities, back pain physiotherapist, knee rehab doctor, stroke rehabilitation, sports injury physio, certified physiotherapists India')
+@section('canonical', url('/specialities'))
+@section('og_type', 'website')
+@section('og_title', 'Specialities & Conditions Treated — PhysioPii Healthcare')
+@section('og_description', 'Explore all physiotherapy specialities, conditions, and certified specialist doctors at PhysioPii. Evidence-based care for back pain, knee rehab, neuro recovery & sports injuries.')
+
+@section('extra_json_ld')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "MedicalWebPage",
+      "@id": "{{ url('/specialities') }}#webpage",
+      "url": "{{ url('/specialities') }}",
+      "name": "Specialities & Physiotherapists — PhysioPii Healthcare",
+      "description": "Explore all physiotherapy specialities, conditions, and certified specialist doctors at PhysioPii.",
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "{{ url('/') }}"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Specialities",
+            "item": "{{ url('/specialities') }}"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "ItemList",
+      "@id": "{{ url('/specialities') }}#itemlist",
+      "name": "Physiotherapy Specialities & Clinical Conditions",
+      "itemListElement": [
+        @foreach($specializations as $sIndex => $specItem)
+        {
+          "@type": "ListItem",
+          "position": {{ $sIndex + 1 }},
+          "name": "{{ addslashes($specItem->name) }}",
+          "url": "{{ url('/specialities#condition-' . $specItem->id) }}"
+        }@if(!$loop->last),@endif
+        @endforeach
+      ]
+    }
+  ]
+}
+</script>
+@endsection
 
 @section('content')
 

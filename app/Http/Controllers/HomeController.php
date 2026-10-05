@@ -27,7 +27,28 @@ class HomeController extends Controller
         return view('patient.index', compact('doctors', 'specializations'));
     }
 
+    public function specialities(Request $request)
+    {
+        $specializations = Specializations::where('status', 'active')
+            ->with([
+                'doctorProfiles.user' => function ($q) {
+                    $q->where('role', 'doctor')
+                      ->where('status', 'active')
+                      ->with('fee', 'profile');
+                }
+            ])
+            ->get();
 
+        $allDoctors = User::whereHas('profile')
+            ->with(['profile.specializationdata', 'fee'])
+            ->where('role', 'doctor')
+            ->where('status', 'active')
+            ->get();
+
+        $selectedSpecId = $request->query('specialization');
+
+        return view('patient.specialities', compact('specializations', 'allDoctors', 'selectedSpecId'));
+    }
 
     public function searchDoctors(Request $request)
     {

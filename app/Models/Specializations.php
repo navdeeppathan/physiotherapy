@@ -21,4 +21,16 @@ class Specializations extends Model
     ];
 
     public $timestamps = true;
+
+    public function doctorProfiles()
+    {
+        return $this->hasMany(DoctorProfile::class, 'specialization', 'id');
+    }
+
+    public function doctors()
+    {
+        return $this->hasManyThrough(User::class, DoctorProfile::class, 'specialization', 'id', 'id', 'user_id')
+            ->where('users.role', 'doctor')
+            ->where('users.status', 'active');
+    }
 }

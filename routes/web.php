@@ -100,6 +100,8 @@ Route::get('/sitemap.xml', function () {
 Route::get('/doctor/{id}', [DoctorController::class, 'show'])->name('doctor.profile');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/specialities', [HomeController::class, 'specialities'])->name('specialities.index');
+Route::get('/conditions', [HomeController::class, 'specialities'])->name('conditions.index');
 Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy.policy');
 Route::get('/privacy', [HomeController::class, 'privacyPolicy']);
 Route::post('/enquiry', [EnquiryController::class, 'store'])->name('enquiry.store');

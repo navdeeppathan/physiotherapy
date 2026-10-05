@@ -2172,16 +2172,21 @@ a {
     <section class="kn-specialities-section" id="specialities">
         <div class="kn-container">
 
-            <div class="kn-section-header">
-                <div class="kn-eyebrow">
-                    <span class="kn-eyebrow-dot"></span> Explore by condition
+            <div class="kn-section-header-flex" style="margin-bottom: 36px;">
+                <div>
+                    <div class="kn-eyebrow">
+                        <span class="kn-eyebrow-dot"></span> Explore by condition
+                    </div>
+                    <h2 class="kn-section-title" style="margin-bottom: 0;">
+                        The right expertise. For your recovery.
+                    </h2>
+                    <p class="kn-section-subtitle" style="margin-top: 8px;">
+                        Find clinicians specialized in your specific needs, from joint pain to neurological rehabilitation.
+                    </p>
                 </div>
-                <h2 class="kn-section-title">
-                    The right expertise. For your recovery.
-                </h2>
-                <p class="kn-section-subtitle">
-                    Find clinicians specialized in your specific needs, from joint pain to neurological rehabilitation.
-                </p>
+                <a href="{{ route('specialities.index') }}" class="kn-view-all-link">
+                    View all specialities &amp; doctors <i class="fa-solid fa-arrow-right"></i>
+                </a>
             </div>
 
             <div class="kn-spec-grid">
@@ -2232,8 +2237,8 @@ a {
                 @endphp
 
                 @if($specializations && $specializations->count() > 0)
-                    {{-- Render dynamically from DB with admin uploaded icons --}}
-                    @foreach($specializations->take(8) as $index => $spec)
+                    {{-- Render dynamically ALL active specializations from DB with admin uploaded icons --}}
+                    @foreach($specializations as $index => $spec)
                         @php
                             $defaultItem = $specDefaults[$index % count($specDefaults)];
                             $iconClass = $defaultItem['icon'];
@@ -3145,6 +3150,7 @@ a {
                         <li><a href="#specialists" onclick="filterByCondition('Sports', null, this); return false;">Sports Injury</a></li>
                         <li><a href="#specialists" onclick="filterByCondition('Post-Surgery', null, this); return false;">Post-Surgery</a></li>
                         <li><a href="#specialists" onclick="filterByCondition('Neuro', null, this); return false;">Neuro Rehab</a></li>
+                        <li><a href="{{ route('specialities.index') }}" style="color: #38bdf8; font-weight: 700;">View All Specialities &rarr;</a></li>
                     </ul>
                 </div>
 

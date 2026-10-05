@@ -1438,7 +1438,7 @@ table.bp-table{width:100%;border-collapse:collapse;}
                                                 </div>
                                                 <div class="bp-tmc-field">
                                                     <div class="bp-tmc-lbl">Amount</div>
-                                                    <div class="bp-tmc-val" style="font-size:13.5px;font-weight:900;color:var(--primary-teal);">₹{{ number_format($pay->amount, 0) }}</div>
+                                                    <div class="bp-tmc-val" style="font-size:13.5px;font-weight:700;color:var(--primary-teal);">₹{{ number_format($pay->amount, 0) }}</div>
                                                 </div>
                                                 <div class="bp-tmc-field">
                                                     <div class="bp-tmc-lbl">Txn ID</div>

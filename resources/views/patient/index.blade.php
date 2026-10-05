@@ -2,7 +2,7 @@
 
 @section('title', 'PhysioPii — Expert Physiotherapy Care at Home & In-Clinic')
 @section('meta_description', 'Book certified & experienced physiotherapists for home visits and clinic appointments across India. Personalized care for Back Pain, Knee Rehab, Sports Injuries, and Neurological Recovery.')
-@section('meta_keywords', 'physiotherapy, home physiotherapy, physiotherapist near me, back pain relief, knee pain therapy, sports injury rehab, stroke recovery, best physio India, physio home visit')
+@section('meta_keywords', 'physiotherapy at home near me, home visit physiotherapist, best physiotherapist near me, female physiotherapist for home visit, physiotherapy consultation cost, online physiotherapy consultation India, back pain physiotherapy treatment, knee pain physiotherapy near me, stroke rehabilitation at home, cervical spondylosis physiotherapy, sports injury rehab near me, post surgery physio, geriatric physiotherapy at home, best physio in India')
 @section('canonical', url('/'))
 @section('og_type', 'website')
 @section('og_title', 'PhysioPii — Expert Physiotherapy Care at Home & In-Clinic')
@@ -19,6 +19,7 @@
       "url": "{{ url('/') }}",
       "name": "PhysioPii — Expert Physiotherapy Care at Home & In-Clinic",
       "description": "Book certified & experienced physiotherapists for home visits and clinic appointments across India. Personalized care for Back Pain, Knee Rehab, Sports Injuries, and Neurological Recovery.",
+      "keywords": "physiotherapy at home near me, home visit physiotherapist, best physiotherapist near me, female physiotherapist for home visit, physiotherapy consultation cost, online physiotherapy consultation India, back pain physiotherapy treatment, knee pain physiotherapy near me, stroke rehabilitation at home, sports injury physio",
       "about": [
         {
           "@type": "MedicalSpecialty",
@@ -2020,7 +2021,7 @@ a {
                             Your next chapter starts with better movement.
                         </h1>
                         <p class="kn-hero-desc">
-                            Find verified physiotherapists for in-clinic and online sessions. Personalised care, zero guesswork, recovery that actually lasts.
+                            Find verified physiotherapists for home visits, in-clinic and online sessions. Personalised care, zero guesswork, recovery that actually lasts.
                         </p>
                         <div class="kn-hero-actions">
                             <a href="#specialists" class="kn-btn-primary">
@@ -2198,7 +2199,7 @@ a {
                         <label class="kn-form-label">Location</label>
                         <div class="kn-input-wrap">
                             <i class="fa-solid fa-location-dot"></i>
-                            <input type="text" name="location" id="homeSearchLocation" placeholder="e.g. London or postcode" value="{{ request('location') }}">
+                            <input type="text" name="location" id="homeSearchLocation" placeholder="e.g. Pune, Mumbai, Delhi or City" value="{{ request('location') }}">
                         </div>
                     </div>
 

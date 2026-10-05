@@ -34,6 +34,30 @@ Physiopii (https://physiopii.in) operates as a specialized digital healthcare pr
 - Bedridden patient conditioning and bed sore prevention
 - Osteoporosis safe strengthening
 
+## Targeted Search Keywords & Patient Query Intent
+- **Transactional & Booking Queries**:
+  - `physiotherapy at home near me`
+  - `home visit physiotherapist`
+  - `best physiotherapist near me`
+  - `female physiotherapist for home visit`
+  - `physiotherapy consultation cost`
+  - `online physiotherapy consultation India`
+  - `emergency physiotherapy at home`
+- **Clinical Condition Queries**:
+  - `back pain physiotherapy treatment`
+  - `sciatica treatment at home`
+  - `slip disc physiotherapy exercises`
+  - `knee pain physiotherapy near me`
+  - `knee osteoarthritis physiotherapy`
+  - `post total knee replacement rehab at home`
+  - `stroke rehabilitation at home`
+  - `neuro physiotherapist near me`
+  - `cervical spondylosis physiotherapy`
+  - `frozen shoulder physical therapy at home`
+  - `sports physiotherapist near me`
+  - `ankle sprain rehab`
+  - `geriatric physiotherapy at home`
+
 ## Booking & Consultation Process
 1. Patients visit https://physiopii.in/search-doctors or select a treatment condition.
 2. Choose preferred certified therapist (BPT / MPT qualifications).

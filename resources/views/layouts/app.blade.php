@@ -20,7 +20,7 @@
     {{-- ── 1. PRIMARY SEO META TAGS ── --}}
     <title>@yield('title', 'Physiopii — Expert Physiotherapy Care at Home & Online Consultation')</title>
     <meta name="description" content="@yield('meta_description', 'Book certified & experienced physiotherapists for home visits and online consultations across India. Expert care for Back Pain, Knee Pain, Stroke Rehabilitation, Cervical Spondylosis & Sports Injuries.')">
-    <meta name="keywords" content="@yield('meta_keywords', 'physiotherapy, home physiotherapy, online physiotherapy consultation, physiotherapist near me, back pain relief, knee pain physiotherapy, stroke rehabilitation, cervical spondylosis treatment, sports injury rehab, physio at home India, best physiotherapist')">
+    <meta name="keywords" content="@yield('meta_keywords', 'physiotherapy at home near me, home visit physiotherapist, best physiotherapist near me, female physiotherapist for home visit, physiotherapy consultation cost, online physiotherapy consultation India, back pain physiotherapy treatment, knee pain physiotherapy, stroke rehabilitation at home, cervical spondylosis physiotherapy, sports injury rehab, post surgery physiotherapy, geriatric physiotherapy at home, best physio in India')">
     <meta name="author" content="Physiopii Healthcare">
     <meta name="robots" content="@yield('meta_robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')">
     <link rel="canonical" href="@yield('canonical', $currentCanonical)">
@@ -154,11 +154,17 @@
             "SportsMedicine",
             "Geriatrics"
           ],
+          "keywords": "physiotherapy at home near me, home visit physiotherapist, best physiotherapist near me, female physiotherapist for home visit, physiotherapy consultation cost, online physiotherapy consultation India, back pain physiotherapy treatment, knee pain physiotherapy near me, stroke rehabilitation at home, sports injury physio",
           "availableService": [
             {
               "@type": "MedicalTherapy",
               "name": "Home Physiotherapy Visits",
               "description": "Certified physiotherapists provide personalized rehabilitation at the patient's home."
+            },
+            {
+              "@type": "MedicalTherapy",
+              "name": "In-Clinic Physiotherapy Consultations",
+              "description": "In-person clinical assessment and hands-on therapy at verified partner clinics."
             },
             {
               "@type": "MedicalTherapy",
@@ -174,6 +180,16 @@
               "@type": "MedicalTherapy",
               "name": "Back & Neck Pain Relief",
               "description": "Evidence-based manual therapy and exercises for sciatica, spondylosis, and spinal health."
+            },
+            {
+              "@type": "MedicalTherapy",
+              "name": "Knee Pain & Osteoarthritis Rehabilitation",
+              "description": "Targeted joint mobilization, strengthening, and post-surgery rehabilitation for knees and hips."
+            },
+            {
+              "@type": "MedicalTherapy",
+              "name": "Sports Injury & Athletic Rehabilitation",
+              "description": "Comprehensive recovery for sprains, tears, strains, and return-to-sport conditioning."
             }
           ]
         },

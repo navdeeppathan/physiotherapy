@@ -2,7 +2,7 @@
 
 @section('title', 'Specialities & Physiotherapists — PhysioPii Healthcare')
 @section('meta_description', 'Explore all physiotherapy specialities, conditions, and certified specialist doctors at PhysioPii. Back pain, knee rehab, sports injuries, post-surgery, and neurological recovery.')
-@section('meta_keywords', 'physiotherapy specialities, back pain physiotherapist, knee rehab doctor, stroke rehabilitation, sports injury physio, certified physiotherapists India')
+@section('meta_keywords', 'back pain physiotherapy treatment, sciatica treatment at home, slip disc physiotherapy exercises, knee pain physiotherapy near me, knee osteoarthritis physiotherapy, post total knee replacement rehab at home, stroke rehabilitation at home, neuro physiotherapist near me, cervical spondylosis physiotherapy, frozen shoulder physical therapy at home, sports physiotherapist near me, ankle sprain rehab, geriatric physiotherapy at home, physiotherapy specialities India')
 @section('canonical', url('/specialities'))
 @section('og_type', 'website')
 @section('og_title', 'Specialities & Conditions Treated — PhysioPii Healthcare')
@@ -19,6 +19,7 @@
       "url": "{{ url('/specialities') }}",
       "name": "Specialities & Physiotherapists — PhysioPii Healthcare",
       "description": "Explore all physiotherapy specialities, conditions, and certified specialist doctors at PhysioPii.",
+      "keywords": "back pain physiotherapy treatment, sciatica treatment at home, slip disc physiotherapy exercises, knee pain physiotherapy near me, knee osteoarthritis physiotherapy, stroke rehabilitation at home, neuro physiotherapist near me, cervical spondylosis physiotherapy, sports physiotherapist near me",
       "breadcrumb": {
         "@type": "BreadcrumbList",
         "itemListElement": [

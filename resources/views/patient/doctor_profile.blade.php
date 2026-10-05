@@ -13,7 +13,7 @@
 
 @section('title', "Dr. {$cleanDoctorName} — {$specName} Specialist Physiotherapist | Physiopii")
 @section('meta_description', "Book a home visit or online consultation with Dr. {$cleanDoctorName} ({$qualification}, {$expYears}+ yrs exp), certified {$specName} specialist on Physiopii.")
-@section('meta_keywords', "Dr {$cleanDoctorName}, {$specName} physiotherapist, book physiotherapist, home physio India, Physiopii")
+@section('meta_keywords', "Dr {$cleanDoctorName}, {$specName} physiotherapist, {$specName} treatment at home, book physiotherapist near me, home visit physiotherapist, physiotherapy consultation cost, best physio India, Physiopii")
 @section('canonical', url()->current())
 @section('og_type', 'profile')
 @section('og_title', "Dr. {$cleanDoctorName} — {$specName} Specialist Physiotherapist | Physiopii")
@@ -35,6 +35,7 @@
       "jobTitle": "Physiotherapist",
       "medicalSpecialty": "{{ $specName }}",
       "description": "{{ addslashes($doctorBio) }}",
+      "keywords": "Dr {{ $cleanDoctorName }}, {{ $specName }} physiotherapist, book physiotherapist near me, home visit physiotherapist, physiotherapy consultation cost, best physio India",
       "telephone": "+91-8855088426",
       "priceRange": "₹₹",
       "knowsAbout": [

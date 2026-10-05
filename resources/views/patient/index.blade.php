@@ -2237,8 +2237,8 @@ a {
                 @endphp
 
                 @if($specializations && $specializations->count() > 0)
-                    {{-- Render dynamically ALL active specializations from DB with admin uploaded icons --}}
-                    @foreach($specializations as $index => $spec)
+                    {{-- Render dynamically exactly 8 active specializations (2 rows of 4) with admin uploaded icons --}}
+                    @foreach($specializations->take(8) as $index => $spec)
                         @php
                             $defaultItem = $specDefaults[$index % count($specDefaults)];
                             $iconClass = $defaultItem['icon'];

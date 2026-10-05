@@ -82,7 +82,7 @@
         font-weight: 800;
         color: #fff;
         letter-spacing: -0.02em;
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-family: 'Newsreader', Georgia, serif;
     }
     .lpl-brand-sub { font-size: 11.5px; color: rgba(255,255,255,0.55); font-weight: 500; margin-top: 2px; }
 
@@ -102,7 +102,7 @@
         letter-spacing: -0.04em;
         line-height: 1.2;
         margin-bottom: 12px;
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-family: 'Newsreader', Georgia, serif;
     }
     .lpl-desc { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.7; }
 
@@ -139,7 +139,7 @@
         letter-spacing: 0.1em;
         text-transform: uppercase;
         margin-bottom: 8px;
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-family: 'Newsreader', Georgia, serif;
     }
     .lpr-heading {
         font-size: 28px;
@@ -147,7 +147,7 @@
         color: #0f172a;
         letter-spacing: -0.04em;
         margin-bottom: 6px;
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-family: 'Newsreader', Georgia, serif;
     }
     .lpr-sub { font-size: 14px; color: #64748b; margin-bottom: 32px; }
 
@@ -159,7 +159,7 @@
         font-weight: 600;
         color: #475569;
         margin-bottom: 7px;
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-family: 'Newsreader', Georgia, serif;
     }
     .lpr-input-wrap { position: relative; }
     .lpr-input-icon {
@@ -178,7 +178,7 @@
         border-radius: 12px;
         padding: 0 14px 0 44px;
         font-size: 14px;
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-family: 'Newsreader', Georgia, serif;
         color: #0f172a;
         outline: none;
         transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
@@ -203,7 +203,7 @@
         font-size: 13px;
         color: #64748b;
         cursor: pointer;
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-family: 'Newsreader', Georgia, serif;
     }
     .lpr-remember input { accent-color: #0ea5e9; width: 15px; height: 15px; }
     .lpr-forgot { font-size: 13px; color: #0ea5e9; font-weight: 600; text-decoration: none; }
@@ -218,7 +218,7 @@
         border-radius: 12px;
         font-size: 15px;
         font-weight: 700;
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-family: 'Newsreader', Georgia, serif;
         cursor: pointer;
         letter-spacing: -0.01em;
         box-shadow: 0 8px 24px rgba(14,165,233,0.35);
@@ -240,7 +240,7 @@
         font-size: 13.5px;
         color: #64748b;
         margin-top: 20px;
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-family: 'Newsreader', Georgia, serif;
     }
     .lpr-register-text a { color: #0ea5e9; font-weight: 700; text-decoration: none; }
     .lpr-register-text a:hover { color: #0284c7; }
@@ -379,6 +379,6 @@
 </script>
 @endif
 <style>
-    .swal-pj { font-family: 'Plus Jakarta Sans', sans-serif !important; border-radius: 16px !important; }
+    .swal-pj { font-family: 'Newsreader', Georgia, serif !important; border-radius: 16px !important; }
 </style>
 @endsection

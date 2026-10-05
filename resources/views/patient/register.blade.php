@@ -68,7 +68,7 @@
         border-radius: 12px;
         display: flex; align-items: center; justify-content: center;
     }
-    .rpl-brand-name { font-size: 16px; font-weight: 800; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .rpl-brand-name { font-size: 16px; font-weight: 800; color: #fff; font-family: 'Newsreader', Georgia, serif; }
     .rpl-brand-sub { font-size: 11.5px; color: rgba(255,255,255,0.5); margin-top: 2px; }
 
     .rpl-main { position: relative; z-index: 1; }
@@ -79,7 +79,7 @@
         display: flex; align-items: center; justify-content: center;
         margin-bottom: 22px;
     }
-    .rpl-title { font-size: 26px; font-weight: 800; color: #fff; letter-spacing: -0.04em; line-height: 1.2; margin-bottom: 10px; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .rpl-title { font-size: 26px; font-weight: 800; color: #fff; letter-spacing: -0.04em; line-height: 1.2; margin-bottom: 10px; font-family: 'Newsreader', Georgia, serif; }
     .rpl-desc { font-size: 13.5px; color: rgba(255,255,255,0.6); line-height: 1.7; }
 
     .rpl-steps { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; }
@@ -101,7 +101,7 @@
         color: #6ee7b7;
         display: flex; align-items: center; justify-content: center;
         flex-shrink: 0;
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-family: 'Newsreader', Georgia, serif;
     }
     .rpl-step-text { font-size: 13px; color: rgba(255,255,255,0.75); font-weight: 500; }
 
@@ -116,15 +116,15 @@
         max-height: 90vh;
     }
 
-    .rpr-eyebrow { font-size: 11px; font-weight: 700; color: #10b981; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; font-family: 'Plus Jakarta Sans', sans-serif; }
-    .rpr-heading { font-size: 26px; font-weight: 800; color: #0f172a; letter-spacing: -0.04em; margin-bottom: 6px; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .rpr-eyebrow { font-size: 11px; font-weight: 700; color: #10b981; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; font-family: 'Newsreader', Georgia, serif; }
+    .rpr-heading { font-size: 26px; font-weight: 800; color: #0f172a; letter-spacing: -0.04em; margin-bottom: 6px; font-family: 'Newsreader', Georgia, serif; }
     .rpr-sub { font-size: 13.5px; color: #64748b; margin-bottom: 28px; }
 
     .rpr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .rpr-grid .full { grid-column: span 2; }
 
     .rpr-field { margin-bottom: 0; }
-    .rpr-label { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .rpr-label { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px; font-family: 'Newsreader', Georgia, serif; }
     .rpr-input-wrap { position: relative; }
     .rpr-input-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #94a3b8; display: flex; align-items: center; pointer-events: none; }
     .rpr-input {
@@ -135,7 +135,7 @@
         border-radius: 11px;
         padding: 0 14px 0 42px;
         font-size: 13.5px;
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-family: 'Newsreader', Georgia, serif;
         color: #0f172a;
         outline: none;
         transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
@@ -155,7 +155,7 @@
         border-radius: 12px;
         font-size: 15px;
         font-weight: 700;
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-family: 'Newsreader', Georgia, serif;
         cursor: pointer;
         box-shadow: 0 8px 24px rgba(16,185,129,0.35);
         transition: all 0.2s;
@@ -165,7 +165,7 @@
     .rpr-submit:hover { background: linear-gradient(135deg, #059669, #10b981); box-shadow: 0 12px 32px rgba(16,185,129,0.45); transform: translateY(-1px); }
     .rpr-submit:active { transform: scale(0.99); }
 
-    .rpr-login-text { text-align: center; font-size: 13px; color: #64748b; margin-top: 18px; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .rpr-login-text { text-align: center; font-size: 13px; color: #64748b; margin-top: 18px; font-family: 'Newsreader', Georgia, serif; }
     .rpr-login-text a { color: #10b981; font-weight: 700; text-decoration: none; }
     .rpr-login-text a:hover { color: #059669; }
 
@@ -307,5 +307,5 @@
     });
 </script>
 @endif
-<style>.swal-pj { font-family: 'Plus Jakarta Sans', sans-serif !important; border-radius: 16px !important; }</style>
+<style>.swal-pj { font-family: 'Newsreader', Georgia, serif !important; border-radius: 16px !important; }</style>
 @endsection

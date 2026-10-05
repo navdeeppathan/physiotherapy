@@ -54,11 +54,11 @@
 }
 
 body, input, button, select, textarea, .kn-main-wrapper, h1, h2, h3, h4, h5, h6, p, a, span {
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-family: 'Newsreader', Georgia, serif !important;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Newsreader', Georgia, serif;
     color: var(--text-primary);
     background-color: var(--page-bg);
     line-height: 1.55;

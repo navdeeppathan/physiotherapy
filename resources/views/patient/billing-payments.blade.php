@@ -18,7 +18,7 @@
     --shadow:0 2px 14px rgba(15,23,42,0.06);--radius:14px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--body);}
+body{font-family:'Newsreader', Georgia, serif;background:var(--bg);color:var(--body);}
 
 .bp-wrap{max-width:1260px;margin:0 auto;padding:28px 20px 60px;display:grid;grid-template-columns:240px 1fr;gap:24px;align-items:start;}
 

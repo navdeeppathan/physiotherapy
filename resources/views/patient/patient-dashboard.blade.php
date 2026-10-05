@@ -41,7 +41,7 @@
     --shadow-hover:      0 10px 30px rgba(12, 105, 120, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Newsreader', Georgia, serif;
     background: var(--bg);
     color: var(--body-c);
     -webkit-font-smoothing: antialiased;
@@ -175,7 +175,7 @@ ul { list-style: none; }
     padding: 12px 14px; border-radius: 12px;
     font-size: 14px; font-weight: 600; color: #ef4444;
     background: transparent; border: none; cursor: pointer;
-    transition: all .18s; font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: all .18s; font-family: 'Newsreader', Georgia, serif;
     text-align: left;
 }
 .pd-drawer-logout-btn:hover { background: #fef2f2; color: #dc2626; }
@@ -276,7 +276,7 @@ ul { list-style: none; }
     padding: 11px 15px; border-radius: var(--r-lg);
     font-size: 14px; font-weight: 600; color: #ef4444;
     background: transparent; border: none; cursor: pointer;
-    transition: all .18s ease; font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: all .18s ease; font-family: 'Newsreader', Georgia, serif;
 }
 .pd-logout-btn:hover { background: #fef2f2; color: #dc2626; }
 .pd-logout-btn svg { width: 17px; height: 17px; }
@@ -359,7 +359,7 @@ ul { list-style: none; }
     cursor: pointer; border: none; background: transparent;
     transition: all .18s ease; white-space: nowrap;
     border-bottom: 2.5px solid transparent; margin-bottom: -1.5px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Newsreader', Georgia, serif;
     display: inline-flex; align-items: center; gap: 6px;
 }
 .pd-tab:hover { color: var(--primary-teal); background: rgba(12, 105, 120, 0.04); }

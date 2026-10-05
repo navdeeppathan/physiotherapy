@@ -109,7 +109,7 @@
 }
 
 body {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Newsreader', Georgia, serif;
     color: var(--body-text);
     background-color: var(--page-bg);
     line-height: 1.6;

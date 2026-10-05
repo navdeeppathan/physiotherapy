@@ -5,7 +5,7 @@
     *, *::before, *::after { box-sizing: border-box; }
 
     body {
-        font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+        font-family: 'Newsreader', Georgia, serif;
         background: #f8fafd;
         margin: 0;
     }

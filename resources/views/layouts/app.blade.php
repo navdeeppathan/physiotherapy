@@ -87,6 +87,31 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
+    {{-- ── GLOBAL TYPOGRAPHY: NEWSREADER FONT FAMILY ── --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bs-body-font-family: 'Newsreader', Georgia, serif;
+            --font-family-sans-serif: 'Newsreader', Georgia, serif;
+            --font-family-serif: 'Newsreader', Georgia, serif;
+        }
+        html, body, button, input, select, textarea,
+        h1, h2, h3, h4, h5, h6,
+        .h1, .h2, .h3, .h4, .h5, .h6,
+        p, a, span:not(.fa):not(.fas):not(.far):not(.fab):not(.fa-solid):not(.fa-regular):not(.fa-brands):not([class*="fa-"]):not(.material-icons),
+        label, li,
+        .btn, .form-control, .form-select, .nav-link,
+        table, th, td, blockquote, div {
+            font-family: 'Newsreader', Georgia, serif !important;
+        }
+        /* Ensure font-awesome icons always use FontAwesome */
+        .fa, .fas, .far, .fab, .fa-solid, .fa-regular, .fa-brands, [class*="fa-"], [class^="fa-"], .material-icons {
+            font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", "FontAwesome", "Material Icons" !important;
+        }
+    </style>
+
     {{-- ── 6. STRUCTURED DATA / JSON-LD SCHEMA ── --}}
     <script type="application/ld+json">
     {

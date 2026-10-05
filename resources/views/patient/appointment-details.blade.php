@@ -30,7 +30,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-page); color: var(--ink); }
+body { font-family: 'Newsreader', Georgia, serif; background: var(--bg-page); color: var(--ink); }
 
 /* Modal z-index fix */
 .modal-backdrop { z-index: 99998 !important; }
@@ -611,7 +611,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-page);
     text-decoration: none;
     cursor: pointer;
     transition: all .15s ease;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Newsreader', Georgia, serif;
 }
 
 .ad-btn-outline:hover {
@@ -635,7 +635,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-page);
     cursor: pointer;
     transition: all .15s ease;
     box-shadow: 0 4px 12px rgba(12, 105, 120, 0.2);
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Newsreader', Georgia, serif;
 }
 
 .ad-btn-solid-teal:hover {
@@ -660,7 +660,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-page);
     cursor: pointer;
     transition: all .15s ease;
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Newsreader', Georgia, serif;
 }
 
 .ad-btn-solid-red:hover {
@@ -850,13 +850,13 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-page);
 .cm-content { border: none; border-radius: var(--radius-xl); overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,.18); }
 .cm-header { display: flex; align-items: center; gap: 12px; padding: 20px 24px; border-bottom: 1px solid var(--border-light); }
 .cm-icon { width: 38px; height: 38px; border-radius: 10px; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 17px; }
-.cm-title { font-size: 17px; font-weight: 800; color: var(--ink); margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+.cm-title { font-size: 17px; font-weight: 800; color: var(--ink); margin: 0; font-family: 'Newsreader', Georgia, serif; }
 .cm-close { margin-left: auto; background: var(--border-light); border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 16px; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .cm-body { padding: 22px 24px; }
 .cm-label { font-size: 13px; font-weight: 700; color: var(--ink-light); margin-bottom: 8px; display: block; }
 .cm-select, .cm-textarea {
     width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius-md);
-    font-size: 14px; font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px; font-family: 'Newsreader', Georgia, serif;
     color: var(--ink); background: var(--bg-page); outline: none;
     transition: all .18s;
 }

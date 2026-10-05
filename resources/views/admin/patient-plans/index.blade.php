@@ -104,10 +104,10 @@ table.plans-table{ width:100%;border-collapse:collapse; }
 .plans-table tbody td:first-child{ text-align:center;font-size:11.5px;font-weight:700;color:var(--text3); }
 
 /* plan name cell */
-.cell-plan-name{ font-weight:800;font-size:14px;color:var(--text); }
+.cell-plan-name{ font-weight:700;font-size:14px;color:var(--text); }
 
 /* price */
-.price-val{ font-size:16px;font-weight:800;color:var(--blue);line-height:1; }
+.price-val{ font-size:16px;font-weight:700;color:var(--blue);line-height:1; }
 .price-cur{ font-size:10.5px;font-weight:700;color:var(--text3);margin-bottom:2px; }
 
 /* appts */
@@ -254,7 +254,7 @@ table.plans-table{ width:100%;border-collapse:collapse; }
             {{-- Discount (%) --}}
             <td>
                 @if($discPct > 0)
-                    <span class="badge-pill bp-active" style="font-size:12px;font-weight:800;padding:4px 10px;">
+                    <span class="badge-pill bp-active" style="font-size:12px;font-weight:700;padding:4px 10px;">
                         {{ (float) $discPct }}% OFF
                     </span>
                     <div style="font-size:10.5px;color:var(--text3);margin-top:2px;">
@@ -276,9 +276,9 @@ table.plans-table{ width:100%;border-collapse:collapse; }
                   Base ₹{{ number_format($sampleBaseTotal) }}
                   @if($discPct > 0)
                     - {{ (float) $discPct }}%
-                    = <strong style="color:var(--green);font-weight:800;font-size:12px;">₹{{ number_format($sampleFinalTotal) }}</strong>
+                    = <strong style="color:var(--green);font-weight:700;font-size:12px;">₹{{ number_format($sampleFinalTotal) }}</strong>
                   @else
-                    = <strong style="color:var(--green);font-weight:800;font-size:12px;">₹{{ number_format($sampleBaseTotal) }}</strong>
+                    = <strong style="color:var(--green);font-weight:700;font-size:12px;">₹{{ number_format($sampleBaseTotal) }}</strong>
                   @endif
                 </div>
               </div>

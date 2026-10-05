@@ -115,7 +115,7 @@ table.subs-table{ width:100%;border-collapse:collapse; }
   width:34px;height:34px;border-radius:50%;
   background:linear-gradient(135deg,var(--blue-d),var(--blue-mid));
   display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:800;color:#fff;
+  font-size:12px;font-weight:700;color:#fff;
   flex-shrink:0;
 }
 .cell-name{ font-weight:700;color:var(--text);font-size:13.5px; }
@@ -146,7 +146,7 @@ table.subs-table{ width:100%;border-collapse:collapse; }
   font-size:11px;font-weight:700;color:var(--text3);
   margin-bottom:5px;
 }
-.usage-nums strong{ color:var(--text);font-weight:800; }
+.usage-nums strong{ color:var(--text);font-weight:700; }
 .usage-track{
   height:6px;border-radius:999px;
   background:rgba(45,125,210,.10);overflow:hidden;
@@ -159,7 +159,7 @@ table.subs-table{ width:100%;border-collapse:collapse; }
 
 /* remaining */
 .remaining-num{
-  font-size:18px;font-weight:800;color:var(--text);line-height:1;
+  font-size:18px;font-weight:700;color:var(--text);line-height:1;
 }
 .remaining-lbl{
   font-size:10.5px;font-weight:600;color:var(--text3);margin-top:2px;
@@ -327,7 +327,7 @@ table.subs-table{ width:100%;border-collapse:collapse; }
 
             {{-- Package Price & Breakdown --}}
             <td>
-              <div style="font-weight:800;font-size:13.5px;color:var(--text);">₹{{ number_format($pkgPrice, 2) }}</div>
+              <div style="font-weight:700;font-size:13.5px;color:var(--text);">₹{{ number_format($pkgPrice, 2) }}</div>
               @if($docShare !== null || $admShare !== null)
                 <div style="font-size:10.5px;color:var(--text3);margin-top:3px;white-space:nowrap;">
                   @if($docShare !== null)<span style="color:var(--blue);">Dr: ₹{{ number_format($docShare, 0) }}</span>@endif

@@ -602,7 +602,7 @@ table.pd-table tr:hover td { background: #fbfdfd; }
    BILLING & PAYMENTS SECTION STYLES (bp-*)
 ───────────────────────────────────────────── */
 .bp-top-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:22px;}
-.bp-page-title{font-size:24px;font-weight:800;color:var(--ink);}
+.bp-page-title{font-size:24px;font-weight:700;color:var(--ink);}
 .bp-page-sub{font-size:13px;color:var(--muted);margin-top:2px;}
 .bp-top-actions{display:flex;gap:10px;}
 .bp-btn-back{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:9px;border:1.5px solid var(--border);background:#fff;color:var(--body-c);font-size:13px;font-weight:600;text-decoration:none;transition:all 0.15s;cursor:pointer;}
@@ -621,7 +621,7 @@ table.pd-table tr:hover td { background: #fbfdfd; }
 .bp-overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .bp-ov-box{background:var(--teal-bg-soft);border:1px solid var(--teal-badge-border);border-radius:11px;padding:16px;}
 .bp-ov-label{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:4px;}
-.bp-ov-val{font-size:22px;font-weight:800;color:var(--primary-teal);letter-spacing:-0.5px;}
+.bp-ov-val{font-size:22px;font-weight:700;color:var(--primary-teal);letter-spacing:-0.5px;}
 .bp-ov-sub{font-size:11px;color:var(--muted);margin-top:3px;}
 .bp-ov-box.pending{background:#fffbeb;border-color:#fde68a;}
 .bp-ov-box.pending .bp-ov-val{color:#d97706;}
@@ -666,7 +666,7 @@ table.bp-table{width:100%;border-collapse:collapse;}
 .bp-wallet-title{font-size:14px;font-weight:700;opacity:.9;}
 .bp-wallet-sub{font-size:11px;opacity:.7;}
 .bp-wallet-bal-lbl{font-size:12px;opacity:.8;margin-bottom:4px;}
-.bp-wallet-bal{font-size:32px;font-weight:800;letter-spacing:-1px;margin-bottom:16px;}
+.bp-wallet-bal{font-size:32px;font-weight:700;letter-spacing:-1px;margin-bottom:16px;}
 .bp-wallet-add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;border-radius:9px;background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.35);color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:background 0.15s;}
 .bp-wallet-add:hover{background:rgba(255,255,255,0.28);}
 .bp-wallet-features{margin-top:14px;display:flex;flex-direction:column;gap:8px;}
@@ -690,14 +690,14 @@ table.bp-table{width:100%;border-collapse:collapse;}
 .bp-modal::-webkit-scrollbar{width:6px;}
 .bp-modal::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:10px;}
 @keyframes modalIn{from{transform:scale(.95) translateY(10px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
-.bp-modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid var(--border);font-size:16px;font-weight:800;color:var(--ink);}
+.bp-modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid var(--border);font-size:16px;font-weight:700;color:var(--ink);}
 .bp-modal-close{width:32px;height:32px;border-radius:8px;background:#f1f5f9;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--muted);transition:all .15s;}
 .bp-modal-close:hover{background:#ef4444;color:#fff;}
 .bp-modal-body{padding:24px 28px;}
 .bp-inv-brand{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #f1f5f9;}
 .bp-inv-logo{height:40px;}
 .bp-inv-num{font-size:11.5px;font-weight:700;color:var(--muted);text-align:right;}
-.bp-inv-num span{display:block;font-size:14.5px;color:var(--ink);font-weight:800;letter-spacing:-0.2px;margin-top:2px;}
+.bp-inv-num span{display:block;font-size:14.5px;color:var(--ink);font-weight:700;letter-spacing:-0.2px;margin-top:2px;}
 .bp-inv-parties{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;background:#f8fafc;border:1px solid #edf2f7;border-radius:12px;padding:14px 16px;}
 .bp-inv-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;}
 .bp-inv-val{font-size:13.5px;font-weight:700;color:var(--ink);margin-top:2px;}
@@ -710,11 +710,11 @@ table.bp-table{width:100%;border-collapse:collapse;}
 .bp-inv-table{width:100%;border-collapse:collapse;margin-bottom:14px;}
 .bp-inv-table th{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;padding:8px 0;border-bottom:1.5px solid var(--border);text-align:left;}
 .bp-inv-table td{padding:10px 0;font-size:13px;color:var(--ink);border-bottom:1px solid #f1f5f9;}
-.bp-inv-total{display:flex;justify-content:space-between;padding:12px 0 6px;font-size:15px;font-weight:800;color:var(--ink);}
+.bp-inv-total{display:flex;justify-content:space-between;padding:12px 0 6px;font-size:15px;font-weight:700;color:var(--ink);}
 .bp-inv-paid-box{background:var(--teal-bg-soft);border:1px solid var(--teal-badge-border);border-radius:12px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin:16px 0;}
 .bp-inv-paid-lbl{font-size:13.5px;font-weight:700;color:var(--primary-teal);}
 .bp-inv-paid-sub{font-size:11.5px;color:var(--muted);margin-top:2px;}
-.bp-inv-paid-amt{font-size:22px;font-weight:800;color:var(--primary-teal);}
+.bp-inv-paid-amt{font-size:22px;font-weight:700;color:var(--primary-teal);}
 .bp-inv-note{display:flex;align-items:flex-start;gap:8px;background:#f8fafc;border-radius:10px;padding:10px 14px;font-size:11.5px;color:var(--muted);line-height:1.5;margin-bottom:6px;}
 .bp-modal-footer{display:flex;gap:12px;padding:14px 28px 24px;}
 .bp-modal-btn{flex:1;padding:11px;border-radius:11px;font-size:13.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;border:1.5px solid var(--border);color:var(--body-c);background:#ffffff;transition:all .15s;text-decoration:none;}
@@ -838,10 +838,10 @@ table.bp-table{width:100%;border-collapse:collapse;}
                     <img src="{{ str_contains($patient->profile_img, '/') ? asset($patient->profile_img) : asset('uploads/profile/'.$patient->profile_img) }}"
                          style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--teal-badge-border);flex-shrink:0;" alt="{{ $patient->name }}">
                 @else
-                    <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--primary-teal),var(--primary-teal-sub));display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:800;flex-shrink:0;">{{ strtoupper(substr($patient->name,0,1)) }}</div>
+                    <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--primary-teal),var(--primary-teal-sub));display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:700;flex-shrink:0;">{{ strtoupper(substr($patient->name,0,1)) }}</div>
                 @endif
                 <div>
-                    <div style="font-size:14px;font-weight:800;color:var(--ink);line-height:1.2;">{{ $patient->name }}</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--ink);line-height:1.2;">{{ $patient->name }}</div>
                     <div style="font-size:12px;color:var(--muted);margin-top:2px;font-weight:500;">Patient</div>
                 </div>
             </div>
@@ -890,7 +890,7 @@ table.bp-table{width:100%;border-collapse:collapse;}
             {{-- Need Help box --}}
             <div class="pd-nav-card" style="padding:18px 16px;text-align:center;">
                 <i class="fas fa-headset" style="font-size:22px;color:var(--primary-teal);margin-bottom:8px;display:block;"></i>
-                <div style="font-size:13.5px;font-weight:800;color:var(--ink);margin-bottom:4px;">Need Help?</div>
+                <div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:4px;">Need Help?</div>
                 <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">Our support team is here for you.</div>
                 <a href="mailto:support@physiopii.com" style="display:block;padding:9px;border-radius:10px;background:var(--primary-teal);color:#fff;font-size:13px;font-weight:700;text-decoration:none;text-align:center;transition:background .15s;" onmouseover="this.style.background='#074752'" onmouseout="this.style.background='var(--primary-teal)'">Contact Support</a>
             </div>
@@ -1008,7 +1008,7 @@ table.bp-table{width:100%;border-collapse:collapse;}
                                             <div class="pd-date-time">{{ $r['time'] }}</div>
                                         </td>
                                         <td style="color:#64748b;font-size:12.5px">{{ $r['booked'] }}</td>
-                                        <td style="font-weight:800;color:var(--ink)">{{ $r['fee'] }}</td>
+                                        <td style="font-weight:700;color:var(--ink)">{{ $r['fee'] }}</td>
                                         <td style="color:#64748b;font-size:12.5px">{{ $r['followUp'] }}</td>
                                         <td>
                                             <span class="pd-pill {{ $r['status'] }}">
@@ -1169,7 +1169,7 @@ table.bp-table{width:100%;border-collapse:collapse;}
                                                 </div>
                                             </div>
                                         </td>
-                                        <td style="font-weight:800;color:var(--ink)">₹{{ number_format($payment->amount,2) }}</td>
+                                        <td style="font-weight:700;color:var(--ink)">₹{{ number_format($payment->amount,2) }}</td>
                                         <td style="color:#64748b;font-size:12.5px">{{ optional($payment->paid_at)->format('d M Y') ?? $payment->created_at->format('d M Y') }}</td>
                                         <td><span class="pd-pill {{ $psCls }}"><span class="pd-pill-dot"></span>{{ $psLabel }}</span></td>
                                     </tr>
@@ -1267,7 +1267,7 @@ table.bp-table{width:100%;border-collapse:collapse;}
                                     <i class="fa-solid fa-file-invoice"></i>
                                 </div>
                                 <div>
-                                    <div style="font-size:17px;font-weight:800;color:var(--ink);">Payment History</div>
+                                    <div style="font-size:17px;font-weight:700;color:var(--ink);">Payment History</div>
                                     <div style="font-size:12.5px;color:var(--muted);margin-top:2px;">Track your invoices, session payments and wallet details</div>
                                 </div>
                             </div>

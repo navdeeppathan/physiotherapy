@@ -1972,7 +1972,7 @@ a {
                                     <i class="fa-solid fa-headset"></i>
                                 </div>
                                 <div>
-                                    <div style="font-size:12.5px;font-weight:800;color:var(--ink)">Need Help?</div>
+                                    <div style="font-size:12.5px;font-weight:700;color:var(--ink)">Need Help?</div>
                                     <div style="font-size:11.5px;color:var(--muted-text)">Call Us at (555) 432-1090 &middot; Mon - Sat, 9AM - 6PM</div>
                                 </div>
                             </div>
@@ -2060,7 +2060,7 @@ a {
                             <div class="bk-rc-lbl"><i class="fa-solid fa-wallet"></i> Amount Paid</div>
                             <div class="bk-rc-val">
                                 <span id="sucAmount">₹979.00</span>
-                                <span style="background:#dcfce7;color:#15803d;font-size:11px;font-weight:800;padding:2px 8px;border-radius:6px;margin-left:6px;">(Paid)</span>
+                                <span style="background:#dcfce7;color:#15803d;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:6px;">(Paid)</span>
                             </div>
                         </div>
                     </div>

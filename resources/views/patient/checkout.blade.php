@@ -319,7 +319,7 @@ body { font-family: 'Newsreader', Georgia, serif; background: #f1f5f9; color: #3
                     <div class="co-card" style="border-color:#bae6fd;background:#f0f9ff">
                         <div class="co-card-body" style="text-align:center;padding:30px">
                             <i class="fa-solid fa-lock" style="font-size:32px;color:#0ea5e9;margin-bottom:12px;display:block"></i>
-                            <h4 style="font-size:17px;font-weight:800;color:#0c4a6e;margin-bottom:6px">Login Required to Continue</h4>
+                            <h4 style="font-size:17px;font-weight:700;color:#0c4a6e;margin-bottom:6px">Login Required to Continue</h4>
                             <p style="font-size:13.5px;color:#0369a1;margin-bottom:18px">Please sign in to complete your appointment booking and secure payment.</p>
                             <a href="{{ route('login') }}" class="co-submit-btn" style="display:inline-flex;width:auto;padding:12px 32px">
                                 <i class="fa-solid fa-right-to-bracket"></i> Login to Continue

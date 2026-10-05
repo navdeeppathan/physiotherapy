@@ -10,9 +10,11 @@
 								<!-- Footer Widget -->
 								<div class="footer-widget footer-about">
 									<div class="footer-logo">
-										{{-- <img src="assets/img/footer-logo.png" alt="logo"> --}}
-										<img src="{{ asset('assets/img/logo.png') }}" class="img-fluid w-50" alt="Logo">
-
+										<a href="{{ route('home') }}" style="display: inline-block; text-decoration: none;">
+											<div style="background: #ffffff; padding: 6px 14px; border-radius: 10px; display: inline-flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+												<img src="{{ asset('logo.png') }}" alt="PhysioPii - Move Better. Live Better." style="height: 38px; width: auto; max-width: 165px; object-fit: contain; display: block;">
+											</div>
+										</a>
 									</div>
 									<div class="footer-about-content">
 										{{-- <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p> --}}
@@ -150,8 +152,9 @@
 								
 									<!-- Copyright Menu -->
 									<div class="copyright-menu">
-										<ul class="policy-menu">
+										<ul class="policy-menu" style="display: flex; gap: 16px; justify-content: flex-end; list-style: none; margin: 0; padding: 0;">
 											<li><a href="{{ route('privacy.policy') }}">Privacy Policy</a></li>
+											<li><a href="{{ route('terms.conditions') }}">Terms and Conditions</a></li>
 										</ul>
 									</div>
 									<!-- /Copyright Menu -->

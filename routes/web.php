@@ -91,6 +91,13 @@ Route::get('/sitemap.xml', function () {
     $xml .= '        <changefreq>monthly</changefreq>' . "\n";
     $xml .= '        <priority>0.5</priority>' . "\n";
     $xml .= '    </url>' . "\n";
+    // Terms and Conditions
+    $xml .= '    <url>' . "\n";
+    $xml .= '        <loc>https://physiopii.in/terms-and-conditions</loc>' . "\n";
+    $xml .= '        <lastmod>' . date('Y-m-d') . '</lastmod>' . "\n";
+    $xml .= '        <changefreq>monthly</changefreq>' . "\n";
+    $xml .= '        <priority>0.5</priority>' . "\n";
+    $xml .= '    </url>' . "\n";
 
     $xml .= '</urlset>';
 
@@ -104,6 +111,13 @@ Route::get('/specialities', [HomeController::class, 'specialities'])->name('spec
 Route::get('/conditions', [HomeController::class, 'specialities'])->name('conditions.index');
 Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy.policy');
 Route::get('/privacy', [HomeController::class, 'privacyPolicy']);
+Route::get('/privacy-policy.html', [HomeController::class, 'privacyPolicy']);
+Route::get('/privacy.html', [HomeController::class, 'privacyPolicy']);
+Route::get('/terms-and-conditions', [HomeController::class, 'termsCondition'])->name('terms.conditions');
+Route::get('/terms', [HomeController::class, 'termsCondition']);
+Route::get('/term-condition', [HomeController::class, 'termsCondition']);
+Route::get('/term-condition.html', [HomeController::class, 'termsCondition']);
+Route::get('/terms-conditions', [HomeController::class, 'termsCondition']);
 Route::post('/enquiry', [EnquiryController::class, 'store'])->name('enquiry.store');
 Route::get('/search-doctors', [HomeController::class, 'searchDoctors'])->name('search.doctors');
 Route::get('/doctor/{id}', [HomeController::class, 'doctorProfile'])->name('doctor.profile');

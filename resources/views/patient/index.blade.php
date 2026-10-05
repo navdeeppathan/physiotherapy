@@ -3133,8 +3133,10 @@ a {
             <div class="kn-footer-grid">
                 {{-- Col 1: Brand --}}
                 <div>
-                    <a href="{{ route('home') }}" style="display: inline-block; margin-bottom: 18px;" aria-label="PhysioPii Home">
-                        <img src="{{ asset('logo.png') }}" alt="PhysioPii - Move Better. Live Better." style="height: 42px; width: auto; max-width: 175px; object-fit: contain; display: block; filter: brightness(0) invert(1);">
+                    <a href="{{ route('home') }}" style="display: inline-block; margin-bottom: 18px; text-decoration: none;" aria-label="PhysioPii Home">
+                        <div style="background: #ffffff; padding: 6px 14px; border-radius: 10px; display: inline-flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                            <img src="{{ asset('logo.png') }}" alt="PhysioPii - Move Better. Live Better." style="height: 38px; width: auto; max-width: 165px; object-fit: contain; display: block;">
+                        </div>
                     </a>
                     <p class="kn-footer-desc">
                         Connecting you with certified physiotherapy specialists for comprehensive in-clinic and at-home rehabilitation.
@@ -3200,8 +3202,8 @@ a {
                 <div>&copy; {{ date('Y') }} PhysioPii Healthcare. All rights reserved.</div>
                 <div class="kn-footer-legal-links">
                     <a href="{{ route('privacy.policy') }}">Privacy Policy</a>
-                    <a href="{{ route('privacy.policy') }}">Terms of Service</a>
-                    <a href="{{ route('privacy.policy') }}">Cookie Policy</a>
+                    <a href="{{ route('terms.conditions') }}">Terms of Service</a>
+                    <a href="{{ route('privacy.policy') }}#sec-15">Cookie Policy</a>
                     <a href="{{ url('/sitemap.xml') }}">Sitemap</a>
                 </div>
             </div>

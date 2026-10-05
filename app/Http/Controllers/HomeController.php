@@ -168,4 +168,12 @@ class HomeController extends Controller
     {
         return view('patient.privacy-policy');
     }
+
+    /**
+     * Terms and Conditions Page
+     */
+    public function termsCondition()
+    {
+        return view('patient.term-condition');
+    }
 }

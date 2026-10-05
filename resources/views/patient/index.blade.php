@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Kinora & PhysioPii — Expert Physiotherapy Care at Home & In-Clinic')
+@section('title', 'PhysioPii — Expert Physiotherapy Care at Home & In-Clinic')
 @section('meta_description', 'Book certified & experienced physiotherapists for home visits and clinic appointments. Personalized care for Back Pain, Knee Rehab, Sports Injuries, and Neurological Recovery.')
 @section('meta_keywords', 'physiotherapy, home physiotherapy, physiotherapist near me, back pain relief, knee pain therapy, sports injury rehab, stroke recovery, best physio India')
 
@@ -205,32 +205,18 @@ a {
 .kn-brand-link {
     display: flex;
     align-items: center;
-    gap: 10px;
     text-decoration: none;
 }
-.kn-brand-icon-box {
-    width: 36px;
-    height: 36px;
-    background: var(--brand-teal);
-    border-radius: 9px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-    font-size: 17px;
-    box-shadow: 0 4px 12px rgba(12, 105, 120, 0.28);
+.kn-brand-logo-img {
+    height: 48px;
+    width: auto;
+    max-width: 190px;
+    object-fit: contain;
+    display: block;
+    transition: transform 0.2s ease;
 }
-.kn-brand-text {
-    font-size: 23px;
-    font-weight: 700;
-    color: var(--brand-teal);
-    letter-spacing: -0.04em;
-    display: flex;
-    align-items: center;
-}
-.kn-brand-text span {
-    color: #1e293b;
-    font-weight: 800;
+.kn-brand-link:hover .kn-brand-logo-img {
+    transform: scale(1.02);
 }
 
 .kn-nav-menu {
@@ -1802,11 +1788,8 @@ a {
             <div class="kn-nav-inner">
                 
                 {{-- Brand Logo --}}
-                <a href="{{ route('home') }}" class="kn-brand-link">
-                    <div class="kn-brand-icon-box">
-                        <i class="fa-solid fa-heart-pulse"></i>
-                    </div>
-                    <span class="kn-brand-text">kinora</span>
+                <a href="{{ route('home') }}" class="kn-brand-link" aria-label="PhysioPii Home">
+                    <img src="{{ asset('logo.png') }}" alt="PhysioPii - Move Better. Live Better." class="kn-brand-logo-img">
                 </a>
 
                 {{-- Desktop Nav Links --}}
@@ -3043,12 +3026,9 @@ a {
             <div class="kn-footer-grid">
                 {{-- Col 1: Brand --}}
                 <div>
-                    <div class="kn-footer-brand-title">
-                        <div class="kn-footer-brand-icon">
-                            <i class="fa-solid fa-heart-pulse"></i>
-                        </div>
-                        <span>kinora</span>
-                    </div>
+                    <a href="{{ route('home') }}" style="display: inline-block; margin-bottom: 18px;" aria-label="PhysioPii Home">
+                        <img src="{{ asset('logo.png') }}" alt="PhysioPii - Move Better. Live Better." style="height: 42px; width: auto; max-width: 175px; object-fit: contain; display: block; filter: brightness(0) invert(1);">
+                    </a>
                     <p class="kn-footer-desc">
                         Connecting you with certified physiotherapy specialists for comprehensive in-clinic and at-home rehabilitation.
                     </p>
@@ -3109,7 +3089,7 @@ a {
             </div>
 
             <div class="kn-footer-bottom">
-                <div>&copy; {{ date('Y') }} Kinora / PhysioPii Healthcare. All rights reserved.</div>
+                <div>&copy; {{ date('Y') }} PhysioPii Healthcare. All rights reserved.</div>
                 <div class="kn-footer-legal-links">
                     <a href="{{ route('privacy.policy') }}">Privacy Policy</a>
                     <a href="{{ route('privacy.policy') }}">Terms of Service</a>

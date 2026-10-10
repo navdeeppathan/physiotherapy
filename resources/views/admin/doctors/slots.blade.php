@@ -3,6 +3,7 @@
 @section('content')
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <style>
 :root {
@@ -93,6 +94,9 @@
   text-transform: uppercase;
   letter-spacing: .5px;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 .doctor-select-dropdown {
   border: none;
@@ -213,17 +217,17 @@
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   background: #FAFBFD;
 }
 .panel-icon-wrap {
-  width: 34px; height: 34px;
-  border-radius: 8px;
+  width: 36px; height: 36px;
+  border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 15px;
+  flex-shrink: 0;
 }
 .panel-header-bar h3 {
-  font-size: 14.5px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text);
   margin: 0;
@@ -236,15 +240,14 @@
 .f-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 14px;
+  gap: 16px;
 }
 .col-12 { grid-column: span 12; }
 .col-6  { grid-column: span 6; }
 .col-4  { grid-column: span 4; }
-.col-3  { grid-column: span 3; }
 
-@media(max-width: 600px) {
-  .col-6, .col-4, .col-3 { grid-column: span 12; }
+@media(max-width: 650px) {
+  .col-6, .col-4 { grid-column: span 12; }
 }
 
 .f-label {
@@ -254,20 +257,22 @@
   color: var(--text3);
   text-transform: uppercase;
   letter-spacing: .5px;
-  margin-bottom: 6px;
+  margin-bottom: 7px;
 }
 .f-input, .f-select {
   width: 100%;
   background: #F8FAFC;
   border: 1.5px solid var(--border);
-  border-radius: 9px;
-  padding: 9px 12px;
+  border-radius: 10px;
+  padding: 10px 14px;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 600;
   color: var(--text);
   outline: none;
   transition: all .15s ease;
+  min-height: 44px;
+  box-sizing: border-box;
 }
 .f-input:focus, .f-select:focus {
   border-color: var(--blue);
@@ -275,7 +280,7 @@
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 .f-hint {
-  font-size: 11px;
+  font-size: 11.5px;
   color: var(--text3);
   margin-top: 4px;
 }
@@ -284,8 +289,8 @@
   background: var(--blue);
   color: #fff;
   border: none;
-  padding: 10px 20px;
-  border-radius: 9px;
+  padding: 11px 20px;
+  border-radius: 10px;
   font-size: 13.5px;
   font-weight: 700;
   cursor: pointer;
@@ -299,7 +304,7 @@
 .btn-submit-action:hover {
   background: #1d4ed8;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
 }
 
 /* ── AGENDA / DATES LIST ── */
@@ -353,7 +358,7 @@
   background: #EFF6FF;
   border: 1px solid #BFDBFE;
   color: var(--blue);
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 700;
@@ -370,14 +375,14 @@
   background: transparent;
   border: 1px solid #FECDD3;
   color: #BE123C;
-  border-radius: 7px;
-  padding: 5px 12px;
+  border-radius: 8px;
+  padding: 6px 13px;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   transition: all .15s ease;
 }
 .btn-clear-date:hover {
@@ -388,7 +393,7 @@
 .slots-pill-grid {
   padding: 20px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
   gap: 12px;
 }
 
@@ -412,7 +417,7 @@
   background: #FFF1F2;
 }
 .slot-time-text {
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 700;
   color: var(--text);
   line-height: 1.2;
@@ -423,6 +428,9 @@
   text-transform: uppercase;
   letter-spacing: .4px;
   margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 .slot-item-pill.available .slot-status-tag { color: var(--green); }
 .slot-item-pill.booked .slot-status-tag { color: var(--rose); }
@@ -433,8 +441,8 @@
   gap: 6px;
 }
 .slot-action-btn {
-  width: 28px; height: 28px;
-  border-radius: 7px;
+  width: 30px; height: 30px;
+  border-radius: 8px;
   border: 1px solid var(--border);
   background: #fff;
   color: var(--text3);
@@ -468,9 +476,9 @@
   color: var(--text3);
 }
 .empty-icon {
-  font-size: 40px;
-  color: #CBD5E1;
-  margin-bottom: 12px;
+  width: 48px; height: 48px;
+  margin: 0 auto 14px;
+  color: #94A3B8;
 }
 </style>
 
@@ -480,7 +488,9 @@
     <div class="slots-header">
         <div class="header-left">
             <a href="{{ route('admin.users.doctorsindex') }}" class="back-btn" title="Back to Doctors">
-                <i class="fa-solid fa-arrow-left"></i>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
             </a>
             <div class="header-title-box">
                 <h1>Doctor Slot Management</h1>
@@ -490,7 +500,10 @@
 
         {{-- Quick Doctor Switcher --}}
         <div class="doctor-switcher-box">
-            <span class="doctor-switcher-label"><i class="fa-solid fa-user-doctor"></i> Doctor:</span>
+            <span class="doctor-switcher-label">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Doctor:
+            </span>
             <select class="doctor-select-dropdown" onchange="window.location.href = '{{ url('admin/doctors') }}/' + this.value + '/slots'">
                 @foreach($allDoctors as $doc)
                     <option value="{{ $doc->id }}" {{ $doc->id === $doctor->id ? 'selected' : '' }}>
@@ -504,21 +517,21 @@
     {{-- Alerts --}}
     @if(session('success'))
         <div style="background:var(--green-bg); border:1px solid rgba(5,150,105,0.3); border-radius:12px; padding:13px 20px; color:var(--green); font-weight:600; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
-            <i class="fa-solid fa-circle-check"></i>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             {{ session('success') }}
         </div>
     @endif
 
     @if(session('error'))
         <div style="background:var(--rose-bg); border:1px solid rgba(220,38,38,0.3); border-radius:12px; padding:13px 20px; color:var(--rose); font-weight:600; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
-            <i class="fa-solid fa-circle-exclamation"></i>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             {{ session('error') }}
         </div>
     @endif
 
     @if(session('warning'))
         <div style="background:var(--amber-bg); border:1px solid rgba(217,119,6,0.3); border-radius:12px; padding:13px 20px; color:var(--amber); font-weight:600; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
-            <i class="fa-solid fa-triangle-exclamation"></i>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             {{ session('warning') }}
         </div>
     @endif
@@ -536,11 +549,22 @@
             <div>
                 <h2 class="doctor-name-title">Dr. {{ $doctor->name }}</h2>
                 <div class="doctor-meta-line">
-                    <span><i class="fa-solid fa-stethoscope"></i> {{ $doctor->profile && $doctor->profile->specializationdata ? $doctor->profile->specializationdata->name : 'Physiotherapy Specialist' }}</span>
-                    <span><i class="fa-regular fa-envelope"></i> {{ $doctor->email }}</span>
-                    <span><i class="fa-solid fa-phone"></i> {{ $doctor->phone ?? 'N/A' }}</span>
+                    <span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4.5c1.45-1.47 4.5-2 4.5-2"/></svg>
+                        {{ $doctor->profile && $doctor->profile->specializationdata ? $doctor->profile->specializationdata->name : 'Physiotherapy Specialist' }}
+                    </span>
+                    <span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                        {{ $doctor->email }}
+                    </span>
+                    <span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        {{ $doctor->phone ?? 'N/A' }}
+                    </span>
                     @if($doctor->fee)
-                        <span style="color:#059669; font-weight:700;"><i class="fa-solid fa-indian-rupee-sign"></i> ₹{{ number_format($doctor->fee->getPerAppointmentTotal(), 0) }} / session</span>
+                        <span style="color:#059669; font-weight:700;">
+                            ₹{{ number_format($doctor->fee->getPerAppointmentTotal(), 0) }} / session
+                        </span>
                     @endif
                 </div>
             </div>
@@ -571,7 +595,9 @@
         <div class="panel-card">
             <div class="panel-header-bar">
                 <div class="panel-icon-wrap" style="background:#F5F3FF; color:var(--purple);">
-                    <i class="fa-solid fa-bolt"></i>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
                 </div>
                 <h3>Bulk Slot Generator (Quick Multi-Day)</h3>
             </div>
@@ -580,7 +606,7 @@
                     @csrf
                     <div class="f-grid">
                         
-                        {{-- Date range --}}
+                        {{-- Row 1: Start Date & End Date (col-6 each) --}}
                         <div class="col-6">
                             <label class="f-label">Start Date *</label>
                             <input type="date" name="start_date" class="f-input" value="{{ date('Y-m-d') }}" min="{{ date('Y-m-d') }}" required>
@@ -591,27 +617,29 @@
                             <div class="f-hint">Leave blank for single day.</div>
                         </div>
 
-                        {{-- Shift timing --}}
-                        <div class="col-4">
-                            <label class="f-label">Shift Start *</label>
+                        {{-- Row 2: Shift Start & Shift End (col-6 each -> wide and never truncated!) --}}
+                        <div class="col-6">
+                            <label class="f-label">Shift Start Time *</label>
                             <input type="time" name="shift_start" class="f-input" value="09:00" required>
                         </div>
-                        <div class="col-4">
-                            <label class="f-label">Shift End *</label>
+                        <div class="col-6">
+                            <label class="f-label">Shift End Time *</label>
                             <input type="time" name="shift_end" class="f-input" value="18:00" required>
                         </div>
-                        <div class="col-4">
+
+                        {{-- Row 3: Slot Duration (col-12) --}}
+                        <div class="col-12">
                             <label class="f-label">Slot Duration *</label>
                             <select name="duration" class="f-select" required>
-                                <option value="30">30 Minutes</option>
-                                <option value="45">45 Minutes</option>
-                                <option value="60" selected>60 Minutes (1 Hour)</option>
-                                <option value="90">90 Minutes</option>
-                                <option value="120">2 Hours</option>
+                                <option value="30">30 Minutes per slot</option>
+                                <option value="45">45 Minutes per slot</option>
+                                <option value="60" selected>60 Minutes (1 Hour per slot)</option>
+                                <option value="90">90 Minutes per slot</option>
+                                <option value="120">120 Minutes (2 Hours per slot)</option>
                             </select>
                         </div>
 
-                        {{-- Optional lunch break --}}
+                        {{-- Row 4: Optional Lunch Break (col-6 each) --}}
                         <div class="col-6">
                             <label class="f-label">Lunch Break Start (Optional)</label>
                             <input type="time" name="break_start" class="f-input" value="13:00">
@@ -621,16 +649,20 @@
                             <input type="time" name="break_end" class="f-input" value="14:00">
                         </div>
 
-                        <div class="col-12" style="display:flex; align-items:center; gap:8px; margin-top:2px;">
-                            <input type="checkbox" name="skip_weekends" id="skipWeekends" value="1" style="width:16px; height:16px; cursor:pointer;" checked>
-                            <label for="skipWeekends" style="font-size:12.5px; font-weight:600; color:var(--text2); cursor:pointer;">
+                        {{-- Row 5: Skip Weekends --}}
+                        <div class="col-12" style="display:flex; align-items:center; gap:10px; background:#F8FAFC; border:1px solid var(--border); border-radius:10px; padding:10px 14px;">
+                            <input type="checkbox" name="skip_weekends" id="skipWeekends" value="1" style="width:18px; height:18px; accent-color:var(--purple); cursor:pointer;" checked>
+                            <label for="skipWeekends" style="font-size:12.5px; font-weight:600; color:var(--text2); cursor:pointer; margin:0;">
                                 Skip Weekends (Don't create slots on Saturday &amp; Sunday)
                             </label>
                         </div>
 
                         <div class="col-12" style="margin-top:6px;">
                             <button type="submit" class="btn-submit-action" style="background:linear-gradient(135deg, #7C3AED, #6D28D9);">
-                                <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Slots in Bulk
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                                </svg>
+                                Generate Slots in Bulk
                             </button>
                         </div>
 
@@ -643,7 +675,9 @@
         <div class="panel-card">
             <div class="panel-header-bar">
                 <div class="panel-icon-wrap" style="background:#EFF6FF; color:var(--blue);">
-                    <i class="fa-solid fa-plus"></i>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
                 </div>
                 <h3>Add Single Custom Slot</h3>
             </div>
@@ -667,9 +701,12 @@
                             <input type="time" name="end_time" class="f-input" value="11:00" required>
                         </div>
 
-                        <div class="col-12" style="margin-top:14px;">
+                        <div class="col-12" style="margin-top:10px;">
                             <button type="submit" class="btn-submit-action">
-                                <i class="fa-solid fa-circle-plus"></i> Add Single Time Slot
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                                </svg>
+                                Add Single Time Slot
                             </button>
                         </div>
 
@@ -677,7 +714,10 @@
                 </form>
 
                 <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:10px; padding:12px 14px; margin-top:20px; font-size:12px; color:var(--text3); line-height:1.5;">
-                    <strong style="color:var(--text2); display:block; margin-bottom:4px;"><i class="fa-solid fa-circle-info" style="color:var(--blue);"></i> Help Note for Admin:</strong>
+                    <strong style="color:var(--text2); display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        Help Note for Admin:
+                    </strong>
                     When you create slots here, they instantly become bookable by patients on the website and app. Patients can book home visits or clinic visits based on doctor profile settings.
                 </div>
             </div>
@@ -690,14 +730,16 @@
     ══════════════════════════════════════════════════ --}}
     <div class="agenda-section-title">
         <div class="agenda-title-left">
-            <i class="fa-regular fa-calendar-check" style="color:var(--blue);"></i>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
             <span>Configured Availability &amp; Slots</span>
         </div>
 
         {{-- Filter Date Form --}}
         <form action="{{ route('admin.doctors.slots', $doctor->id) }}" method="GET" class="date-filter-form">
-            <input type="date" name="date" class="f-input" style="width:160px; padding:6px 10px;" value="{{ $selectedDate ?? '' }}">
-            <button type="submit" class="btn-submit-action" style="padding:7px 14px; font-size:12.5px; width:auto;">
+            <input type="date" name="date" class="f-input" style="width:160px; padding:6px 10px; min-height:36px;" value="{{ $selectedDate ?? '' }}">
+            <button type="submit" class="btn-submit-action" style="padding:7px 14px; font-size:12.5px; width:auto; min-height:36px;">
                 Filter Date
             </button>
             @if($selectedDate)
@@ -713,7 +755,9 @@
             <div class="date-slot-header">
                 <div class="date-title-wrap">
                     <span class="date-badge-calendar">
-                        <i class="fa-regular fa-calendar-days"></i>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
                         {{ \Carbon\Carbon::parse($avail->available_date)->format('D, d M Y') }}
                     </span>
                     <span class="date-slots-count">
@@ -729,7 +773,8 @@
                         @method('DELETE')
                         <input type="hidden" name="date" value="{{ \Carbon\Carbon::parse($avail->available_date)->format('Y-m-d') }}">
                         <button type="submit" class="btn-clear-date">
-                            <i class="fa-solid fa-eraser"></i> Clear Unbooked Slots
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            Clear Unbooked Slots
                         </button>
                     </form>
                 @endif
@@ -745,9 +790,11 @@
                                 </div>
                                 <div class="slot-status-tag">
                                     @if($slot->is_booked)
-                                        <i class="fa-solid fa-lock" style="font-size:9px;"></i> Booked / Blocked
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                        Booked / Blocked
                                     @else
-                                        <i class="fa-solid fa-circle-check" style="font-size:9px;"></i> Available
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                        Available
                                     @endif
                                 </div>
                             </div>
@@ -758,9 +805,9 @@
                                     @csrf
                                     <button type="submit" class="slot-action-btn btn-toggle" title="{{ $slot->is_booked ? 'Make Available' : 'Block Slot' }}">
                                         @if($slot->is_booked)
-                                            <i class="fa-solid fa-unlock"></i>
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
                                         @else
-                                            <i class="fa-solid fa-lock"></i>
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                                         @endif
                                     </button>
                                 </form>
@@ -770,7 +817,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="slot-action-btn btn-del" title="Delete Slot">
-                                        <i class="fa-solid fa-trash-can"></i>
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                                     </button>
                                 </form>
                             </div>
@@ -785,10 +832,15 @@
         </div>
     @empty
         <div class="empty-state-card">
-            <div class="empty-icon"><i class="fa-regular fa-calendar-xmark"></i></div>
+            <div class="empty-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                    <line x1="10" y1="14" x2="14" y2="18"/><line x1="14" y1="14" x2="10" y2="18"/>
+                </svg>
+            </div>
             <h3 style="font-size:16px; font-weight:700; color:var(--text); margin:0 0 6px;">No Upcoming Slots Found for Dr. {{ $doctor->name }}</h3>
             <p style="font-size:13px; max-width:460px; margin:0 auto 18px;">
-                This doctor doesn't have any time slots configured yet. Use the <strong>Bulk Slot Generator</strong> above to create their weekly schedule in 1 click!
+                This doctor doesn't have any time slots configured yet. Use the <strong>Bulk Slot Generator</strong> above to create their schedule in 1 click!
             </p>
         </div>
     @endforelse

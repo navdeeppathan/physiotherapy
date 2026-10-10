@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Specializations;
+use App\Models\HeroBanner;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -22,9 +23,14 @@ class HomeController extends Controller
             ->take(10)
             ->get();
 
-            // dd($doctors);
+        try {
+            HeroBanner::ensureTableExists();
+            $banners = HeroBanner::active()->get();
+        } catch (\Throwable $e) {
+            $banners = collect();
+        }
 
-        return view('patient.index', compact('doctors', 'specializations'));
+        return view('patient.index', compact('doctors', 'specializations', 'banners'));
     }
 
     public function specialities(Request $request)

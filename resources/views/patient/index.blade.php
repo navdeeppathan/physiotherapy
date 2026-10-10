@@ -426,211 +426,270 @@ a {
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   2. HERO SECTION & CAROUSEL (3 SLIDES)
+   2. FULL PAGE HERO SLIDER (DYNAMIC BANNER CAROUSEL)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .kn-hero-wrapper {
-    background: #eef6f5;
-    padding: 40px 0 35px;
+    background: #081e24;
     position: relative;
     overflow: hidden;
+    width: 100%;
 }
 
 .kn-hero-carousel-container {
     position: relative;
-    min-height: 480px;
+    width: 100%;
+    min-height: 520px;
+    height: 560px;
 }
 
 .kn-hero-slide {
-    display: none;
-    grid-template-columns: 1.15fr 1fr;
-    gap: 40px;
-    align-items: center;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     opacity: 0;
-    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-    transform: translateX(15px);
-}
-.kn-hero-slide.active {
-    display: grid;
-    opacity: 1;
-    transform: translateX(0);
+    visibility: hidden;
+    transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(1.02);
+    display: flex;
+    align-items: center;
+    z-index: 1;
 }
 
-/* Left Hero Content */
-.kn-hero-content {
-    padding-right: 15px;
+.kn-hero-slide.active {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+    z-index: 2;
 }
-.kn-hero-heading {
-    font-size: clamp(34px, 4.3vw, 54px);
+
+/* Background Image Layer & Overlay */
+.kn-hero-bg-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.kn-hero-bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 7s cubic-bezier(0.25, 1, 0.5, 1);
+    display: block;
+}
+
+.kn-hero-slide.active .kn-hero-bg-img {
+    transform: scale(1.05);
+}
+
+.kn-hero-bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(8, 28, 36, 0.94) 0%, rgba(8, 28, 36, 0.84) 42%, rgba(8, 28, 36, 0.40) 75%, rgba(8, 28, 36, 0.18) 100%);
+    z-index: 2;
+}
+
+/* Slide Content Container */
+.kn-hero-inner-container {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.kn-hero-content-wrap {
+    max-width: 680px;
+    padding: 40px 0 50px;
+    animation: heroContentFadeIn 0.8s ease forwards;
+}
+
+@keyframes heroContentFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Time / Badge */
+.kn-hero-time-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(20, 184, 166, 0.20);
+    border: 1px solid rgba(20, 184, 166, 0.50);
+    backdrop-filter: blur(8px);
+    color: #5eead4;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 13px;
     font-weight: 700;
-    color: var(--text-primary);
-    line-height: 1.14;
-    letter-spacing: -0.04em;
-    margin-bottom: 18px;
+    letter-spacing: 0.04em;
+    margin-bottom: 20px;
 }
+
+.kn-hero-time-badge i {
+    font-size: 13px;
+    color: #2dd4bf;
+}
+
+.kn-time-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #2dd4bf;
+    box-shadow: 0 0 10px #2dd4bf;
+}
+
+/* Hero Typography */
+.kn-hero-heading {
+    font-size: clamp(34px, 4.4vw, 56px);
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.14;
+    letter-spacing: -0.03em;
+    margin-bottom: 18px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+    font-family: 'Newsreader', Georgia, serif;
+}
+
 .kn-hero-desc {
-    font-size: 16px;
-    color: var(--text-secondary);
+    font-size: 16.5px;
+    color: #e2f1f0;
     line-height: 1.62;
     margin-bottom: 28px;
-    max-width: 530px;
+    max-width: 580px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
+
 .kn-hero-actions {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 14px;
-    margin-bottom: 26px;
+    margin-bottom: 24px;
 }
+
+.kn-btn-white-glass {
+    background: rgba(255, 255, 255, 0.14) !important;
+    color: #ffffff !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+    backdrop-filter: blur(8px);
+}
+
+.kn-btn-white-glass:hover {
+    background: #ffffff !important;
+    color: #0b1a20 !important;
+    border-color: #ffffff !important;
+}
+
 .kn-hero-guarantee {
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 13px;
     font-weight: 600;
-    color: var(--brand-teal);
+    color: #a7f3d0;
 }
+
 .kn-hero-guarantee i {
     font-size: 14px;
+    color: #2dd4bf;
 }
 
-/* Right Hero Visual & Badges */
-.kn-hero-visual {
-    position: relative;
-    border-radius: var(--radius-2xl);
-    overflow: visible;
-}
-.kn-hero-image-box {
-    position: relative;
-    border-radius: var(--radius-2xl);
-    overflow: hidden;
-    height: 420px;
-    background: #cbd5e1;
-    box-shadow: 0 20px 45px rgba(9, 40, 46, 0.12);
-}
-.kn-hero-image-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-    transition: transform 1.2s ease;
-}
-.kn-hero-slide.active .kn-hero-image-box img {
-    transform: scale(1.02);
-}
-
-/* Top-Left Floating Badge */
-.kn-floating-top-badge {
+/* Side Floating Arrows */
+.kn-hero-nav-arrow {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    background: rgba(255, 255, 255, 0.94);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: rgba(8, 28, 36, 0.55);
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 5;
     backdrop-filter: blur(8px);
-    padding: 7px 16px;
-    border-radius: 50px;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text-primary);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    z-index: 2;
-}
-.kn-floating-top-badge i {
-    color: var(--brand-teal);
-    font-size: 13px;
+    transition: all 0.25s ease;
+    font-size: 15px;
 }
 
-/* Bottom Floating Stats Overlay Card */
-.kn-hero-stats-card {
+.kn-hero-nav-arrow:hover {
+    background: var(--brand-teal);
+    border-color: var(--brand-teal);
+    color: #ffffff;
+    transform: translateY(-50%) scale(1.08);
+    box-shadow: 0 4px 20px rgba(20, 184, 166, 0.4);
+}
+
+.kn-hero-nav-arrow.prev { left: 24px; }
+.kn-hero-nav-arrow.next { right: 24px; }
+
+/* Hero Bottom Navigation Bar */
+.kn-hero-controls-bar {
     position: absolute;
-    bottom: 18px;
-    left: 18px;
-    right: 18px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: var(--radius-lg);
-    padding: 16px 22px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 10px 30px rgba(9, 40, 46, 0.14);
-    z-index: 2;
-    border: 1px solid rgba(255, 255, 255, 0.6);
-}
-.kn-hero-stats-left h5 {
-    font-size: 14.5px;
-    font-weight: 800;
-    color: var(--text-primary);
-    margin-bottom: 2px;
-}
-.kn-hero-stats-left p {
-    font-size: 12.5px;
-    color: var(--text-muted);
-    margin: 0;
-}
-.kn-hero-stats-right {
-    text-align: right;
-    border-left: 1px solid #e2e8f0;
-    padding-left: 20px;
-}
-.kn-hero-stats-num {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--brand-teal);
-    line-height: 1.1;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 4px;
-}
-.kn-hero-stats-sub {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
+    bottom: 48px;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    pointer-events: none;
 }
 
-/* Hero Controls at Bottom */
-.kn-hero-controls {
+.kn-hero-controls-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-top: 25px;
-    padding-top: 10px;
+    pointer-events: auto;
 }
+
 .kn-carousel-progress {
     display: flex;
     align-items: center;
     gap: 12px;
 }
+
 .kn-dots-track {
     display: flex;
     align-items: center;
     gap: 8px;
 }
+
 .kn-dot-btn {
     height: 8px;
     width: 8px;
     border-radius: 50%;
-    background: #bcdbdc;
+    background: rgba(255, 255, 255, 0.35);
     border: none;
     cursor: pointer;
     padding: 0;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .kn-dot-btn.active {
-    width: 26px;
+    width: 28px;
     border-radius: 8px;
-    background: var(--brand-teal);
+    background: #2dd4bf;
+    box-shadow: 0 0 10px rgba(45, 212, 191, 0.6);
 }
+
 .kn-counter-text {
-    font-size: 12.5px;
+    font-size: 13px;
     font-weight: 800;
-    color: var(--brand-teal);
-    letter-spacing: 0.05em;
+    color: #e2f1f0;
+    letter-spacing: 0.06em;
 }
 
 .kn-carousel-arrows {
@@ -638,27 +697,30 @@ a {
     align-items: center;
     gap: 10px;
 }
+
 .kn-arrow-btn {
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: #ffffff;
-    border: 1.5px solid #d0e4e5;
-    color: var(--brand-teal);
+    background: rgba(8, 28, 36, 0.6);
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 14px;
     cursor: pointer;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+    backdrop-filter: blur(6px);
     transition: all 0.2s ease;
 }
+
 .kn-arrow-btn:hover {
     background: var(--brand-teal);
     border-color: var(--brand-teal);
     color: #ffffff;
     transform: translateY(-1px);
 }
+
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    3. FLOATING SEARCH CARD & STATS ROW
@@ -1817,12 +1879,18 @@ a {
     .kn-mobile-toggle {
         display: block;
     }
-    .kn-hero-slide {
-        grid-template-columns: 1fr;
-        gap: 32px;
+    .kn-hero-carousel-container {
+        height: auto;
+        min-height: 500px;
     }
-    .kn-hero-content {
-        padding-right: 0;
+    .kn-hero-bg-overlay {
+        background: linear-gradient(180deg, rgba(8, 28, 36, 0.85) 0%, rgba(8, 28, 36, 0.94) 100%);
+    }
+    .kn-hero-content-wrap {
+        padding: 35px 0 65px;
+    }
+    .kn-hero-nav-arrow {
+        display: none;
     }
     .kn-search-form {
         grid-template-columns: 1fr 1fr;
@@ -2004,177 +2072,206 @@ a {
     </div>
 
     {{-- ══════════════════════════════════════════════════
-         2. HERO SECTION CAROUSEL (3 SLIDES)
+         2. FULL PAGE HERO SECTION SLIDER (CAROUSEL)
     ══════════════════════════════════════════════════ --}}
-    <section class="kn-hero-wrapper">
-        <div class="kn-container">
+    <section class="kn-hero-wrapper" aria-label="PhysioPii Hero Banner Slider">
 
-            <div class="kn-hero-carousel-container" id="knHeroCarousel">
+        <div class="kn-hero-carousel-container" id="knHeroCarousel">
 
-                {{-- SLIDE 1: Live pain-free, live better --}}
+            @php
+                $activeBanners = isset($banners) && $banners->count() > 0 ? $banners : null;
+            @endphp
+
+            @if($activeBanners)
+                {{-- DYNAMIC ADMIN UPLOADED BANNERS --}}
+                @foreach($activeBanners as $index => $banner)
+                    <div class="kn-hero-slide {{ $index === 0 ? 'active' : '' }}" data-slide-index="{{ $index }}">
+                        {{-- Full-width Background Image & Gradient Layer --}}
+                        <div class="kn-hero-bg-layer">
+                            <img src="{{ $banner->image_url }}" alt="{{ $banner->title ?: 'PhysioPii Healthcare Banner' }}" class="kn-hero-bg-img">
+                            <div class="kn-hero-bg-overlay"></div>
+                        </div>
+
+                        {{-- Slide Content Overlay --}}
+                        <div class="kn-hero-inner-container">
+                            <div class="kn-hero-content-wrap">
+                                @if(!empty($banner->time))
+                                    <div class="kn-hero-time-badge">
+                                        <i class="fa-regular fa-clock"></i> {{ $banner->time }}
+                                    </div>
+                                @else
+                                    <div class="kn-hero-time-badge">
+                                        <span class="kn-time-dot"></span> Live pain-free, live better
+                                    </div>
+                                @endif
+
+                                @if(!empty($banner->title))
+                                    <h1 class="kn-hero-heading">
+                                        {{ $banner->title }}
+                                    </h1>
+                                @endif
+
+                                @if(!empty($banner->description))
+                                    <p class="kn-hero-desc">
+                                        {{ $banner->description }}
+                                    </p>
+                                @endif
+
+                                <div class="kn-hero-actions">
+                                    <a href="{{ $banner->button_link ?: '#search-bar' }}" class="kn-btn-primary">
+                                        {{ $banner->button_text ?: 'Book Appointment' }} <i class="fa-solid fa-arrow-right" style="font-size: 13px;"></i>
+                                    </a>
+                                    <a href="{{ $banner->button_link_2 ?: '#specialists' }}" class="kn-btn-secondary kn-btn-white-glass">
+                                        {{ $banner->button_text_2 ?: 'Find Physiotherapist' }} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 13px;"></i>
+                                    </a>
+                                </div>
+
+                                <div class="kn-hero-guarantee">
+                                    <i class="fa-regular fa-circle-check"></i>
+                                    <span>Verified experts · No booking fees · Home &amp; Clinic care</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+
+            @else
+                {{-- DEFAULT CURATED FALLBACK SLIDES --}}
+                {{-- Slide 1 --}}
                 <div class="kn-hero-slide active" data-slide-index="0">
-                    <div class="kn-hero-content">
-                        <div class="kn-eyebrow">
-                            <span class="kn-eyebrow-dot"></span> Live pain-free, live better
-                        </div>
-                        <h1 class="kn-hero-heading">
-                            Your next chapter starts with better movement.
-                        </h1>
-                        <p class="kn-hero-desc">
-                            Find verified physiotherapists for home visits, in-clinic and online sessions. Personalised care, zero guesswork, recovery that actually lasts.
-                        </p>
-                        <div class="kn-hero-actions">
-                            <a href="#specialists" class="kn-btn-primary">
-                                Find Physiotherapist <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 13px;"></i>
-                            </a>
-                            <a href="#search-bar" class="kn-btn-secondary">
-                                Book Appointment
-                            </a>
-                        </div>
-                        <div class="kn-hero-guarantee">
-                            <i class="fa-regular fa-circle-check"></i>
-                            <span>Verified experts · No booking fees · Your care, your choice</span>
-                        </div>
+                    <div class="kn-hero-bg-layer">
+                        <img src="{{ asset('assets/img/hero/hero-1.jpg') }}" alt="Physiotherapist guiding patient arm recovery" class="kn-hero-bg-img">
+                        <div class="kn-hero-bg-overlay"></div>
                     </div>
-
-                    <div class="kn-hero-visual">
-                        <div class="kn-floating-top-badge">
-                            <i class="fa-regular fa-heart"></i> Top rated care
-                        </div>
-                        <div class="kn-hero-image-box">
-                            <img src="{{ asset('assets/img/hero/hero-1.jpg') }}" alt="Physiotherapist guiding patient arm recovery">
-                        </div>
-                        <div class="kn-hero-stats-card">
-                            <div class="kn-hero-stats-left">
-                                <h5>Recovery built around your goals</h5>
-                                <p>Real people. Expert hands.</p>
+                    <div class="kn-hero-inner-container">
+                        <div class="kn-hero-content-wrap">
+                            <div class="kn-hero-time-badge">
+                                <span class="kn-time-dot"></span> Live pain-free, live better
                             </div>
-                            <div class="kn-hero-stats-right">
-                                <div class="kn-hero-stats-num">
-                                    <span>4.9</span> <i class="fa-solid fa-star" style="color: #f59e0b; font-size: 14px;"></i>
-                                </div>
-                                <div class="kn-hero-stats-sub">20k+ reviews</div>
+                            <h1 class="kn-hero-heading">
+                                Your next chapter starts with better movement.
+                            </h1>
+                            <p class="kn-hero-desc">
+                                Find verified physiotherapists for home visits, in-clinic and online sessions. Personalised care, zero guesswork, recovery that actually lasts.
+                            </p>
+                            <div class="kn-hero-actions">
+                                <a href="#specialists" class="kn-btn-primary">
+                                    Find Physiotherapist <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 13px;"></i>
+                                </a>
+                                <a href="#search-bar" class="kn-btn-secondary kn-btn-white-glass">
+                                    Book Appointment
+                                </a>
+                            </div>
+                            <div class="kn-hero-guarantee">
+                                <i class="fa-regular fa-circle-check"></i>
+                                <span>Verified experts · No booking fees · Your care, your choice</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- SLIDE 2: Get back to what you love --}}
+                {{-- Slide 2 --}}
                 <div class="kn-hero-slide" data-slide-index="1">
-                    <div class="kn-hero-content">
-                        <div class="kn-eyebrow">
-                            <span class="kn-eyebrow-dot"></span> Get back to what you love
-                        </div>
-                        <h2 class="kn-hero-heading">
-                            A stronger comeback. One step at a time.
-                        </h2>
-                        <p class="kn-hero-desc">
-                            From your first pain-free walk to your next finish line, connect with sports and orthopedic specialists who put your goals first.
-                        </p>
-                        <div class="kn-hero-actions">
-                            <a href="#specialists" class="kn-btn-primary">
-                                Find Physiotherapist <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 13px;"></i>
-                            </a>
-                            <a href="#search-bar" class="kn-btn-secondary">
-                                Book Appointment
-                            </a>
-                        </div>
-                        <div class="kn-hero-guarantee">
-                            <i class="fa-regular fa-circle-check"></i>
-                            <span>Verified experts · No booking fees · Your care, your choice</span>
-                        </div>
+                    <div class="kn-hero-bg-layer">
+                        <img src="{{ asset('assets/img/hero/hero-2.jpg') }}" alt="Athletic rehabilitation resistance training" class="kn-hero-bg-img">
+                        <div class="kn-hero-bg-overlay"></div>
                     </div>
-
-                    <div class="kn-hero-visual">
-                        <div class="kn-floating-top-badge">
-                            <i class="fa-regular fa-heart"></i> Made for your comeback
-                        </div>
-                        <div class="kn-hero-image-box">
-                            <img src="{{ asset('assets/img/hero/hero-2.jpg') }}" alt="Athletic rehabilitation resistance training">
-                        </div>
-                        <div class="kn-hero-stats-card">
-                            <div class="kn-hero-stats-left">
-                                <h5>Recovery built around your goals</h5>
-                                <p>Real people. Expert hands.</p>
+                    <div class="kn-hero-inner-container">
+                        <div class="kn-hero-content-wrap">
+                            <div class="kn-hero-time-badge">
+                                <i class="fa-regular fa-clock"></i> Available 24/7 · Doorstep &amp; Clinic
                             </div>
-                            <div class="kn-hero-stats-right">
-                                <div class="kn-hero-stats-num">
-                                    <span>500+</span>
-                                </div>
-                                <div class="kn-hero-stats-sub">verified specialists</div>
+                            <h2 class="kn-hero-heading">
+                                A stronger comeback. One step at a time.
+                            </h2>
+                            <p class="kn-hero-desc">
+                                From your first pain-free walk to your next finish line, connect with sports and orthopedic specialists who put your goals first.
+                            </p>
+                            <div class="kn-hero-actions">
+                                <a href="#specialists" class="kn-btn-primary">
+                                    Find Physiotherapist <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 13px;"></i>
+                                </a>
+                                <a href="#search-bar" class="kn-btn-secondary kn-btn-white-glass">
+                                    Book Appointment
+                                </a>
+                            </div>
+                            <div class="kn-hero-guarantee">
+                                <i class="fa-regular fa-circle-check"></i>
+                                <span>Verified experts · No booking fees · Your care, your choice</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- SLIDE 3: Expert care, wherever you are --}}
+                {{-- Slide 3 --}}
                 <div class="kn-hero-slide" data-slide-index="2">
-                    <div class="kn-hero-content">
-                        <div class="kn-eyebrow">
-                            <span class="kn-eyebrow-dot"></span> Expert care, wherever you are
-                        </div>
-                        <h2 class="kn-hero-heading">
-                            Feel better. Without going out of your way.
-                        </h2>
-                        <p class="kn-hero-desc">
-                            Choose in-clinic or online physiotherapy that fits your life. Book a verified specialist and start your personalised recovery from home.
-                        </p>
-                        <div class="kn-hero-actions">
-                            <a href="#search-bar" class="kn-btn-primary">
-                                Book Appointment <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 13px;"></i>
-                            </a>
-                            <a href="#specialists" class="kn-btn-secondary">
-                                Find Physiotherapist
-                            </a>
-                        </div>
-                        <div class="kn-hero-guarantee">
-                            <i class="fa-regular fa-circle-check"></i>
-                            <span>Verified experts · No booking fees · Your care, your choice</span>
-                        </div>
+                    <div class="kn-hero-bg-layer">
+                        <img src="{{ asset('assets/img/hero/hero-3.jpg') }}" alt="Home virtual video physiotherapy session" class="kn-hero-bg-img">
+                        <div class="kn-hero-bg-overlay"></div>
                     </div>
-
-                    <div class="kn-hero-visual">
-                        <div class="kn-floating-top-badge">
-                            <i class="fa-regular fa-heart"></i> Care that fits your life
-                        </div>
-                        <div class="kn-hero-image-box">
-                            <img src="{{ asset('assets/img/hero/hero-3.jpg') }}" alt="Home virtual video physiotherapy session">
-                        </div>
-                        <div class="kn-hero-stats-card">
-                            <div class="kn-hero-stats-left">
-                                <h5>Personalised support, at home</h5>
-                                <p>Real people. Expert hands.</p>
+                    <div class="kn-hero-inner-container">
+                        <div class="kn-hero-content-wrap">
+                            <div class="kn-hero-time-badge">
+                                <i class="fa-regular fa-clock"></i> Easy Online &amp; Doorstep Booking
                             </div>
-                            <div class="kn-hero-stats-right">
-                                <div class="kn-hero-stats-num">
-                                    <span>24/7</span>
-                                </div>
-                                <div class="kn-hero-stats-sub">easy online booking</div>
+                            <h2 class="kn-hero-heading">
+                                Feel better. Without going out of your way.
+                            </h2>
+                            <p class="kn-hero-desc">
+                                Choose in-clinic or online physiotherapy that fits your life. Book a verified specialist and start your personalised recovery from home.
+                            </p>
+                            <div class="kn-hero-actions">
+                                <a href="#search-bar" class="kn-btn-primary">
+                                    Book Appointment <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 13px;"></i>
+                                </a>
+                                <a href="#specialists" class="kn-btn-secondary kn-btn-white-glass">
+                                    Find Physiotherapist
+                                </a>
+                            </div>
+                            <div class="kn-hero-guarantee">
+                                <i class="fa-regular fa-circle-check"></i>
+                                <span>Verified experts · No booking fees · Your care, your choice</span>
                             </div>
                         </div>
                     </div>
                 </div>
+            @endif
 
-            </div>
+            {{-- Floating Prev / Next Navigation Arrows on Slider Edges --}}
+            <button class="kn-hero-nav-arrow prev" id="knFloatPrevBtn" aria-label="Previous slide">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button class="kn-hero-nav-arrow next" id="knFloatNextBtn" aria-label="Next slide">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
 
-            {{-- Hero Slider Navigation Controls --}}
-            <div class="kn-hero-controls">
-                <div class="kn-carousel-progress">
-                    <div class="kn-dots-track">
-                        <button class="kn-dot-btn active" data-slide-to="0" aria-label="Slide 1"></button>
-                        <button class="kn-dot-btn" data-slide-to="1" aria-label="Slide 2"></button>
-                        <button class="kn-dot-btn" data-slide-to="2" aria-label="Slide 3"></button>
+            {{-- Hero Slider Bottom Controls Bar --}}
+            <div class="kn-hero-controls-bar">
+                <div class="kn-hero-inner-container">
+                    <div class="kn-hero-controls-inner">
+                        <div class="kn-carousel-progress">
+                            <div class="kn-dots-track" id="knHeroDotsTrack">
+                                @php
+                                    $slideCount = $activeBanners ? $activeBanners->count() : 3;
+                                @endphp
+                                @for($i = 0; $i < $slideCount; $i++)
+                                    <button class="kn-dot-btn {{ $i === 0 ? 'active' : '' }}" data-slide-to="{{ $i }}" aria-label="Slide {{ $i + 1 }}"></button>
+                                @endfor
+                            </div>
+                            <div class="kn-counter-text" id="knSlideCounter">
+                                01 / {{ $slideCount < 10 ? '0' . $slideCount : $slideCount }}
+                            </div>
+                        </div>
+
+                        <div class="kn-carousel-arrows">
+                            <button class="kn-arrow-btn" id="knPrevBtn" aria-label="Previous slide">
+                                <i class="fa-solid fa-arrow-left"></i>
+                            </button>
+                            <button class="kn-arrow-btn" id="knNextBtn" aria-label="Next slide">
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="kn-counter-text" id="knSlideCounter">01 / 03</div>
-                </div>
-
-                <div class="kn-carousel-arrows">
-                    <button class="kn-arrow-btn" id="knPrevBtn" aria-label="Previous slide">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </button>
-                    <button class="kn-arrow-btn" id="knNextBtn" aria-label="Next slide">
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </button>
                 </div>
             </div>
 
@@ -3398,9 +3495,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        if (counterText) {
+        if (counterText && totalSlides > 0) {
             var num = currentSlide + 1;
-            counterText.textContent = (num < 10 ? '0' + num : num) + ' / 0' + totalSlides;
+            var totalStr = totalSlides < 10 ? '0' + totalSlides : totalSlides;
+            var currentStr = num < 10 ? '0' + num : num;
+            counterText.textContent = currentStr + ' / ' + totalStr;
         }
     }
 
@@ -3414,7 +3513,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function startAutoSlide() {
         stopAutoSlide();
-        slideInterval = setInterval(nextSlide, 6000);
+        if (totalSlides > 1) {
+            slideInterval = setInterval(nextSlide, 6000);
+        }
     }
 
     function stopAutoSlide() {
@@ -3433,6 +3534,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (prevBtn) {
         prevBtn.addEventListener('click', function () {
+            prevSlide();
+            startAutoSlide();
+        });
+    }
+
+    var floatPrevBtn = document.getElementById('knFloatPrevBtn');
+    var floatNextBtn = document.getElementById('knFloatNextBtn');
+
+    if (floatNextBtn) {
+        floatNextBtn.addEventListener('click', function () {
+            nextSlide();
+            startAutoSlide();
+        });
+    }
+
+    if (floatPrevBtn) {
+        floatPrevBtn.addEventListener('click', function () {
             prevSlide();
             startAutoSlide();
         });

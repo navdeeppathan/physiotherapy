@@ -22,6 +22,7 @@ use App\Http\Controllers\EnquiryController;
 use App\Http\Controllers\Admin\AdminAssessmentController;
 use App\Http\Controllers\Admin\AdminParameterController;
 use App\Http\Controllers\Admin\AdminPatientDocumentController;
+use App\Http\Controllers\Admin\AdminBannerController;
 
 Route::get('/sitemap.xml', function () {
     try {
@@ -220,6 +221,13 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
     Route::post('/specializations', [SpecializationController::class, 'store'])->name('specializations.store');
     Route::put('/specializations/{id}', [SpecializationController::class, 'update'])->name('specializations.update');
     Route::delete('/specializations/{id}', [SpecializationController::class, 'destroy'])->name('specializations.destroy');
+
+    // ── Hero Banners (Full Page Homepage Slider) ───────────────
+    Route::get('/banners', [AdminBannerController::class, 'index'])->name('banners.index');
+    Route::post('/banners', [AdminBannerController::class, 'store'])->name('banners.store');
+    Route::put('/banners/{id}', [AdminBannerController::class, 'update'])->name('banners.update');
+    Route::get('/banners/{id}/toggle', [AdminBannerController::class, 'toggleStatus'])->name('banners.toggle');
+    Route::delete('/banners/{id}', [AdminBannerController::class, 'destroy'])->name('banners.destroy');
 
     Route::post('/fees/store', [AppointmentFeeController::class, 'store'])->name('fees.store');
     Route::get('/fees/{doctor_id}', [AppointmentFeeController::class, 'getFee']);

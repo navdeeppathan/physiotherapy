@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\AdminParameterController;
 use App\Http\Controllers\Admin\AdminPatientDocumentController;
 use App\Http\Controllers\Admin\AdminBannerController;
 use App\Http\Controllers\Admin\AdminDoctorSlotController;
+use App\Http\Controllers\Admin\AdminReportController;
 
 Route::get('/sitemap.xml', function () {
     try {
@@ -279,6 +280,10 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
     Route::get('/patient-documents/{id}/download', [AdminPatientDocumentController::class, 'download'])->name('patient-documents.download');
     Route::get('/patient-documents/{id}/preview', [AdminPatientDocumentController::class, 'preview'])->name('patient-documents.preview');
     Route::delete('/patient-documents/{id}', [AdminPatientDocumentController::class, 'destroy'])->name('patient-documents.destroy');
+
+    // ── Platform Reports & Analytics ───────────────────────────
+    Route::get('/reports', [AdminReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/export', [AdminReportController::class, 'export'])->name('reports.export');
 
     // ── System Cache Clear (Views, Config, Cache, OPcache) ──
     Route::get('/clear-cache', function () {

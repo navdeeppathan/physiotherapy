@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\AdminAssessmentController;
 use App\Http\Controllers\Admin\AdminParameterController;
 use App\Http\Controllers\Admin\AdminPatientDocumentController;
 use App\Http\Controllers\Admin\AdminBannerController;
+use App\Http\Controllers\Admin\AdminDoctorSlotController;
 
 Route::get('/sitemap.xml', function () {
     try {
@@ -215,6 +216,15 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
 
     Route::get('doctors/{id}/payments', [DashboardController::class, 'appointments'])->name('doctors.payments');
     Route::post('doctors/{id}/pay', [DashboardController::class, 'pay'])->name('doctors.pay');
+
+    // ── Doctor Slots Management (Admin Help Doctor Create Slots) ──
+    Route::get('/doctors/{id}/slots', [AdminDoctorSlotController::class, 'index'])->name('doctors.slots');
+    Route::get('/doctors-slots', [AdminDoctorSlotController::class, 'index'])->name('doctors.slots.overview');
+    Route::post('/doctors/{id}/slots/store', [AdminDoctorSlotController::class, 'storeSingle'])->name('doctors.slots.store');
+    Route::post('/doctors/{id}/slots/bulk-generate', [AdminDoctorSlotController::class, 'bulkGenerate'])->name('doctors.slots.bulk-generate');
+    Route::post('/doctors/slots/{slotId}/toggle-booked', [AdminDoctorSlotController::class, 'toggleBooked'])->name('doctors.slots.toggle-booked');
+    Route::delete('/doctors/slots/{slotId}', [AdminDoctorSlotController::class, 'destroy'])->name('doctors.slots.destroy');
+    Route::delete('/doctors/{id}/slots/clear-date', [AdminDoctorSlotController::class, 'clearDate'])->name('doctors.slots.clear-date');
 
     Route::get('/appointments', [AppointmentController::class, 'adminIndex'])->name('appointments.index');
     Route::get('/specializations', [SpecializationController::class, 'index'])->name('specializations.index');

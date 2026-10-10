@@ -789,8 +789,8 @@
 
             <div class="nav-item">
                 <a href="{{ route('admin.users.doctorsindex') }}"
-                   data-tooltip="Users"
-                   class="nav-link {{ Request::is('admin/doctors*') ? 'active' : '' }}">
+                   data-tooltip="Doctors"
+                   class="nav-link {{ Request::is('admin/doctors') || Request::is('admin/doctors/create') || Request::is('admin/doctors/*/edit') || Request::is('admin/doctors/*/payments') || (Request::is('admin/doctors/*') && !Request::is('admin/doctors/*/slots*')) ? 'active' : '' }}">
                     <span class="nav-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -798,6 +798,20 @@
                         </svg>
                     </span>
                     <span class="nav-text">Doctors</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="{{ route('admin.doctors.slots.overview') }}"
+                   data-tooltip="Doctor Slots"
+                   class="nav-link {{ Request::is('admin/doctors/*/slots*') || Request::is('admin/doctors-slots*') ? 'active' : '' }}">
+                    <span class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </span>
+                    <span class="nav-text">Doctor Slots</span>
                 </a>
             </div>
 

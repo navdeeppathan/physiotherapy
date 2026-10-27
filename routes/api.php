@@ -25,12 +25,22 @@ use App\Http\Controllers\Api\PatientDocumentController;
 
 // Authentication
 Route::post('/login', [UserController::class, 'login']);
+Route::post('/doctor/login', [UserController::class, 'login']);
+Route::post('/doctor-login', [UserController::class, 'login']);
 Route::post('/login-patient', [UserController::class, 'loginPatient']);
 Route::post('/verify-otp', [UserController::class, 'verifyOtp']);
 Route::post('/register-patient', [UserController::class, 'registerPatient']);
 Route::post('/register-doctor', [UserController::class, 'registerDoctor']);
 Route::post('/doctor/register', [UserController::class, 'registerDoctor']);
 Route::post('/doctor-register', [UserController::class, 'registerDoctor']);
+
+// Doctor Forgot & Reset Password
+Route::post('/doctor/forgot-password', [UserController::class, 'doctorForgotPassword']);
+Route::post('/doctor/verify-forgot-otp', [UserController::class, 'doctorVerifyForgotOtp']);
+Route::post('/doctor/reset-password', [UserController::class, 'doctorResetPassword']);
+Route::post('/forgot-password', [UserController::class, 'doctorForgotPassword']);
+Route::post('/verify-forgot-otp', [UserController::class, 'doctorVerifyForgotOtp']);
+Route::post('/reset-password', [UserController::class, 'doctorResetPassword']);
 
 // Patient Enquiry API
 Route::post('/enquiry', [EnquiryController::class, 'store']);

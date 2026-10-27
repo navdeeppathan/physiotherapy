@@ -280,6 +280,37 @@ class UserController extends BaseApiController
                 ], 403);
             }
 
+            // ✅ Password Login: If password is provided in login request, verify directly
+            if ($request->filled('password')) {
+                if ($user->status !== 'active') {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Your doctor account is currently inactive.'
+                    ], 403);
+                }
+
+                if (!Hash::check($request->password, $user->password)) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Invalid password'
+                    ], 401);
+                }
+
+                // Generate Token
+                $token = Str::random(60);
+                $user->api_token = hash('sha256', $token);
+                $user->save();
+
+                return response()->json([
+                    'status'     => true,
+                    'message'    => 'Login successful',
+                    'token'      => $token,
+                    'token_type' => 'Bearer',
+                    'role'       => $user->role,
+                    'data'       => $user
+                ], 200);
+            }
+
             // ✅ Generate OTP: Static 123456 for chauhanronak40@gmail.com only, random for all others
             if ($inputEmail === 'chauhanronak40@gmail.com') {
                 $otp = 123456;
@@ -1251,6 +1282,320 @@ class UserController extends BaseApiController
 
             return response()->json([
                 'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Helper to find a doctor by email, phone, or identity input
+     */
+    protected function findDoctorByIdentity(Request $request): ?User
+    {
+        $input = trim((string) ($request->input('email') ?? $request->input('phone') ?? $request->input('identity') ?? $request->input('username') ?? ''));
+        if (empty($input)) {
+            return null;
+        }
+
+        $user = null;
+        if (str_contains($input, '@')) {
+            $user = User::findByEmail($input);
+        } else {
+            $user = User::findByPhone($input);
+            if (!$user) {
+                $user = User::findByEmail($input);
+            }
+        }
+
+        return $user;
+    }
+
+    /**
+     * Request OTP to reset forgotten password for Doctor
+     * Route: POST /api/doctor/forgot-password, /api/forgot-password
+     */
+    public function doctorForgotPassword(Request $request)
+    {
+        try {
+            if (!$request->has('email') && !$request->has('phone') && !$request->has('identity')) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Please provide your registered email address or mobile number.'
+                ], 422);
+            }
+
+            $user = $this->findDoctorByIdentity($request);
+
+            if (!$user) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'No account found with the provided email or mobile number.'
+                ], 404);
+            }
+
+            // Role check: Only doctors allowed
+            if ($user->role !== 'doctor') {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'This account is registered as a ' . ucfirst($user->role) . ' account, not a Doctor account. Please use the appropriate portal.',
+                    'role'    => $user->role
+                ], 403);
+            }
+
+            // Status check
+            if ($user->status !== 'active') {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Your doctor account is currently inactive. Please contact administrator.'
+                ], 403);
+            }
+
+            // Generate 6-digit OTP
+            if ($user->email === 'chauhanronak40@gmail.com') {
+                $otp = 123456;
+            } else {
+                $otp = rand(100000, 999999);
+            }
+
+            $user->otp = $otp;
+            $user->otp_expires_at = Carbon::now()->addMinutes(15);
+            $user->save();
+
+            // Send Email notification
+            if (!empty($user->email)) {
+                try {
+                    $docName = $user->name ?? 'Doctor';
+                    Mail::send([], [], function ($message) use ($user, $otp, $docName) {
+                        $message->to($user->email)
+                                ->subject('Password Reset OTP - Physiotherapy Doctor Portal')
+                                ->html("
+                                    <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #E2E8F0; border-radius: 12px; background: #ffffff;'>
+                                        <h2 style='color: #2563EB; margin-top: 0;'>Password Reset Request</h2>
+                                        <p style='color: #334155; font-size: 14px;'>Hello <strong>Dr. {$docName}</strong>,</p>
+                                        <p style='color: #475569; font-size: 14px;'>We received a request to reset your password for the <strong>Physiotherapy Doctor Portal</strong>.</p>
+                                        <div style='background: #F8FAFC; border: 1.5px dashed #2563EB; border-radius: 10px; padding: 18px; text-align: center; margin: 24px 0;'>
+                                            <div style='font-size: 12px; color: #64748B; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-bottom: 6px;'>Your Verification OTP</div>
+                                            <span style='font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #0F172A;'>{$otp}</span>
+                                        </div>
+                                        <p style='color: #64748B; font-size: 13px;'>This OTP is valid for <strong>15 minutes</strong>. Do not share this OTP with anyone.</p>
+                                        <p style='color: #94A3B8; font-size: 12px;'>If you did not request this password reset, please ignore this email or contact support.</p>
+                                        <hr style='border: none; border-top: 1px solid #E2E8F0; margin: 20px 0;'>
+                                        <p style='color: #94A3B8; font-size: 11px; margin: 0;'>Physiotherapy Medical &amp; Healthcare Platform</p>
+                                    </div>
+                                ");
+                    });
+                } catch (\Throwable $mailEx) {
+                    \Log::warning("Failed to send doctor forgot-password OTP email to {$user->email}: " . $mailEx->getMessage());
+                }
+            }
+
+            $maskedEmail = preg_replace('/(?<=.{2}).(?=.*@)/u', '*', (string)$user->email);
+
+            $response = [
+                'status'  => true,
+                'message' => 'Password reset OTP has been sent successfully to your registered email.',
+                'data'    => [
+                    'doctor_id'      => $user->id,
+                    'email'          => $user->email,
+                    'masked_email'   => $maskedEmail,
+                    'phone'          => $user->phone,
+                    'otp_expires_in' => '15 minutes'
+                ]
+            ];
+
+            // If debug enabled or test account, include OTP for testing convenience
+            if (config('app.debug') || $user->email === 'chauhanronak40@gmail.com') {
+                $response['data']['debug_otp'] = $otp;
+            }
+
+            return response()->json($response, 200);
+
+        } catch (Exception $e) {
+            $this->logException($e, 'Doctor Forgot Password Error');
+            return response()->json([
+                'status'  => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Verify OTP for Doctor Password Reset
+     * Route: POST /api/doctor/verify-forgot-otp, /api/verify-forgot-otp
+     */
+    public function doctorVerifyForgotOtp(Request $request)
+    {
+        try {
+            $request->validate([
+                'otp' => 'required'
+            ]);
+
+            $user = $this->findDoctorByIdentity($request);
+
+            if (!$user) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'No account found with the provided email or mobile number.'
+                ], 404);
+            }
+
+            if ($user->role !== 'doctor') {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'This account is not a Doctor account.'
+                ], 403);
+            }
+
+            $isStaticDoctor = ($user->email === 'chauhanronak40@gmail.com');
+
+            if ($isStaticDoctor && (string)$request->otp === '123456') {
+                // Static OTP verified
+            } elseif ((string)$user->otp !== (string)$request->otp) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Invalid OTP entered. Please try again.'
+                ], 400);
+            } elseif ($user->otp_expires_at && Carbon::now()->gt($user->otp_expires_at)) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'OTP has expired. Please request a new OTP.'
+                ], 400);
+            }
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'OTP verified successfully. You can now set your new password.',
+                'data'    => [
+                    'doctor_id' => $user->id,
+                    'email'     => $user->email,
+                    'verified'  => true
+                ]
+            ], 200);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'errors' => $e->errors()
+            ], 422);
+        } catch (Exception $e) {
+            $this->logException($e, 'Doctor Verify Forgot OTP Error');
+            return response()->json([
+                'status'  => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Reset Doctor Password using verified OTP
+     * Route: POST /api/doctor/reset-password, /api/reset-password
+     */
+    public function doctorResetPassword(Request $request)
+    {
+        try {
+            $passwordField = $request->has('new_password') ? 'new_password' : 'password';
+
+            $rules = [
+                'otp'          => 'required',
+                $passwordField => 'required|min:6',
+            ];
+
+            if ($request->has('password_confirmation') || $request->has('new_password_confirmation')) {
+                $rules[$passwordField] .= '|confirmed';
+            }
+
+            $request->validate($rules, [
+                "{$passwordField}.required"  => 'New password is required.',
+                "{$passwordField}.min"       => 'Password must be at least 6 characters.',
+                "{$passwordField}.confirmed" => 'Password confirmation does not match.',
+                'otp.required'               => 'OTP is required to reset password.'
+            ]);
+
+            $user = $this->findDoctorByIdentity($request);
+
+            if (!$user) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'No account found with the provided email or mobile number.'
+                ], 404);
+            }
+
+            if ($user->role !== 'doctor') {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'This account is not a Doctor account.'
+                ], 403);
+            }
+
+            $isStaticDoctor = ($user->email === 'chauhanronak40@gmail.com');
+
+            if ($isStaticDoctor && (string)$request->otp === '123456') {
+                // Static OTP verified
+            } elseif ((string)$user->otp !== (string)$request->otp) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Invalid OTP. Please check and try again.'
+                ], 400);
+            } elseif ($user->otp_expires_at && Carbon::now()->gt($user->otp_expires_at)) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'OTP has expired. Please request a new OTP.'
+                ], 400);
+            }
+
+            // Update password
+            $newPassword = $request->input($passwordField);
+            $user->password = Hash::make($newPassword);
+            $user->otp = null;
+            $user->otp_expires_at = null;
+
+            // Generate fresh api token
+            $token = Str::random(60);
+            $user->api_token = hash('sha256', $token);
+            $user->save();
+
+            // Send confirmation email
+            if (!empty($user->email)) {
+                try {
+                    $docName = $user->name ?? 'Doctor';
+                    Mail::send([], [], function ($message) use ($user, $docName) {
+                        $message->to($user->email)
+                                ->subject('Password Changed Successfully - Physiotherapy Doctor Portal')
+                                ->html("
+                                    <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #E2E8F0; border-radius: 12px; background: #ffffff;'>
+                                        <h2 style='color: #059669; margin-top: 0;'>Password Reset Successful</h2>
+                                        <p style='color: #334155; font-size: 14px;'>Hello <strong>Dr. {$docName}</strong>,</p>
+                                        <p style='color: #475569; font-size: 14px;'>Your password for the <strong>Physiotherapy Doctor Portal</strong> was updated successfully.</p>
+                                        <p style='color: #475569; font-size: 14px;'>You can now log in using your new password.</p>
+                                        <p style='color: #DC2626; font-size: 12px;'>If you did not perform this action, please contact platform administration immediately.</p>
+                                        <hr style='border: none; border-top: 1px solid #E2E8F0; margin: 20px 0;'>
+                                        <p style='color: #94A3B8; font-size: 11px; margin: 0;'>Physiotherapy Medical &amp; Healthcare Platform</p>
+                                    </div>
+                                ");
+                    });
+                } catch (\Throwable $mailEx) {
+                    \Log::warning("Failed to send doctor password reset confirmation email: " . $mailEx->getMessage());
+                }
+            }
+
+            return response()->json([
+                'status'     => true,
+                'message'    => 'Password has been reset successfully. You can now log in with your new password.',
+                'token'      => $token,
+                'token_type' => 'Bearer',
+                'role'       => $user->role,
+                'data'       => $user
+            ], 200);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'errors' => $e->errors()
+            ], 422);
+        } catch (Exception $e) {
+            $this->logException($e, 'Doctor Reset Password Error');
+            return response()->json([
+                'status'  => false,
                 'message' => $e->getMessage()
             ], 500);
         }

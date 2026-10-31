@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\AdminPatientDocumentController;
 use App\Http\Controllers\Admin\AdminBannerController;
 use App\Http\Controllers\Admin\AdminDoctorSlotController;
 use App\Http\Controllers\Admin\AdminReportController;
+use App\Http\Controllers\PincodeController;
 
 Route::get('/sitemap.xml', function () {
     try {
@@ -164,6 +165,7 @@ Route::post('/enquiry', [EnquiryController::class, 'store'])->name('enquiry.stor
 Route::get('/search-doctors', [HomeController::class, 'searchDoctors'])->name('search.doctors');
 Route::get('/doctor/{id}', [HomeController::class, 'doctorProfile'])->name('doctor.profile');
 Route::get('/search', [HomeController::class, 'index'])->name('search');
+Route::get('/pincode/{pincode}', [PincodeController::class, 'lookup'])->name('public.pincode.lookup');
 
 Route::get('/patient-dashboard', [PatientController::class, 'index'])->name('patient.dashboard');
 Route::get('/patient-profile', [PatientController::class, 'profile'])->name('patient.profile');
@@ -284,6 +286,9 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
     // ── Platform Reports & Analytics ───────────────────────────
     Route::get('/reports', [AdminReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export', [AdminReportController::class, 'export'])->name('reports.export');
+
+    // ── Postal PIN Code Lookup (City & State Auto-detect) ──────
+    Route::get('/pincode/{pincode}', [PincodeController::class, 'lookup'])->name('pincode.lookup');
 
     // ── System Cache Clear (Views, Config, Cache, OPcache) ──
     Route::get('/clear-cache', function () {

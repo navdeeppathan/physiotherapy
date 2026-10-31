@@ -744,6 +744,10 @@ class UserController extends BaseApiController
 
                 'experience' => 'nullable|string',
                 'clinic_address' => 'nullable|string',
+                'address' => 'nullable|string',
+                'city' => 'nullable|string|max:100',
+                'state' => 'nullable|string|max:100',
+                'pincode' => 'nullable|string|max:20',
                 'home_visit_available' => 'nullable|boolean',
                 'clinic_visit_available' => 'nullable|boolean',
 
@@ -852,7 +856,10 @@ class UserController extends BaseApiController
                 'gender' => $request->gender,
 
                 'profile_img' => $profileImagePath,
-                'address' => $request->clinic_address,
+                'address' => $request->clinic_address ?? $request->address,
+                'city' => $request->city,
+                'state' => $request->state,
+                'pincode' => $request->pincode,
 
                 'default_available_days' =>
                     $request->default_available_days
@@ -871,7 +878,10 @@ class UserController extends BaseApiController
                 'specialization_id'       => $request->specialization ?? '1',
                 'qualification'          => $request->qualification ?? 'BPT',
                 'experience_years'       => $request->experience,
-                'clinic_address'         => $request->clinic_address,
+                'clinic_address'         => $request->clinic_address ?? $request->address,
+                'city'                   => $request->city,
+                'state'                  => $request->state,
+                'pincode'                => $request->pincode,
 
                 'home_visit_available'   => $request->boolean('home_visit_available'),
                 'clinic_visit_available' => $request->boolean('clinic_visit_available'),
@@ -950,6 +960,10 @@ class UserController extends BaseApiController
                 // Doctor fields
                 'experience' => 'nullable|string',
                 'clinic_address' => 'nullable|string',
+                'address' => 'nullable|string',
+                'city' => 'nullable|string|max:100',
+                'state' => 'nullable|string|max:100',
+                'pincode' => 'nullable|string|max:20',
                 'home_visit_available' => 'nullable|boolean',
                 'clinic_visit_available' => 'nullable|boolean',
 
@@ -1045,6 +1059,10 @@ class UserController extends BaseApiController
                 'experience_years' => 'nullable|integer|min:0',
                 
                 'clinic_address'   => 'nullable|string',
+                'address'          => 'nullable|string',
+                'city'             => 'nullable|string|max:100',
+                'state'            => 'nullable|string|max:100',
+                'pincode'          => 'nullable|string|max:20',
                 'bio'              => 'nullable|string',
                 'career_path'      => 'nullable|string',
                 'highlights'       => 'nullable|string',
@@ -1106,6 +1124,8 @@ class UserController extends BaseApiController
                 );
             }
 
+            $effectiveAddress = $request->clinic_address ?? $request->address ?? $user->address;
+
             // Update User
             $user->update([
                 'role' => $request->role,
@@ -1114,7 +1134,10 @@ class UserController extends BaseApiController
                 'dob' => $request->dob,
                 'gender' => $request->gender,
                 'profile_img' => $profileImagePath,
-                'address' => $request->clinic_address,
+                'address' => $effectiveAddress,
+                'city' => $request->city ?? $user->city,
+                'state' => $request->state ?? $user->state,
+                'pincode' => $request->pincode ?? $user->pincode,
                 'default_available_days' => $request->default_available_days ?? $user->default_available_days,
                 'default_start_time' => $startTime,
                 'default_end_time' => $endTime,
@@ -1131,7 +1154,10 @@ class UserController extends BaseApiController
                         'specialization'   => $request->specialization,
                         'experience_years' => $request->experience_years,
                     
-                        'clinic_address'   => $request->clinic_address,
+                        'clinic_address'   => $effectiveAddress,
+                        'city'             => $request->city ?? $doctorProfile->city ?? $user->city,
+                        'state'            => $request->state ?? $doctorProfile->state ?? $user->state,
+                        'pincode'          => $request->pincode ?? $doctorProfile->pincode ?? $user->pincode,
                         'bio'              => $request->bio,
                         'career_path'      => $request->career_path,
                         'highlights'       => $request->highlights,

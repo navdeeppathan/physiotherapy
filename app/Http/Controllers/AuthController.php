@@ -91,6 +91,9 @@ class AuthController extends Controller
             'password' => 'required|min:6',
         ]);
 
+        $personalAddress = $request->address ?? $request->clinic_address;
+        $clinicAddress   = $request->clinic_address ?? $request->address;
+
         $doctor = User::create([
             'role'     => 'doctor',
             'name'     => $request->name,
@@ -105,7 +108,7 @@ class AuthController extends Controller
             'default_end_time'   => $request->default_end_time,
             'default_available_days' => json_encode($request->available_days ?? []),
 
-            'address' => $request->address,
+            'address' => $personalAddress,
             'city'    => $request->city,
             'state'   => $request->state,
             'pincode' => $request->pincode,
@@ -133,7 +136,10 @@ class AuthController extends Controller
             'bio'                    => $request->bio,
             'career_path'            => $request->career_path,
             'highlights'             => $request->highlights,
-            'clinic_address'         => $request->clinic_address,
+            'clinic_address'         => $clinicAddress,
+            'city'                   => $request->city,
+            'state'                  => $request->state,
+            'pincode'                => $request->pincode,
             'home_visit_available'   => $request->home_visit_available ?? 0,
             'clinic_visit_available' => $request->clinic_visit_available ?? 0,
         ]);
@@ -194,6 +200,9 @@ class AuthController extends Controller
             'phone'=>'required|unique:users,phone,'.$doctor->id,
         ]);
 
+        $personalAddress = $request->address ?? $request->clinic_address;
+        $clinicAddress   = $request->clinic_address ?? $request->address;
+
         $doctor->update([
 
             'name'=>$request->name,
@@ -208,7 +217,7 @@ class AuthController extends Controller
 
             'default_available_days'=>json_encode($request->available_days),
 
-            'address'=>$request->address,
+            'address'=>$personalAddress,
             'city'=>$request->city,
             'state'=>$request->state,
             'pincode'=>$request->pincode,
@@ -253,7 +262,10 @@ class AuthController extends Controller
                 'bio'                    => $request->bio,
                 'career_path'            => $request->career_path,
                 'highlights'             => $request->highlights,
-                'clinic_address'         => $request->clinic_address,
+                'clinic_address'         => $clinicAddress,
+                'city'                   => $request->city,
+                'state'                  => $request->state,
+                'pincode'                => $request->pincode,
                 'home_visit_available'   => $request->home_visit_available ?? 0,
                 'clinic_visit_available' => $request->clinic_visit_available ?? 0,
             ]

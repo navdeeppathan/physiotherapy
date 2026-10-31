@@ -505,49 +505,61 @@
                 </div>
             </div>
 
-            <!-- Address -->
+            <!-- Address & Location -->
             <div class="card">
                 <div class="card-head">
                     <div class="card-head-title">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
                         </svg>
-                        Address
+                        Address &amp; Location
                     </div>
+                    <span id="editPincodeBadge" style="display:none; font-size:11px; padding:3px 9px; border-radius:12px; font-weight:600;"></span>
                 </div>
                 <div class="card-body">
 
-                    <div class="form-group">
-                        <label class="form-label">Personal Address</label>
-                        <input type="text" name="address" class="form-control"
-                            value="{{ old('address', $doctor->address) }}">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                <label class="form-label" style="margin-bottom:0;">PINCODE (6 DIGITS) *</label>
+                                <span id="editPincodeLoader" style="display:none; font-size:11.5px; color:#2563EB; font-weight:600; align-items:center;">
+                                    <span class="spinner-border spinner-border-sm" style="width:11px; height:11px; border-width:1.5px; margin-right:4px;"></span> Fetching...
+                                </span>
+                            </div>
+                            <input type="text" name="pincode" id="edit_doctor_pincode" class="form-control"
+                                maxlength="6" placeholder="e.g. 110001, 302001"
+                                value="{{ old('pincode', $doctor->pincode ?? ($doctor->profile->pincode ?? '')) }}" autocomplete="postal-code">
+                            <div class="form-hint" id="editPincodeHelp">⚡ Enter 6-digit PIN to auto-detect City &amp; State via API.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">City / District *</label>
+                            <input type="text" name="city" id="edit_doctor_city" class="form-control"
+                                placeholder="Auto-filled via PIN code or enter manually"
+                                value="{{ old('city', $doctor->city ?? ($doctor->profile->city ?? '')) }}">
+                        </div>
                     </div>
 
                     <div class="form-grid">
                         <div class="form-group">
-                            <label class="form-label">City</label>
-                            <input type="text" name="city" class="form-control"
-                                value="{{ old('city', $doctor->city) }}">
+                            <label class="form-label">State *</label>
+                            <input type="text" name="state" id="edit_doctor_state" class="form-control"
+                                placeholder="Auto-filled via PIN code or enter manually"
+                                value="{{ old('state', $doctor->state ?? ($doctor->profile->state ?? '')) }}">
                         </div>
+
                         <div class="form-group">
-                            <label class="form-label">State</label>
-                            <input type="text" name="state" class="form-control"
-                                value="{{ old('state', $doctor->state) }}">
+                            <label class="form-label">Personal / Residential Address</label>
+                            <input type="text" name="address" class="form-control"
+                                placeholder="Doctor's personal residential address"
+                                value="{{ old('address', $doctor->address) }}">
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Pincode</label>
-                        <input type="text" name="pincode" class="form-control"
-                            value="{{ old('pincode', $doctor->pincode) }}">
-                    </div>
-
-                    <hr class="section-divider">
-
-                    <div class="form-group">
-                        <label class="form-label">Clinic Address</label>
-                        <input type="text" name="clinic_address" class="form-control"
-                            value="{{ old('clinic_address', $doctor->profile->clinic_address ?? '') }}">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label">Clinic / Hospital Address</label>
+                        <textarea name="clinic_address" id="edit_doctor_clinic_address" class="form-control"
+                            placeholder="Complete clinic or hospital street address, floor, landmark...">{{ old('clinic_address', $doctor->profile->clinic_address ?? '') }}</textarea>
                     </div>
 
                 </div>
@@ -657,6 +669,129 @@ document.addEventListener("DOMContentLoaded", function () {
         admFeeInput.addEventListener('input', updateFeePreview);
         feeTypeInput.addEventListener('change', updateFeePreview);
         updateFeePreview();
+    }
+
+    // Auto-detect City and State from 6-digit Pincode via Postal API
+    const pincodeInput = document.getElementById('edit_doctor_pincode');
+    const cityInput    = document.getElementById('edit_doctor_city');
+    const stateInput   = document.getElementById('edit_doctor_state');
+    const loader       = document.getElementById('editPincodeLoader');
+    const badge        = document.getElementById('editPincodeBadge');
+    const helpText     = document.getElementById('editPincodeHelp');
+
+    let lookupTimer = null;
+    let lastCheckedPin = '';
+
+    function applyLocation(city, state, pin) {
+        if (loader) loader.style.display = 'none';
+        if (cityInput && (!cityInput.value || cityInput.dataset.autofilled === 'true')) {
+            cityInput.value = city;
+            cityInput.dataset.autofilled = 'true';
+        }
+        if (stateInput && (!stateInput.value || stateInput.dataset.autofilled === 'true')) {
+            stateInput.value = state;
+            stateInput.dataset.autofilled = 'true';
+        }
+        if (badge) {
+            badge.textContent = `✓ Auto-filled: ${city}, ${state}`;
+            badge.style.background = '#ECFDF5';
+            badge.style.color = '#059669';
+            badge.style.border = '1px solid #A7F3D0';
+            badge.style.display = 'inline-block';
+        }
+        if (helpText) {
+            helpText.innerHTML = `✓ Location auto-detected: <strong>${city}, ${state}</strong>`;
+            helpText.style.color = '#059669';
+        }
+    }
+
+    function showLookupError(msg) {
+        if (loader) loader.style.display = 'none';
+        if (badge) {
+            badge.textContent = 'Manual Entry';
+            badge.style.background = '#FEF2F2';
+            badge.style.color = '#DC2626';
+            badge.style.border = '1px solid #FECDD3';
+            badge.style.display = 'inline-block';
+        }
+        if (helpText) {
+            helpText.textContent = msg;
+            helpText.style.color = '#DC2626';
+        }
+    }
+
+    function fetchPincode(pin) {
+        if (!pin || pin.length !== 6 || !/^\d{6}$/.test(pin) || pin === lastCheckedPin) {
+            return;
+        }
+        lastCheckedPin = pin;
+
+        if (loader) loader.style.display = 'inline-flex';
+        if (badge) badge.style.display = 'none';
+
+        // 1. Primary backend API call with caching
+        fetch(`{{ url('/admin/pincode') }}/${pin}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.status && data.city && data.state) {
+                    applyLocation(data.city, data.state, pin);
+                } else {
+                    fallbackBrowserFetch(pin);
+                }
+            })
+            .catch(() => {
+                fallbackBrowserFetch(pin);
+            });
+    }
+
+    function fallbackBrowserFetch(pin) {
+        fetch(`https://api.postalpincode.in/pincode/${pin}`)
+            .then(res => res.json())
+            .then(json => {
+                if (Array.isArray(json) && json[0] && json[0].Status === 'Success' && json[0].PostOffice && json[0].PostOffice.length > 0) {
+                    const po = json[0].PostOffice[0];
+                    const city = po.District || po.Division || po.Region || '';
+                    const state = po.State || '';
+                    applyLocation(city, state, pin);
+                } else {
+                    showLookupError('Could not auto-detect location. Please enter City & State manually.');
+                }
+            })
+            .catch(() => {
+                showLookupError('API lookup timed out. You can enter City & State manually.');
+            });
+    }
+
+    if (pincodeInput) {
+        pincodeInput.addEventListener('input', function () {
+            const val = this.value.replace(/\D/g, '').substring(0, 6);
+            this.value = val;
+            clearTimeout(lookupTimer);
+            if (val.length === 6) {
+                lookupTimer = setTimeout(() => fetchPincode(val), 200);
+            } else {
+                if (badge) badge.style.display = 'none';
+                if (helpText) {
+                    helpText.innerHTML = '⚡ Enter 6-digit PIN to auto-detect City &amp; State via API.';
+                    helpText.style.color = '#94a3b8';
+                }
+            }
+        });
+
+        if (pincodeInput.value && pincodeInput.value.length === 6 && (!cityInput.value || !stateInput.value)) {
+            fetchPincode(pincodeInput.value);
+        }
+    }
+
+    if (cityInput) {
+        cityInput.addEventListener('input', function () {
+            this.dataset.autofilled = 'false';
+        });
+    }
+    if (stateInput) {
+        stateInput.addEventListener('input', function () {
+            this.dataset.autofilled = 'false';
+        });
     }
 });
 </script>

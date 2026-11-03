@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Services\FirebaseService;
 
 class AssessmentController extends BaseApiController
 {
@@ -1470,6 +1471,24 @@ class AssessmentController extends BaseApiController
                 'total_sessions'     => PatientSession::where('assessment_id', $assessment->id)->count(),
             ]);
 
+            try {
+                $doctorName = $doctor->name ?? 'Your doctor';
+                FirebaseService::sendToUser(
+                    $assessment->patient_id,
+                    '🏥 Session Completed',
+                    "Dr. {$doctorName} has completed Session #{$session->session_number} for your treatment plan.",
+                    [
+                        'type'           => 'session_completed',
+                        'session_id'     => (string) $session->id,
+                        'session_number' => (string) $session->session_number,
+                        'assessment_id'  => (string) $assessment->id,
+                        'doctor_name'    => (string) $doctorName,
+                    ]
+                );
+            } catch (\Exception $fcmEx) {
+                \Log::warning('FCM error on startSession: ' . $fcmEx->getMessage());
+            }
+
             return $this->sendResponse([
                 'session_id'     => $session->id,
                 'session_number' => $session->session_number,
@@ -1497,6 +1516,25 @@ class AssessmentController extends BaseApiController
                     'completed_sessions' => PatientSession::where('assessment_id', $session->assessment_id)->where('status', 'completed')->count(),
                     'total_sessions'     => PatientSession::where('assessment_id', $session->assessment_id)->count(),
                 ]);
+
+                try {
+                    $doctor = Auth::user();
+                    $doctorName = $doctor->name ?? 'Your doctor';
+                    FirebaseService::sendToUser(
+                        $session->patient_id,
+                        '🌟 Session Completed!',
+                        "Dr. {$doctorName} has completed Session #{$session->session_number}.",
+                        [
+                            'type'           => 'session_completed',
+                            'session_id'     => (string) $session->id,
+                            'session_number' => (string) $session->session_number,
+                            'assessment_id'  => (string) $session->assessment_id,
+                            'doctor_name'    => (string) $doctorName,
+                        ]
+                    );
+                } catch (\Exception $fcmEx) {
+                    \Log::warning('FCM error on completeSession: ' . $fcmEx->getMessage());
+                }
             }
 
             return $this->sendResponse(['session_id' => $session->id], 'Session marked as completed');

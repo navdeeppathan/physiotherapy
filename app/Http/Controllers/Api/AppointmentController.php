@@ -24,6 +24,7 @@ use App\Models\PatientPlan;
 use App\Models\PatientPlanSubscription;
 use App\Models\PatientAssessment;
 use App\Models\PatientSession;
+use App\Services\FirebaseService;
 
 class AppointmentController extends BaseApiController
 {
@@ -308,6 +309,30 @@ class AppointmentController extends BaseApiController
 
             DB::commit();
 
+            // Send FCM Push Notification to Doctor
+            try {
+                $patientName = $request->patient_name ?? ($patient->name ?? 'A patient');
+                $firstSlot = $slots->first();
+                $dateStr = $firstSlot && $firstSlot->availabilityDate ? $firstSlot->availabilityDate->available_date : date('Y-m-d');
+                $timeStr = $firstSlot ? ($firstSlot->start_time . ' - ' . $firstSlot->end_time) : '';
+
+                FirebaseService::sendToUser(
+                    $request->doctor_id,
+                    '🩺 New Appointment Booked!',
+                    "Patient {$patientName} has booked an appointment for {$dateStr} ({$timeStr}).",
+                    [
+                        'type'             => 'new_appointment_booked',
+                        'appointment_id'   => (string) ($appointmentIds[0] ?? ''),
+                        'patient_id'       => (string) $patient->id,
+                        'patient_name'     => (string) $patientName,
+                        'appointment_date' => (string) $dateStr,
+                        'slot_time'        => (string) $timeStr,
+                    ]
+                );
+            } catch (\Exception $fcmEx) {
+                \Log::warning('FCM Notification error on appointment book: ' . $fcmEx->getMessage());
+            }
+
             return $this->sendResponse([
                 'appointments' => $appointments,
                 'subscription' => $subscription,
@@ -524,6 +549,38 @@ class AppointmentController extends BaseApiController
 
             DB::commit();
 
+            // Send FCM Notifications on cancellation
+            try {
+                $apptDate = $appointment->appointment_date ? Carbon::parse($appointment->appointment_date)->format('d M Y') : 'scheduled date';
+                if ($cancelledBy === 'patient') {
+                    $patientName = $user->name ?? 'Patient';
+                    FirebaseService::sendToUser(
+                        $appointment->doctor_id,
+                        '❌ Appointment Cancelled',
+                        "Patient {$patientName} has cancelled their appointment scheduled for {$apptDate}.",
+                        [
+                            'type'           => 'appointment_cancelled',
+                            'appointment_id' => (string) $appointment->id,
+                            'cancelled_by'   => 'patient',
+                        ]
+                    );
+                } else {
+                    $doctorName = $user->name ?? 'Doctor';
+                    FirebaseService::sendToUser(
+                        $appointment->patient_id,
+                        '❌ Appointment Cancelled',
+                        "Dr. {$doctorName} has cancelled your appointment scheduled for {$apptDate}. Refund has been initiated.",
+                        [
+                            'type'           => 'appointment_cancelled',
+                            'appointment_id' => (string) $appointment->id,
+                            'cancelled_by'   => 'doctor',
+                        ]
+                    );
+                }
+            } catch (\Exception $fcmEx) {
+                \Log::warning('FCM error on appointment cancel: ' . $fcmEx->getMessage());
+            }
+
             return $this->sendResponse(
                 $refundDetails,
                 'Appointment cancelled successfully'
@@ -665,6 +722,28 @@ class AppointmentController extends BaseApiController
                 $appointment->update([
                     'status' => 'confirmed'
                 ]);
+
+                try {
+                    $doctorName = $doctor->name ?? 'Your doctor';
+                    $apptDate = $appointment->appointment_date ? Carbon::parse($appointment->appointment_date)->format('d M Y') : 'scheduled date';
+                    $startTime = $appointment->start_time ? Carbon::parse($appointment->start_time)->format('h:i A') : '';
+
+                    FirebaseService::sendToUser(
+                        $appointment->patient_id,
+                        '✅ Appointment Confirmed!',
+                        "Dr. {$doctorName} has confirmed your appointment for {$apptDate} at {$startTime}.",
+                        [
+                            'type'           => 'appointment_status_update',
+                            'status'         => 'confirmed',
+                            'appointment_id' => (string) $appointment->id,
+                            'doctor_name'    => (string) $doctorName,
+                            'date'           => (string) $apptDate,
+                            'time'           => (string) $startTime,
+                        ]
+                    );
+                } catch (\Exception $fcmEx) {
+                    \Log::warning('FCM error on appointment accept: ' . $fcmEx->getMessage());
+                }
             } else if ($request->action === 'reject') {
                 $appointment->update([
                     'status' => 'cancelled'
@@ -673,6 +752,23 @@ class AppointmentController extends BaseApiController
                 // Free the slot again
                 DoctorTimeSlot::where('id', $appointment->time_slot_id)
                     ->update(['is_booked' => false]);
+
+                try {
+                    $doctorName = $doctor->name ?? 'Your doctor';
+                    FirebaseService::sendToUser(
+                        $appointment->patient_id,
+                        '⚠️ Appointment Update',
+                        "Dr. {$doctorName} was unable to accept your appointment request. Refund is being processed.",
+                        [
+                            'type'           => 'appointment_status_update',
+                            'status'         => 'cancelled',
+                            'appointment_id' => (string) $appointment->id,
+                            'doctor_name'    => (string) $doctorName,
+                        ]
+                    );
+                } catch (\Exception $fcmEx) {
+                    \Log::warning('FCM error on appointment reject: ' . $fcmEx->getMessage());
+                }
             }
             else if($request->action === 'complete')
             {
@@ -1003,6 +1099,25 @@ class AppointmentController extends BaseApiController
             }
 
             DB::commit();
+
+            // Send FCM Notification to Patient
+            if (!$wasAlreadyCompleted) {
+                try {
+                    $doctorName = $doctor->name ?? 'Your doctor';
+                    FirebaseService::sendToUser(
+                        $appointment->patient_id,
+                        '🌟 Session Completed!',
+                        "Your session with Dr. {$doctorName} is complete. Tap to view your notes & leave a review.",
+                        [
+                            'type'           => 'appointment_completed',
+                            'appointment_id' => (string) $appointment->id,
+                            'doctor_name'    => (string) $doctorName,
+                        ]
+                    );
+                } catch (\Exception $fcmEx) {
+                    \Log::warning('FCM error on appointment complete: ' . $fcmEx->getMessage());
+                }
+            }
 
             $msg = $wasAlreadyCompleted
                 ? 'Appointment is already marked as completed (session time & duration updated)'
@@ -1379,6 +1494,27 @@ class AppointmentController extends BaseApiController
             ]);
 
             DB::commit();
+
+            // Send FCM Notification on reschedule to patient
+            try {
+                $doctorName = $doctor->name ?? 'Your doctor';
+                $newDate = $newSlot->availabilityDate ? Carbon::parse($newSlot->availabilityDate->available_date)->format('d M Y') : 'new date';
+                $newTime = $newSlot->start_time ? Carbon::parse($newSlot->start_time)->format('h:i A') : '';
+                FirebaseService::sendToUser(
+                    $appointment->patient_id,
+                    '🕒 Appointment Rescheduled',
+                    "Dr. {$doctorName} has rescheduled your appointment to {$newDate} at {$newTime}.",
+                    [
+                        'type'           => 'appointment_rescheduled',
+                        'appointment_id' => (string) $appointment->id,
+                        'new_date'       => (string) $newDate,
+                        'new_time'       => (string) $newTime,
+                        'doctor_name'    => (string) $doctorName,
+                    ]
+                );
+            } catch (\Exception $fcmEx) {
+                \Log::warning('FCM error on appointment reschedule: ' . $fcmEx->getMessage());
+            }
 
             return $this->sendResponse(
                 $appointment->fresh(),

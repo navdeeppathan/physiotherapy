@@ -44,6 +44,7 @@ class User extends Authenticatable
         'city',
         'state',
         'pincode',
+        'fcm_token',
         'latitude',
         'longitude',
         'default_available_days',
@@ -233,5 +234,15 @@ class User extends Authenticatable
     public function addresses()
     {
         return $this->hasMany(UserAddress::class);
+    }
+
+    public function devices()
+    {
+        return $this->hasMany(UserDevice::class, 'user_id');
+    }
+
+    public function activeDevices()
+    {
+        return $this->hasMany(UserDevice::class, 'user_id')->where('is_active', true);
     }
 }

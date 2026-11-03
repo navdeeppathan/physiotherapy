@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\ExerciseController;
 use App\Http\Controllers\Api\PatientReportController;
 use App\Http\Controllers\Api\DoctorReportController;
 use App\Http\Controllers\Api\PatientDocumentController;
+use App\Http\Controllers\Api\NotificationController;
 
 // Authentication
 Route::post('/login', [UserController::class, 'login']);
@@ -67,6 +68,12 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/user', [UserController::class, 'me']);
     Route::get('/check-auth', [UserController::class, 'checkAuth']);
     Route::post('/logout', [UserController::class, 'logout']);
+
+    // FCM Device Notifications
+    Route::post('/update-fcm-token', [NotificationController::class, 'updateFcmToken']);
+    Route::post('/fcm-token', [NotificationController::class, 'updateFcmToken']);
+    Route::post('/remove-fcm-token', [NotificationController::class, 'removeFcmToken']);
+    Route::post('/test-notification', [NotificationController::class, 'testNotification']);
 
     // Users
     Route::apiResource('users', UserController::class)->except(['store']);

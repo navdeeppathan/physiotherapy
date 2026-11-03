@@ -87,6 +87,32 @@ class PatientDocumentController extends BaseApiController
                 'status'         => 'submitted',
             ]);
 
+            // Send FCM Notification to Doctor if assigned or linked
+            try {
+                $doctorId = $request->input('doctor_id');
+                if (!$doctorId && $request->filled('appointment_id')) {
+                    $appt = \App\Models\Appointment::find($request->appointment_id);
+                    $doctorId = $appt ? $appt->doctor_id : null;
+                }
+                if ($doctorId) {
+                    $patientName = $user->name ?? 'Patient';
+                    \App\Services\FirebaseService::sendToUser(
+                        $doctorId,
+                        '📄 New Medical Document Uploaded',
+                        "{$patientName} has uploaded a new document ({$title}).",
+                        [
+                            'type'         => 'document_uploaded',
+                            'document_id'  => (string) $document->id,
+                            'patient_id'   => (string) $user->id,
+                            'patient_name' => (string) $patientName,
+                            'title'        => (string) $title,
+                        ]
+                    );
+                }
+            } catch (\Exception $fcmEx) {
+                \Log::warning('FCM error on document upload: ' . $fcmEx->getMessage());
+            }
+
             return $this->sendResponse([
                 'id'                  => $document->id,
                 'patient_id'          => $document->patient_id,

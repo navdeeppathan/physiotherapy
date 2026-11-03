@@ -34,6 +34,25 @@ class FeedbackController extends BaseApiController
                 'review' => $request->review,
             ]);
 
+            // Send FCM Notification to Doctor
+            try {
+                $patientName = $user->name ?? 'A patient';
+                \App\Services\FirebaseService::sendToUser(
+                    $request->doctor_id,
+                    '⭐ New Review Received!',
+                    "{$patientName} rated your consultation {$request->rating}/5 stars.",
+                    [
+                        'type'           => 'feedback_received',
+                        'feedback_id'    => (string) $feedback->id,
+                        'rating'         => (string) $request->rating,
+                        'patient_name'   => (string) $patientName,
+                        'appointment_id' => (string) ($request->appointment_id ?? ''),
+                    ]
+                );
+            } catch (\Exception $fcmEx) {
+                \Log::warning('FCM error on feedback: ' . $fcmEx->getMessage());
+            }
+
             return response()->json([
                 'status' => true,
                 'message' => 'Feedback submitted successfully',

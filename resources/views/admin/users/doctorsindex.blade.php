@@ -242,6 +242,82 @@
     .user-avatar.patient { background: #EFF6FF; color: #2563EB; }
     .user-avatar.other   { background: #f1f5f9; color: #64748b; }
 
+    /* ── BULK ACTIONS & CHECKBOXES ──────────────────── */
+    .styled-checkbox {
+        width: 17px;
+        height: 17px;
+        cursor: pointer;
+        accent-color: #2563EB;
+        border-radius: 4px;
+        vertical-align: middle;
+    }
+
+    .users-table tr.row-selected td {
+        background: #EFF6FF !important;
+    }
+
+    .bulk-actions-wrap {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .bulk-actions-wrap.active {
+        display: flex !important;
+    }
+
+    .badge-selected-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #1e40af;
+        background: #DBEAFE;
+        border: 1px solid #BFDBFE;
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+
+    .btn-bulk-delete {
+        background: #DC2626;
+        color: #fff;
+        border: none;
+        padding: 7px 15px;
+        font-size: 12.5px;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.15s ease;
+        box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+    }
+
+    .btn-bulk-delete:hover {
+        background: #B91C1C;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(220, 38, 38, 0.35);
+    }
+
+    .btn-bulk-cancel {
+        background: #F1F5F9;
+        color: #475569;
+        border: 1px solid #CBD5E1;
+        padding: 7px 12px;
+        font-size: 12.5px;
+        font-weight: 500;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+
+    .btn-bulk-cancel:hover {
+        background: #E2E8F0;
+    }
+
     .user-name {
         font-weight: 500;
         color: #0f172a;
@@ -631,9 +707,28 @@
         <div class="table-card-head">
             <div>
                 <div class="table-card-head-title">Doctors Directory</div>
-                <div class="table-card-head-count">
+                <div class="table-card-head-count" id="doctorsCountText">
                     Showing {{ $users->firstItem() }}–{{ $users->lastItem() }} of {{ $users->total() }} doctors
                 </div>
+            </div>
+
+            <!-- Bulk Actions Toolbar -->
+            <div id="bulkActionsBar" class="bulk-actions-wrap">
+                <span class="badge-selected-count">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    <span id="bulkSelectedText">0 selected</span>
+                </span>
+                <button type="button" id="btnBulkDelete" class="btn-bulk-delete">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>
+                    </svg>
+                    Delete Selected (<span id="bulkSelectedCount">0</span>)
+                </button>
+                <button type="button" id="btnDeselectAll" class="btn-bulk-cancel">
+                    Deselect All
+                </button>
             </div>
         </div>
 
@@ -641,6 +736,9 @@
             <table class="users-table">
                 <thead>
                     <tr>
+                        <th style="width: 44px; text-align: center; padding: 10px 12px;">
+                            <input type="checkbox" id="selectAllDoctors" class="styled-checkbox" title="Select / Deselect all on this page">
+                        </th>
                         <th>#</th>
                         <th>User</th>
                         <th>Phone</th>
@@ -654,7 +752,10 @@
                 </thead>
                 <tbody>
                     @forelse($users as $key => $user)
-                        <tr>
+                        <tr id="doctor-row-{{ $user->id }}">
+                            <td style="text-align: center; padding: 13px 12px;">
+                                <input type="checkbox" class="doctor-checkbox styled-checkbox" value="{{ $user->id }}" data-name="{{ $user->name }}">
+                            </td>
                             <td style="color: #94a3b8; font-size: 12px;">
                                 {{ $users->firstItem() + $key }}
                             </td>
@@ -800,7 +901,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" style="text-align: center; padding: 36px 20px; color: #94a3b8; font-size: 13px;">
+                            <td colspan="10" style="text-align: center; padding: 36px 20px; color: #94a3b8; font-size: 13px;">
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display: block; margin: 0 auto 10px;">
                                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
                                     <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
@@ -1174,6 +1275,191 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     });
+
+    // ── Bulk Selection & Bulk Delete Handlers ─────────
+    const selectAllCheckbox = document.getElementById('selectAllDoctors');
+    const doctorCheckboxes  = document.querySelectorAll('.doctor-checkbox');
+    const bulkActionsBar    = document.getElementById('bulkActionsBar');
+    const bulkSelectedText  = document.getElementById('bulkSelectedText');
+    const bulkSelectedCount = document.getElementById('bulkSelectedCount');
+    const btnBulkDelete     = document.getElementById('btnBulkDelete');
+    const btnDeselectAll    = document.getElementById('btnDeselectAll');
+
+    function getSelectedCheckboxes() {
+        return Array.from(document.querySelectorAll('.doctor-checkbox:checked'));
+    }
+
+    function updateBulkActionsState() {
+        const checkedList = getSelectedCheckboxes();
+        const count = checkedList.length;
+        const total = document.querySelectorAll('.doctor-checkbox').length;
+
+        if (bulkSelectedCount) bulkSelectedCount.textContent = count;
+        if (bulkSelectedText) {
+            bulkSelectedText.textContent = count === 1 ? '1 doctor selected' : `${count} doctors selected`;
+        }
+
+        if (count > 0) {
+            bulkActionsBar.classList.add('active');
+        } else {
+            bulkActionsBar.classList.remove('active');
+        }
+
+        // Update row highlight
+        document.querySelectorAll('.doctor-checkbox').forEach(cb => {
+            const tr = cb.closest('tr');
+            if (tr) {
+                if (cb.checked) {
+                    tr.classList.add('row-selected');
+                } else {
+                    tr.classList.remove('row-selected');
+                }
+            }
+        });
+
+        // Update select all checkbox state
+        if (selectAllCheckbox) {
+            if (count === 0) {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = false;
+            } else if (count === total && total > 0) {
+                selectAllCheckbox.checked = true;
+                selectAllCheckbox.indeterminate = false;
+            } else {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = true;
+            }
+        }
+    }
+
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function () {
+            const isChecked = this.checked;
+            document.querySelectorAll('.doctor-checkbox').forEach(cb => {
+                cb.checked = isChecked;
+            });
+            updateBulkActionsState();
+        });
+    }
+
+    document.querySelectorAll('.doctor-checkbox').forEach(cb => {
+        cb.addEventListener('change', function () {
+            updateBulkActionsState();
+        });
+    });
+
+    if (btnDeselectAll) {
+        btnDeselectAll.addEventListener('click', function () {
+            document.querySelectorAll('.doctor-checkbox').forEach(cb => {
+                cb.checked = false;
+            });
+            if (selectAllCheckbox) {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = false;
+            }
+            updateBulkActionsState();
+        });
+    }
+
+    if (btnBulkDelete) {
+        btnBulkDelete.addEventListener('click', function () {
+            const checkedList = getSelectedCheckboxes();
+            const count = checkedList.length;
+
+            if (count === 0) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'No Selection',
+                    text: 'Please select at least one doctor to delete.',
+                    confirmButtonColor: '#2563EB',
+                    customClass: { popup: 'swal-inter' }
+                });
+                return;
+            }
+
+            const doctorIds = checkedList.map(cb => cb.value);
+
+            Swal.fire({
+                title: count === 1 ? 'Delete 1 Doctor?' : `Delete ${count} Doctors?`,
+                html: `Are you sure you want to permanently delete <strong>${count} selected doctor(s)</strong>?<br><br><span style="color:#DC2626;font-size:12.5px;">⚠️ All associated profiles, consultation fees, slots, and records will be permanently removed. This cannot be undone.</span>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#DC2626',
+                cancelButtonColor: '#64748B',
+                confirmButtonText: count === 1 ? 'Yes, delete doctor' : `Yes, delete ${count} doctors`,
+                cancelButtonText: 'Cancel',
+                customClass: { popup: 'swal-inter' }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: `Deleting ${count} doctor(s)…`,
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    fetch('/admin/doctors/bulk-delete', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                            'Accept':       'application/json'
+                        },
+                        body: JSON.stringify({ doctor_ids: doctorIds })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Deleted!',
+                                text: data.message || `Successfully deleted ${count} doctor(s).`,
+                                timer: 1800,
+                                showConfirmButton: false,
+                                customClass: { popup: 'swal-inter' }
+                            });
+
+                            // Animate removal of selected rows
+                            checkedList.forEach(cb => {
+                                const tr = cb.closest('tr');
+                                if (tr) {
+                                    tr.style.transition = 'all 0.3s ease';
+                                    tr.style.opacity    = '0';
+                                    tr.style.transform  = 'scale(0.95)';
+                                    setTimeout(() => tr.remove(), 320);
+                                }
+                            });
+
+                            // Reset bulk action bar
+                            setTimeout(() => {
+                                updateBulkActionsState();
+                                const remainingRows = document.querySelectorAll('.doctor-checkbox').length;
+                                if (remainingRows === 0) {
+                                    window.location.reload();
+                                }
+                            }, 350);
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Bulk Delete Failed',
+                                text: data.message || 'Could not delete selected doctors.',
+                                confirmButtonColor: '#2563EB',
+                                customClass: { popup: 'swal-inter' }
+                            });
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Something went wrong while deleting. Please try again.',
+                            confirmButtonColor: '#2563EB',
+                            customClass: { popup: 'swal-inter' }
+                        });
+                    });
+                }
+            });
+        });
+    }
 
 });
 </script>

@@ -216,6 +216,8 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
     Route::get('/doctors/{id}/edit', [AuthController::class, 'editDoctor'])->name('doctors.edit');
     Route::put('/doctors/{id}/update', [AuthController::class, 'updateDoctor'])->name('doctors.update');
     Route::delete('/doctors/{id}', [AuthController::class, 'destroyDoctor'])->name('doctors.destroy');
+    Route::post('/doctors/bulk-delete', [AuthController::class, 'bulkDestroyDoctors'])->name('doctors.bulk-destroy');
+    Route::delete('/doctors/bulk-delete', [AuthController::class, 'bulkDestroyDoctors'])->name('doctors.bulk-destroy.delete');
 
     Route::get('doctors/{id}/payments', [DashboardController::class, 'appointments'])->name('doctors.payments');
     Route::post('doctors/{id}/pay', [DashboardController::class, 'pay'])->name('doctors.pay');

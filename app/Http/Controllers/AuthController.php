@@ -606,4 +606,123 @@ class AuthController extends Controller
             return redirect()->back()->with('error', 'Failed to delete doctor: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Bulk Delete Selected Doctors
+     * POST/DELETE /admin/doctors/bulk-delete
+     */
+    public function bulkDestroyDoctors(Request $request)
+    {
+        try {
+            $ids = $request->input('doctor_ids');
+            if (is_string($ids)) {
+                $ids = explode(',', $ids);
+            }
+            $doctorIds = array_filter(array_map('intval', (array) $ids));
+
+            if (empty($doctorIds)) {
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Please select at least one doctor to delete.'
+                    ], 422);
+                }
+                return redirect()->back()->with('error', 'Please select at least one doctor to delete.');
+            }
+
+            $deletedCount = 0;
+
+            \Illuminate\Support\Facades\DB::transaction(function () use ($doctorIds, &$deletedCount) {
+                // Verify these are doctors
+                $validDoctorIds = User::where('role', 'doctor')
+                    ->whereIn('id', $doctorIds)
+                    ->pluck('id')
+                    ->toArray();
+
+                if (empty($validDoctorIds)) {
+                    return;
+                }
+
+                $deletedCount = count($validDoctorIds);
+
+                // Clean up related doctor data safely in batch
+                \App\Models\DoctorProfile::whereIn('user_id', $validDoctorIds)->delete();
+                \App\Models\AppointmentFee::whereIn('doctor_id', $validDoctorIds)->delete();
+                \App\Models\DoctorDocument::whereIn('user_id', $validDoctorIds)->delete();
+                \App\Models\DoctorWallet::whereIn('doctor_id', $validDoctorIds)->delete();
+                \App\Models\DoctorReview::whereIn('doctor_id', $validDoctorIds)->delete();
+                \App\Models\Feedback::whereIn('doctor_id', $validDoctorIds)->delete();
+                \App\Models\AppointmentTransfer::whereIn('old_doctor_id', $validDoctorIds)
+                    ->orWhereIn('new_doctor_id', $validDoctorIds)
+                    ->delete();
+                \App\Models\AppointmentTransferRequest::whereIn('doctor_id', $validDoctorIds)->delete();
+
+                // Appointments & associated records cleanup
+                $appointmentIds = \App\Models\Appointment::whereIn('doctor_id', $validDoctorIds)->pluck('id');
+                if ($appointmentIds->isNotEmpty()) {
+                    \App\Models\AppointmentCancellation::whereIn('appointment_id', $appointmentIds)->delete();
+                    \App\Models\DoctorReview::whereIn('appointment_id', $appointmentIds)->delete();
+                    \App\Models\AppointmentTransfer::whereIn('appointment_id', $appointmentIds)->delete();
+                    \App\Models\Appointment::whereIn('id', $appointmentIds)->delete();
+                }
+
+                // Patient assessments linked to doctors
+                $assessmentIds = \App\Models\PatientAssessment::whereIn('doctor_id', $validDoctorIds)->pluck('id');
+                if ($assessmentIds->isNotEmpty()) {
+                    \App\Models\AssessmentParameter::whereIn('assessment_id', $assessmentIds)->delete();
+                    \App\Models\AssessmentExercise::whereIn('assessment_id', $assessmentIds)->delete();
+                    \App\Models\AssessmentGoal::whereIn('assessment_id', $assessmentIds)->delete();
+                    \App\Models\PatientSession::whereIn('assessment_id', $assessmentIds)->delete();
+                    \App\Models\PatientReport::whereIn('assessment_id', $assessmentIds)->delete();
+                    \App\Models\PatientAssessment::whereIn('id', $assessmentIds)->delete();
+                }
+
+                // Doctor availability and time slots
+                \App\Models\DoctorTimeSlot::whereIn('user_id', $validDoctorIds)->delete();
+                \App\Models\DoctorAvailabilityDate::whereIn('user_id', $validDoctorIds)->delete();
+
+                // User devices / fcm tokens if table exists
+                if (\Illuminate\Support\Facades\Schema::hasTable('user_devices')) {
+                    \App\Models\UserDevice::whereIn('user_id', $validDoctorIds)->delete();
+                }
+
+                // Delete doctor user records
+                User::where('role', 'doctor')->whereIn('id', $validDoctorIds)->delete();
+            });
+
+            if ($deletedCount === 0) {
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'No matching doctor accounts found to delete.'
+                    ], 404);
+                }
+                return redirect()->back()->with('error', 'No matching doctor accounts found.');
+            }
+
+            $msg = $deletedCount === 1 
+                ? '1 doctor successfully deleted.' 
+                : "{$deletedCount} doctors successfully deleted.";
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success'       => true,
+                    'message'       => $msg,
+                    'deleted_count' => $deletedCount,
+                ]);
+            }
+
+            return redirect()->route('admin.users.doctorsindex')->with('success', $msg);
+
+        } catch (\Exception $e) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to delete doctors: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()->back()->with('error', 'Failed to delete doctors: ' . $e->getMessage());
+        }
+    }
 }

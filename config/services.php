@@ -32,7 +32,7 @@ return [
     ],
 
     'firebase' => [
-        'project_id'       => env('FIREBASE_PROJECT_ID'),
+        'project_id'       => env('FIREBASE_PROJECT_ID', 'physiopii'),
         'credentials_file' => env('FIREBASE_CREDENTIALS', storage_path('app/firebase-credentials.json')),
         'server_key'       => env('FIREBASE_SERVER_KEY'),
     ],

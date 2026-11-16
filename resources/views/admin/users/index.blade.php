@@ -560,6 +560,12 @@
             <p>Manage doctors, patients, and their access across the platform.</p>
         </div>
         <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button type="button" class="btn-open-notify-modal" data-target="direct_token" style="height:38px; display:inline-flex; align-items:center; gap:6px; padding:0 14px; border-radius:8px; font-weight:600; font-size:13px; background:#fff; color:#334155; border:1px solid #CBD5E1; cursor:pointer;" title="Test any mobile device FCM registration token">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 2v7.31M14 9.3V1.99M8.5 2h7M14 9.3a6.5 6.5 0 1 1-4 0"/>
+                </svg>
+                🧪 Test Token
+            </button>
             <button type="button" class="btn-open-notify-modal" data-target="all_patients" style="height:38px; display:inline-flex; align-items:center; gap:6px; padding:0 16px; border-radius:8px; font-weight:600; font-size:13px; background:linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); color:#fff; border:none; box-shadow:0 2px 6px rgba(79,70,229,0.3); cursor:pointer;" title="Broadcast push notification to patients">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>

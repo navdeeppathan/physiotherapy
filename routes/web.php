@@ -222,6 +222,7 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
 
     // ── Admin Push Notifications (Doctors & Patients) ──
     Route::post('/notifications/send', [AdminNotificationController::class, 'send'])->name('notifications.send');
+    Route::post('/notifications/test-token', [AdminNotificationController::class, 'testToken'])->name('notifications.test-token');
 
     Route::get('doctors/{id}/payments', [DashboardController::class, 'appointments'])->name('doctors.payments');
     Route::post('doctors/{id}/pay', [DashboardController::class, 'pay'])->name('doctors.pay');

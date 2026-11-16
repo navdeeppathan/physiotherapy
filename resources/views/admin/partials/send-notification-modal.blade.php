@@ -35,6 +35,7 @@
                             <option value="all_patients">🧑‍🤝‍🧑 All Patients</option>
                             <option value="all_users">🌐 Everyone (All Doctors & Patients)</option>
                             <option value="specific_user">🎯 Specific User</option>
+                            <option value="direct_token">🧪 Test Device FCM Token (Tester Mode)</option>
                         </select>
                     </div>
 
@@ -51,6 +52,30 @@
                             Change Audience
                         </button>
                     </div>
+
+                    <!-- Direct FCM Token Input Group (Tester Mode) -->
+                    <div id="notifyDirectTokenGroup" style="display: none; background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 10px; padding: 12px 14px; margin-bottom: 16px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                            <label for="notify_fcm_token" style="font-size: 12px; font-weight: 700; color: #92400E; margin-bottom: 0;">
+                                Device FCM Token <span style="color: #DC2626;">*</span>
+                            </label>
+                            <span style="font-size: 10.5px; color: #B45309; font-weight: 600; background: #FEF3C7; padding: 2px 7px; border-radius: 4px;">FCM HTTP v1</span>
+                        </div>
+                        <textarea
+                            name="fcm_token"
+                            id="notify_fcm_token"
+                            class="form-control"
+                            rows="3"
+                            placeholder="Paste raw registration token from mobile app (e.g. c8Y1-N2...)"
+                            style="border-radius: 8px; border: 1px solid #FCD34D; font-size: 12px; font-family: monospace; color: #78350F; background: #FFFFFF; resize: vertical;"
+                        ></textarea>
+                        <div style="font-size: 11px; color: #92400E; margin-top: 6px; line-height: 1.4;">
+                            💡 <strong>Direct Tester:</strong> Send a push directly to this token. If valid, your phone receives it immediately and Google returns a live message ID.
+                        </div>
+                    </div>
+
+                    <!-- Test Result Message Box -->
+                    <div id="notifyTestResultBox" style="display: none; border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; font-size: 12.5px; line-height: 1.45;"></div>
 
                     <!-- Notification Title -->
                     <div class="mb-3">
@@ -148,6 +173,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const specificUserName   = document.getElementById('notifySpecificUserName');
     const specificUserRole   = document.getElementById('notifySpecificUserRole');
     const clearSpecificUser  = document.getElementById('notifyClearSpecificUser');
+    const directTokenGroup   = document.getElementById('notifyDirectTokenGroup');
+    const fcmTokenInput      = document.getElementById('notify_fcm_token');
+    const testResultBox      = document.getElementById('notifyTestResultBox');
     const titleInput         = document.getElementById('notify_title');
     const bodyInput          = document.getElementById('notify_body');
     const titleCount         = document.getElementById('notifyTitleCount');
@@ -169,14 +197,37 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Toggle specific user banner on target change
+    // Toggle specific user banner and direct token input on target change
     if (targetSelect) {
         targetSelect.addEventListener('change', function () {
-            if (this.value !== 'specific_user') {
+            if (testResultBox) testResultBox.style.display = 'none';
+
+            if (this.value === 'direct_token') {
+                if (directTokenGroup) directTokenGroup.style.display = 'block';
                 if (specificUserBanner) specificUserBanner.style.display = 'none';
                 if (userIdInput) userIdInput.value = '';
-            } else if (userIdInput && userIdInput.value) {
-                if (specificUserBanner) specificUserBanner.style.display = 'flex';
+
+                // Pre-fill friendly test values if empty
+                if (titleInput && !titleInput.value.trim()) {
+                    titleInput.value = 'PhysioPii FCM Test 🔔';
+                    if (titleCount) titleCount.textContent = `${titleInput.value.length}/120`;
+                }
+                if (bodyInput && !bodyInput.value.trim()) {
+                    bodyInput.value = 'This is a test notification from the PhysioPii Admin Panel to verify device token reception.';
+                    if (bodyCount) bodyCount.textContent = `${bodyInput.value.length}/500`;
+                }
+                if (btnText) btnText.textContent = 'Send Test Notification 🚀';
+                if (fcmTokenInput) fcmTokenInput.focus();
+            } else {
+                if (directTokenGroup) directTokenGroup.style.display = 'none';
+                if (btnText) btnText.textContent = 'Send Notification';
+
+                if (this.value !== 'specific_user') {
+                    if (specificUserBanner) specificUserBanner.style.display = 'none';
+                    if (userIdInput) userIdInput.value = '';
+                } else if (userIdInput && userIdInput.value) {
+                    if (specificUserBanner) specificUserBanner.style.display = 'flex';
+                }
             }
         });
     }
@@ -186,10 +237,13 @@ document.addEventListener('DOMContentLoaded', function () {
             if (userIdInput) userIdInput.value = '';
             if (specificUserBanner) specificUserBanner.style.display = 'none';
             if (targetSelect) targetSelect.value = 'all_doctors';
+            if (directTokenGroup) directTokenGroup.style.display = 'none';
+            if (testResultBox) testResultBox.style.display = 'none';
+            if (btnText) btnText.textContent = 'Send Notification';
         });
     }
 
-    // ── 1. Open Notification Modal from Header Broadcast Button ──
+    // ── 1. Open Notification Modal from Header Broadcast / Test Button ──
     document.querySelectorAll('.btn-open-notify-modal').forEach(btn => {
         btn.addEventListener('click', function () {
             const defaultTarget = this.dataset.target || 'all_doctors';
@@ -198,7 +252,21 @@ document.addEventListener('DOMContentLoaded', function () {
             if (bodyCount) bodyCount.textContent = '0/500';
             if (userIdInput) userIdInput.value = '';
             if (specificUserBanner) specificUserBanner.style.display = 'none';
+            if (testResultBox) testResultBox.style.display = 'none';
             if (targetSelect) targetSelect.value = defaultTarget;
+
+            if (defaultTarget === 'direct_token') {
+                if (directTokenGroup) directTokenGroup.style.display = 'block';
+                if (titleInput) titleInput.value = 'PhysioPii FCM Test 🔔';
+                if (bodyInput) bodyInput.value = 'This is a test notification from the PhysioPii Admin Panel to verify device token reception.';
+                if (titleCount) titleCount.textContent = `${titleInput.value.length}/120`;
+                if (bodyCount) bodyCount.textContent = `${bodyInput.value.length}/500`;
+                if (btnText) btnText.textContent = 'Send Test Notification 🚀';
+                setTimeout(() => { if (fcmTokenInput) fcmTokenInput.focus(); }, 400);
+            } else {
+                if (directTokenGroup) directTokenGroup.style.display = 'none';
+                if (btnText) btnText.textContent = 'Send Notification';
+            }
 
             if (notifyModal) notifyModal.show();
         });
@@ -214,6 +282,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if (notifyForm) notifyForm.reset();
             if (titleCount) titleCount.textContent = '0/120';
             if (bodyCount) bodyCount.textContent = '0/500';
+            if (directTokenGroup) directTokenGroup.style.display = 'none';
+            if (testResultBox) testResultBox.style.display = 'none';
+            if (btnText) btnText.textContent = 'Send Notification';
 
             if (userIdInput) userIdInput.value = userId;
             if (targetSelect) targetSelect.value = 'specific_user';
@@ -229,10 +300,34 @@ document.addEventListener('DOMContentLoaded', function () {
     // ── 3. Submit Push Notification ──
     if (submitBtn) {
         submitBtn.addEventListener('click', function () {
-            const title  = titleInput ? titleInput.value.trim() : '';
-            const body   = bodyInput ? bodyInput.value.trim() : '';
-            const target = targetSelect ? targetSelect.value : 'all_doctors';
-            const userId = userIdInput ? userIdInput.value : '';
+            const title    = titleInput ? titleInput.value.trim() : '';
+            const body     = bodyInput ? bodyInput.value.trim() : '';
+            const target   = targetSelect ? targetSelect.value : 'all_doctors';
+            const userId   = userIdInput ? userIdInput.value : '';
+            const fcmToken = fcmTokenInput ? fcmTokenInput.value.trim() : '';
+
+            if (testResultBox) testResultBox.style.display = 'none';
+
+            if (target === 'direct_token') {
+                if (!fcmToken) {
+                    if (fcmTokenInput) fcmTokenInput.focus();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Device Token Required',
+                        text: 'Please paste the FCM registration token from the mobile app.',
+                        customClass: { popup: 'swal-inter' }
+                    });
+                    return;
+                }
+            } else if (target === 'specific_user' && !userId) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Target Missing',
+                    text: 'Please select a specific user or change audience to All Doctors/Patients.',
+                    customClass: { popup: 'swal-inter' }
+                });
+                return;
+            }
 
             if (!title) {
                 if (titleInput) titleInput.focus();
@@ -246,23 +341,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            if (target === 'specific_user' && !userId) {
-                Swal.fire({ icon: 'warning', title: 'Target Missing', text: 'Please select a specific user or change audience to All Doctors/Patients.', customClass: { popup: 'swal-inter' } });
-                return;
-            }
-
             // Button loading state
             submitBtn.disabled = true;
             if (spinner) spinner.style.display = 'inline-block';
             if (sendIcon) sendIcon.style.display = 'none';
-            if (btnText) btnText.textContent = 'Sending...';
+            if (btnText) btnText.textContent = (target === 'direct_token') ? 'Testing...' : 'Sending...';
 
             const payload = {
-                target:  target,
-                user_id: userId,
-                title:   title,
-                body:    body,
-                type:    document.getElementById('notify_type') ? document.getElementById('notify_type').value : 'admin_broadcast'
+                target:    target,
+                user_id:   userId,
+                fcm_token: fcmToken,
+                title:     title,
+                body:      body,
+                type:      document.getElementById('notify_type') ? document.getElementById('notify_type').value : 'admin_broadcast'
             };
 
             fetch("{{ route('admin.notifications.send') }}", {
@@ -279,23 +370,61 @@ document.addEventListener('DOMContentLoaded', function () {
                 submitBtn.disabled = false;
                 if (spinner) spinner.style.display = 'none';
                 if (sendIcon) sendIcon.style.display = 'inline-block';
-                if (btnText) btnText.textContent = 'Send Notification';
+                if (btnText) btnText.textContent = (target === 'direct_token') ? 'Send Test Notification 🚀' : 'Send Notification';
 
                 if (data.success) {
-                    if (notifyModal) notifyModal.hide();
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Dispatched!',
-                        text: data.message || 'Notification sent successfully.',
-                        timer: 3000,
-                        showConfirmButton: false,
-                        customClass: { popup: 'swal-inter' }
-                    });
+                    if (target === 'direct_token') {
+                        if (testResultBox) {
+                            testResultBox.style.display = 'block';
+                            testResultBox.style.background = '#ECFDF5';
+                            testResultBox.style.border = '1px solid #A7F3D0';
+                            testResultBox.style.color = '#065F46';
+                            testResultBox.innerHTML = `
+                                <div style="font-weight: 700; display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                                    <span>✅</span> Notification Sent Successfully!
+                                </div>
+                                <div style="font-size: 11.5px; color: #047857; margin-bottom:4px;">${data.message || ''}</div>
+                                <div style="font-size: 10.5px; color: #059669; word-break: break-all;"><strong>Token:</strong> ${data.token || (fcmToken.substring(0, 20) + '...')}</div>
+                            `;
+                        }
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Delivered to FCM!',
+                            text: data.message || 'Check your phone now for the notification.',
+                            confirmButtonColor: '#10B981',
+                            customClass: { popup: 'swal-inter' }
+                        });
+                    } else {
+                        if (notifyModal) notifyModal.hide();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Dispatched!',
+                            text: data.message || 'Notification sent successfully.',
+                            timer: 3000,
+                            showConfirmButton: false,
+                            customClass: { popup: 'swal-inter' }
+                        });
+                    }
                 } else {
+                    if (target === 'direct_token') {
+                        if (testResultBox) {
+                            testResultBox.style.display = 'block';
+                            testResultBox.style.background = '#FEF2F2';
+                            testResultBox.style.border = '1px solid #FECACA';
+                            testResultBox.style.color = '#991B1B';
+                            testResultBox.innerHTML = `
+                                <div style="font-weight: 700; display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                                    <span>❌</span> Google FCM Delivery Error
+                                </div>
+                                <div style="font-size: 11.5px; color: #B91C1C;">${data.message || 'Delivery failed'}</div>
+                                <div style="font-size: 10.5px; color: #7F1D1D; margin-top:4px;">Tip: Ensure the token is freshly generated by Firebase on the target phone and matches Firebase project <code>physiopii</code>.</div>
+                            `;
+                        }
+                    }
                     Swal.fire({
                         icon: 'error',
-                        title: 'Sending Failed',
-                        text: data.message || 'Could not send notification. Please check Firebase credentials.',
+                        title: (target === 'direct_token') ? 'FCM Delivery Failed' : 'Sending Failed',
+                        text: data.message || 'Could not send notification. Please check Firebase credentials or token.',
                         confirmButtonColor: '#2563EB',
                         customClass: { popup: 'swal-inter' }
                     });
@@ -305,7 +434,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 submitBtn.disabled = false;
                 if (spinner) spinner.style.display = 'none';
                 if (sendIcon) sendIcon.style.display = 'inline-block';
-                if (btnText) btnText.textContent = 'Send Notification';
+                if (btnText) btnText.textContent = (target === 'direct_token') ? 'Send Test Notification 🚀' : 'Send Notification';
 
                 Swal.fire({
                     icon: 'error',

@@ -51,6 +51,7 @@ Route::get('/enquiry-symptoms', [EnquiryController::class, 'symptoms']);
 Route::post('users', [UserController::class, 'store']);
 Route::get('/all-specializations', [SpecializationControllerApi::class, 'index']);
 Route::get('/pincode/{pincode}', [\App\Http\Controllers\PincodeController::class, 'lookup']);
+Route::post('/test-token-notification', [\App\Http\Controllers\Admin\AdminNotificationController::class, 'testToken']);
 
 // Public Discovery: Doctors & Patient Plans
 Route::get('/doctors', [UserController::class, 'doctors']);

@@ -559,12 +559,20 @@
             <h1>All Users</h1>
             <p>Manage doctors, patients, and their access across the platform.</p>
         </div>
-        <div class="header-badge">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-            {{ $users->total() }} users total
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button type="button" class="btn-open-notify-modal" data-target="all_patients" style="height:38px; display:inline-flex; align-items:center; gap:6px; padding:0 16px; border-radius:8px; font-weight:600; font-size:13px; background:linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); color:#fff; border:none; box-shadow:0 2px 6px rgba(79,70,229,0.3); cursor:pointer;" title="Broadcast push notification to patients">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                Send Notification
+            </button>
+            <div class="header-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                {{ $users->total() }} users total
+            </div>
         </div>
     </div>
 
@@ -678,11 +686,24 @@
                                 @endif
                             </td>
                              <td>
-                                @if($user->role == 'patient')
-                                    <a href="{{ route('admin.appointments.create', $user->id) }}" class="btn btn-primary btn-sm">
-                                        Book Appointment
-                                    </a>
-                                @endif
+                                <div class="d-flex align-items-center gap-2">
+                                    @if($user->role == 'patient')
+                                        <a href="{{ route('admin.appointments.create', $user->id) }}" class="btn btn-primary btn-sm" style="font-size:12px; font-weight:600; padding:5px 12px; border-radius:7px;">
+                                            Book Appointment
+                                        </a>
+                                    @endif
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-notify-user"
+                                        data-id="{{ $user->id }}"
+                                        data-name="{{ $user->name }}"
+                                        data-role="{{ ucfirst($user->role) }}"
+                                        style="background:#EEF2FF; color:#4F46E5; border:1px solid #C7D2FE; font-size:12px; font-weight:600; padding:5px 10px; border-radius:7px;"
+                                        title="Send push notification to {{ $user->name }}"
+                                    >
+                                        🔔 Notify
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     @empty
@@ -989,5 +1010,7 @@ document.addEventListener("DOMContentLoaded", function () {
 <style>
     .swal-inter { font-family: 'Inter', 'Poppins', sans-serif !important; }
 </style>
+
+@include('admin.partials.send-notification-modal')
 
 @endsection

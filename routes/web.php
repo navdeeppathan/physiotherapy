@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\AdminAssessmentController;
 use App\Http\Controllers\Admin\AdminParameterController;
 use App\Http\Controllers\Admin\AdminPatientDocumentController;
 use App\Http\Controllers\Admin\AdminBannerController;
+use App\Http\Controllers\Admin\AdminNotificationController;
 use App\Http\Controllers\Admin\AdminDoctorSlotController;
 use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\PincodeController;
@@ -218,6 +219,9 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
     Route::delete('/doctors/{id}', [AuthController::class, 'destroyDoctor'])->name('doctors.destroy');
     Route::post('/doctors/bulk-delete', [AuthController::class, 'bulkDestroyDoctors'])->name('doctors.bulk-destroy');
     Route::delete('/doctors/bulk-delete', [AuthController::class, 'bulkDestroyDoctors'])->name('doctors.bulk-destroy.delete');
+
+    // ── Admin Push Notifications (Doctors & Patients) ──
+    Route::post('/notifications/send', [AdminNotificationController::class, 'send'])->name('notifications.send');
 
     Route::get('doctors/{id}/payments', [DashboardController::class, 'appointments'])->name('doctors.payments');
     Route::post('doctors/{id}/pay', [DashboardController::class, 'pay'])->name('doctors.pay');

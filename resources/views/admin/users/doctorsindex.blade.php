@@ -636,6 +636,12 @@
             <p>Manage doctors, consultation fees, platform admin fees, and their access.</p>
         </div>
         <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button type="button" class="btn-open-notify-modal" data-target="all_doctors" style="height:38px; display:inline-flex; align-items:center; gap:6px; padding:0 16px; border-radius:8px; font-weight:600; font-size:13px; background:linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); color:#fff; border:none; box-shadow:0 2px 6px rgba(79,70,229,0.3); cursor:pointer;" title="Broadcast push notification to doctors">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                Send Notification
+            </button>
             <a href="{{ route('admin.doctors.slots.overview') }}" style="text-decoration:none; height:38px; display:inline-flex; align-items:center; gap:6px; padding:0 16px; border-radius:8px; font-weight:600; font-size:13px; background:#7C3AED; color:#fff; transition: background 0.15s;" title="Create & Manage Slots for Doctors">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
@@ -883,6 +889,19 @@
                                         title="{{ $user->status == 'active' ? 'Mark as Inactive' : 'Mark as Active' }}"
                                     >
                                         {{ $user->status == 'active' ? '⏸️ Inactive' : '▶️ Activate' }}
+                                    </button>
+
+                                    <!-- Send Push Notification to Doctor -->
+                                    <button
+                                        type="button"
+                                        class="act-btn btn-notify-user"
+                                        data-id="{{ $user->id }}"
+                                        data-name="{{ $user->name }}"
+                                        data-role="Doctor"
+                                        style="background:#EEF2FF;color:#4F46E5;border:1px solid #C7D2FE;"
+                                        title="Send push notification to Dr. {{ $user->name }}"
+                                    >
+                                        🔔 Notify
                                     </button>
 
                                     <!-- Delete Doctor Option -->
@@ -1467,5 +1486,7 @@ document.addEventListener("DOMContentLoaded", function () {
 <style>
     .swal-inter { font-family: 'Inter', 'Poppins', sans-serif !important; }
 </style>
+
+@include('admin.partials.send-notification-modal')
 
 @endsection

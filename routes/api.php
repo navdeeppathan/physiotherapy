@@ -51,6 +51,8 @@ Route::get('/enquiry-symptoms', [EnquiryController::class, 'symptoms']);
 Route::post('users', [UserController::class, 'store']);
 Route::get('/all-specializations', [SpecializationControllerApi::class, 'index']);
 Route::get('/pincode/{pincode}', [\App\Http\Controllers\PincodeController::class, 'lookup']);
+Route::get('/fcm-status', [\App\Http\Controllers\Admin\AdminNotificationController::class, 'status']);
+Route::post('/save-fcm-credentials', [\App\Http\Controllers\Admin\AdminNotificationController::class, 'saveCredentials']);
 Route::post('/test-token-notification', [\App\Http\Controllers\Admin\AdminNotificationController::class, 'testToken']);
 
 // Public Discovery: Doctors & Patient Plans

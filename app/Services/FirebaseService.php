@@ -102,12 +102,13 @@ class FirebaseService
             return self::sendViaLegacyKey($legacyKey, $fcmToken, $title, $body, $stringData);
         }
 
-        // 3. Fallback: Log simulation (safe development mode without crashing backend)
-        Log::info("[FCM Simulated] Notification to Token: " . substr($fcmToken, 0, 16) . "... | Title: {$title} | Body: {$body}", $stringData);
+        // 3. Fallback: Missing credentials error (DO NOT silently return success)
+        Log::error("[FCM Failed] Notification to Token: " . substr($fcmToken, 0, 16) . "... | Title: {$title} | Error: Firebase credentials missing on server.");
         return [
-            'success' => true,
-            'simulated' => true,
-            'message' => 'Firebase credentials not configured in .env; logged notification.'
+            'success'             => false,
+            'simulated'           => false,
+            'credentials_missing' => true,
+            'error'               => 'Firebase credentials file missing on server (storage/app/firebase-credentials.json not found).'
         ];
     }
 
@@ -324,6 +325,42 @@ class FirebaseService
         }
 
         return array_values(array_unique(array_filter($tokens)));
+    }
+
+    /**
+     * Diagnostic helper: Check whether Firebase credentials exist and work
+     */
+    public static function checkStatus(): array
+    {
+        $serviceAccount = self::getServiceAccountConfig();
+        if (!$serviceAccount) {
+            return [
+                'configured' => false,
+                'status'     => 'missing',
+                'message'    => 'Firebase credentials file missing (storage/app/firebase-credentials.json not found).',
+                'project_id' => config('services.firebase.project_id', 'physiopii'),
+                'client_email' => null,
+            ];
+        }
+
+        $token = self::getGoogleAccessToken($serviceAccount);
+        if (!$token) {
+            return [
+                'configured' => false,
+                'status'     => 'oauth_failed',
+                'message'    => 'Credentials file found, but Google OAuth2 authentication failed. Check private key.',
+                'project_id' => $serviceAccount['project_id'] ?? null,
+                'client_email' => $serviceAccount['client_email'] ?? null,
+            ];
+        }
+
+        return [
+            'configured'   => true,
+            'status'       => 'connected',
+            'message'      => 'Successfully authenticated with Google FCM HTTP v1 API.',
+            'project_id'   => $serviceAccount['project_id'] ?? null,
+            'client_email' => $serviceAccount['client_email'] ?? null,
+        ];
     }
 
     protected static function base64UrlEncode(string $data): string

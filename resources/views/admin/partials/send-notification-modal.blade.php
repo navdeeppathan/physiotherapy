@@ -21,6 +21,35 @@
 
             <!-- Modal Body -->
             <div class="modal-body" style="padding: 22px 24px;">
+
+                <!-- Firebase Live Status Bar -->
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding: 8px 12px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 9px;">
+                    <div id="fcmStatusBadge" style="display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: #64748B;">
+                        <span class="spinner-border spinner-border-sm" style="width: 10px; height: 10px; border-width: 2px;"></span>
+                        Checking Firebase status...
+                    </div>
+                    <button type="button" id="btnToggleFcmCredentials" style="background: none; border: none; font-size: 11.5px; color: #2563EB; font-weight: 600; cursor: pointer; text-decoration: underline;">
+                        ⚙️ Credentials
+                    </button>
+                </div>
+
+                <!-- Firebase Credentials Config Box (shown when clicked or if credentials missing) -->
+                <div id="fcmCredentialsBox" style="display: none; background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 10px; padding: 12px; margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-size: 12px; font-weight: 700; color: #92400E;">Paste Firebase Service Account JSON</span>
+                        <span style="font-size: 10.5px; color: #B45309;">storage/app/firebase-credentials.json</span>
+                    </div>
+                    <div style="font-size: 11px; color: #78350F; margin-bottom: 8px; line-height: 1.4;">
+                        Paste the raw JSON downloaded from Firebase Console to connect this server to Google FCM HTTP v1.
+                    </div>
+                    <textarea id="fcmCredentialsJsonInput" class="form-control" rows="4" placeholder='{"type": "service_account", "project_id": "physiopii", ...}' style="font-size: 11px; font-family: monospace; border-radius: 8px; border: 1px solid #FDE68A; margin-bottom: 8px;"></textarea>
+                    <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                        <button type="button" id="btnSaveFcmCredentials" class="btn btn-sm" style="background: #D97706; color: #fff; font-size: 11.5px; font-weight: 600; border-radius: 6px; padding: 5px 12px; border: none;">
+                            Save & Verify with Google
+                        </button>
+                    </div>
+                </div>
+
                 <form id="adminNotificationForm">
                     @csrf
                     <input type="hidden" name="user_id" id="notify_user_id" value="">
@@ -185,6 +214,106 @@ document.addEventListener('DOMContentLoaded', function () {
     const spinner            = document.getElementById('notifySpinner');
     const sendIcon           = document.getElementById('notifySendIcon');
 
+    const fcmStatusBadge       = document.getElementById('fcmStatusBadge');
+    const btnToggleCredentials = document.getElementById('btnToggleFcmCredentials');
+    const fcmCredentialsBox    = document.getElementById('fcmCredentialsBox');
+    const fcmJsonInput         = document.getElementById('fcmCredentialsJsonInput');
+    const btnSaveCredentials   = document.getElementById('btnSaveFcmCredentials');
+
+    function checkFcmStatus() {
+        if (!fcmStatusBadge) return;
+        fetch("{{ route('admin.notifications.status') }}")
+            .then(res => res.json())
+            .then(data => {
+                if (data.configured) {
+                    fcmStatusBadge.innerHTML = `<span style="color:#10B981; font-size:14px;">●</span> <span style="color:#065F46;">Firebase Connected</span> <span style="color:#64748B; font-weight:400;">(${data.project_id || 'physiopii'})</span>`;
+                    if (fcmCredentialsBox) fcmCredentialsBox.style.display = 'none';
+                } else {
+                    fcmStatusBadge.innerHTML = `<span style="color:#EF4444; font-size:14px;">●</span> <span style="color:#DC2626;">Missing Credentials</span>`;
+                    if (fcmCredentialsBox) fcmCredentialsBox.style.display = 'block';
+                }
+            })
+            .catch(() => {
+                fcmStatusBadge.innerHTML = `<span style="color:#F59E0B; font-size:14px;">●</span> <span style="color:#B45309;">Firebase Status Check Failed</span>`;
+            });
+    }
+
+    if (btnToggleCredentials) {
+        btnToggleCredentials.addEventListener('click', () => {
+            if (fcmCredentialsBox) {
+                fcmCredentialsBox.style.display = (fcmCredentialsBox.style.display === 'none') ? 'block' : 'none';
+            }
+        });
+    }
+
+    if (btnSaveCredentials) {
+        btnSaveCredentials.addEventListener('click', () => {
+            const rawJson = fcmJsonInput ? fcmJsonInput.value.trim() : '';
+            if (!rawJson) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'JSON Required',
+                    text: 'Please paste your Firebase service account JSON before saving.',
+                    customClass: { popup: 'swal-inter' }
+                });
+                return;
+            }
+
+            btnSaveCredentials.disabled = true;
+            btnSaveCredentials.textContent = 'Verifying with Google...';
+
+            fetch("{{ route('admin.notifications.save-credentials') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                    'Accept':       'application/json'
+                },
+                body: JSON.stringify({ credentials_json: rawJson })
+            })
+            .then(res => res.json())
+            .then(data => {
+                btnSaveCredentials.disabled = false;
+                btnSaveCredentials.textContent = 'Save & Verify with Google';
+
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Connected to Firebase!',
+                        text: data.message,
+                        timer: 3000,
+                        showConfirmButton: false,
+                        customClass: { popup: 'swal-inter' }
+                    });
+                    if (fcmJsonInput) fcmJsonInput.value = '';
+                    checkFcmStatus();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Verification Failed',
+                        text: data.message || 'Could not verify Firebase credentials with Google.',
+                        confirmButtonColor: '#2563EB',
+                        customClass: { popup: 'swal-inter' }
+                    });
+                }
+            })
+            .catch(err => {
+                btnSaveCredentials.disabled = false;
+                btnSaveCredentials.textContent = 'Save & Verify with Google';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to communicate with the server.',
+                    confirmButtonColor: '#2563EB',
+                    customClass: { popup: 'swal-inter' }
+                });
+            });
+        });
+    }
+
+    // Initial check
+    checkFcmStatus();
+
     // Character counter listeners
     if (titleInput && titleCount) {
         titleInput.addEventListener('input', () => {
@@ -269,6 +398,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             if (notifyModal) notifyModal.show();
+            checkFcmStatus();
         });
     });
 
@@ -294,6 +424,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (specificUserBanner) specificUserBanner.style.display = 'flex';
 
             if (notifyModal) notifyModal.show();
+            checkFcmStatus();
         });
     });
 

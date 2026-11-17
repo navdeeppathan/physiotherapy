@@ -221,8 +221,10 @@ Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->
     Route::delete('/doctors/bulk-delete', [AuthController::class, 'bulkDestroyDoctors'])->name('doctors.bulk-destroy.delete');
 
     // ── Admin Push Notifications (Doctors & Patients) ──
+    Route::get('/notifications/status', [AdminNotificationController::class, 'status'])->name('notifications.status');
     Route::post('/notifications/send', [AdminNotificationController::class, 'send'])->name('notifications.send');
     Route::post('/notifications/test-token', [AdminNotificationController::class, 'testToken'])->name('notifications.test-token');
+    Route::post('/notifications/save-credentials', [AdminNotificationController::class, 'saveCredentials'])->name('notifications.save-credentials');
 
     Route::get('doctors/{id}/payments', [DashboardController::class, 'appointments'])->name('doctors.payments');
     Route::post('doctors/{id}/pay', [DashboardController::class, 'pay'])->name('doctors.pay');

@@ -285,13 +285,26 @@ class AdminNotificationController extends Controller
                 ], 422);
             }
 
-            $targetDir = storage_path('app');
-            if (!file_exists($targetDir)) {
-                mkdir($targetDir, 0755, true);
-            }
+            $encodedJson = json_encode($decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
-            $targetPath = storage_path('app/firebase-credentials.json');
-            file_put_contents($targetPath, json_encode($decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            $targetsToSave = [
+                storage_path('app/firebase-credentials.json'),
+                base_path('firebase-credentials.json'),
+                public_path('firebase-credentials.json'),
+                '/home/bookmyre/public_html/firebase-credentials.json',
+            ];
+
+            $savedCount = 0;
+            foreach ($targetsToSave as $path) {
+                $dir = dirname($path);
+                if (!file_exists($dir)) {
+                    @mkdir($dir, 0755, true);
+                }
+                if (@file_put_contents($path, $encodedJson) !== false) {
+                    @chmod($path, 0644);
+                    $savedCount++;
+                }
+            }
 
             // Clear any cached access token
             \Illuminate\Support\Facades\Cache::forget('fcm_google_access_token_' . md5($decoded['client_email']));
@@ -303,7 +316,7 @@ class AdminNotificationController extends Controller
                 'success' => $status['configured'],
                 'message' => $status['configured'] 
                     ? "Credentials saved! Successfully connected to Google Firebase project: {$decoded['project_id']}"
-                    : "File saved, but Google authentication failed: {$status['message']}",
+                    : "Saved to {$savedCount} location(s), but Google authentication failed: {$status['message']}",
                 'status'  => $status,
             ]);
 

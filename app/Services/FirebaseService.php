@@ -244,7 +244,7 @@ class FirebaseService
             $base64UrlClaim  = self::base64UrlEncode($claimSet);
             $signatureInput  = $base64UrlHeader . '.' . $base64UrlClaim;
 
-            $privateKey = $serviceAccount['private_key'];
+            $privateKey = str_replace('\n', "\n", $serviceAccount['private_key']);
             $binarySignature = '';
 
             $success = openssl_sign($signatureInput, $binarySignature, $privateKey, OPENSSL_ALGO_SHA256);
@@ -287,12 +287,27 @@ class FirebaseService
      */
     protected static function getServiceAccountConfig(): ?array
     {
-        $credPath = config('services.firebase.credentials_file');
+        $possiblePaths = [
+            config('services.firebase.credentials_file'),
+            storage_path('app/firebase-credentials.json'),
+            base_path('firebase-credentials.json'),
+            public_path('firebase-credentials.json'),
+            base_path('../public_html/firebase-credentials.json'),
+            '/home/bookmyre/public_html/firebase-credentials.json',
+            '/home/bookmyre/firebase-credentials.json',
+        ];
 
-        if (!empty($credPath) && file_exists($credPath)) {
-            $json = json_decode(file_get_contents($credPath), true);
-            if (is_array($json) && !empty($json['private_key']) && !empty($json['client_email'])) {
-                return $json;
+        foreach (array_unique(array_filter($possiblePaths)) as $path) {
+            clearstatcache(true, $path);
+            if (@file_exists($path) && @is_readable($path)) {
+                $content = @file_get_contents($path);
+                if (!empty($content)) {
+                    $json = json_decode($content, true);
+                    if (is_array($json) && !empty($json['private_key']) && !empty($json['client_email'])) {
+                        $json['_loaded_from'] = $path;
+                        return $json;
+                    }
+                }
             }
         }
 
@@ -301,6 +316,7 @@ class FirebaseService
         if (!empty($envJson)) {
             $decoded = json_decode($envJson, true);
             if (is_array($decoded) && !empty($decoded['private_key']) && !empty($decoded['client_email'])) {
+                $decoded['_loaded_from'] = 'env:FIREBASE_SERVICE_ACCOUNT_JSON';
                 return $decoded;
             }
         }
@@ -360,6 +376,7 @@ class FirebaseService
             'message'      => 'Successfully authenticated with Google FCM HTTP v1 API.',
             'project_id'   => $serviceAccount['project_id'] ?? null,
             'client_email' => $serviceAccount['client_email'] ?? null,
+            'loaded_from'  => $serviceAccount['_loaded_from'] ?? 'file',
         ];
     }
 
